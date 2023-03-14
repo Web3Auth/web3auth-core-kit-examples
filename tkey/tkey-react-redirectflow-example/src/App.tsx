@@ -455,7 +455,7 @@ function App() {
 
 			<footer className='footer'>
 				<a
-					href='https://github.com/Web3Auth/examples/tree/main/tkey/tkey-react-example'
+					href='https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-react-redirectflow-example'
 					target='_blank'
 					rel='noopener noreferrer'
 				>
