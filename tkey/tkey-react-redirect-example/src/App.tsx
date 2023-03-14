@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import swal from 'sweetalert';
@@ -10,6 +11,7 @@ import BN from 'bn.js';
 function App() {
 	const [user, setUser] = useState<any>(null);
 	const [privateKey, setPrivateKey] = useState<any>();
+	const [oAuthShare, setOAuthShare] = useState<any>();
 	const [provider, setProvider] = useState<any>();
 
 	// Init Service Provider inside the useEffect Method
@@ -23,6 +25,7 @@ function App() {
 					let result = await (tKey.serviceProvider as any).directWeb.getRedirectResult();
 					tKey.serviceProvider.postboxKey = new BN ( (result.result as any).privateKey!  , "hex");
 					setUser( (result.result as any).userInfo);
+					setOAuthShare((result.result as any).privateKey);
 					initializeNewKey();
 				}
 
@@ -75,6 +78,7 @@ function App() {
 					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
 			});
 			setUser(loginResponse.userInfo);
+			setOAuthShare(loginResponse.privateKey);
 			// uiConsole('Public Key : ' + loginResponse.publicAddress);
 			// uiConsole('Email : ' + loginResponse.userInfo.email);
 
@@ -240,7 +244,7 @@ function App() {
 				}
 			} else {
 				swal('Error', 'Password must be >= 11 characters', 'error');
-				logout();
+				uiConsole('Looks like you entered an invalid password. Please try again via logging in or reset your account.');
 			}
 		});
 	}
@@ -253,6 +257,23 @@ function App() {
 		const keyDetails = await tKey.getKeyDetails();
 		uiConsole(keyDetails);
 	};
+
+	const resetAccount = async () => {
+		if (!tKey) {
+			uiConsole("tKey not initialized yet");
+			return;
+		}
+		try {
+		uiConsole(oAuthShare);
+		  await tKey.storageLayer.setMetadata({
+			privKey: oAuthShare,
+			input: { message: "KEY_NOT_FOUND" },
+		  });
+		  uiConsole("Reset Account Successful.");
+		} catch (e) {
+		  uiConsole(e);
+		}
+	  };
 
 	const logout = (): void => {
 		uiConsole('Log out');
@@ -357,6 +378,7 @@ function App() {
 		if (el) {
 			el.innerHTML = JSON.stringify(args || {}, null, 2);
 		}
+		console.log(...args);
 	};
 
 	const loggedInView = (
@@ -426,6 +448,11 @@ function App() {
 				<div>
 					<button onClick={logout} className='card'>
 						Log Out
+					</button>
+				</div>
+				<div>
+					<button onClick={resetAccount} className='card'>
+						Reset Account (CAUTION)
 					</button>
 				</div>
 			</div>

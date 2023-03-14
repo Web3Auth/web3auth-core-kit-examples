@@ -8,6 +8,7 @@ import Web3 from "web3";
 function App() {
 	const [user, setUser] = useState<any>(null);
 	const [privateKey, setPrivateKey] = useState<any>();
+	const [oAuthShare, setOAuthShare] = useState<any>();
 	const [provider, setProvider] = useState<any>();
 
 	// Init Service Provider inside the useEffect Method
@@ -65,6 +66,7 @@ function App() {
 					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
 			});
 			setUser(loginResponse.userInfo);
+			setOAuthShare(loginResponse.privateKey);
 			// uiConsole('Public Key : ' + loginResponse.publicAddress);
 			// uiConsole('Email : ' + loginResponse.userInfo.email);
 		} catch (error) {
@@ -236,6 +238,23 @@ function App() {
 		const keyDetails = await tKey.getKeyDetails();
 		uiConsole(keyDetails);
 	};
+
+	const resetAccount = async () => {
+		if (!tKey) {
+			uiConsole("tKey not initialized yet");
+			return;
+		}
+		try {
+		uiConsole(oAuthShare);
+		  await tKey.storageLayer.setMetadata({
+			privKey: oAuthShare,
+			input: { message: "KEY_NOT_FOUND" },
+		  });
+		  uiConsole("Reset Account Successful.");
+		} catch (e) {
+		  uiConsole(e);
+		}
+	  };
 
 	const logout = (): void => {
 		uiConsole('Log out');
@@ -409,6 +428,11 @@ function App() {
 				<div>
 					<button onClick={logout} className='card'>
 						Log Out
+					</button>
+				</div>
+				<div>
+					<button onClick={resetAccount} className='card'>
+						Reset Account (CAUTION)
 					</button>
 				</div>
 			</div>
