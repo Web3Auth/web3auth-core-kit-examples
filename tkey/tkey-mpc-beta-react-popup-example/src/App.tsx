@@ -76,9 +76,14 @@ function App() {
     try {
       // Triggering Login using Service Provider ==> opens the popup
       const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-        typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
-        clientId: '774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+        typeOfLogin: 'jwt',
+				verifier: 'mpc-key-demo-passwordless',
+        clientId: 'QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1',
+				jwtParams: {
+					domain: "https://shahbaz-torus.us.auth0.com",
+					verifierIdField: "name",
+          connection: "google-oauth2"
+				},
       });
       uiConsole("This is the login response:", loginResponse);
       setLoginResponse(loginResponse);
