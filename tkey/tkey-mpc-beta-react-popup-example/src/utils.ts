@@ -249,7 +249,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       }
     });
 
-    const { tssNonce, factor2Share, factor2Index, compressedTSSPubKey, signatures} = signingParams;
+    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures} = signingParams;
 
     const { verifier, verifierId } = loginReponse.userInfo;
 
@@ -274,8 +274,8 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       const currentSession = `${sessionId}${randomSessionNonce.toString("hex")}`;
 
       const participatingServerDKGIndexes = [1, 2, 3];
-      const dklsCoeff = getDKLSCoeff(true, participatingServerDKGIndexes, factor2Index);
-      const denormalisedShare = dklsCoeff.mul(factor2Share).umod(ec.curve.n);
+      const dklsCoeff = getDKLSCoeff(true, participatingServerDKGIndexes, tssShare2Index);
+      const denormalisedShare = dklsCoeff.mul(tssShare2).umod(ec.curve.n);
       const share = Buffer.from(denormalisedShare.toString(16, 64), "hex").toString("base64");
 
       if (!currentSession) {
@@ -299,7 +299,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       const serverCoeffs: any = {};
       for (let i = 0; i < participatingServerDKGIndexes.length; i++) {
         const serverIndex = participatingServerDKGIndexes[i];
-        serverCoeffs[serverIndex] = getDKLSCoeff(false, participatingServerDKGIndexes, factor2Index, serverIndex).toString("hex");
+        serverCoeffs[serverIndex] = getDKLSCoeff(false, participatingServerDKGIndexes, tssShare2Index, serverIndex).toString("hex");
       }
       client.precompute(tss, { signatures, server_coeffs: serverCoeffs });
       await client.ready();

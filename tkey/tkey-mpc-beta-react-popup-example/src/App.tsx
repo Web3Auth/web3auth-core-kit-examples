@@ -109,14 +109,11 @@ function App() {
 
       // Right not we're depending on if local storage exists to tell us if user is new or existing.
       let factorKey: BN;
-      let deviceTSSShare: BN;
-      let deviceTSSIndex: number;
-      let metadataDeviceShare: ShareStore;
 
       if (!localFactorKey) {
         factorKey = new BN(generatePrivate());
-        deviceTSSShare = new BN(generatePrivate());
-        deviceTSSIndex = 2;
+        const deviceTSSShare = new BN(generatePrivate());
+        const deviceTSSIndex = 2;
         const factorPub = getPubKeyPoint(factorKey);
         await tKey.initialize({ useTSS: true, factorPub, deviceTSSShare, deviceTSSIndex });
       } else {
@@ -130,9 +127,8 @@ function App() {
           throw new Error("no metadata for your factor key, reset your account");
         }
         const metadataShare = JSON.parse(factorKeyMetadata.message);
-
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
-        metadataDeviceShare = metadataShare.deviceShare;
+        const metadataDeviceShare = metadataShare.deviceShare;
         await tKey.initialize({ neverInitializeNewKey: true });
         await tKey.inputShareStoreSafe(metadataDeviceShare, true);
         await tKey.reconstructKey();
@@ -149,24 +145,26 @@ function App() {
       setMetadataKey(metadataKey?.privKey.toString("hex"));
 
       const tssNonce: number = tKey.metadata.tssNonces![tKey.tssTag];
-      const factor1PubKeyDetails = await tKey.serviceProvider.getTSSPubKey(tKey.tssTag, tssNonce);
-      const factor1PubKey = { x: factor1PubKeyDetails.x.toString("hex"), y: factor1PubKeyDetails.y.toString("hex") };
+      // tssShare1 = TSS Share from the social login/ service provider
+      const tssShare1PubKeyDetails = await tKey.serviceProvider.getTSSPubKey(tKey.tssTag, tssNonce);
+      const tssShare1PubKey = { x: tssShare1PubKeyDetails.x.toString("hex"), y: tssShare1PubKeyDetails.y.toString("hex") };
 
-      const { tssShare: factor2Share, tssIndex: factor2Index } = await tKey.getTSSShare(factorKey);
+      // tssShare2 = TSS Share from the local storage of the device
+      const { tssShare: tssShare2, tssIndex: tssShare2Index } = await tKey.getTSSShare(factorKey);
       
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
-      const tssPubKey = getTSSPubKey(factor1PubKey, factor2Share, factor2Index);
+      const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2, tssShare2Index);
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
-      await addFactorKeyMetadata(tKey, factorKey, factor2Share, factor2Index, "local storage key");
+      await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage key");
       await tKey.syncLocalMetadataTransitions();
       setLocalFactorKey(factorKey);
 
       setSigningParams({
         tssNonce,
-        factor2Share,
-        factor2Index,
+        tssShare2,
+        tssShare2Index,
         compressedTSSPubKey,
         signatures
       })
