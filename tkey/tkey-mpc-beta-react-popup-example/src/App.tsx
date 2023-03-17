@@ -2,12 +2,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable require-atomic-updates */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { getPubKeyPoint, ShareStore } from "@tkey/common-types";
+import { getPubKeyPoint } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 // import swal from "sweetalert";
-
+import { encrypt, randomSelection } from '@toruslabs/rss-client';
 import { tKey } from "./tkey";
 import { addFactorKeyMetadata, getTSSPubKey, setupWeb3 } from "./utils";
 
@@ -181,81 +181,96 @@ function App() {
     }
   };
 
-  // const addNewTSSShareAndFactor = async (newFactorPub: Point, newFactorTSSIndex: number, inputFactorKey: BN) => {
-  //   if (!tKey) {
-  //     throw new Error("tkey does not exist, cannot add factor pub");
-  //   }
-  //   if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-  //     throw new Error("tssIndex must be 2 or 3");
-  //   }
-  //   if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
-  //     throw new Error("factorPubs does not exist");
-  //   }
-  //   const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-  //   const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-  //   const existingTSSIndexes = existingFactorPubs.map((fb) => tKey.getFactorEncs(fb).tssIndex);
-  //   const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
-  //   const { tssShare, tssIndex } = await tKey.getTSSShare(inputFactorKey);
-  //   tKey.metadata.addTSSData({
-  //     tssTag: tKey.tssTag,
-  //     factorPubs: updatedFactorPubs,
-  //   });
-  //   const rssNodeDetails = await tKey._getRssNodeDetails();
-  //   const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
-  //   const randomSelectedServers = randomSelection(
-  //     new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
-  //     Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
-  //   );
-  //   const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
-  //   await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
-  //     selectedServers: randomSelectedServers,
-  //     serverEndpoints,
-  //     serverPubKeys,
-  //     serverThreshold,
-  //     authSignatures: await this.getSignatures(),
-  //   });
-  // };
+  const addNewTSSShareAndFactor = async (newFactorTSSIndex: number) => {
+    if (!tKey) {
+      throw new Error("tkey does not exist, cannot add factor pub");
+    }
+    if (!localFactorKey) {
+      throw new Error("localFactorKey does not exist, cannot add factor pub");
+    }
+    if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
+      throw new Error("tssIndex must be 2 or 3");
+    }
+    if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
+      throw new Error("factorPubs does not exist");
+    }
 
-  // const copyExistingTSSShareForNewFactor = async (newFactorPub: Point, newFactorTSSIndex: number, inputFactorKey: BN) => {
-  //   if (!tKey) {
-  //     throw new Error("tkey does not exist, cannot copy factor pub");
-  //   }
-  //   if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-  //     throw new Error("input factor tssIndex must be 2 or 3");
-  //   }
-  //   if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
-  //     throw new Error("factorPubs does not exist, failed in copy factor pub");
-  //   }
-  //   if (!tKey.metadata.factorEncs || typeof tKey.metadata.factorEncs[tKey.tssTag] !== "object") {
-  //     throw new Error("factorEncs does not exist, failed in copy factor pub");
-  //   }
-  //   const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-  //   const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-  //   const { tssShare, tssIndex } = await tKey.getTSSShare(inputFactorKey);
-  //   if (tssIndex !== newFactorTSSIndex) {
-  //     throw new Error("retrieved tssIndex does not match input factor tssIndex");
-  //   }
-  //   const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
-  //   const factorPubID = newFactorPub.x.toString(16, 64);
-  //   factorEncs[factorPubID] = {
-  //     tssIndex: newFactorTSSIndex,
-  //     type: "direct",
-  //     userEnc: await encrypt(
-  //       Buffer.concat([
-  //         Buffer.from("04", "hex"),
-  //         Buffer.from(newFactorPub.x.toString(16, 64), "hex"),
-  //         Buffer.from(newFactorPub.y.toString(16, 64), "hex"),
-  //       ]),
-  //       Buffer.from(tssShare.toString(16, 64), "hex")
-  //     ),
-  //     serverEncs: [],
-  //   };
-  //   tKey.metadata.addTSSData({
-  //     tssTag: tKey.tssTag,
-  //     factorPubs: updatedFactorPubs,
-  //     factorEncs,
-  //   });
-  // };
+    const factorKey = new BN(localFactorKey, "hex");
+    const factorPub = getPubKeyPoint(factorKey);
+
+    const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
+    const updatedFactorPubs = existingFactorPubs.concat([factorPub]);
+    const existingTSSIndexes = existingFactorPubs.map((fb) => tKey.getFactorEncs(fb).tssIndex);
+    const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
+    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
+
+    tKey.metadata.addTSSData({
+      tssTag: tKey.tssTag,
+      factorPubs: updatedFactorPubs,
+    });
+
+    const rssNodeDetails = await tKey._getRssNodeDetails();
+    const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
+    const randomSelectedServers = randomSelection(
+      new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
+      Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
+    );
+
+    const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
+    await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
+      selectedServers: randomSelectedServers,
+      serverEndpoints,
+      serverPubKeys,
+      serverThreshold,
+      authSignatures: signingParams.signatures,
+    });
+  };
+
+  const copyExistingTSSShareForNewFactor = async (newFactorTSSIndex: number) => {
+    if (!tKey) {
+      throw new Error("tkey does not exist, cannot copy factor pub");
+    }
+    if (!localFactorKey) {
+      throw new Error("localFactorKey does not exist, cannot add factor pub");
+    }
+    if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
+      throw new Error("input factor tssIndex must be 2 or 3");
+    }
+    if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
+      throw new Error("factorPubs does not exist, failed in copy factor pub");
+    }
+    if (!tKey.metadata.factorEncs || typeof tKey.metadata.factorEncs[tKey.tssTag] !== "object") {
+      throw new Error("factorEncs does not exist, failed in copy factor pub");
+    }
+    const factorKey = new BN(localFactorKey, "hex");
+    const factorPub = getPubKeyPoint(factorKey);
+    const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
+    const updatedFactorPubs = existingFactorPubs.concat([factorPub]);
+    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
+    if (tssIndex !== newFactorTSSIndex) {
+      throw new Error("retrieved tssIndex does not match input factor tssIndex");
+    }
+    const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
+    const factorPubID = factorPub.x.toString(16, 64);
+    factorEncs[factorPubID] = {
+      tssIndex: newFactorTSSIndex,
+      type: "direct",
+      userEnc: await encrypt(
+        Buffer.concat([
+          Buffer.from("04", "hex"),
+          Buffer.from(factorPub.x.toString(16, 64), "hex"),
+          Buffer.from(factorPub.y.toString(16, 64), "hex"),
+        ]),
+        Buffer.from(tssShare.toString(16, 64), "hex")
+      ),
+      serverEncs: [],
+    };
+    tKey.metadata.addTSSData({
+      tssTag: tKey.tssTag,
+      factorPubs: updatedFactorPubs,
+      factorEncs,
+    });
+  };
 
   const keyDetails = async () => {
     if (!tKey) {
@@ -396,6 +411,16 @@ function App() {
             See Login Response
           </button>
         </div>
+        {/* <div>
+          <button onClick={copyExistingTSSShareForNewFactor} className="card">
+            Copy Existing TSS Share For New Factor
+          </button>
+        </div>
+        <div>
+          <button onClick={addNewTSSShareAndFactor} className="card">
+            Add new TSS Share and Factor
+          </button>
+        </div> */}
         <div>
           <button onClick={keyDetails} className="card">
             Key Details
