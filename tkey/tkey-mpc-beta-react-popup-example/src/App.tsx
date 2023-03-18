@@ -140,6 +140,7 @@ function App() {
       // Right not we're depending on if local storage exists to tell us if user is new or existing.
       let factorKey: BN;
 
+      // TODO: DO NOT USE LOCAL FACTOR KEY TO DEFINE A NEW FROM EXISTING USER IN PROD
       if (!localFactorKey) {
         factorKey = new BN(generatePrivate());
         const deviceTSSShare = new BN(generatePrivate());
@@ -187,8 +188,9 @@ function App() {
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
-      await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
+      if (!localFactorKey) await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       await tKey.syncLocalMetadataTransitions();
+      
       setLocalFactorKey(factorKey);
 
       setSigningParams({
@@ -198,18 +200,30 @@ function App() {
         compressedTSSPubKey,
         signatures
       })
+      
 
       uiConsole(
         "Successfully logged in & initialised MPC TKey SDK",
         "TSS Public Key: ",
-        tssPubKey,
+        tKey.getTSSPub(),
         "Metadata Key",
-        metadataKey.privKey.toString("hex")
+        metadataKey.privKey.toString("hex"), 
+        "With Factors/Shares:",
+        tKey.getMetadata().getShareDescription(),
       );
     } catch (error) {
       uiConsole(error, "caught");
     }
   };
+
+  // const addShareDescription = async (factorKeyPub: string, tssShareIndex: number) => {
+  //   const params = {
+  //     module: "Factor Details",
+  //     dateAdded: Date.now(),
+  //     tssShareIndex,
+  //   };
+  //   await tKey.addShareDescription(factorKeyPub, JSON.stringify(params), true);
+  // }
 
   const copyTSSShareIntoManualBackupFactorkey = async() => {
     try {
@@ -359,9 +373,15 @@ function App() {
       uiConsole("tKey not initialized yet");
       return;
     }
-    const keyDetails = await tKey.getKeyDetails();
-    uiConsole(keyDetails);
-    return keyDetails;
+    // const keyDetails = await tKey.getKeyDetails();
+
+
+   uiConsole(
+    "TSS Public Key: ",
+    tKey.getTSSPub(),
+    "With Factors/Shares:",
+    tKey.getMetadata().getShareDescription())
+    // return keyDetails;
   };
 
   const logout = (): void => {
@@ -500,7 +520,7 @@ function App() {
         </div>
         <div>
           <button onClick={createNewTSSShareIntoManualBackupFactorkey} className="card">
-            CreateNewTSSShareIntoManualBackupFactorkey
+            Create New TSSShare Into Manual Backup Factor
           </button>
         </div>
         <div>

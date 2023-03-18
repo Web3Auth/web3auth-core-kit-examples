@@ -183,6 +183,7 @@ export async function fetchPostboxKeyAndSigs(opts: any) {
   };
 }
 
+
 export async function assignTssKey(opts: any) {
   const { verifierName, verifierId, tssTag = "default", nonce } = opts;
   const extendedVerifierId = `${verifierId}\u0015${tssTag}\u0016${nonce}`;
@@ -386,6 +387,7 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
   const params = {
     module: factorKeyDescription,
     dateAdded: Date.now(),
+    tssShareIndex: tssIndex,
   };
   await tKey.addShareDescription(factorIndex, JSON.stringify(params), true);
 };
