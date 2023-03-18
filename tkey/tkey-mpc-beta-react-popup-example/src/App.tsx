@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 // import swal from "sweetalert";
 import { encrypt, randomSelection } from '@toruslabs/rss-client';
 import { tKey } from "./tkey";
-import { addFactorKeyMetadata, getTSSPubKey, setupWeb3 } from "./utils";
+import { addFactorKeyMetadata, fetchPostboxKeyAndSigs, getTSSPubKey, setupWeb3 } from "./utils";
 
 import "./App.css";
 
@@ -85,7 +85,6 @@ function App() {
           connection: "google-oauth2"
 				},
       });
-      uiConsole("This is the login response:", loginResponse);
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
       return loginResponse;
@@ -94,13 +93,43 @@ function App() {
     }
   };
 
-  const initializeNewKey = async () => {
+  const triggerMockLogin = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
       return;
     }
     try {
-      const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+      const verifier = "torus-test-health";
+      const verifierId = "test809@example.com";
+      const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
+      tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
+      (tKey.serviceProvider as any).verifierName = verifier;
+      (tKey.serviceProvider as any).verifierId = verifierId;
+      const loginResponse = {
+        userInfo: { verifierId, verifier },
+        signatures,
+        privateKey: postboxkey,
+      };
+      setLoginResponse(loginResponse);
+      setUser(loginResponse.userInfo);
+      return loginResponse;
+    } catch (error) {
+      uiConsole(error);
+    }
+  };
+
+  const initializeNewKey = async (mockLogin: boolean) => {
+    if (!tKey) {
+      uiConsole("tKey not initialized yet");
+      return;
+    }
+    try {
+      let loginResponse;
+      if (mockLogin) {
+        loginResponse = await triggerMockLogin();
+      } else {
+        loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+      }
       setOAuthShare(loginResponse.privateKey);
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
@@ -477,8 +506,11 @@ function App() {
 
   const unloggedInView = (
     <div>
-      <button onClick={initializeNewKey} className="card">
+      <button onClick={() => initializeNewKey(false)} className="card">
         Login
+      </button>
+      <button onClick={() => initializeNewKey(true)} className="card">
+        MockLogin
       </button>
     </div>
   );
