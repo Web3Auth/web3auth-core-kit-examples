@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable require-atomic-updates */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { getPubKeyPoint, Point } from "@tkey/common-types";
+import { getPubKeyPoint, Point, getPubKeyECC, ShareStore } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
@@ -20,6 +20,7 @@ const uiConsole = (...args: any[]): void => {
   }
   console.log(...args);
 };
+
 
 function App() {
   const [loginResponse, setLoginResponse] = useState<any>(null);
@@ -186,7 +187,7 @@ function App() {
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
-      await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage key");
+      await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       await tKey.syncLocalMetadataTransitions();
       setLocalFactorKey(factorKey);
 
@@ -211,6 +212,7 @@ function App() {
   };
 
   const copyTSSShareIntoManualBackupFactorkey = async() => {
+    try {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot add factor pub");
     }
@@ -218,16 +220,53 @@ function App() {
       throw new Error("localFactorKey does not exist, cannot add factor pub");
     }
 
-    const backupFactorKey = new BN(generatePrivate());
-    const backupFactorPub = getPubKeyPoint(backupFactorKey);
+      const backupFactorKey = new BN(generatePrivate());
+      const backupFactorPub = getPubKeyPoint(backupFactorKey);
+  
+      await copyExistingTSSShareForNewFactor(backupFactorPub, 2, localFactorKey);
+  
+      const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
+      await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
+  
+      await tKey.syncLocalMetadataTransitions();
+      uiConsole(` 
+      Successfully created manual backup
+      Manual Backup Factor: ${backupFactorKey.toString("hex")}`)
 
-    await copyExistingTSSShareForNewFactor(backupFactorPub, 2);
+    } catch(err) {
+      uiConsole(`Failed to create new manual factor ${err}`)
+    }
+  }
 
+  const createNewTSSShareIntoManualBackupFactorkey = async() => {
+    try {
+    if (!tKey) {
+      throw new Error("tkey does not exist, cannot add factor pub");
+    }
+    if (!localFactorKey) {
+      throw new Error("localFactorKey does not exist, cannot add factor pub");
+    }
 
+      const backupFactorKey = new BN(generatePrivate());
+      const backupFactorPub = getPubKeyPoint(backupFactorKey);
+  
+      await addNewTSSShareAndFactor(backupFactorPub, 3, localFactorKey);
+  
+      const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
+      await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
+  
+      await tKey.syncLocalMetadataTransitions();
+      uiConsole(` 
+      Successfully created manual backup
+      Manual Backup Factor: ${backupFactorKey.toString("hex")}`)
+
+    } catch(err) {
+      uiConsole(`Failed to create new manual factor ${err}`)
+    }
   }
   
 
-  const addNewTSSShareAndFactor = async (newFactorPub: Point, newFactorTSSIndex: number) => {
+  const addNewTSSShareAndFactor = async (newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN) => {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot add factor pub");
     }
@@ -241,13 +280,12 @@ function App() {
       throw new Error("factorPubs does not exist");
     }
 
-    const factorKey = new BN(localFactorKey, "hex");
 
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
     const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
     const existingTSSIndexes = existingFactorPubs.map((fb) => tKey.getFactorEncs(fb).tssIndex);
     const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
-    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
+    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
 
     tKey.metadata.addTSSData({
       tssTag: tKey.tssTag,
@@ -271,12 +309,9 @@ function App() {
     });
   };
 
-  const copyExistingTSSShareForNewFactor = async (newFactorPub: Point , newFactorTSSIndex: number) => {
+  const copyExistingTSSShareForNewFactor = async (newFactorPub: Point , newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN) => {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot copy factor pub");
-    }
-    if (!localFactorKey) {
-      throw new Error("localFactorKey does not exist, cannot add factor pub");
     }
     if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
       throw new Error("input factor tssIndex must be 2 or 3");
@@ -287,10 +322,11 @@ function App() {
     if (!tKey.metadata.factorEncs || typeof tKey.metadata.factorEncs[tKey.tssTag] !== "object") {
       throw new Error("factorEncs does not exist, failed in copy factor pub");
     }
-    const factorKey = new BN(localFactorKey, "hex");
+
+
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
     const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
+    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
     if (tssIndex !== newFactorTSSIndex) {
       throw new Error("retrieved tssIndex does not match input factor tssIndex");
     }
@@ -314,6 +350,8 @@ function App() {
       factorPubs: updatedFactorPubs,
       factorEncs,
     });
+
+    
   };
 
   const keyDetails = async () => {
@@ -455,16 +493,16 @@ function App() {
             See Login Response
           </button>
         </div>
-        {/* <div>
-          <button onClick={copyExistingTSSShareForNewFactor} className="card">
-            Copy Existing TSS Share For New Factor
+        <div>
+          <button onClick={copyTSSShareIntoManualBackupFactorkey} className="card">
+            Copy Existing TSS Share For New Factor Manual
           </button>
         </div>
         <div>
-          <button onClick={addNewTSSShareAndFactor} className="card">
-            Add new TSS Share and Factor
+          <button onClick={createNewTSSShareIntoManualBackupFactorkey} className="card">
+            CreateNewTSSShareIntoManualBackupFactorkey
           </button>
-        </div> */}
+        </div>
         <div>
           <button onClick={keyDetails} className="card">
             Key Details
