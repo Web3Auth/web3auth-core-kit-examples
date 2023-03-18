@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable require-atomic-updates */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { getPubKeyPoint } from "@tkey/common-types";
+import { getPubKeyPoint, Point } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
@@ -181,7 +181,24 @@ function App() {
     }
   };
 
-  const addNewTSSShareAndFactor = async (newFactorTSSIndex: number) => {
+  const copyTSSShareIntoManualBackupFactorkey = async() => {
+    if (!tKey) {
+      throw new Error("tkey does not exist, cannot add factor pub");
+    }
+    if (!localFactorKey) {
+      throw new Error("localFactorKey does not exist, cannot add factor pub");
+    }
+
+    const backupFactorKey = new BN(generatePrivate());
+    const backupFactorPub = getPubKeyPoint(backupFactorKey);
+
+    await copyExistingTSSShareForNewFactor(backupFactorPub, 2);
+
+
+  }
+  
+
+  const addNewTSSShareAndFactor = async (newFactorPub: Point, newFactorTSSIndex: number) => {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot add factor pub");
     }
@@ -196,10 +213,9 @@ function App() {
     }
 
     const factorKey = new BN(localFactorKey, "hex");
-    const factorPub = getPubKeyPoint(factorKey);
 
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-    const updatedFactorPubs = existingFactorPubs.concat([factorPub]);
+    const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
     const existingTSSIndexes = existingFactorPubs.map((fb) => tKey.getFactorEncs(fb).tssIndex);
     const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
     const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
@@ -226,7 +242,7 @@ function App() {
     });
   };
 
-  const copyExistingTSSShareForNewFactor = async (newFactorTSSIndex: number) => {
+  const copyExistingTSSShareForNewFactor = async (newFactorPub: Point , newFactorTSSIndex: number) => {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot copy factor pub");
     }
@@ -243,23 +259,22 @@ function App() {
       throw new Error("factorEncs does not exist, failed in copy factor pub");
     }
     const factorKey = new BN(localFactorKey, "hex");
-    const factorPub = getPubKeyPoint(factorKey);
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-    const updatedFactorPubs = existingFactorPubs.concat([factorPub]);
+    const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
     const { tssShare, tssIndex } = await tKey.getTSSShare(factorKey);
     if (tssIndex !== newFactorTSSIndex) {
       throw new Error("retrieved tssIndex does not match input factor tssIndex");
     }
     const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
-    const factorPubID = factorPub.x.toString(16, 64);
+    const factorPubID = newFactorPub.x.toString(16, 64);
     factorEncs[factorPubID] = {
       tssIndex: newFactorTSSIndex,
       type: "direct",
       userEnc: await encrypt(
         Buffer.concat([
           Buffer.from("04", "hex"),
-          Buffer.from(factorPub.x.toString(16, 64), "hex"),
-          Buffer.from(factorPub.y.toString(16, 64), "hex"),
+          Buffer.from(newFactorPub.x.toString(16, 64), "hex"),
+          Buffer.from(newFactorPub.y.toString(16, 64), "hex"),
         ]),
         Buffer.from(tssShare.toString(16, 64), "hex")
       ),
