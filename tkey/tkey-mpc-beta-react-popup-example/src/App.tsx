@@ -30,17 +30,23 @@ function App() {
   const [oAuthShare, setOAuthShare] = useState<any>(null);
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
+  const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
 
   // Init Service Provider inside the useEffect Method
 
   useEffect(() => {
     if (!localFactorKey) return;
-    localStorage.setItem("tKeyLocalStore", JSON.stringify({
+    localStorage.setItem(`tKeyLocalStore${loginResponse.userInfo.verifier}${loginResponse.userInfo.verifierId}`, JSON.stringify({
       factorKey: localFactorKey.toString("hex"),
       verifier: loginResponse.userInfo.verifier,
       verifierId: loginResponse.userInfo.verifierId,
     }));
   }, [localFactorKey]);
+
+  useEffect(() => {
+    if (!mockVerifierId) return;
+    localStorage.setItem(`mockVerifierId`, mockVerifierId);
+  }, [mockVerifierId]);
 
   useEffect(() => {
     const init = async () => {
@@ -105,7 +111,16 @@ function App() {
     }
     try {
       const verifier = "torus-test-health";
-      const verifierId = "test809@example.com";
+      let verifierId: string;
+
+      const localMockVerifierId = localStorage.getItem("mockVerifierId");
+      if (localMockVerifierId) {
+        verifierId = localMockVerifierId;
+      } else {
+        verifierId = Math.round(Math.random()*100000)+"@example.com";
+        setMockVerifierId(verifierId);
+      }
+
       const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
       tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
       (tKey.serviceProvider as any).verifierName = verifier;
@@ -139,7 +154,7 @@ function App() {
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
 
-      const tKeyLocalStoreString = localStorage.getItem("tKeyLocalStore");
+      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore${loginResponse.userInfo.verifier}${loginResponse.userInfo.verifierId}`);
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       // Right not we're depending on if local storage exists to tell us if user is new or existing.
@@ -271,11 +286,7 @@ function App() {
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
       const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
       await tKey.syncLocalMetadataTransitions();
-      uiConsole(` 
-      Successfully created manual backup
-      Manual Backup Factor: 
-      
-      ${serializedShare.toString("hex")}`)
+      uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
     } catch(err) {
       uiConsole(`Failed to create new manual factor ${err}`)
@@ -301,11 +312,7 @@ function App() {
       const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
 
       await tKey.syncLocalMetadataTransitions();
-      uiConsole(` 
-      Successfully created manual backup
-      Manual Backup Factor: 
-      
-      ${serializedShare}`);
+      uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
 
     } catch(err) {
       uiConsole(`Failed to create new manual factor ${err}`)
