@@ -21,6 +21,13 @@
 	margin: 50px;
 }
 
+.subtitle {
+	line-height: 1.15;
+	font-size: 1.5rem;
+	text-align: center;
+	margin: 10px;
+}
+
 .title a {
 	color: #0070f3;
 	text-decoration: none;
@@ -83,14 +90,12 @@
 .flex-container {
 	display: flex;
 	flex-flow: row wrap;
+	justify-content: center;
+	align-items: center;
 }
 
-.flex-container > div {
-	width: 100px;
-	margin: 10px;
-	text-align: center;
-	line-height: 75px;
-	font-size: 30px;
+.flex-container .card {
+	width: fit-content;
 }
 
 #console {
