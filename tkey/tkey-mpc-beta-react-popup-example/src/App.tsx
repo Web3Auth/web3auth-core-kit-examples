@@ -2,14 +2,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable require-atomic-updates */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { getPubKeyPoint, Point, getPubKeyECC, ShareStore } from "@tkey/common-types";
+import { getPubKeyPoint } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 // import swal from "sweetalert";
-import { encrypt, randomSelection } from '@toruslabs/rss-client';
 import { tKey } from "./tkey";
-import { addFactorKeyMetadata, fetchPostboxKeyAndSigs, getTSSPubKey, setupWeb3 } from "./utils";
+import { addFactorKeyMetadata, fetchPostboxKeyAndSigs, getTSSPubKey, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor } from "./utils";
+import swal from 'sweetalert';
 
 import "./App.css";
 
@@ -35,7 +35,11 @@ function App() {
 
   useEffect(() => {
     if (!localFactorKey) return;
-    localStorage.setItem("tKeyLocalStore", localFactorKey.toString("hex"));
+    localStorage.setItem("tKeyLocalStore", JSON.stringify({
+      factorKey: localFactorKey.toString("hex"),
+      verifier: loginResponse.userInfo.verifier,
+      verifierId: loginResponse.userInfo.verifierId,
+    }));
   }, [localFactorKey]);
 
   useEffect(() => {
@@ -135,20 +139,38 @@ function App() {
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
 
-      const localFactorKey: string | null = localStorage.getItem("tKeyLocalStore");
+      const tKeyLocalStoreString = localStorage.getItem("tKeyLocalStore");
+      const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       // Right not we're depending on if local storage exists to tell us if user is new or existing.
-      let factorKey: BN;
+      let factorKey: BN | null = null;
 
-      // TODO: DO NOT USE LOCAL FACTOR KEY TO DEFINE A NEW FROM EXISTING USER IN PROD
-      if (!localFactorKey) {
+      const existingUser = await isMetadataPresent(loginResponse.privateKey);
+
+      if (!existingUser) {
         factorKey = new BN(generatePrivate());
         const deviceTSSShare = new BN(generatePrivate());
         const deviceTSSIndex = 2;
         const factorPub = getPubKeyPoint(factorKey);
         await tKey.initialize({ useTSS: true, factorPub, deviceTSSShare, deviceTSSIndex });
       } else {
-        factorKey = new BN(localFactorKey, "hex");
+        if (tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId) {
+          factorKey = new BN(tKeyLocalStore.factorKey, "hex");
+        }
+        else {
+          try {
+            factorKey = await swal('Enter your backup share', {
+              content: 'input' as any,
+            }).then(async value => {
+              uiConsole(value);
+              return await (tKey.modules.shareSerialization as any).deserialize(value, "mnemonic");
+            });
+          } catch (error) {
+            uiConsole(error);
+            throw new Error("Invalid backup share");
+          }
+        }
+        if (factorKey === null) throw new Error("Backup share not found");
         const factorKeyMetadata = await tKey.storageLayer.getMetadata<{
           message: string;
         }>({
@@ -216,36 +238,44 @@ function App() {
     }
   };
 
-  // const addShareDescription = async (factorKeyPub: string, tssShareIndex: number) => {
-  //   const params = {
-  //     module: "Factor Details",
-  //     dateAdded: Date.now(),
-  //     tssShareIndex,
-  //   };
-  //   await tKey.addShareDescription(factorKeyPub, JSON.stringify(params), true);
-  // }
+  const isMetadataPresent = async (privateKeyBN: BN) => {
+    const metadata = (await tKey.storageLayer.getMetadata({ privKey: privateKeyBN }));
+    if (
+      metadata &&
+      Object.keys(metadata).length > 0 &&
+      (metadata as any).message !== 'KEY_NOT_FOUND'
+    ) {
+      uiConsole('metadata already exists', JSON.stringify(metadata));
+      return true;
+    } else {
+      uiConsole("metadata doesn't exists", metadata);
+      return false;
+    }
+  }
 
   const copyTSSShareIntoManualBackupFactorkey = async() => {
     try {
-    if (!tKey) {
-      throw new Error("tkey does not exist, cannot add factor pub");
-    }
-    if (!localFactorKey) {
-      throw new Error("localFactorKey does not exist, cannot add factor pub");
-    }
+      if (!tKey) {
+        throw new Error("tkey does not exist, cannot add factor pub");
+      }
+      if (!localFactorKey) {
+        throw new Error("localFactorKey does not exist, cannot add factor pub");
+      }
 
       const backupFactorKey = new BN(generatePrivate());
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
-  
-      await copyExistingTSSShareForNewFactor(backupFactorPub, 2, localFactorKey);
-  
+
+      await copyExistingTSSShareForNewFactor(tKey, backupFactorPub, 2, localFactorKey);
+
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-  
+      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
       await tKey.syncLocalMetadataTransitions();
       uiConsole(` 
       Successfully created manual backup
-      Manual Backup Factor: ${backupFactorKey.toString("hex")}`)
+      Manual Backup Factor: 
+      
+      ${serializedShare.toString("hex")}`)
 
     } catch(err) {
       uiConsole(`Failed to create new manual factor ${err}`)
@@ -254,119 +284,33 @@ function App() {
 
   const createNewTSSShareIntoManualBackupFactorkey = async() => {
     try {
-    if (!tKey) {
-      throw new Error("tkey does not exist, cannot add factor pub");
-    }
-    if (!localFactorKey) {
-      throw new Error("localFactorKey does not exist, cannot add factor pub");
-    }
+      if (!tKey) {
+        throw new Error("tkey does not exist, cannot add factor pub");
+      }
+      if (!localFactorKey) {
+        throw new Error("localFactorKey does not exist, cannot add factor pub");
+      }
 
       const backupFactorKey = new BN(generatePrivate());
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
-  
-      await addNewTSSShareAndFactor(backupFactorPub, 3, localFactorKey);
-  
+
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, 3, localFactorKey, signingParams.signatures);
+
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-  
+      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
+
       await tKey.syncLocalMetadataTransitions();
       uiConsole(` 
       Successfully created manual backup
-      Manual Backup Factor: ${backupFactorKey.toString("hex")}`)
+      Manual Backup Factor: 
+      
+      ${serializedShare}`);
 
     } catch(err) {
       uiConsole(`Failed to create new manual factor ${err}`)
     }
   }
-  
-
-  const addNewTSSShareAndFactor = async (newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN) => {
-    if (!tKey) {
-      throw new Error("tkey does not exist, cannot add factor pub");
-    }
-    if (!localFactorKey) {
-      throw new Error("localFactorKey does not exist, cannot add factor pub");
-    }
-    if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-      throw new Error("tssIndex must be 2 or 3");
-    }
-    if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
-      throw new Error("factorPubs does not exist");
-    }
-
-
-    const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-    const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-    const existingTSSIndexes = existingFactorPubs.map((fb) => tKey.getFactorEncs(fb).tssIndex);
-    const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
-    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-
-    tKey.metadata.addTSSData({
-      tssTag: tKey.tssTag,
-      factorPubs: updatedFactorPubs,
-    });
-
-    const rssNodeDetails = await tKey._getRssNodeDetails();
-    const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
-    const randomSelectedServers = randomSelection(
-      new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
-      Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
-    );
-
-    const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
-    await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
-      selectedServers: randomSelectedServers,
-      serverEndpoints,
-      serverPubKeys,
-      serverThreshold,
-      authSignatures: signingParams.signatures,
-    });
-  };
-
-  const copyExistingTSSShareForNewFactor = async (newFactorPub: Point , newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN) => {
-    if (!tKey) {
-      throw new Error("tkey does not exist, cannot copy factor pub");
-    }
-    if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-      throw new Error("input factor tssIndex must be 2 or 3");
-    }
-    if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
-      throw new Error("factorPubs does not exist, failed in copy factor pub");
-    }
-    if (!tKey.metadata.factorEncs || typeof tKey.metadata.factorEncs[tKey.tssTag] !== "object") {
-      throw new Error("factorEncs does not exist, failed in copy factor pub");
-    }
-
-
-    const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-    const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-    if (tssIndex !== newFactorTSSIndex) {
-      throw new Error("retrieved tssIndex does not match input factor tssIndex");
-    }
-    const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
-    const factorPubID = newFactorPub.x.toString(16, 64);
-    factorEncs[factorPubID] = {
-      tssIndex: newFactorTSSIndex,
-      type: "direct",
-      userEnc: await encrypt(
-        Buffer.concat([
-          Buffer.from("04", "hex"),
-          Buffer.from(newFactorPub.x.toString(16, 64), "hex"),
-          Buffer.from(newFactorPub.y.toString(16, 64), "hex"),
-        ]),
-        Buffer.from(tssShare.toString(16, 64), "hex")
-      ),
-      serverEncs: [],
-    };
-    tKey.metadata.addTSSData({
-      tssTag: tKey.tssTag,
-      factorPubs: updatedFactorPubs,
-      factorEncs,
-    });
-
-    
-  };
 
   const keyDetails = async () => {
     if (!tKey) {
