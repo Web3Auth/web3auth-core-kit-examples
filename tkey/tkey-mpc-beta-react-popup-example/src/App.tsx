@@ -261,10 +261,8 @@ function App() {
       Object.keys(metadata).length > 0 &&
       (metadata as any).message !== 'KEY_NOT_FOUND'
     ) {
-      uiConsole('metadata already exists', JSON.stringify(metadata));
       return true;
     } else {
-      uiConsole("metadata doesn't exists", metadata);
       return false;
     }
   }
@@ -459,78 +457,85 @@ function App() {
 
   const loggedInView = (
     <>
+      <h2 className="subtitle">Account Details</h2>
       <div className="flex-container">
-        <div>
-          <button onClick={getUserInfo} className="card">
-            Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={getLoginResponse} className="card">
-            See Login Response
-          </button>
-        </div>
-        <div>
-          <button onClick={copyTSSShareIntoManualBackupFactorkey} className="card">
-            Copy Existing TSS Share For New Factor Manual
-          </button>
-        </div>
-        <div>
-          <button onClick={createNewTSSShareIntoManualBackupFactorkey} className="card">
-            Create New TSSShare Into Manual Backup Factor
-          </button>
-        </div>
-        <div>
-          <button onClick={keyDetails} className="card">
-            Key Details
-          </button>
-        </div>
-        <div>
-          <button onClick={getMetadataKey} className="card">
-            Metadata Key
-          </button>
-        </div>
-        <div>
-          <button onClick={getChainID} className="card">
-            Get Chain ID
-          </button>
-        </div>
-        <div>
-          <button onClick={getAccounts} className="card">
-            Get Accounts
-          </button>
-        </div>
-        <div>
-          <button onClick={getBalance} className="card">
-            Get Balance
-          </button>
-        </div>
 
-        <div>
-          <button onClick={signMessage} className="card">
-            Sign Message
-          </button>
-        </div>
-        <div>
-          <button onClick={sendTransaction} className="card">
-            Send Transaction
-          </button>
-        </div>
-        <div>
-          <button onClick={logout} className="card">
-            Log Out
-          </button>
-        </div>
-        <div>
-          <button onClick={deleteTkeyLocalStore} className="card">
-            Delete tKey Local Store (enables Recovery Flow)
-          </button>
-        </div>
-        <div>
-          <button onClick={resetAccount} className='card'>
-            Reset Account (CAUTION)
-          </button>
-        </div>
+        <button onClick={getUserInfo} className="card">
+          Get User Info
+        </button>
+
+
+        <button onClick={getLoginResponse} className="card">
+          See Login Response
+        </button>
+
+
+        <button onClick={keyDetails} className="card">
+          Key Details
+        </button>
+
+
+        <button onClick={getMetadataKey} className="card">
+          Metadata Key
+        </button>
+
+
+        <button onClick={logout} className="card">
+          Log Out
+        </button>
+
+      </div>
+      <h2 className="subtitle">Recovery/ Key Manipulation</h2>
+      <div className="flex-container">
+
+        <button onClick={copyTSSShareIntoManualBackupFactorkey} className="card">
+          Copy Existing TSS Share For New Factor Manual
+        </button>
+
+
+        <button onClick={createNewTSSShareIntoManualBackupFactorkey} className="card">
+          Create New TSSShare Into Manual Backup Factor
+        </button>
+
+
+        <button onClick={deleteTkeyLocalStore} className="card">
+          Delete tKey Local Store (enables Recovery Flow)
+        </button>
+
+
+        <button onClick={resetAccount} className='card'>
+          Reset Account (CAUTION)
+        </button>
+
+      </div>
+      <h2 className="subtitle">Blockchain Calls</h2>
+      <div className="flex-container">
+
+        <button onClick={getChainID} className="card">
+          Get Chain ID
+        </button>
+
+
+        <button onClick={getAccounts} className="card">
+          Get Accounts
+        </button>
+
+
+        <button onClick={getBalance} className="card">
+          Get Balance
+        </button>
+
+
+
+        <button onClick={signMessage} className="card">
+          Sign Message
+        </button>
+
+
+        <button onClick={sendTransaction} className="card">
+          Send Transaction
+        </button>
+
       </div>
 
       <div id="console" style={{ whiteSpace: "pre-line" }}>
