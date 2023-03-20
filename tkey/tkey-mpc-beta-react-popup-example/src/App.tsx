@@ -6,10 +6,9 @@ import { getPubKeyPoint } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
-// import swal from "sweetalert";
+import swal from "sweetalert";
 import { tKey } from "./tkey";
 import { addFactorKeyMetadata, fetchPostboxKeyAndSigs, getTSSPubKey, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor } from "./utils";
-import swal from 'sweetalert';
 
 import "./App.css";
 
@@ -36,7 +35,7 @@ function App() {
 
   useEffect(() => {
     if (!localFactorKey) return;
-    localStorage.setItem(`tKeyLocalStore${loginResponse.userInfo.verifier}${loginResponse.userInfo.verifierId}`, JSON.stringify({
+    localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`, JSON.stringify({
       factorKey: localFactorKey.toString("hex"),
       verifier: loginResponse.userInfo.verifier,
       verifierId: loginResponse.userInfo.verifierId,
@@ -63,7 +62,7 @@ function App() {
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
-      const chainConfig =  {
+      const chainConfig = {
         chainId: "0x5",
         rpcTarget: "https://rpc.ankr.com/eth_goerli",
         displayName: "Goerli Testnet",
@@ -88,13 +87,13 @@ function App() {
       // Triggering Login using Service Provider ==> opens the popup
       const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
         typeOfLogin: 'jwt',
-				verifier: 'mpc-key-demo-passwordless',
+        verifier: 'mpc-key-demo-passwordless',
         clientId: 'QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1',
-				jwtParams: {
-					domain: "https://shahbaz-torus.us.auth0.com",
-					verifierIdField: "name",
+        jwtParams: {
+          domain: "https://shahbaz-torus.us.auth0.com",
+          verifierIdField: "name",
           connection: "google-oauth2"
-				},
+        },
       });
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
@@ -104,6 +103,16 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    let verifierId: string;
+
+    const localMockVerifierId = localStorage.getItem("mockVerifierId");
+    if (localMockVerifierId) verifierId = localMockVerifierId;
+    else verifierId = Math.round(Math.random() * 100000) + "@example.com";
+    setMockVerifierId(verifierId);
+
+  }, []);
+
   const triggerMockLogin = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
@@ -111,15 +120,7 @@ function App() {
     }
     try {
       const verifier = "torus-test-health";
-      let verifierId: string;
-
-      const localMockVerifierId = localStorage.getItem("mockVerifierId");
-      if (localMockVerifierId) {
-        verifierId = localMockVerifierId;
-      } else {
-        verifierId = Math.round(Math.random()*100000)+"@example.com";
-        setMockVerifierId(verifierId);
-      }
+      const verifierId = mockVerifierId;
 
       const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
       tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
@@ -154,7 +155,7 @@ function App() {
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
 
-      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore${loginResponse.userInfo.verifier}${loginResponse.userInfo.verifierId}`);
+      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       // Right not we're depending on if local storage exists to tell us if user is new or existing.
@@ -219,7 +220,7 @@ function App() {
 
       // tssShare2 = TSS Share from the local storage of the device
       const { tssShare: tssShare2, tssIndex: tssShare2Index } = await tKey.getTSSShare(factorKey);
-      
+
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
       const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2, tssShare2Index);
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
@@ -227,7 +228,7 @@ function App() {
       // 5. save factor key and other metadata
       if (!localFactorKey) await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       await tKey.syncLocalMetadataTransitions();
-      
+
       setLocalFactorKey(factorKey);
 
       setSigningParams({
@@ -237,14 +238,14 @@ function App() {
         compressedTSSPubKey,
         signatures
       })
-      
+
 
       uiConsole(
         "Successfully logged in & initialised MPC TKey SDK",
         "TSS Public Key: ",
         tKey.getTSSPub(),
         "Metadata Key",
-        metadataKey.privKey.toString("hex"), 
+        metadataKey.privKey.toString("hex"),
         "With Factors/Shares:",
         tKey.getMetadata().getShareDescription(),
       );
@@ -268,7 +269,7 @@ function App() {
     }
   }
 
-  const copyTSSShareIntoManualBackupFactorkey = async() => {
+  const copyTSSShareIntoManualBackupFactorkey = async () => {
     try {
       if (!tKey) {
         throw new Error("tkey does not exist, cannot add factor pub");
@@ -288,12 +289,12 @@ function App() {
       await tKey.syncLocalMetadataTransitions();
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
-    } catch(err) {
+    } catch (err) {
       uiConsole(`Failed to create new manual factor ${err}`)
     }
   }
 
-  const createNewTSSShareIntoManualBackupFactorkey = async() => {
+  const createNewTSSShareIntoManualBackupFactorkey = async () => {
     try {
       if (!tKey) {
         throw new Error("tkey does not exist, cannot add factor pub");
@@ -314,9 +315,14 @@ function App() {
       await tKey.syncLocalMetadataTransitions();
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
 
-    } catch(err) {
+    } catch (err) {
       uiConsole(`Failed to create new manual factor ${err}`)
     }
+  }
+
+  const deleteTkeyLocalStore = async () => {
+    localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+    uiConsole("Successfully deleted tKey local store");
   }
 
   const keyDetails = async () => {
@@ -327,11 +333,11 @@ function App() {
     // const keyDetails = await tKey.getKeyDetails();
 
 
-   uiConsole(
-    "TSS Public Key: ",
-    tKey.getTSSPub(),
-    "With Factors/Shares:",
-    tKey.getMetadata().getShareDescription())
+    uiConsole(
+      "TSS Public Key: ",
+      tKey.getTSSPub(),
+      "With Factors/Shares:",
+      tKey.getMetadata().getShareDescription())
     // return keyDetails;
   };
 
@@ -358,7 +364,7 @@ function App() {
 
   const resetAccount = async () => {
     try {
-      localStorage.removeItem("tKeyLocalStore");
+      localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
       await tKey.storageLayer.setMetadata({
         privKey: oAuthShare,
         input: { message: "KEY_NOT_FOUND" },
@@ -516,9 +522,14 @@ function App() {
           </button>
         </div>
         <div>
-            <button onClick={resetAccount} className='card'>
-                Reset Account (CAUTION)
-            </button>
+          <button onClick={deleteTkeyLocalStore} className="card">
+            Delete tKey Local Store (enables Recovery Flow)
+          </button>
+        </div>
+        <div>
+          <button onClick={resetAccount} className='card'>
+            Reset Account (CAUTION)
+          </button>
         </div>
       </div>
 
@@ -529,22 +540,25 @@ function App() {
   );
 
   const unloggedInView = (
-    <div>
+    <>
       <button onClick={() => initializeNewKey(false)} className="card">
         Login
       </button>
       <button onClick={() => initializeNewKey(true)} className="card">
         MockLogin
       </button>
-    </div>
+
+      <p>Mock Login Seed Email</p>
+      <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
+    </>
   );
 
   return (
     <div className="container">
       <h1 className="title">
-        <a target="_blank" href="http://web3auth.io/" rel="noreferrer">
-          Web3Auth (tKey)
-        </a>
+        <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
+          Web3Auth Core Kit tKey MPC Beta
+        </a> {" "}
         & ReactJS Ethereum Example
       </h1>
 
