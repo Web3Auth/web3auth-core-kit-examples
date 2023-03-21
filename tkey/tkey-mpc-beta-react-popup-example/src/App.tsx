@@ -291,7 +291,7 @@ function App() {
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
     } catch (err) {
-      uiConsole("Failed to copy share to new manual factor", err)
+      uiConsole(`Failed to copy share to new manual factor: ${err}`)
     }
   }
 
@@ -306,12 +306,23 @@ function App() {
 
       const backupFactorKey = new BN(generatePrivate());
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
-      const tKeyShareDescriptions = tKey.getMetadata().getShareDescription();
-      uiConsole("tKeyShareDescriptions:", tKeyShareDescriptions);
+      const tKeyShareDescriptions = await tKey.getMetadata().getShareDescription();
+      let backupFactorIndex = 2;
+      for (const [key, value] of Object.entries(tKeyShareDescriptions)) {
+        console.log(`value of share ${key}`, value)
+        // eslint-disable-next-line no-loop-func, array-callback-return
+        value.map((factor: any) => {
+          factor = JSON.parse(factor);
+          if (factor.tssShareIndex > backupFactorIndex) {
+            backupFactorIndex = factor.tssShareIndex;
+            console.log(`backupFactorIndex of share ${key}`, backupFactorIndex)
+          }
+        });
+      }
+      uiConsole("backupFactorIndex:", backupFactorIndex+1);
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex+1, localFactorKey, signingParams.signatures);
 
-      await addNewTSSShareAndFactor(tKey, backupFactorPub, 3, localFactorKey, signingParams.signatures);
-
-      const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
+      const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
       const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
 
@@ -319,7 +330,7 @@ function App() {
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
 
     } catch (err) {
-      uiConsole(`Failed to create new manual factor`, err)
+      uiConsole(`Failed to create new manual factor ${err}`);
     }
   }
 

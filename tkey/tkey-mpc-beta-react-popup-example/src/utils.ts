@@ -430,41 +430,46 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
 };
 
 export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN, signatures: any) => {
-  if (!tKey) {
-    throw new Error("tkey does not exist, cannot add factor pub");
+  try {
+    if (!tKey) {
+      throw new Error("tkey does not exist, cannot add factor pub");
+    }
+    if (!(newFactorTSSIndex === 2 || newFactorTSSIndex === 3)) {
+      throw new Error("tssIndex must be 2 or 3");
+    }
+    if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
+      throw new Error("factorPubs does not exist");
+    }
+  
+    const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
+    const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
+    const existingTSSIndexes = existingFactorPubs.map((fb: any) => tKey.getFactorEncs(fb).tssIndex);
+    const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
+    const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
+  
+    tKey.metadata.addTSSData({
+      tssTag: tKey.tssTag,
+      factorPubs: updatedFactorPubs,
+    });
+  
+    const rssNodeDetails = await tKey._getRssNodeDetails();
+    const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
+    const randomSelectedServers = randomSelection(
+      new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
+      Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
+    );
+  
+    const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
+    await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
+      selectedServers: randomSelectedServers,
+      serverEndpoints,
+      serverPubKeys,
+      serverThreshold,
+      authSignatures: signatures,
+    });
   }
-  if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-    throw new Error("tssIndex must be 2 or 3");
+  catch(err) {
+    console.error(err);
+    throw err;
   }
-  if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
-    throw new Error("factorPubs does not exist");
-  }
-
-
-  const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
-  const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-  const existingTSSIndexes = existingFactorPubs.map((fb: any) => tKey.getFactorEncs(fb).tssIndex);
-  const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
-  const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-
-  tKey.metadata.addTSSData({
-    tssTag: tKey.tssTag,
-    factorPubs: updatedFactorPubs,
-  });
-
-  const rssNodeDetails = await tKey._getRssNodeDetails();
-  const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
-  const randomSelectedServers = randomSelection(
-    new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
-    Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
-  );
-
-  const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
-  await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
-    selectedServers: randomSelectedServers,
-    serverEndpoints,
-    serverPubKeys,
-    serverThreshold,
-    authSignatures: signatures,
-  });
 };
