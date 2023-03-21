@@ -392,12 +392,9 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
   await tKey.addShareDescription(factorIndex, JSON.stringify(params), true);
 };
 
-export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: Point , newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN) => {
+export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
   if (!tKey) {
     throw new Error("tkey does not exist, cannot copy factor pub");
-  }
-  if (newFactorTSSIndex !== 2 && newFactorTSSIndex !== 3) {
-    throw new Error("input factor tssIndex must be 2 or 3");
   }
   if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
     throw new Error("factorPubs does not exist, failed in copy factor pub");
@@ -406,17 +403,14 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
     throw new Error("factorEncs does not exist, failed in copy factor pub");
   }
 
-
   const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
   const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
   const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-  if (tssIndex !== newFactorTSSIndex) {
-    throw new Error("retrieved tssIndex does not match input factor tssIndex");
-  }
+  
   const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
   const factorPubID = newFactorPub.x.toString(16, 64);
   factorEncs[factorPubID] = {
-    tssIndex: newFactorTSSIndex,
+    tssIndex,
     type: "direct",
     userEnc: await encrypt(
       Buffer.concat([

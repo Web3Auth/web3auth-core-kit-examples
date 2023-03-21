@@ -158,7 +158,6 @@ function App() {
       const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
-      // Right not we're depending on if local storage exists to tell us if user is new or existing.
       let factorKey: BN | null = null;
 
       const existingUser = await isMetadataPresent(loginResponse.privateKey);
@@ -203,7 +202,6 @@ function App() {
         await tKey.reconstructKey();
       }
 
-
       // Checks the requiredShares to reconstruct the tKey, starts from 2 by default and each of the above share reduce it by one.
       const { requiredShares } = tKey.getKeyDetails();
       if (requiredShares > 0) {
@@ -226,7 +224,12 @@ function App() {
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
-      if (!localFactorKey) await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
+      if (
+        !existingUser ||
+        !(tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId)
+      ) {
+        await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
+      }
       await tKey.syncLocalMetadataTransitions();
 
       setLocalFactorKey(factorKey);
@@ -279,7 +282,7 @@ function App() {
       const backupFactorKey = new BN(generatePrivate());
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
 
-      await copyExistingTSSShareForNewFactor(tKey, backupFactorPub, 2, localFactorKey);
+      await copyExistingTSSShareForNewFactor(tKey, backupFactorPub, localFactorKey);
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
@@ -288,7 +291,7 @@ function App() {
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
     } catch (err) {
-      uiConsole(`Failed to create new manual factor ${err}`)
+      uiConsole("Failed to copy share to new manual factor", err)
     }
   }
 
@@ -303,6 +306,8 @@ function App() {
 
       const backupFactorKey = new BN(generatePrivate());
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
+      const tKeyShareDescriptions = tKey.getMetadata().getShareDescription();
+      uiConsole("tKeyShareDescriptions:", tKeyShareDescriptions);
 
       await addNewTSSShareAndFactor(tKey, backupFactorPub, 3, localFactorKey, signingParams.signatures);
 
@@ -314,7 +319,7 @@ function App() {
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
 
     } catch (err) {
-      uiConsole(`Failed to create new manual factor ${err}`)
+      uiConsole(`Failed to create new manual factor`, err)
     }
   }
 
