@@ -86,15 +86,11 @@ function App() {
     try {
       // Triggering Login using Service Provider ==> opens the popup
       const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-        typeOfLogin: 'jwt',
-        verifier: 'mpc-key-demo-passwordless',
-        clientId: 'QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1',
-        jwtParams: {
-          domain: "https://shahbaz-torus.us.auth0.com",
-          verifierIdField: "name",
-          connection: "google-oauth2"
-        },
-      });
+				typeOfLogin: 'google',
+				verifier: 'google-tkey-w3a',
+				clientId:
+					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+			});
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
       return loginResponse;
@@ -309,13 +305,11 @@ function App() {
       const tKeyShareDescriptions = await tKey.getMetadata().getShareDescription();
       let backupFactorIndex = 2;
       for (const [key, value] of Object.entries(tKeyShareDescriptions)) {
-        console.log(`value of share ${key}`, value)
         // eslint-disable-next-line no-loop-func, array-callback-return
         value.map((factor: any) => {
           factor = JSON.parse(factor);
           if (factor.tssShareIndex > backupFactorIndex) {
             backupFactorIndex = factor.tssShareIndex;
-            console.log(`backupFactorIndex of share ${key}`, backupFactorIndex)
           }
         });
       }
