@@ -1,17 +1,16 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Button,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Button,
-  ScrollView,
   Dimensions,
 } from 'react-native';
-import * as WebBrowser from '@toruslabs/react-native-web-browser';
-import Web3Auth, {
-  LOGIN_PROVIDER,
-  OPENLOGIN_NETWORK,
-} from '@web3auth/react-native-sdk';
+import BN from 'bn.js';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+import {tKey} from './tkey';
+import CustomAuth from '@toruslabs/customauth-react-native-sdk';
 import RPC from './ethersRPC'; // for using ethers.js
 import auth from '@react-native-firebase/auth';
 
@@ -19,7 +18,8 @@ const scheme = 'web3authrnbarefirebase'; // Or your desired app redirection sche
 const resolvedRedirectUrl = `${scheme}://openlogin`;
 const clientId =
   'BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk';
-// const providerUrl = 'https://rpc.ankr.com/eth'; // Or your desired provider url
+
+const setMetadataKey = true;
 
 async function signInWithEmailPassword() {
   try {
@@ -38,44 +38,58 @@ export default function App() {
   const [userInfo, setUserInfo] = useState('');
   const [console, setConsole] = useState('');
 
+  useEffect(() => {
+    try {
+      CustomAuth.init({
+        browserRedirectUri: 'https://scripts.toruswallet.io/redirect.html',
+        redirectUri: 'torusapp://org.torusresearch.customauthexample/redirect',
+        network: 'cyan', // details for test net
+        enableOneKey: false,
+      });
+    } catch (error) {
+      uiConsole(error, 'mounted caught');
+    }
+  });
+
   const login = async () => {
     try {
       setConsole('Logging in');
-      const web3auth = new Web3Auth(WebBrowser, {
-        clientId,
-        network: OPENLOGIN_NETWORK.CYAN, // or other networks
-        loginConfig: {
-          jwt: {
-            name: 'Web3Auth-Auth0-JWT',
-            verifier: 'web3auth-firebase-examples',
-            typeOfLogin: 'jwt',
-            clientId,
-          },
-        },
-      });
-
       const loginRes = await signInWithEmailPassword();
       uiConsole('Login success', loginRes);
-      const idToken = await loginRes.user.getIdToken(true);
+      const idToken = await loginRes!.user.getIdToken(true);
       uiConsole('idToken', idToken);
 
-      const info = await web3auth.login({
-        loginProvider: LOGIN_PROVIDER.JWT,
-        redirectUrl: resolvedRedirectUrl,
-        mfaLevel: 'none',
-        curve: 'secp256k1',
-        extraLoginOptions: {
+      const loginDetails = await CustomAuth.triggerLogin({
+        typeOfLogin: 'jwt',
+        verifier: 'web3auth-firebase-examples',
+        clientId,
+        jwtParams: {
+          loginProvider: 'jwt',
+          redirectUrl: resolvedRedirectUrl,
           id_token: idToken,
           verifierIdField: 'sub',
           domain: 'http://localhost:3000',
         },
       });
 
-      setUserInfo(info);
-      setKey(info.privKey);
-      uiConsole('Logged In');
+      let pbKey = new BN(loginDetails.privateKey, 16);
+      uiConsole({pbKey});
+      tKey.serviceProvider.postboxKey = pbKey;
+
+      if (setMetadataKey) {
+        await tKey.storageLayer.setMetadata({
+          privKey: pbKey,
+          input: {message: 'KEY_NOT_FOUND'},
+        });
+      }
+
+      const res = await tKey.initialize();
+
+      setUserInfo(res as any);
+      setKey(res as any);
+      uiConsole('Logged In', res);
     } catch (e) {
-      console.error(e);
+      uiConsole(e);
     }
   };
 
@@ -106,7 +120,7 @@ export default function App() {
     uiConsole(message);
   };
 
-  const uiConsole = (...args) => {
+  const uiConsole = (...args: any) => {
     setConsole(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + console);
   };
 
