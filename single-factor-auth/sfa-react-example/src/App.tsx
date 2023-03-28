@@ -60,7 +60,8 @@ function App() {
         const web3authSfa = new Web3Auth({
           clientId, // Get your Client ID from Web3Auth Dashboard
           chainConfig,
-          web3AuthNetwork: "cyan" // For testing in web3auth testnet network, change it to "testnet".
+          web3AuthNetwork: "testnet", // ["cyan", "testnet"]
+          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
         setWeb3authSFAuth(web3authSfa);
         web3authSfa.init();
