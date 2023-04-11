@@ -10,6 +10,7 @@ import {
 import BN from 'bn.js';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {tKey} from './tkey';
+// @ts-ignore
 import CustomAuth from '@toruslabs/customauth-react-native-sdk';
 import RPC from './ethersRPC'; // for using ethers.js
 import auth from '@react-native-firebase/auth';

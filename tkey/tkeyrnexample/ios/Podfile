@@ -1,8 +1,11 @@
+ENV['SWIFT_VERSION'] = '5'
+ENV['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
+
 $RNFirebaseAsStaticFramework = true
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '13'
+platform :ios, '14'
 prepare_react_native_project!
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
@@ -25,6 +28,9 @@ end
 target 'tkeyrnexample' do
   config = use_native_modules!
   use_frameworks! :linkage => :static
+
+  pod 'CustomAuth', '~> 5.0.0', :modular_headers => false
+  pod 'secp256k1.swift', :modular_headers => true
 
   # Flags change depending on the env values.
   flags = get_default_flags()
