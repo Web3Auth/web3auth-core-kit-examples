@@ -1,11 +1,31 @@
-# Web3Auth x (Vite + React) Demo Application
+# Web3Auth (`@web3auth/single-factor-auth`) React (Vite) Example
 
-## Questions
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/single-factor-auth/)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
-Ask us on our
-[Github Discussion Board](https://github.com/orgs/Web3Auth/discussions) or reach
-out to our [Discord](https://discord.gg/web3auth).
+[Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
 
+This example demonstrates how to use Web3Auth's Single Factor Authentication in a React(Vite) environment.
+
+## How to Use
+
+### Download Manually
+
+```bash
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth/sfa-react-vite-example w3a-sfa-react-vite-example
+```
+
+Install & Run:
+
+```bash
+cd w3a-sfa-react-vite-example
+npm install
+npm run start
+# or
+cd w3a-sfa-react-vite-example
+yarn
+yarn start
+```
 ## Important Links
 
 - [Website](https://web3auth.io)
@@ -13,29 +33,4 @@ out to our [Discord](https://discord.gg/web3auth).
 - [Guides](https://web3auth.io/docs/guides)
 - [SDK / API References](https://web3auth.io/docs/sdk)
 - [Pricing](https://web3auth.io/pricing.html)
-- [Github Discussion Board](https://github.com/orgs/Web3Auth/discussions)
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm run dev`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm preview`
-
-Locally preview the production build.\
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best
-performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- [Community Portal](https://community.web3auth.io)
