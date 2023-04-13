@@ -28,6 +28,7 @@ cd w3a-sfa-one-key-example
 yarn
 yarn start
 ```
+
 ## Configure
 
 Adding Web3Auth Plug and Play SDKs to your application is a great way to authenticate users and reconstruct their private key, and to reconstruct the key, Web3Auth SDK redirects users to a Web3Auth hosted screen (i.e. http://app.openlogin.com). This flow is great for most use cases. Still, sometimes you may want to customize the authentication flow such that you can have more control over the UI and UX of the authentication process (i.e. to avoid the redirection to openlogin hosted screens). This guide will show you how to use one such flow to authenticate users without redirecting to a Web3Auth-hosted screen.

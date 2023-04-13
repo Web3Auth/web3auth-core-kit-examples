@@ -20,12 +20,13 @@ Install & Run:
 ```bash
 cd w3a-sfa-react-vite-example
 npm install
-npm run start
+npm run dev
 # or
 cd w3a-sfa-react-vite-example
 yarn
-yarn start
+yarn dev
 ```
+
 ## Important Links
 
 - [Website](https://web3auth.io)
