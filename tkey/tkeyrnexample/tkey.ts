@@ -28,7 +28,7 @@ const shareSerializationModule = new ShareSerializationModule();
 const securityQuestionsModule = new SecurityQuestionsModule();
 
 // Instantiation of tKey
-export const tKey = new ThresholdKey({
+export const tKeyInstance = new ThresholdKey({
   serviceProvider: serviceProvider,
   storageLayer,
   modules: {
@@ -37,3 +37,15 @@ export const tKey = new ThresholdKey({
     shareSerializationModule: shareSerializationModule,
   },
 });
+
+export function getNewTKeyInstance() {
+  return new ThresholdKey({
+    serviceProvider: serviceProvider,
+    storageLayer,
+    modules: {
+      shareTransfer: shareTransferModule,
+      securityQuestions: securityQuestionsModule,
+      shareSerializationModule: shareSerializationModule,
+    },
+  });
+}
