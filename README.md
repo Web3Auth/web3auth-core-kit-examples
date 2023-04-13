@@ -30,12 +30,16 @@ provider specific to the user and application.
 | :--------------------- | :------------- | :------------------------------------------------------------------------------------------ |
 | `tKey` - PopUp FLow    | `REACT`        | [tKey-React-Popup-Example](/tkey/tkey-react-popup-example/)                                 |
 | `tKey` - Redirect FLow | `REACT`        | [tKey-React-Redirect-Example](/tkey/tkey-react-redirect-example/)                           |
+| `tKey` - MPC Beta    | `REACT`        | [MPC-React-Popup-Example](/tkey/tkey-mpc-beta-react-popup-example/)                                 |
 
 ###  Single Factor Auth
 
 | SDK                    | Lang Framework | Directory                                                                                  |
 | :--------------------- | :------------- | :----------------------------------------------------------------------------------------- |
-| `SFA`                  | `REACT`        | [single-factor-auth-React](/single-factor-auth/react-evm-sfa-example/)                                 |
+| `SFA`                  | `REACT`        | [single-factor-auth-React-One-Key-with-NoModal](/single-factor-auth/react-evm-sfa-example/)                                 |
+| `SFA`                  | `REACT` | [single-factor-auth-React](/single-factor-auth/sfa-react-example/)                                 |
+| `SFA`                  | `REACT` | [single-factor-auth-React-Vite](/single-factor-auth/sfa-react-vite-example/)                                 |
+| `SFA`                  | `Android` | [single-factor-auth-Android](/single-factor-auth/android-sfa-firebase-example/)                                 |
 
 ###  Node SDK
 

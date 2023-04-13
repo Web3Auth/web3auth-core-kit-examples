@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Android SFA Example</string>
+    <string name="login_via_firebase_to_sfa">Login via Firebase to SFA</string>
+    <string name="not_logged_in">Login now to get Token</string>
+    <string name="logout">Logout</string>
+</resources>
