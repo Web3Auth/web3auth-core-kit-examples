@@ -11,7 +11,7 @@ if (!global.atob) {
   global.atob = decode;
 }
 if (!global.Buffer) {
-  global.Buffer = require("buffer/").Buffer;
+  global.Buffer = require("buffer").Buffer;
 }
 
 global.process.version = "v16.0.0";
