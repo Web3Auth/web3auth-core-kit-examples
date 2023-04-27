@@ -2,7 +2,6 @@ import ThresholdKey from "@tkey/core";
 import { TorusServiceProvider } from "@tkey/service-provider-torus";
 import { TorusStorageLayer } from "@tkey/storage-layer-torus";
 import { ShareSerializationModule } from "@tkey/share-serialization";
-import {SecurityQuestionsModule} from "@tkey/security-questions";
 // Configuration of Service Provider
 
 const torusSp = new TorusServiceProvider({
@@ -28,6 +27,5 @@ export const tKey = new ThresholdKey({
   manualSync: true,
   modules: {
     shareSerialization: shareSerializationModule,
-    securityQuestions: securityQuestionsModule,
   }
 });
