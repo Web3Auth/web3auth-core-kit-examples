@@ -9,6 +9,7 @@ import { Web3Auth } from "@web3auth/single-factor-auth";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 
 // RPC libraries for blockchain calls
 // import RPC from "./web3RPC";
@@ -55,10 +56,11 @@ function App() {
           clientId, // Get your Client ID from Web3Auth Dashboard
           chainConfig,
           web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
         setWeb3authSFAuth(web3authSfa);
-        web3authSfa.init();
+        const provider = new EthereumPrivateKeyProvider({ config: { chainConfig } })
+
+        web3authSfa.init(provider);
       } catch (error) {
         console.error(error);
       }

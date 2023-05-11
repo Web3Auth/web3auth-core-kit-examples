@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Web3Auth } from "@web3auth/single-factor-auth";
 
 // Import Web3Auth Core SDK for redirect in case of users who have enabled MFA
-import { Web3AuthCore } from "@web3auth/core";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
 import {
   WALLET_ADAPTERS,
   CHAIN_NAMESPACES,
@@ -12,7 +12,7 @@ import {
   WalletLoginError,
 } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
-
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
 import RPC from "./evm.ethers";
@@ -54,7 +54,7 @@ const firebaseConfig = {
 };
 
 function App() {
-  const [web3authCore, setWeb3authCore] = useState<Web3AuthCore | null>(null);
+  const [web3authNoModal, setWeb3authNoModal] = useState<Web3AuthNoModal | null>(null);
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [usesSfaSDK, setUsesSfaSDK] = useState(false);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
@@ -71,17 +71,20 @@ function App() {
         const web3authSfa = new Web3Auth({
           clientId, // Get your Client ID from Web3Auth Dashboard
           chainConfig,
-          web3AuthNetwork: "cyan"
+          web3AuthNetwork: "cyan",
+          usePnPKey: true // use this flag if you require the key returned by PnP SDK. Ideal for migrating from PnP Products to SFA
         });
         setWeb3authSFAuth(web3authSfa);
-        web3authSfa.init();
+        const provider = new EthereumPrivateKeyProvider({ config: { chainConfig } })
+
+        web3authSfa.init(provider);
 
         // Initialising Web3Auth Core SDK
-        const web3authCore = new Web3AuthCore({
+        const web3authNoModal = new Web3AuthNoModal({
           clientId,
           chainConfig,
           web3AuthNetwork: "cyan",
-          useCoreKitKey: true
+          // useCoreKitKey: true // use this flag if you require the key returned by PnP SDK. Ideal for migrating from Core Kit Products to PnP Products
         });
 
         const openloginAdapter = new OpenloginAdapter({
@@ -96,12 +99,12 @@ function App() {
             },
           },
         });
-        web3authCore.configureAdapter(openloginAdapter);
-        setWeb3authCore(web3authCore);
-        await web3authCore.init();
+        web3authNoModal.configureAdapter(openloginAdapter);
+        setWeb3authNoModal(web3authNoModal);
+        await web3authNoModal.init();
 
-        if (web3authCore.provider) {
-          setProvider(web3authCore.provider);
+        if (web3authNoModal.provider) {
+          setProvider(web3authNoModal.provider);
         }
       } catch (error) {
         console.error(error);
@@ -163,15 +166,15 @@ function App() {
       setUsesSfaSDK(true);
     } catch (err) {
       // Single Factor Auth SDK throws an error if the user has already enabled MFA
-      // We will try to use the Web3AuthCore SDK to handle this case
+      // We will try to use the Web3AuthNoModal SDK to handle this case
 
       if (err instanceof WalletLoginError && err.code === 5115) {
         try {
-          if (!web3authCore) {
+          if (!web3authNoModal) {
             uiConsole("Web3Auth Core SDK not initialized yet");
             return;
           }
-          const web3authProvider = await web3authCore.connectTo(
+          const web3authProvider = await web3authNoModal.connectTo(
             WALLET_ADAPTERS.OPENLOGIN,
             {
               loginProvider: "jwt",
@@ -203,11 +206,11 @@ function App() {
       );
       return;
     }
-    if (!web3authCore) {
+    if (!web3authNoModal) {
       uiConsole("Web3Auth Core SDK not initialized yet");
       return;
     }
-    const user = await web3authCore.getUserInfo();
+    const user = await web3authNoModal.getUserInfo();
     uiConsole(user);
   };
 
@@ -219,16 +222,16 @@ function App() {
       setProvider(null);
       return;
     }
-    if (!web3authCore) {
+    if (!web3authNoModal) {
       uiConsole("Web3Auth Core SDK not initialized yet");
       return;
     }
-    await web3authCore.logout();
+    await web3authNoModal.logout();
     setProvider(null);
   };
 
   const enableMfa = async () => {
-    if (!web3authCore) {
+    if (!web3authNoModal) {
       uiConsole("Web3Auth Core SDK not initialized yet");
       return;
     }
@@ -243,7 +246,7 @@ function App() {
   
     // web3auth instance must be initialized before calling this function
     // as decribed in login with mfa flow above
-    const web3AuthProvider = await web3authCore.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+    const web3AuthProvider = await web3authNoModal.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
       loginProvider: "jwt",
       extraLoginOptions: {
         id_token: idToken,
@@ -252,7 +255,7 @@ function App() {
       },
       mfaLevel: "default",
     });
-    web3authCore.logout();
+    web3authNoModal.logout();
     return web3AuthProvider;
   };
 
@@ -369,7 +372,7 @@ function App() {
       </h1>
 
       <div className="grid">
-        {web3authCore && web3authSFAuth
+        {web3authNoModal && web3authSFAuth
           ? provider
             ? loginView
             : logoutView

@@ -36,7 +36,7 @@ export default defineConfig({
       tty: "rollup-plugin-node-polyfills/polyfills/tty",
       domain: "rollup-plugin-node-polyfills/polyfills/domain",
       buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
-      process: "rollup-plugin-node-polyfills/polyfills/process-es6",
+      process: "process",
     },
   },
   optimizeDeps: {
