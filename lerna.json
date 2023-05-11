@@ -6,7 +6,8 @@
   "packages": [
     "mpc-core-kit/**/*",
     "node-sdk/**/*",
-    "tkey/*",
-    "single-factor-auth/*"
+    "single-factor-auth-web/*",
+    "tkey-web/*",
+    "tkey-react-native/*"
   ]
 }
