@@ -190,8 +190,10 @@ function App() {
         if (factorKeyMetadata.message === "KEY_NOT_FOUND") {
           throw new Error("no metadata for your factor key, reset your account");
         }
+        
         const metadataShare = JSON.parse(factorKeyMetadata.message);
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
+        uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
         const metadataDeviceShare = metadataShare.deviceShare;
         await tKey.initialize({ neverInitializeNewKey: true });
         await tKey.inputShareStoreSafe(metadataDeviceShare, true);

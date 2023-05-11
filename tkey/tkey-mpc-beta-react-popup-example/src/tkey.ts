@@ -26,6 +26,6 @@ export const tKey = new ThresholdKey({
   storageLayer: storageLayer as any,
   manualSync: true,
   modules: {
-    shareSerialization: shareSerializationModule
+    shareSerialization: shareSerializationModule,
   }
 });
