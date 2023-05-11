@@ -84,6 +84,10 @@ function App() {
             text: "Enter Recovery Share",
             value: "recoveryShare"
           },
+          resetAccount : {
+            text: "CRITICAL Reset Account",
+            value: "resetAccount"
+          },
           cancel: true,
         },
         dangerMode: true,
@@ -95,7 +99,7 @@ function App() {
                 content: 'input' as any,
               }).then(async value => {
                 if (value.length > 10) {
-                  resetViaPassword(value);
+                  recoverViaPassword(value);
                 } else {
                   swal('Error', 'Password must be >= 11 characters', 'error');
                 }
@@ -114,6 +118,10 @@ function App() {
               });
               break;
 
+              case "resetAccount":
+                resetAccount();
+                break;
+
             default:
               swal("Cannot Recover Account");
           }
@@ -123,13 +131,21 @@ function App() {
     }
   }
 
-  const resetViaPassword = async (password: string) => {
+  const recoverViaPassword = async (password: string) => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
     await coreKitInstance.recoverSecurityQuestionShare("What is your password?", password);
     uiConsole('submitted');
     if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
+  }
+
+  const resetAccount = async (): Promise<void> => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    await coreKitInstance.CRITICAL_resetAccount();
+    uiConsole('reset account successful');
   }
 
   const submitBackupShare = async (seedPhrase: string): Promise<void> => {
@@ -350,6 +366,9 @@ function App() {
         </button>
         <button onClick={deletePasswordShare} className="card">
           Delete Password Share
+        </button>
+        <button onClick={resetAccount} className="card">
+          CRITICAL Reset Account
         </button>
 
       </div>

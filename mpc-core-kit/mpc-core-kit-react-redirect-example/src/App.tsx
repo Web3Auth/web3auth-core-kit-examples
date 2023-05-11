@@ -37,6 +37,7 @@ function App() {
             if (provider) setProvider(provider);
           } catch (error) {
             if ((error as Error).message === "required more shares") {
+              uiConsole("first triggered", coreKitInstance);
               recoverAccount();
             }
           }
@@ -71,6 +72,7 @@ function App() {
       if (provider) setProvider(provider);
     } catch (error) {
       if ((error as Error).message === "required more shares") {
+        uiConsole("second triggered", coreKitInstance);
         recoverAccount();
       }
       uiConsole(error);
@@ -79,7 +81,7 @@ function App() {
 
   const recoverAccount = async () => {
     if (!coreKitInstance) {
-      uiConsole("coreKitInstance not initialized yet");
+      uiConsole("coreKitInstance not initialized yet", coreKitInstance);
       return;
     }
     try {
@@ -96,6 +98,10 @@ function App() {
           recoveryShare: {
             text: "Enter Recovery Share",
             value: "recoveryShare"
+          },
+          resetAccount : {
+            text: "CRITICAL Reset Account",
+            value: "resetAccount"
           },
           cancel: true,
         },
@@ -127,6 +133,10 @@ function App() {
               });
               break;
 
+              case "resetAccount":
+                resetAccount();
+                break;
+
             default:
               swal("Cannot Recover Account");
           }
@@ -152,6 +162,14 @@ function App() {
     await coreKitInstance.inputBackupShare(seedPhrase);
     uiConsole('submitted');
     if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
+  }
+
+  const resetAccount = async (): Promise<void> => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    await coreKitInstance.CRITICAL_resetAccount();
+    uiConsole('reset account successful');
   }
 
   const exportShare = async (): Promise<void> => {
@@ -363,6 +381,9 @@ function App() {
         </button>
         <button onClick={deletePasswordShare} className="card">
           Delete Password Share
+        </button>
+        <button onClick={resetAccount} className="card">
+          CRITICAL Reset Account
         </button>
 
       </div>
