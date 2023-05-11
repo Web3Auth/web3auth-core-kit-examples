@@ -4,6 +4,7 @@ import SecurityQuestionsModule from "@tkey/security-questions";
 
 // Configuration of Service Provider
 const customAuthArgs = {
+  web3AuthClientId: "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk",
   baseUrl: window.location.origin,
   redirectPathName: "auth",
   enableLogging: true,
