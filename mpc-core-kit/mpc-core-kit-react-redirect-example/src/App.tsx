@@ -30,18 +30,6 @@ function App() {
         await coreKitInstance.init();
         setCoreKitInstance(coreKitInstance);
         if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-
-        if (window.location.hash.includes('#state')) {
-          try {
-            const provider = await coreKitInstance.handleRedirectResult();
-            if (provider) setProvider(provider);
-          } catch (error) {
-            if ((error as Error).message === "required more shares") {
-              uiConsole("first triggered", coreKitInstance);
-              recoverAccount();
-            }
-          }
-        }
       } catch (error) {
         console.error(error);
       }
@@ -49,7 +37,22 @@ function App() {
     init();
   }, []);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const submitRedirectResult = async () => {
+      try {
+        const provider = await coreKitInstance?.handleRedirectResult();
+        if (provider) setProvider(provider);
+      } catch (error) {
+        if ((error as Error).message === "required more shares") {
+          uiConsole("first triggered", coreKitInstance);
+          recoverAccount();
+        }
+      }
+    }
+    if (coreKitInstance && window.location.hash.includes("#state")) {
+      submitRedirectResult();
+    }
+  }, [coreKitInstance]);
 
   const login = async () => {
     if (!coreKitInstance) {
