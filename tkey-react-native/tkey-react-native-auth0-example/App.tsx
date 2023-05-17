@@ -7,6 +7,7 @@ import {
   View,
   Dimensions,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import BN from 'bn.js';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,8 +18,10 @@ import RPC from './ethersRPC'; // for using ethers.js
 // @ts-ignore
 import {Dialog, Input} from '@rneui/themed';
 
-const scheme = 'tkeyrnexample'; // Or your desired app redirection scheme
-const resolvedRedirectUrl = `${scheme}://auth`;
+const resolvedRedirectUrl =
+  Platform.OS === 'ios'
+    ? 'tdsdk://tdsdk/oauthCallback'
+    : 'torusapp://org.torusresearch.customauthexample/redirect';
 
 export default function App() {
   const [tKey, setTKey] = useState<typeof tKeyInstance>(tKeyInstance);
@@ -40,8 +43,9 @@ export default function App() {
   useEffect(() => {
     try {
       CustomAuth.init({
+        browserRedirectUri: 'https://scripts.toruswallet.io/redirect.html',
         redirectUri: resolvedRedirectUrl,
-        network: 'cyan', // details for test net
+        network: 'testnet', // details for test net
       });
     } catch (error) {
       uiConsole(error, 'mounted caught');
@@ -72,7 +76,7 @@ export default function App() {
       setOAuthShare(loginDetails.privateKey);
       (tKey.serviceProvider as any).verifierName = verifier;
       (tKey.serviceProvider as any).verifierId =
-        loginDetails.user.name || 'something'; // need to fix this
+        loginDetails.userInfo.name || 'something'; // need to fix this
 
       await tKey.initialize();
 
