@@ -21,7 +21,7 @@ import {Dialog, Input} from '@rneui/themed';
 const resolvedRedirectUrl =
   Platform.OS === 'ios'
     ? 'tdsdk://tdsdk/oauthCallback'
-    : 'torusapp://org.torusresearch.customauthexample/redirect';
+    : 'torusapp://org.torusresearch.customauthandroid/redirect';
 
 export default function App() {
   const [tKey, setTKey] = useState<typeof tKeyInstance>(tKeyInstance);
