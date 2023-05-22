@@ -46,7 +46,7 @@ class LoginModel: ObservableObject {
                                          verifier: "w3a-a0-github",
                                          redirectURL: "tdsdk://tdsdk/oauthCallback",
                                          browserRedirectURL: "https://scripts.toruswallet.io/redirect.html",
-                                         jwtParams: ["domain" : "web3auth.au.auth0.com", "verifier_id_field": "email"])
+                                         jwtParams: ["domain" : "web3auth.au.auth0.com", "verifier_id_field": "email", "connection": "github"])
 
             let tdsdk = CustomAuth(aggregateVerifierType: .singleIdVerifier, aggregateVerifier: "w3a-agg-example", subVerifierDetails: [sub], network: .TESTNET)
             let data = try await tdsdk.triggerLogin()
@@ -65,7 +65,7 @@ class LoginModel: ObservableObject {
                                          verifier: "w3a-a0-discord",
                                          redirectURL: "tdsdk://tdsdk/oauthCallback",
                                          browserRedirectURL: "https://scripts.toruswallet.io/redirect.html",
-                                         jwtParams: ["domain" : "web3auth.au.auth0.com", "verifier_id_field": "email"])
+                                         jwtParams: ["domain" : "web3auth.au.auth0.com", "verifier_id_field": "email", "connection": "discord"])
             let tdsdk = CustomAuth(aggregateVerifierType: .singleIdVerifier, aggregateVerifier: "w3a-agg-example", subVerifierDetails: [sub], network: .TESTNET)
             let data = try await tdsdk.triggerLogin()
             await MainActor.run(body: {
