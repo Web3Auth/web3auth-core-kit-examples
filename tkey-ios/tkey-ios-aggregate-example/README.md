@@ -1,4 +1,4 @@
-# Web3Auth tKey iOS Example with Google verifier
+# Web3Auth tKey iOS Example with Aggregate Verifiers
 
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/tkey-ios)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
@@ -13,13 +13,13 @@ This example demonstrates how to use Web3Auth's tKey in iOS.
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example w3a-tkey-ios-google
+npx degit Web3Auth/web3auth-core-kit-examples/tkey-ios/tkey-ios-aggregate-example w3a-tkey-ios-aggregate
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-tkey-ios-google
+cd w3a-tkey-ios-aggregate
 # run project in Xcode
 ```
 
