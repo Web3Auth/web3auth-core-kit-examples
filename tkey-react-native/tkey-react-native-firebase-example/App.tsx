@@ -19,9 +19,6 @@ import auth from '@react-native-firebase/auth';
 import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
 
-const scheme = 'web3authrnbarefirebase'; // Or your desired app redirection scheme
-const resolvedRedirectUrl = `${scheme}://openlogin`;
-
 async function signInWithEmailPassword() {
   try {
     const res = await auth().signInWithEmailAndPassword(
@@ -54,8 +51,7 @@ export default function App() {
   useEffect(() => {
     try {
       CustomAuth.init({
-        redirectUri: resolvedRedirectUrl,
-        network: 'cyan', // details for test net
+        network: 'testnet', // details for test net
       });
     } catch (error) {
       uiConsole(error, 'mounted caught');
@@ -92,6 +88,7 @@ export default function App() {
         verifierId,
         {
           verifierIdField: 'sub',
+          verifier_id: verifierId,
         },
         idToken,
       );
