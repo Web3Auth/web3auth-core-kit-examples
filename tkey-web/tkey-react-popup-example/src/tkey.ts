@@ -1,7 +1,7 @@
 import ThresholdKey from "@tkey/default";
 import WebStorageModule from "@tkey/web-storage";
 import SecurityQuestionsModule from "@tkey/security-questions";
-import ShareSerializationModule, { SHARE_SERIALIZATION_MODULE_NAME } from "@tkey/share-serialization"
+import ShareSerializationModule from "@tkey/share-serialization"
 
 // Configuration of Service Provider
 const customAuthArgs = {
