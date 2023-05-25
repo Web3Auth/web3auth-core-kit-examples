@@ -21,6 +21,13 @@
 	margin: 50px;
 }
 
+.sub-heading {
+	line-height: 1.15;
+	font-size: 1.5rem;
+	text-align: center;
+	margin: 50px;
+}
+
 .title a {
 	color: #0070f3;
 	text-decoration: none;
@@ -100,4 +107,28 @@
 	word-wrap: break-word;
 	font-size: 16px;
 	font-family: monospace;
+}
+
+input {
+	width: 50%;
+	height: 100%;
+	font-size: 16px;
+	padding: 10px;
+	margin-top: 10px;
+}
+
+.recover-btn{
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #0070f3;
+	color: #eaeaea;
+	border: none;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.disabled{
+	background-color: #eaeaea;
+	color: #0070f3;
+	cursor: not-allowed;
 }

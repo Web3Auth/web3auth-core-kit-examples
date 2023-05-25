@@ -456,13 +456,14 @@ function App() {
 
 	const unloggedInView = (
 		<>
-			<button onClick={initializeNewKey} className='card'>
+			<button onClick={initializeNewKey} className='card' disabled={!tKey}>
 				Login
 			</button>
-
-			<input value={ mnemonicA} onChange={ (e) => setMnemonicA(e.target.value)}/>
-			<input value={ mnemonicB} onChange={ (e) => setMnemonicB(e.target.value) }/>
-			<button onClick={()=> recoverWithShareC(mnemonicA, mnemonicB) }> Recover with Mnemonic Shares </button>
+			
+			<p className='sub-heading'>Recover using 2 Mnemonics</p>
+			<input value={ mnemonicA } onChange={ (e) => setMnemonicA(e.target.value)} placeholder='Mnemonic 1'/>
+			<input value={ mnemonicB } onChange={ (e) => setMnemonicB(e.target.value) } placeholder='Mnemonic 2'/>
+			<button className={mnemonicA&&mnemonicB ? 'recover-btn': 'recover-btn disabled'} onClick={()=> recoverWithShareC(mnemonicA, mnemonicB) } disabled={!(mnemonicA&&mnemonicB)}> Recover with Mnemonic Shares </button>
 			<div id='console' style={{ whiteSpace: 'pre-line' }}>
 				<p style={{ whiteSpace: 'pre-line' }}></p>
 			</div>
