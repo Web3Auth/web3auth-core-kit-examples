@@ -2,8 +2,6 @@ import ThresholdKey from "@tkey/default";
 import WebStorageModule from "@tkey/web-storage";
 import SecurityQuestionsModule from "@tkey/security-questions";
 import ShareSerializationModule, { SHARE_SERIALIZATION_MODULE_NAME } from "@tkey/share-serialization"
-import { getPubKeyPoint, decrypt, toPrivKeyECC, ShareStore, EncryptedMessage } from "@tkey/common-types"
-
 
 // Configuration of Service Provider
 const customAuthArgs = {
@@ -20,8 +18,6 @@ export const tKey = new ThresholdKey({
   modules: {
     webStorage: webStorageModule,
     securityQuestions: securityQuestionsModule,
-
-    [SHARE_SERIALIZATION_MODULE_NAME]: new ShareSerializationModule(),
   },
   customAuthArgs: customAuthArgs as any,
 });
