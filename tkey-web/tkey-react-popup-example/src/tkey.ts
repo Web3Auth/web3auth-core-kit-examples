@@ -31,26 +31,8 @@ export const mnemonicToShareStore = async ( mnemonic : string) => {
   const tkey2 = new ThresholdKey({
     customAuthArgs: customAuthArgs as any
   });
-  console.log(mnemonic)
   const deserializeModule = new ShareSerializationModule()
   const share = await deserializeModule.deserialize(mnemonic, "mnemonic");
-  console.log(share)
-  const point = getPubKeyPoint(share);
-  const index = point.x.toString("hex")
-   
   const authMetadata = await tkey2.getAuthMetadata({ privKey: share})
-
-  const encryptedShareStore = authMetadata.scopedStore.encryptedShares as Record<string, EncryptedMessage>;
-  if (!encryptedShareStore) {
-    throw new Error (`share not available ${share}`);
-  }
-  const encryptedShare = encryptedShareStore[index];
-  if (!encryptedShare) {
-    throw new Error (`share not available ${share}`);
-  }
-  const rawDecrypted = await decrypt(toPrivKeyECC(share), encryptedShare as EncryptedMessage);
-  
-  const shareStore = ShareStore.fromJSON(JSON.parse(rawDecrypted.toString()));
-  
-  return shareStore
+  return authMetadata.shareToShareStore(share)
 }
