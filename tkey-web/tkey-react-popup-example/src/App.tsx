@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import swal from 'sweetalert';
-import {tKey} from "./tkey"
+import {mnemonicToShareStore, tKey} from "./tkey"
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
 
@@ -10,6 +10,9 @@ function App() {
 	const [privateKey, setPrivateKey] = useState<any>();
 	const [oAuthShare, setOAuthShare] = useState<any>();
 	const [provider, setProvider] = useState<any>();
+
+	const [mnemonicA, setMnemonicA] = useState<string>('');
+	const [mnemonicB, setMnemonicB] = useState<string>('');
 
 	// Init Service Provider inside the useEffect Method
 	useEffect(() => {
@@ -361,6 +364,14 @@ function App() {
 		}
 	};
 
+	const recoverWithShareC = async ( mnemonicA: string, mnemonicB: string ) => {
+		const shareStore = await mnemonicToShareStore( mnemonicA );
+		await tKey.initialize( {withShare: shareStore})
+		await tKey.inputShare(mnemonicB, "mnemonic");
+		const keyDetail = await tKey.reconstructKey();
+		uiConsole( keyDetail );
+	}
+
 	const loggedInView = (
 		<>
 			<div className='flex-container'>
@@ -444,9 +455,18 @@ function App() {
 	);
 
 	const unloggedInView = (
-		<button onClick={initializeNewKey} className='card'>
-			Login
-		</button>
+		<>
+			<button onClick={initializeNewKey} className='card'>
+				Login
+			</button>
+
+			<input value={ mnemonicA} onChange={ (e) => setMnemonicA(e.target.value)}/>
+			<input value={ mnemonicB} onChange={ (e) => setMnemonicB(e.target.value) }/>
+			<button onClick={()=> recoverWithShareC(mnemonicA, mnemonicB) }> Recover with Mnemonic Shares </button>
+			<div id='console' style={{ whiteSpace: 'pre-line' }}>
+				<p style={{ whiteSpace: 'pre-line' }}></p>
+			</div>
+		</>
 	);
 
 	return (
