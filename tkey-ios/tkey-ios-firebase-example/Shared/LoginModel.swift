@@ -2,6 +2,7 @@ import Foundation
 import CustomAuth
 import FirebaseCore
 import FirebaseAuth
+import JWTDecode
 
 class LoginModel: ObservableObject {
     @Published var loggedIn: Bool = false
@@ -27,15 +28,15 @@ class LoginModel: ObservableObject {
         Task {
             let res = try await Auth.auth().signIn(withEmail: "custom+jwt@firebase.login", password: "Testing@123")
             let id_token = try await res.user.getIDToken()
+            let jwt = try decode(jwt: id_token)
             let sub = SubVerifierDetails(loginType: .web,
                                          loginProvider: .jwt,
                                          clientId: "BHr_dKcxC0ecKn_2dZQmQeNdjPgWykMkcodEHkVvPMo71qzOV6SgtoN8KCvFdLN7bf34JOm89vWQMLFmSfIo84A",
                                          verifier: "web3auth-firebase-examples",
                                          redirectURL: "tdsdk://tdsdk/oauthCallback",
-                                         browserRedirectURL: "https://scripts.toruswallet.io/redirect.html",
-                                         jwtParams: ["id_token": id_token, "verifier_id_field": "sub"])
+                                         browserRedirectURL: "https://scripts.toruswallet.io/redirect.html")
             let tdsdk = CustomAuth(aggregateVerifierType: .singleLogin, aggregateVerifier: "web3auth-firebase-examples", subVerifierDetails: [sub], network: .TESTNET)
-            let data = try await tdsdk.triggerLogin()
+            let data = try await tdsdk.getTorusKey(verifier: "web3auth-firebase-examples", verifierId: jwt.subject ?? "", idToken: id_token)
             await MainActor.run(body: {
                 self.userData = data
                 loggedIn = true
