@@ -1,0 +1,95 @@
+{
+  "pins" : [
+    {
+      "identity" : "bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/attaswift/BigInt",
+      "state" : {
+        "revision" : "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+        "version" : "5.3.0"
+      }
+    },
+    {
+      "identity" : "cryptoswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
+      "state" : {
+        "revision" : "eee9ad754926c40a0f7e73f152357d37b119b7fa",
+        "version" : "1.7.1"
+      }
+    },
+    {
+      "identity" : "customauth-swift-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/customauth-swift-sdk",
+      "state" : {
+        "branch" : "master",
+        "revision" : "db234de0aed06f0f0e9112066b754fe193ea7209"
+      }
+    },
+    {
+      "identity" : "fetch-node-details-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
+      "state" : {
+        "revision" : "94a0ee598abfcc2104ceeda80eecf4b55242ba62",
+        "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "generic-json-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zoul/generic-json-swift",
+      "state" : {
+        "revision" : "0a06575f4038b504e78ac330913d920f1630f510",
+        "version" : "2.0.2"
+      }
+    },
+    {
+      "identity" : "jwtdecode.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/JWTDecode.swift.git",
+      "state" : {
+        "revision" : "3cd207fb9e943b6168a117baa3936c823204c2dc",
+        "version" : "2.6.3"
+      }
+    },
+    {
+      "identity" : "libtkey-pkg",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/libtkey-pkg/",
+      "state" : {
+        "branch" : "master",
+        "revision" : "54452e80d237615b2615b1d0b41802e6682ed762"
+      }
+    },
+    {
+      "identity" : "secp256k1.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Boilertalk/secp256k1.swift",
+      "state" : {
+        "revision" : "cd187c632fb812fd93711a9f7e644adb7e5f97f0",
+        "version" : "0.1.7"
+      }
+    },
+    {
+      "identity" : "torus-utils-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
+      "state" : {
+        "revision" : "902bf105ecfb5cb83dc1911692163289633316f5",
+        "version" : "4.0.0"
+      }
+    },
+    {
+      "identity" : "web3.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/argentlabs/web3.swift",
+      "state" : {
+        "revision" : "0474eb5e883bc4800b3909833207a1d35e72b808",
+        "version" : "0.9.3"
+      }
+    }
+  ],
+  "version" : 2
+}
