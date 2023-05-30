@@ -831,7 +831,6 @@ public class FirstFragment extends Fragment {
             binding.changeSeedPhrase.setEnabled(true);
             binding.getSeedPhrase.setEnabled(true);
             binding.getAccounts.setEnabled(true);
-
         });
     }
 
@@ -841,8 +840,8 @@ public class FirstFragment extends Fragment {
                 binding.resultView.setText("");
                 binding.resultView.append("Final Key\n");
                 binding.resultView.append(reconstructionDetails.getKey() + "\n");
-                binding.resultView.append("Total Shares" + details.getTotalShares() + "\n");
-                binding.resultView.append("Required Shares" + details.getThreshold() + "\n");
+                binding.resultView.append("Total Shares: " + details.getTotalShares() + "\n");
+                binding.resultView.append("Required Shares: " + details.getThreshold() + "\n");
             } catch (RuntimeError e) {
                 renderError(e);
             }
