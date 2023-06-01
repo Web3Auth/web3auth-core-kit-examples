@@ -12,7 +12,7 @@ This example demonstrates how to use Web3Auth's tKey JS in React Native environm
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/tkey/tkey-react-native-example w3a-tkey-rn-example
+npx degit Web3Auth/web3auth-core-kit-examples/tkey-react-native/tkey-react-native-firebase-example w3a-tkey-rn-example
 ```
 
 Install & Run:
