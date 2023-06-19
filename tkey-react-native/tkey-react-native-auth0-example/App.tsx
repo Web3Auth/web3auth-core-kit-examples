@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import BN from 'bn.js';
+import {subkey} from '@toruslabs/openlogin-subkey';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {tKeyInstance, getNewTKeyInstance} from './tkey';
 // @ts-ignore
@@ -212,6 +213,25 @@ export default function App() {
     }
   };
 
+  const getSubKey = async () => {
+    if (!privateKey) {
+      uiConsole('tKey not initialized yet');
+      return;
+    }
+    try {
+      const subKey = subkey(
+        privateKey.padStart(64, '0'),
+        global.Buffer.from(
+          'BILuyqFCuDXAqVmAuMbD3c4oWEFd7PUENVPyVC-zmsF9euHAvUjqbTCpKw6gO05DBif1YImIVtyaxmEbcLLlb6w',
+          'base64',
+        ),
+      );
+      uiConsole('Subkey', subKey);
+    } catch (e) {
+      uiConsole(e);
+    }
+  };
+
   const getChainId = async () => {
     setConsoleUI('Getting chain id');
     const networkDetails = await RPC.getChainId();
@@ -346,6 +366,7 @@ export default function App() {
       <Button title="Send Transaction" onPress={() => sendTransaction()} />
       <Button title="Sign Message" onPress={() => signMessage()} />
       <Button title="Get Private Key" onPress={() => uiConsole(privateKey)} />
+      <Button title="Get subkey" onPress={getSubKey} />
       <Button title="Reset Account" onPress={resetAccount} />
       <Button title="Log Out" onPress={logout} />
     </View>

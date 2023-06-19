@@ -24,6 +24,7 @@
     "@tkey/share-transfer": "^9.0.0",
     "@tkey/storage-layer-torus": "^9.0.0",
     "@toruslabs/customauth-react-native-sdk": "^4.0.1",
+    "@toruslabs/openlogin-subkey": "^4.2.0",
     "@toruslabs/react-native-web-browser": "^1.1.0",
     "@web3auth/react-native-sdk": "^3.5.0",
     "base-64": "^1.0.0",

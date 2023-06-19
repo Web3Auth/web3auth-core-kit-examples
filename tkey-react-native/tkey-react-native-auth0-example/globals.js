@@ -13,7 +13,7 @@ if (!global.atob) {
 if (!global.Buffer) {
   global.Buffer = require("buffer").Buffer;
 }
-
+global.process.browser = true;
 global.process.version = "v16.0.0";
 if (!global.process.version) {
   global.process = require("process");
