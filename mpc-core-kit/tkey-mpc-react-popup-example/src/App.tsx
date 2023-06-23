@@ -18,6 +18,7 @@ import {
 } from "./utils";
 
 import "./App.css";
+import { TorusServiceProvider } from "@tkey/service-provider-torus";
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -98,7 +99,9 @@ function App() {
     }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
+      const loginResponse = await (
+        tKey.serviceProvider as TorusServiceProvider
+      ).triggerLogin({
         typeOfLogin: "google",
         verifier: "google-web3auth-tkey-mpc",
         clientId:
@@ -162,6 +165,7 @@ function App() {
       } else {
         loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
       }
+      if (!loginResponse) throw new Error("Login Failed");
       setOAuthShare(loginResponse.privateKey);
 
       const signatures = loginResponse.signatures.filter(
@@ -175,7 +179,9 @@ function App() {
 
       let factorKey: BN | null = null;
 
-      const existingUser = await isMetadataPresent(loginResponse.privateKey);
+      const existingUser = await isMetadataPresent(
+        new BN(loginResponse.privateKey, "hex")
+      );
 
       if (!existingUser) {
         factorKey = new BN(generatePrivate());

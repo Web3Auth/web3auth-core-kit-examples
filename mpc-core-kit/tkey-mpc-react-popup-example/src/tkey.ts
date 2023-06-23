@@ -10,6 +10,7 @@ const torusSp = new TorusServiceProvider({
     baseUrl: `${window.location.origin}/serviceworker`,
     enableLogging: true,
     web3AuthClientId: "random-on-purpose",
+    network: "sapphire_devnet",
   },
 });
 

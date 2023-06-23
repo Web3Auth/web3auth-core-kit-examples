@@ -17,20 +17,20 @@ import * as tss from "@toruslabs/tss-lib";
 import { EthereumSigningProvider } from "@web3auth-mpc/ethereum-provider";
 import keccak256 from "keccak256";
 import Web3 from "web3";
+import NodeDetailsManager from "@toruslabs/fetch-node-details";
+import { TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
+
+import { fetchLocalConfig } from "@toruslabs/fnd-base";
 import type { provider } from "web3-core";
 
-const torusNodeEndpoints = [
-  "https://sapphire-1.auth.network",
-  "https://sapphire-2.auth.network",
-  "https://sapphire-3.auth.network",
-  "https://sapphire-4.auth.network",
-  "https://sapphire-5.auth.network",
-];
+const manager = new NodeDetailsManager({
+  network: "sapphire_devnet",
+});
 
 const torus = new TorusUtils({
-  metadataHost: "https://sapphire-1.auth.network/metadata",
-  network: "cyan",
+  network: "sapphire_devnet",
   enableOneKey: true,
+  clientId: "hello",
 });
 
 const DELIMITERS = {
@@ -206,15 +206,21 @@ export async function fetchPostboxKeyAndSigs(opts: any) {
   const { verifierName, verifierId } = opts;
   const token = generateIdToken(verifierId);
 
+  const { torusNodeSSSEndpoints } = await manager.getNodeDetails({
+    verifier: verifierName,
+    verifierId,
+  });
+  if (!torusNodeSSSEndpoints) throw new Error("No Torus Node SSS Endpoints");
+
   const retrieveSharesResponse = await torus.retrieveShares(
-    torusNodeEndpoints,
+    torusNodeSSSEndpoints,
     verifierName,
     { verifier_id: verifierId },
     token
   );
 
   const signatures: any = [];
-  retrieveSharesResponse.sessionTokensData.filter((session) => {
+  retrieveSharesResponse.sessionTokenData.filter((session) => {
     if (session) {
       signatures.push(
         JSON.stringify({
@@ -235,8 +241,15 @@ export async function fetchPostboxKeyAndSigs(opts: any) {
 export async function assignTssKey(opts: any) {
   const { verifierName, verifierId, tssTag = "default", nonce } = opts;
   const extendedVerifierId = `${verifierId}\u0015${tssTag}\u0016${nonce}`;
+
+  const { torusNodeSSSEndpoints } = await manager.getNodeDetails({
+    verifier: verifierName,
+    verifierId,
+  });
+  if (!torusNodeSSSEndpoints) throw new Error("No Torus Node SSS Endpoints");
+
   const pubKeyDetails = await torus.getPublicAddress(
-    torusNodeEndpoints,
+    torusNodeSSSEndpoints,
     { verifier: verifierName, verifierId, extendedVerifierId },
     true
   );
@@ -278,22 +291,46 @@ export const setupSockets = async (tssWSEndpoints: string[]) => {
   return sockets;
 };
 
-export const generateTSSEndpoints = (parties: number, clientIndex: number) => {
-  const endpoints: string[] = [];
-  const tssWSEndpoints: string[] = [];
-  const partyIndexes: number[] = [];
+export function generateEndpoints(
+  parties: number,
+  clientIndex: number,
+  network: TORUS_SAPPHIRE_NETWORK_TYPE,
+  nodeIndexes: number[] = []
+) {
+  console.log("generateEndpoints node indexes", nodeIndexes);
+  const networkConfig = fetchLocalConfig(network);
+  if (!networkConfig) throw new Error("Invalid network");
+
+  const endpoints = [];
+  const tssWSEndpoints = [];
+  const partyIndexes = [];
+
   for (let i = 0; i < parties; i++) {
     partyIndexes.push(i);
+
     if (i === clientIndex) {
-      endpoints.push(null as any);
-      tssWSEndpoints.push(null as any);
+      endpoints.push(null);
+      tssWSEndpoints.push(null);
     } else {
-      endpoints.push(`https://sapphire-${i + 1}.auth.network/tss`);
-      tssWSEndpoints.push(`https://sapphire-${i + 1}.auth.network`);
+      endpoints.push(
+        networkConfig.torusNodeTSSEndpoints![
+          nodeIndexes[i] ? nodeIndexes[i] - 1 : i
+        ]
+      );
+      tssWSEndpoints.push(
+        networkConfig.torusNodeEndpoints[
+          nodeIndexes[i] ? nodeIndexes[i] - 1 : i
+        ]
+      );
     }
   }
-  return { endpoints, tssWSEndpoints, partyIndexes };
-};
+
+  return {
+    endpoints: endpoints,
+    tssWSEndpoints: tssWSEndpoints,
+    partyIndexes: partyIndexes,
+  };
+}
 
 const parties = 4;
 const clientIndex = parties - 1;
@@ -333,13 +370,17 @@ export const setupWeb3 = async (
     const sign = async (msgHash: Buffer) => {
       // 1. setup
       // generate endpoints for servers
-      const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(
+      const { endpoints, tssWSEndpoints, partyIndexes } = generateEndpoints(
         parties,
-        clientIndex
+        clientIndex,
+        "sapphire_devnet"
       );
+      if (!endpoints || !tssWSEndpoints || !partyIndexes)
+        throw new Error("Invalid endpoints");
+
       // setup mock shares, sockets and tss wasm files.
       const [sockets] = await Promise.all([
-        setupSockets(tssWSEndpoints),
+        setupSockets(tssWSEndpoints as string[]),
         tss.default(tssImportUrl),
       ]);
 
