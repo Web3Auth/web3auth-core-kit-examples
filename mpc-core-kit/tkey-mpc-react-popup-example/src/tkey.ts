@@ -9,11 +9,12 @@ const torusSp = new TorusServiceProvider({
   customAuthArgs: {
     baseUrl: `${window.location.origin}/serviceworker`,
     enableLogging: true,
+    web3AuthClientId: "random-on-purpose",
   },
 });
 
 const storageLayer = new TorusStorageLayer({
-  hostUrl: "https://sapphire-dev-2-1.authnetwork.dev/metadata",
+  hostUrl: "https://sapphire-1.auth.network/metadata",
   enableLogging: true,
 });
 
@@ -27,5 +28,5 @@ export const tKey = new ThresholdKey({
   manualSync: true,
   modules: {
     shareSerialization: shareSerializationModule,
-  }
+  },
 });
