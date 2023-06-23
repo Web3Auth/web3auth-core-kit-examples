@@ -8,16 +8,15 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import BN from 'bn.js';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 import {tKeyInstance, getNewTKeyInstance} from './tkey';
-// @ts-ignore
-import CustomAuth from '@toruslabs/customauth-react-native-sdk';
 import RPC from './ethersRPC'; // for using ethers.js
 import auth from '@react-native-firebase/auth';
 // @ts-ignore
 import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
+
+import Web3Auth from '@web3auth/node-sdk';
+import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 
 async function signInWithEmailPassword() {
   try {
@@ -35,7 +34,7 @@ export default function App() {
   const [tKey, setTKey] = useState<typeof tKeyInstance>(tKeyInstance);
   const [privateKey, setPrivateKey] = useState<string | null>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [oAuthShare, setOAuthShare] = useState<BN | null>(null);
+  const [oAuthShare, setOAuthShare] = useState<any>(null);
   const [userInfo, setUserInfo] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [recoveryPassword, setRecoveryPassword] = useState<string>('');
@@ -48,11 +47,33 @@ export default function App() {
     setChangePasswordShareModalVisibility,
   ] = useState<boolean>(false);
 
+  const web3auth = new Web3Auth({
+    clientId:
+      'BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk', // Get your Client ID from Web3Auth Dashboard
+    web3AuthNetwork: 'cyan',
+    usePnPKey: false, // By default, this sdk returns CoreKitKey
+  });
+
+  const privateKeyProvider = new EthereumPrivateKeyProvider({
+    config: {
+      /*
+        pass the chain config that you want to connect with
+        all chainConfig fields are required.
+        */
+      chainConfig: {
+        chainId: '0x1',
+        rpcTarget: 'https://rpc.ankr.com/eth',
+        displayName: 'mainnet',
+        blockExplorer: 'https://etherscan.io/',
+        ticker: 'ETH',
+        tickerName: 'Ethereum',
+      },
+    },
+  });
+
   useEffect(() => {
     try {
-      CustomAuth.init({
-        network: 'testnet', // details for test net
-      });
+      web3auth.init({provider: privateKeyProvider});
     } catch (error) {
       uiConsole(error, 'mounted caught');
     }
@@ -83,20 +104,17 @@ export default function App() {
       const verifier = 'web3auth-firebase-examples';
       const verifierId = parsedToken.sub;
 
-      const loginDetails = await CustomAuth.getTorusKey(
-        verifier,
-        verifierId,
-        {
-          verifierIdField: 'sub',
-          verifier_id: verifierId,
-        },
+      const OAuthShareProvider = await web3auth.connect({
+        verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
+        verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
         idToken,
-      );
+      });
+      const OAuthShareKey = await OAuthShareProvider!.request({
+        method: 'eth_private_key',
+      });
 
-      uiConsole('loginDetails', loginDetails);
-
-      tKey.serviceProvider.postboxKey = loginDetails.privateKey;
-      setOAuthShare(loginDetails.privateKey);
+      tKey.serviceProvider.postboxKey = OAuthShareKey as any;
+      setOAuthShare(OAuthShareKey);
       (tKey.serviceProvider as any).verifierName = verifier;
       (tKey.serviceProvider as any).verifierId = verifierId;
 
@@ -225,7 +243,7 @@ export default function App() {
     try {
       uiConsole(oAuthShare);
       await tKey.storageLayer.setMetadata({
-        privKey: oAuthShare as BN,
+        privKey: oAuthShare as any,
         input: {message: 'KEY_NOT_FOUND'},
       });
       uiConsole('Reset Account Successful.');

@@ -7,7 +7,6 @@
     "mpc-core-kit/**/*",
     "node-sdk/**/*",
     "single-factor-auth-web/*",
-    "tkey-web/*",
-    "tkey-react-native/*"
+    "tkey-web/*"
   ]
 }

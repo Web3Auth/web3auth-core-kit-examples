@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "tkeyrnexample.app"
-               BlueprintName = "tkeyrnexample"
-               ReferencedContainer = "container:tkeyrnexample.xcodeproj">
+               BuildableName = "tkeyfirebaseexample.app"
+               BlueprintName = "tkeyfirebaseexample"
+               ReferencedContainer = "container:tkeyfirebaseexample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "tkeyrnexampleTests.xctest"
-               BlueprintName = "tkeyrnexampleTests"
-               ReferencedContainer = "container:tkeyrnexample.xcodeproj">
+               BuildableName = "tkeyfirebaseexampleTests.xctest"
+               BlueprintName = "tkeyfirebaseexampleTests"
+               ReferencedContainer = "container:tkeyfirebaseexample.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "tkeyrnexample.app"
-            BlueprintName = "tkeyrnexample"
-            ReferencedContainer = "container:tkeyrnexample.xcodeproj">
+            BuildableName = "tkeyfirebaseexample.app"
+            BlueprintName = "tkeyfirebaseexample"
+            ReferencedContainer = "container:tkeyfirebaseexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "tkeyrnexample.app"
-            BlueprintName = "tkeyrnexample"
-            ReferencedContainer = "container:tkeyrnexample.xcodeproj">
+            BuildableName = "tkeyfirebaseexample.app"
+            BlueprintName = "tkeyfirebaseexample"
+            ReferencedContainer = "container:tkeyfirebaseexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

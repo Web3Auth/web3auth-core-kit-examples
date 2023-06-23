@@ -1,4 +1,4 @@
-import ThresholdKey from '@tkey/default';
+import ThresholdKey from '@tkey/core';
 import SecurityQuestionsModule from '@tkey/security-questions';
 import TorusServiceProvider from '@tkey/service-provider-base';
 import TorusStorageLayer from '@tkey/storage-layer-torus';
