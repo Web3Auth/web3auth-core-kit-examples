@@ -1,16 +1,17 @@
-/* eslint-disable no-throw-literal */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable require-atomic-updates */
-/* eslint-disable @typescript-eslint/no-shadow */
+import "./App.css";
+
 import { getPubKeyPoint } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { tKey } from "./tkey";
-import { addFactorKeyMetadata, fetchPostboxKeyAndSigs, getTSSPubKey, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor } from "./utils";
+import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
+import { fetchPostboxKeyAndSigs} from "./mockUtils";
+import { utils } from "@toruslabs/tss-client";
 
-import "./App.css";
+const { getTSSPubKey } = utils;
+
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -203,7 +204,7 @@ function App() {
       // Checks the requiredShares to reconstruct the tKey, starts from 2 by default and each of the above share reduce it by one.
       const { requiredShares } = tKey.getKeyDetails();
       if (requiredShares > 0) {
-        throw `Threshold not met. Required Share: ${requiredShares}. You should reset your account.`;
+        throw new Error(`Threshold not met. Required Share: ${requiredShares}. You should reset your account.`);
       }
       // 2. Reconstruct the Metadata Key
       const metadataKey = await tKey.reconstructKey();
@@ -212,13 +213,20 @@ function App() {
       const tssNonce: number = tKey.metadata.tssNonces![tKey.tssTag];
       // tssShare1 = TSS Share from the social login/ service provider
       const tssShare1PubKeyDetails = await tKey.serviceProvider.getTSSPubKey(tKey.tssTag, tssNonce);
-      const tssShare1PubKey = { x: tssShare1PubKeyDetails.x.toString("hex"), y: tssShare1PubKeyDetails.y.toString("hex") };
+
+      const tssShare1PubKey = { x: tssShare1PubKeyDetails.pubKey.x.toString("hex"), y: tssShare1PubKeyDetails.pubKey.y.toString("hex") };
 
       // tssShare2 = TSS Share from the local storage of the device
       const { tssShare: tssShare2, tssIndex: tssShare2Index } = await tKey.getTSSShare(factorKey);
 
+      const ec = getEcCrypto()
+      const tssShare2ECPK = ec.curve.g.mul(tssShare2);
+      const tssShare2PubKey = { x: tssShare2ECPK.getX().toString("hex"), y: tssShare2ECPK.getY().toString("hex") };
+
+    
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
-      const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2, tssShare2Index);
+      const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2PubKey, tssShare2Index);
+    
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
