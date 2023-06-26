@@ -102,10 +102,7 @@ function App() {
             privateKey: signingParams.oAuthShare,
           }
           setLoginResponse(loginResponse);
-
-          const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
-          setWeb3(web3Local);
-
+          signingParams["compressedTSSPubKey"] = Buffer.from(signingParams.compressedTSSPubKey.padStart(64, "0"), "hex")
           setSigningParams(signingParams);
           
           uiConsole(
@@ -336,6 +333,7 @@ function App() {
       if (!signingParams) {
         throw new Error("User not logged in");
       }
+      signingParams['compressedTSSPubKey'] = Buffer.from(signingParams.compressedTSSPubKey).toString("hex");
       await sessionManager!.createSession(signingParams);
       localStorage.setItem("sessionId", sessionId);
       uiConsole("Successfully created session");
