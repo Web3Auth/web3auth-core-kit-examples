@@ -380,6 +380,7 @@ function App() {
         input: { message: "KEY_NOT_FOUND" },
       });
       uiConsole("Reset Account Successful.");
+      setUser(null);
     } catch (e) {
       uiConsole(e);
     }
@@ -550,9 +551,7 @@ function App() {
 
       </div>
 
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
-      </div>
+
     </>
   );
 
@@ -580,7 +579,9 @@ function App() {
       </h1>
 
       <div className="grid">{user ? loggedInView : unloggedInView}</div>
-
+      <div id="console" style={{ whiteSpace: "pre-line" }}>
+        <p style={{ whiteSpace: "pre-line" }}></p>
+      </div>
       <footer className="footer">
         <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-mpc-beta-react-popup-example" target="_blank" rel="noopener noreferrer">
           Source code
