@@ -9,6 +9,7 @@ import { tKey } from "./tkey";
 import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
 import { fetchPostboxKeyAndSigs} from "./mockUtils";
 import { utils } from "@toruslabs/tss-client";
+import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
 
 const { getTSSPubKey } = utils;
 
@@ -21,6 +22,15 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+const chainConfig = {
+  chainId: "0x5",
+  rpcTarget: "https://rpc.ankr.com/eth_goerli",
+  displayName: "Goerli Testnet",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
+
 
 function App() {
   const [loginResponse, setLoginResponse] = useState<any>(null);
@@ -31,6 +41,7 @@ function App() {
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
   const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
+  const [sessionManager, setSessionManager] = useState<OpenloginSessionManager<typeof signingParams>>(new OpenloginSessionManager({}));
 
   // Init Service Provider inside the useEffect Method
 
@@ -53,8 +64,62 @@ function App() {
       // Initialization of Service Provider
       try {
         await (tKey.serviceProvider as any).init();
+        const sessionId = localStorage.getItem("sessionId");
+        const sessionManager = new OpenloginSessionManager({
+          sessionTime: 86400,
+          sessionId: sessionId!,
+        });
+        setSessionManager(sessionManager);
+        if (sessionId) {
+          const signingParams: any = await sessionManager!.authorizeSession();
+          uiConsole("signingParams", signingParams)
+
+          const factorKeyMetadata = await tKey.storageLayer.getMetadata<{
+            message: string;
+          }>({
+            privKey: signingParams.factorKey,
+          });
+          const metadataShare = JSON.parse(factorKeyMetadata.message);
+
+          if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
+          uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
+          const metadataDeviceShare = metadataShare.deviceShare;
+
+          tKey.serviceProvider.postboxKey = new BN(signingParams.oAuthShare, "hex");
+          (tKey.serviceProvider as any).verifierName = signingParams.userInfo.verifier;
+          (tKey.serviceProvider as any).verifierId = signingParams.userInfo.verifierId;
+
+          await tKey.initialize({ neverInitializeNewKey: true });
+          await tKey.inputShareStoreSafe(metadataDeviceShare, true);
+          const metadataKey = await tKey.reconstructKey();
+          setMetadataKey(metadataKey?.privKey.toString("hex"));
+          setOAuthShare(signingParams.oAuthShare);
+          setLocalFactorKey(signingParams.factorKey);
+          setUser(signingParams.userInfo);
+          const loginResponse = {
+            userInfo: signingParams.userInfo,
+            signatures: signingParams.signatures,
+            privateKey: signingParams.oAuthShare,
+          }
+          setLoginResponse(loginResponse);
+
+          const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
+          setWeb3(web3Local);
+
+          setSigningParams(signingParams);
+          
+          uiConsole(
+            "Successfully logged in & initialised MPC TKey SDK",
+            "TSS Public Key: ",
+            tKey.getTSSPub(),
+            "Metadata Key",
+            metadataKey.privKey.toString("hex"),
+            "With Factors/Shares:",
+            tKey.getMetadata().getShareDescription(),
+          );
+        }
       } catch (error) {
-        console.error(error);
+        uiConsole(error);
       }
     };
     init();
@@ -63,14 +128,6 @@ function App() {
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
-      const chainConfig = {
-        chainId: "0x5",
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        displayName: "Goerli Testnet",
-        blockExplorer: "https://goerli.etherscan.io",
-        ticker: "ETH",
-        tickerName: "Ethereum",
-      }
       const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
       setWeb3(web3Local);
     };
@@ -240,14 +297,20 @@ function App() {
 
       setLocalFactorKey(factorKey);
 
-      setSigningParams({
+      const signingParams = {
+        oAuthShare: loginResponse.privateKey,
+        factorKey,
         tssNonce,
         tssShare2,
         tssShare2Index,
         compressedTSSPubKey,
-        signatures
-      })
+        signatures,
+        userInfo: loginResponse.userInfo,
+      };
+      
+      setSigningParams(signingParams)
 
+      uiConsole("signingParams", signingParams)
 
       uiConsole(
         "Successfully logged in & initialised MPC TKey SDK",
@@ -258,10 +321,28 @@ function App() {
         "With Factors/Shares:",
         tKey.getMetadata().getShareDescription(),
       );
+
+      createSession(signingParams);
+
     } catch (error) {
       uiConsole(error, "caught");
     }
   };
+
+  async function createSession(signingParams: any) {
+    try {
+      const sessionId = OpenloginSessionManager.generateRandomSessionKey();
+      sessionManager!.sessionKey = sessionId!;
+      if (!signingParams) {
+        throw new Error("User not logged in");
+      }
+      await sessionManager!.createSession(signingParams);
+      localStorage.setItem("sessionId", sessionId);
+      uiConsole("Successfully created session");
+    } catch (err) {
+      uiConsole("error creating session", err);
+    }
+  }
 
   const isMetadataPresent = async (privateKeyBN: BN) => {
     const metadata = (await tKey.storageLayer.getMetadata({ privKey: privateKeyBN }));
@@ -363,6 +444,7 @@ function App() {
     uiConsole("Log out");
     setUser(null);
     setLoginResponse(null);
+    localStorage.removeItem("sessionId");
   };
 
   const getUserInfo = (): void => {
@@ -395,7 +477,7 @@ function App() {
 
   const getChainID = async () => {
     if (!web3) {
-      console.log("web3 not initialized yet");
+      uiConsole("web3 not initialized yet");
       return;
     }
     const chainId = await web3.eth.getChainId();
@@ -405,7 +487,7 @@ function App() {
 
   const getAccounts = async () => {
     if (!web3) {
-      console.log("web3 not initialized yet");
+      uiConsole("web3 not initialized yet");
       return;
     }
     const address = (await web3.eth.getAccounts())[0];
@@ -415,7 +497,7 @@ function App() {
 
   const getBalance = async () => {
     if (!web3) {
-      console.log("web3 not initialized yet");
+      uiConsole("web3 not initialized yet");
       return;
     }
     const address = (await web3.eth.getAccounts())[0];
@@ -428,7 +510,7 @@ function App() {
 
   const signMessage = async (): Promise<any> => {
     if (!web3) {
-      console.log("web3 not initialized yet");
+      uiConsole("web3 not initialized yet");
       return;
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
@@ -457,7 +539,7 @@ function App() {
 
   const sendTransaction = async () => {
     if (!web3) {
-      console.log("web3 not initialized yet");
+      uiConsole("web3 not initialized yet");
       return;
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
