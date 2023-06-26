@@ -561,7 +561,7 @@ function App() {
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
 
-    const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
+    const destination = "0x57E65a70e31fdc30Be6238dBbE8E0d6d0e0c1B61";
     const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
 
     // Submit transaction to the blockchain and wait for it to be mined
