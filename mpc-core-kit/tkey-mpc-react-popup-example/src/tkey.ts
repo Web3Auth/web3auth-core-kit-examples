@@ -7,6 +7,8 @@ import { ShareSerializationModule } from "@tkey/share-serialization";
 const torusSp = new TorusServiceProvider({
   useTSS: true,
   customAuthArgs: {
+    network: "sapphire_devnet",
+    web3AuthClientId: "YOUR_CLIENT_ID", // anything will work on localhost, but get one valid clientID before hosting, from https://dashboard.web3auth.io
     baseUrl: `${window.location.origin}/serviceworker`,
     enableLogging: true,
   },
