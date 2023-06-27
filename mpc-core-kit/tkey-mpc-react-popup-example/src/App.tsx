@@ -1,18 +1,22 @@
 import "./App.css";
 
-import { getPubKeyPoint } from "@tkey/common-types";
+import { getPubKeyECC, getPubKeyPoint } from "@tkey/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { tKey } from "./tkey";
 import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
-import { fetchPostboxKeyAndSigs} from "./mockUtils";
+import { fetchPostboxKeyAndSigs } from "./mockUtils";
 import { utils } from "@toruslabs/tss-client";
 import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
+import { address, networks, payments, Psbt, Transaction } from "bitcoinjs-lib";
+import ecc from "@bitcoinerlab/secp256k1";
+import ECPairFactory from "ecpair";
+import { TinySecp256k1Interface } from "bitcoinjs-lib/src/types";
+import { pbkdf2Sync, sign } from "crypto";
 
 const { getTSSPubKey } = utils;
-
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -29,8 +33,7 @@ const chainConfig = {
   blockExplorer: "https://goerli.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
-}
-
+};
 
 function App() {
   const [loginResponse, setLoginResponse] = useState<any>(null);
@@ -47,11 +50,14 @@ function App() {
 
   useEffect(() => {
     if (!localFactorKey) return;
-    localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`, JSON.stringify({
-      factorKey: localFactorKey.toString("hex"),
-      verifier: loginResponse.userInfo.verifier,
-      verifierId: loginResponse.userInfo.verifierId,
-    }));
+    localStorage.setItem(
+      `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`,
+      JSON.stringify({
+        factorKey: localFactorKey.toString("hex"),
+        verifier: loginResponse.userInfo.verifier,
+        verifierId: loginResponse.userInfo.verifierId,
+      })
+    );
   }, [localFactorKey]);
 
   useEffect(() => {
@@ -72,7 +78,7 @@ function App() {
         setSessionManager(sessionManager);
         if (sessionId) {
           const signingParams: any = await sessionManager!.authorizeSession();
-          uiConsole("signingParams", signingParams)
+          uiConsole("signingParams", signingParams);
 
           const factorKeyMetadata = await tKey.storageLayer.getMetadata<{
             message: string;
@@ -100,11 +106,11 @@ function App() {
             userInfo: signingParams.userInfo,
             signatures: signingParams.signatures,
             privateKey: signingParams.oAuthShare,
-          }
+          };
           setLoginResponse(loginResponse);
-          signingParams["compressedTSSPubKey"] = Buffer.from(signingParams.compressedTSSPubKey.padStart(64, "0"), "hex")
+          signingParams["compressedTSSPubKey"] = Buffer.from(signingParams.compressedTSSPubKey.padStart(64, "0"), "hex");
           setSigningParams(signingParams);
-          
+
           uiConsole(
             "Successfully logged in & initialised MPC TKey SDK",
             "TSS Public Key: ",
@@ -112,7 +118,7 @@ function App() {
             "Metadata Key",
             metadataKey.privKey.toString("hex"),
             "With Factors/Shares:",
-            tKey.getMetadata().getShareDescription(),
+            tKey.getMetadata().getShareDescription()
           );
         }
       } catch (error) {
@@ -125,6 +131,14 @@ function App() {
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
+      const chainConfig = {
+        chainId: "0x5",
+        rpcTarget: "https://rpc.ankr.com/eth_goerli",
+        displayName: "Goerli Testnet",
+        blockExplorer: "https://goerli.etherscan.io",
+        ticker: "ETH",
+        tickerName: "Ethereum",
+      };
       const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
       setWeb3(web3Local);
     };
@@ -141,11 +155,10 @@ function App() {
     try {
       // Triggering Login using Service Provider ==> opens the popup
       const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
-				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-			});
+        typeOfLogin: "google",
+        verifier: "google-tkey-w3a",
+        clientId: "774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com",
+      });
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
       return loginResponse;
@@ -161,7 +174,6 @@ function App() {
     if (localMockVerifierId) verifierId = localMockVerifierId;
     else verifierId = Math.round(Math.random() * 100000) + "@example.com";
     setMockVerifierId(verifierId);
-
   }, []);
 
   const triggerMockLogin = async () => {
@@ -173,7 +185,10 @@ function App() {
       const verifier = "torus-test-health";
       const verifierId = mockVerifierId;
 
-      const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
+      const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({
+        verifierName: verifier,
+        verifierId,
+      });
       tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
       (tKey.serviceProvider as any).verifierName = verifier;
       (tKey.serviceProvider as any).verifierId = verifierId;
@@ -206,7 +221,9 @@ function App() {
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
 
-      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+      const tKeyLocalStoreString = localStorage.getItem(
+        `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`
+      );
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       let factorKey: BN | null = null;
@@ -218,16 +235,20 @@ function App() {
         const deviceTSSShare = new BN(generatePrivate());
         const deviceTSSIndex = 2;
         const factorPub = getPubKeyPoint(factorKey);
-        await tKey.initialize({ useTSS: true, factorPub, deviceTSSShare, deviceTSSIndex });
+        await tKey.initialize({
+          useTSS: true,
+          factorPub,
+          deviceTSSShare,
+          deviceTSSIndex,
+        });
       } else {
         if (tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId) {
           factorKey = new BN(tKeyLocalStore.factorKey, "hex");
-        }
-        else {
+        } else {
           try {
-            factorKey = await swal('Enter your backup share', {
-              content: 'input' as any,
-            }).then(async value => {
+            factorKey = await swal("Enter your backup share", {
+              content: "input" as any,
+            }).then(async (value) => {
               uiConsole(value);
               return await (tKey.modules.shareSerialization as any).deserialize(value, "mnemonic");
             });
@@ -245,7 +266,7 @@ function App() {
         if (factorKeyMetadata.message === "KEY_NOT_FOUND") {
           throw new Error("no metadata for your factor key, reset your account");
         }
-        
+
         const metadataShare = JSON.parse(factorKeyMetadata.message);
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
         uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
@@ -268,19 +289,23 @@ function App() {
       // tssShare1 = TSS Share from the social login/ service provider
       const tssShare1PubKeyDetails = await tKey.serviceProvider.getTSSPubKey(tKey.tssTag, tssNonce);
 
-      const tssShare1PubKey = { x: tssShare1PubKeyDetails.pubKey.x.toString("hex"), y: tssShare1PubKeyDetails.pubKey.y.toString("hex") };
+      const tssShare1PubKey = {
+        x: tssShare1PubKeyDetails.pubKey.x.toString("hex"),
+        y: tssShare1PubKeyDetails.pubKey.y.toString("hex"),
+      };
 
       // tssShare2 = TSS Share from the local storage of the device
       const { tssShare: tssShare2, tssIndex: tssShare2Index } = await tKey.getTSSShare(factorKey);
 
-      const ec = getEcCrypto()
+      const ec = getEcCrypto();
       const tssShare2ECPK = ec.curve.g.mul(tssShare2);
-      const tssShare2PubKey = { x: tssShare2ECPK.getX().toString("hex"), y: tssShare2ECPK.getY().toString("hex") };
+      const tssShare2PubKey = {
+        x: tssShare2ECPK.getX().toString("hex"),
+        y: tssShare2ECPK.getY().toString("hex"),
+      };
 
-    
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
       const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2PubKey, tssShare2Index);
-    
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
@@ -304,10 +329,10 @@ function App() {
         signatures,
         userInfo: loginResponse.userInfo,
       };
-      
-      setSigningParams(signingParams)
 
-      uiConsole("signingParams", signingParams)
+      setSigningParams(signingParams);
+
+      uiConsole("signingParams", signingParams);
 
       uiConsole(
         "Successfully logged in & initialised MPC TKey SDK",
@@ -316,11 +341,10 @@ function App() {
         "Metadata Key",
         metadataKey.privKey.toString("hex"),
         "With Factors/Shares:",
-        tKey.getMetadata().getShareDescription(),
+        tKey.getMetadata().getShareDescription()
       );
 
       createSession(signingParams);
-
     } catch (error) {
       uiConsole(error, "caught");
     }
@@ -333,7 +357,7 @@ function App() {
       if (!signingParams) {
         throw new Error("User not logged in");
       }
-      signingParams['compressedTSSPubKey'] = Buffer.from(signingParams.compressedTSSPubKey).toString("hex");
+      signingParams["compressedTSSPubKey"] = Buffer.from(signingParams.compressedTSSPubKey).toString("hex");
       await sessionManager!.createSession(signingParams);
       localStorage.setItem("sessionId", sessionId);
       uiConsole("Successfully created session");
@@ -343,17 +367,15 @@ function App() {
   }
 
   const isMetadataPresent = async (privateKeyBN: BN) => {
-    const metadata = (await tKey.storageLayer.getMetadata({ privKey: privateKeyBN }));
-    if (
-      metadata &&
-      Object.keys(metadata).length > 0 &&
-      (metadata as any).message !== 'KEY_NOT_FOUND'
-    ) {
+    const metadata = await tKey.storageLayer.getMetadata({
+      privKey: privateKeyBN,
+    });
+    if (metadata && Object.keys(metadata).length > 0 && (metadata as any).message !== "KEY_NOT_FOUND") {
       return true;
     } else {
       return false;
     }
-  }
+  };
 
   const copyTSSShareIntoManualBackupFactorkey = async () => {
     try {
@@ -373,12 +395,11 @@ function App() {
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
       const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
       await tKey.syncLocalMetadataTransitions();
-      uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
-
+      uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare);
     } catch (err) {
-      uiConsole(`Failed to copy share to new manual factor: ${err}`)
+      uiConsole(`Failed to copy share to new manual factor: ${err}`);
     }
-  }
+  };
 
   const createNewTSSShareIntoManualBackupFactorkey = async () => {
     try {
@@ -402,8 +423,8 @@ function App() {
           }
         });
       }
-      uiConsole("backupFactorIndex:", backupFactorIndex+1);
-      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex+1, localFactorKey, signingParams.signatures);
+      uiConsole("backupFactorIndex:", backupFactorIndex + 1);
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex + 1, localFactorKey, signingParams.signatures);
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
@@ -411,16 +432,15 @@ function App() {
 
       await tKey.syncLocalMetadataTransitions();
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
-
     } catch (err) {
       uiConsole(`Failed to create new manual factor ${err}`);
     }
-  }
+  };
 
   const deleteTkeyLocalStore = async () => {
     localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
     uiConsole("Successfully deleted tKey local store");
-  }
+  };
 
   const keyDetails = async () => {
     if (!tKey) {
@@ -429,12 +449,7 @@ function App() {
     }
     // const keyDetails = await tKey.getKeyDetails();
 
-
-    uiConsole(
-      "TSS Public Key: ",
-      tKey.getTSSPub(),
-      "With Factors/Shares:",
-      tKey.getMetadata().getShareDescription())
+    uiConsole("TSS Public Key: ", tKey.getTSSPub(), "With Factors/Shares:", tKey.getMetadata().getShareDescription());
     // return keyDetails;
   };
 
@@ -491,6 +506,77 @@ function App() {
     const address = (await web3.eth.getAccounts())[0];
     uiConsole(address);
     return address;
+  };
+
+  const getAccountsBTC = async () => {
+    // const privateKey = generatePrivate().toString("hex");
+    const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
+    // mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx
+
+    // BTC Address ee668c37ae96fe7ee593825acfec7b27d40c711fdee77173b379801259dbb43d mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx
+
+    const publicKey = getPubKeyPoint(new BN(privateKey, 16));
+    const publicKeyECC = getPubKeyECC(new BN(privateKey, 16));
+    const compressedPubKey = Buffer.from(`${publicKey.x.toString(16, 64)}${publicKey.y.toString(16, 64)}`, "hex");
+
+    const { address: btcAdress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
+    console.log("BTC Address", privateKey, btcAdress);
+  };
+
+  const bitcoinTx = async () => {
+    // 0.01105008 tBTC
+    const ECPair = ECPairFactory(ecc);
+    const keyPair = ECPair.fromPrivateKey(Buffer.from("30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27", "hex"));
+
+    const id = "99badb8a6e2bf0952a6bba65811c96de26aeb4f28559cd897d4c9203e977ee87";
+    const destinationAddress = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    const fromAddress = "mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx";
+    const balance = 0.01105008 * 1e8;
+    // const amount = 0.0001;
+    const minerFee = 10000;
+    // const outputAmount = amount * 1e8 - minerFee;
+    // const outputNumber = 0;
+
+    const send_amount = 90000;
+    const change_amount = balance - send_amount - minerFee;
+
+    const rawTransaction = new Psbt({ network: networks.testnet });
+    const nonWitnessUtxo = Buffer.from(
+      "020000000112f915516dc54d71edbe93de50ad573203a30cbbacf89a147fc75da895f00341010000006a47304402207851d9c7cb46d0a3b938c0f541e0cd5647dffc16a4692b7d094eda62800c29d302205984f8968e7398f4f4666addc698c53d709dc4248ccffa0754a9a4d0ca509dd90121024cddb2047e64fcba8e47d81fd326f3f127479dd9c3879aae6068f06222264bedfdffffff0270dc1000000000001976a9142bec919e191a14116f0a5a632cad4cd32c3267ef88ac0f8b423a010000001976a91452a74b899130ec989673b6539c24f8b897b4840888ac1c382500",
+      "hex"
+    );
+
+    rawTransaction.addInput({
+      hash: id,
+      index: 0,
+      nonWitnessUtxo,
+    });
+    rawTransaction.addOutput({
+      address: destinationAddress,
+      value: send_amount,
+    });
+    // rawTransaction.addOutput({
+    //   address: fromAddress,
+    //   value: change_amount,
+    // });
+
+    const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+    // const data = rawTransaction.toBase64();
+    // const signer1 = Psbt.fromBase64(data);
+    // signer1.signAllInputs(keyPair);
+
+    // console.log("Signer 1", signer1.toBase64());
+    // console.log("Signer 1", signer1.validateSignaturesOfInput(0, validator));
+    rawTransaction.signInput(0, keyPair);
+    rawTransaction.validateSignaturesOfInput(0, validator);
+    // rawTransaction.finalizeAllInputs();
+
+    // const signed_tx = rawTransaction.extractTransaction().toHex();
+    // console.log("Signed Raw Transaction:", signed_tx);
+
+    // const builder = new Transaction();
+    // builder.addInput(Buffer.from(id, "hex"), outputNumber);
+    // builder.addOutput(address.toOutputScript(destinationAddress, networks.testnet), outputAmount);
   };
 
   const getBalance = async () => {
@@ -559,83 +645,65 @@ function App() {
     <>
       <h2 className="subtitle">Account Details</h2>
       <div className="flex-container">
-
         <button onClick={getUserInfo} className="card">
           Get User Info
         </button>
-
 
         <button onClick={getLoginResponse} className="card">
           See Login Response
         </button>
 
-
         <button onClick={keyDetails} className="card">
           Key Details
         </button>
-
 
         <button onClick={getMetadataKey} className="card">
           Metadata Key
         </button>
 
-
         <button onClick={logout} className="card">
           Log Out
         </button>
-
       </div>
       <h2 className="subtitle">Recovery/ Key Manipulation</h2>
       <div className="flex-container">
-
         <button onClick={copyTSSShareIntoManualBackupFactorkey} className="card">
           Copy Existing TSS Share For New Factor Manual
         </button>
-
 
         <button onClick={createNewTSSShareIntoManualBackupFactorkey} className="card">
           Create New TSSShare Into Manual Backup Factor
         </button>
 
-
         <button onClick={deleteTkeyLocalStore} className="card">
           Delete tKey Local Store (enables Recovery Flow)
         </button>
 
-
-        <button onClick={resetAccount} className='card'>
+        <button onClick={resetAccount} className="card">
           Reset Account (CAUTION)
         </button>
-
       </div>
       <h2 className="subtitle">Blockchain Calls</h2>
       <div className="flex-container">
-
         <button onClick={getChainID} className="card">
           Get Chain ID
         </button>
-
 
         <button onClick={getAccounts} className="card">
           Get Accounts
         </button>
 
-
         <button onClick={getBalance} className="card">
           Get Balance
         </button>
-
-
 
         <button onClick={signMessage} className="card">
           Sign Message
         </button>
 
-
         <button onClick={sendTransaction} className="card">
           Send Transaction
         </button>
-
       </div>
 
       <div id="console" style={{ whiteSpace: "pre-line" }}>
@@ -653,6 +721,19 @@ function App() {
         MockLogin
       </button>
 
+      <h2 className="subtitle">Bitcoin</h2>
+      <div className="flex-container">
+        <button onClick={getAccountsBTC} className="card">
+          Get Accounts
+        </button>
+      </div>
+
+      <div className="flex-container">
+        <button onClick={bitcoinTx} className="card">
+          BTC tx
+        </button>
+      </div>
+
       <p>Mock Login Seed Email</p>
       <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
     </>
@@ -663,14 +744,18 @@ function App() {
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
           Web3Auth Core Kit tKey MPC Beta
-        </a> {" "}
+        </a>{" "}
         & ReactJS Ethereum Example
       </h1>
 
       <div className="grid">{user ? loggedInView : unloggedInView}</div>
 
       <footer className="footer">
-        <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-mpc-beta-react-popup-example" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-mpc-beta-react-popup-example"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Source code
         </a>
       </footer>
