@@ -15,6 +15,7 @@ import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
 import { TinySecp256k1Interface } from "bitcoinjs-lib/src/types";
 import { pbkdf2Sync, sign } from "crypto";
+import { bitcoin } from "bitcoinjs-lib/src/networks";
 
 const { getTSSPubKey } = utils;
 
@@ -510,14 +511,19 @@ function App() {
 
   const getAccountsBTC = async () => {
     // const privateKey = generatePrivate().toString("hex");
+    const ECPair = ECPairFactory(ecc);
+
     const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
+    const keyPair = ECPair.fromPrivateKey(Buffer.from("30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27", "hex"));
+    console.log(keyPair.compressed);
     // mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx
 
     // BTC Address ee668c37ae96fe7ee593825acfec7b27d40c711fdee77173b379801259dbb43d mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx
 
     const publicKey = getPubKeyPoint(new BN(privateKey, 16));
     const publicKeyECC = getPubKeyECC(new BN(privateKey, 16));
-    const compressedPubKey = Buffer.from(`${publicKey.x.toString(16, 64)}${publicKey.y.toString(16, 64)}`, "hex");
+    // const compressedPubKey = Buffer.from(`${publicKey.x.toString(16, 64)}${publicKey.y.toString(16, 64)}`, "hex");
+    // console.log("publicKey", `${publicKey.x.toString(16, 64)}`);
 
     const { address: btcAdress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
     console.log("BTC Address", privateKey, btcAdress);
@@ -531,6 +537,7 @@ function App() {
     const id = "99badb8a6e2bf0952a6bba65811c96de26aeb4f28559cd897d4c9203e977ee87";
     const destinationAddress = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
     const fromAddress = "mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx";
+
     const balance = 0.01105008 * 1e8;
     // const amount = 0.0001;
     const minerFee = 10000;
@@ -550,6 +557,7 @@ function App() {
       hash: id,
       index: 0,
       nonWitnessUtxo,
+      sighashType: 1,
     });
     rawTransaction.addOutput({
       address: destinationAddress,
@@ -561,6 +569,31 @@ function App() {
     // });
 
     const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+
+    // const alice = ECPair.fromWIF("L2uPYXe17xSTqbCjZvL2DsyXPCbXspvcu5mHLDYUgzdUbZGSKrSr");
+    // const psbt = new Psbt();
+    // psbt.addInput({
+    //   hash: "7d067b4a697a09d2c3cff7d4d9506c9955e93bff41bf82d439da7d030382bc3e",
+    //   index: 0,
+    //   nonWitnessUtxo: Buffer.from(
+    //     "0200000001f9f34e95b9d5c8abcd20fc5bd4a825d1517be62f0f775e5f36da944d9" +
+    //       "452e550000000006b483045022100c86e9a111afc90f64b4904bd609e9eaed80d48" +
+    //       "ca17c162b1aca0a788ac3526f002207bb79b60d4fc6526329bf18a77135dc566020" +
+    //       "9e761da46e1c2f1152ec013215801210211755115eabf846720f5cb18f248666fec" +
+    //       "631e5e1e66009ce3710ceea5b1ad13ffffffff01905f0100000000001976a9148bb" +
+    //       "c95d2709c71607c60ee3f097c1217482f518d88ac00000000",
+    //     "hex"
+    //   ),
+    //   sighashType: 1,
+    // });
+
+    // psbt.addOutput({
+    //   address: "1KRMKfeZcmosxALVYESdPNez1AP1mEtywp",
+    //   value: 80000,
+    // });
+    // psbt.signInput(0, alice);
+    // console.log("signed", psbt.validateSignaturesOfInput(0, validator));
+
     // const data = rawTransaction.toBase64();
     // const signer1 = Psbt.fromBase64(data);
     // signer1.signAllInputs(keyPair);
