@@ -76,7 +76,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       },
     });
 
-    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, btcAddress, btcPublicKey } = signingParams;
+    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, ecPublicKey } = signingParams;
     // console.log("signingParams", compressedTSSPubKey.toString("hex"));
 
     const { verifier, verifierId } = loginReponse.userInfo;
@@ -120,7 +120,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
         endpoints,
         sockets,
         share,
-        compressedTSSPubKey.toString("base64"),
+        Buffer.from(compressedTSSPubKey, "hex").toString("base64"),
         true,
         tssImportUrl
       );
@@ -129,7 +129,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
         const serverIndex = participatingServerDKGIndexes[i];
         serverCoeffs[serverIndex] = getDKLSCoeff(false, participatingServerDKGIndexes, tssShare2Index, serverIndex).toString("hex");
       }
-      debugger;
+      // debugger;
       client.precompute(tss, { signatures, server_coeffs: serverCoeffs });
       console.log("client is ready");
       await client.ready();
@@ -137,8 +137,13 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
         signatures,
       });
       await client.cleanup(tss, { signatures, server_coeffs: serverCoeffs });
-      const sig = { v: recoveryParam, r: Buffer.from(r.toString("hex"), "hex"), s: Buffer.from(s.toString("hex"), "hex") };
-      return Promise.resolve(Buffer.from("0", "hex"));
+      const sig = {
+        v: recoveryParam,
+        r: Buffer.from(r.toString("hex").padStart(64, "0"), "hex"),
+        s: Buffer.from(s.toString("hex").padStart(64, "0"), "hex"),
+      };
+      const sigBuffer = Buffer.concat([sig.r, sig.s]);
+      return Promise.resolve(sigBuffer);
     };
 
     if (!compressedTSSPubKey) {
@@ -170,7 +175,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       return ret;
     };
 
-    const btcSigner = toAsyncSigner({ publicKey: btcPublicKey, sign: sign as any });
+    const btcSigner = toAsyncSigner({ publicKey: ecPublicKey, sign: sign as any });
     return btcSigner;
     // await ethereumSigningProvider.setupProvider({ sign, getPublic });
     // // console.log(ethereumSigningProvider.provider);

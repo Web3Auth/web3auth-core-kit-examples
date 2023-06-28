@@ -27,6 +27,8 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+
 const chainConfig = {
   chainId: "0x5",
   rpcTarget: "https://rpc.ankr.com/eth_goerli",
@@ -314,7 +316,7 @@ function App() {
       const prefixedCompressedTSSPubKey = Buffer.from(`04${compressedTSSPubKey.toString("hex")}`, "hex");
       const ECPubKey = ECPair.fromPublicKey(prefixedCompressedTSSPubKey, { network: testnet });
       const { address: btcAddress } = p2pkh({ pubkey: ECPubKey.publicKey, network: testnet });
-      // console.log(btcAddress);
+
       // 5. save factor key and other metadata
       if (
         !existingUser ||
@@ -330,7 +332,7 @@ function App() {
         oAuthShare: loginResponse.privateKey,
         factorKey,
         btcAddress,
-        btcPublicKey: ECPubKey.publicKey,
+        ecPublicKey: ECPubKey.publicKey,
         tssNonce,
         tssShare2,
         tssShare2Index,
@@ -563,11 +565,11 @@ function App() {
         value: 20,
       });
 
+    // const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
     // encode to send tx to signer
     const hexTx = psbt.toBase64();
 
     // psbt.signInput(0, keyPair);
-    // const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
     // psbt.validateSignaturesOfInput(0, validator);
     // psbt.finalizeAllInputs();
   };
@@ -642,9 +644,12 @@ function App() {
     // const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
     // const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
     // Submit transaction to the blockchain and wait for it to be mined
-    uiConsole("Sending transaction...", web3.publicKey);
+    uiConsole("Sending transaction...");
 
     await psbt.signInputAsync(0, web3);
+    psbt.validateSignaturesOfInput(0, BTCValidator);
+    console.log("psbt", psbt.validateSignaturesOfInput(0, BTCValidator));
+
     // const receipt = await web3.eth.sendTransaction({
     //   from: fromAddress,
     //   to: destination,
