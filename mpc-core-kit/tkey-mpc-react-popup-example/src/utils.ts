@@ -14,6 +14,7 @@ import { TORUS_NETWORK, TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants
 import { utils } from "@toruslabs/tss-client";
 import { Signer, SignerAsync } from "bitcoinjs-lib";
 import { testnet } from "bitcoinjs-lib/src/networks";
+import { debug } from "console";
 const { getDKLSCoeff, setupSockets } = utils;
 
 const network = TORUS_NETWORK.SAPPHIRE_DEVNET;
@@ -98,7 +99,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(parties, clientIndex, network);
 
       // setup mock shares, sockets and tss wasm files.
-      const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], currentSession), tss.default(tssImportUrl)]);
+      const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], randomSessionNonce.toString("hex")), tss.default(tssImportUrl)]);
 
       const participatingServerDKGIndexes = [1, 2, 3];
       const dklsCoeff = getDKLSCoeff(true, participatingServerDKGIndexes, tssShare2Index);
@@ -128,7 +129,9 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
         const serverIndex = participatingServerDKGIndexes[i];
         serverCoeffs[serverIndex] = getDKLSCoeff(false, participatingServerDKGIndexes, tssShare2Index, serverIndex).toString("hex");
       }
+      debugger;
       client.precompute(tss, { signatures, server_coeffs: serverCoeffs });
+      console.log("client is ready");
       await client.ready();
       const { r, s, recoveryParam } = await client.sign(tss as any, Buffer.from(hash).toString("base64"), true, "", "keccak256", {
         signatures,
@@ -153,7 +156,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
           return new Promise((resolve, rejects): void => {
             // setTimeout(() => {
             try {
-              debugger;
+              // debugger;
               const r = signer.sign(hash, lowR);
               resolve(r);
             } catch (e) {
