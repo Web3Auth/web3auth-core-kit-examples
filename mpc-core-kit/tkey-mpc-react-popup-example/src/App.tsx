@@ -509,107 +509,60 @@ function App() {
     return address;
   };
 
+  const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
+
   const getAccountsBTC = async () => {
-    // const privateKey = generatePrivate().toString("hex");
     const ECPair = ECPairFactory(ecc);
 
-    const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
-    const keyPair = ECPair.fromPrivateKey(Buffer.from("30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27", "hex"));
-    console.log(keyPair.compressed);
-    // mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx
+    const keyPair = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"));
+    console.log("keyPair.publicKey", keyPair.publicKey.toString("hex"));
 
-    // BTC Address ee668c37ae96fe7ee593825acfec7b27d40c711fdee77173b379801259dbb43d mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx
+    const { address } = payments.p2pkh({ pubkey: keyPair.publicKey, network: networks.testnet });
+    console.log("address", address);
 
-    const publicKey = getPubKeyPoint(new BN(privateKey, 16));
-    const publicKeyECC = getPubKeyECC(new BN(privateKey, 16));
-    // const compressedPubKey = Buffer.from(`${publicKey.x.toString(16, 64)}${publicKey.y.toString(16, 64)}`, "hex");
-    // console.log("publicKey", `${publicKey.x.toString(16, 64)}`);
-
-    const { address: btcAdress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
-    console.log("BTC Address", privateKey, btcAdress);
+    // WARNING: The code below will produce a different address!!!
+    //
+    // const publicKeyECC = getPubKeyECC(new BN(privateKey, 'hex'));
+    // console.log("publicKeyECC", publicKeyECC.toString("hex"));
+    // const { address: wrongAddress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
+    // console.log("wrongAddress", wrongAddress);
   };
 
   const bitcoinTx = async () => {
-    // 0.01105008 tBTC
     const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromPrivateKey(Buffer.from("30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27", "hex"));
-
-    const id = "99badb8a6e2bf0952a6bba65811c96de26aeb4f28559cd897d4c9203e977ee87";
-    const destinationAddress = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
-    const fromAddress = "mjXCkPiKSFHPunjckCjmJKtgaRa4PV9xsx";
-
-    const balance = 0.01105008 * 1e8;
-    // const amount = 0.0001;
-    const minerFee = 10000;
-    // const outputAmount = amount * 1e8 - minerFee;
-    // const outputNumber = 0;
-
-    const send_amount = 90000;
-    const change_amount = balance - send_amount - minerFee;
-
-    const rawTransaction = new Psbt({ network: networks.testnet });
-    const nonWitnessUtxo = Buffer.from(
-      "020000000112f915516dc54d71edbe93de50ad573203a30cbbacf89a147fc75da895f00341010000006a47304402207851d9c7cb46d0a3b938c0f541e0cd5647dffc16a4692b7d094eda62800c29d302205984f8968e7398f4f4666addc698c53d709dc4248ccffa0754a9a4d0ca509dd90121024cddb2047e64fcba8e47d81fd326f3f127479dd9c3879aae6068f06222264bedfdffffff0270dc1000000000001976a9142bec919e191a14116f0a5a632cad4cd32c3267ef88ac0f8b423a010000001976a91452a74b899130ec989673b6539c24f8b897b4840888ac1c382500",
-      "hex"
+    const keyPair = ECPair.fromPrivateKey(
+      Buffer.from(privateKey, "hex"),
+      { network: networks.testnet },
     );
 
-    rawTransaction.addInput({
-      hash: id,
+    // unspent transaction
+    const txId = "a220e3352d1241c5be72293b6870c517b2946ce5f5f6a4b310c775827abdc34e";
+
+    // fetch transaction from testnet
+    const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
+    console.log("txHex", txHex);
+
+    const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    const psbt = new Psbt({ network: networks.testnet })
+    .addInput({
+      hash: txId,
       index: 0,
-      nonWitnessUtxo,
-      sighashType: 1,
+      nonWitnessUtxo: Buffer.from(txHex, "hex"),
+    })
+    .addOutput({
+      address: outAddr,
+      value: 2e4,
     });
-    rawTransaction.addOutput({
-      address: destinationAddress,
-      value: send_amount,
-    });
-    // rawTransaction.addOutput({
-    //   address: fromAddress,
-    //   value: change_amount,
-    // });
 
-    const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+    psbt.signInput(0, keyPair);
 
-    // const alice = ECPair.fromWIF("L2uPYXe17xSTqbCjZvL2DsyXPCbXspvcu5mHLDYUgzdUbZGSKrSr");
-    // const psbt = new Psbt();
-    // psbt.addInput({
-    //   hash: "7d067b4a697a09d2c3cff7d4d9506c9955e93bff41bf82d439da7d030382bc3e",
-    //   index: 0,
-    //   nonWitnessUtxo: Buffer.from(
-    //     "0200000001f9f34e95b9d5c8abcd20fc5bd4a825d1517be62f0f775e5f36da944d9" +
-    //       "452e550000000006b483045022100c86e9a111afc90f64b4904bd609e9eaed80d48" +
-    //       "ca17c162b1aca0a788ac3526f002207bb79b60d4fc6526329bf18a77135dc566020" +
-    //       "9e761da46e1c2f1152ec013215801210211755115eabf846720f5cb18f248666fec" +
-    //       "631e5e1e66009ce3710ceea5b1ad13ffffffff01905f0100000000001976a9148bb" +
-    //       "c95d2709c71607c60ee3f097c1217482f518d88ac00000000",
-    //     "hex"
-    //   ),
-    //   sighashType: 1,
-    // });
-
-    // psbt.addOutput({
-    //   address: "1KRMKfeZcmosxALVYESdPNez1AP1mEtywp",
-    //   value: 80000,
-    // });
-    // psbt.signInput(0, alice);
-    // console.log("signed", psbt.validateSignaturesOfInput(0, validator));
-
-    // const data = rawTransaction.toBase64();
-    // const signer1 = Psbt.fromBase64(data);
-    // signer1.signAllInputs(keyPair);
-
-    // console.log("Signer 1", signer1.toBase64());
-    // console.log("Signer 1", signer1.validateSignaturesOfInput(0, validator));
-    rawTransaction.signInput(0, keyPair);
-    rawTransaction.validateSignaturesOfInput(0, validator);
-    // rawTransaction.finalizeAllInputs();
-
-    // const signed_tx = rawTransaction.extractTransaction().toHex();
-    // console.log("Signed Raw Transaction:", signed_tx);
-
-    // const builder = new Transaction();
-    // builder.addInput(Buffer.from(id, "hex"), outputNumber);
-    // builder.addOutput(address.toOutputScript(destinationAddress, networks.testnet), outputAmount);
+    const validator = (
+      pubkey: Buffer,
+      msghash: Buffer,
+      signature: Buffer,
+    ): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+    psbt.validateSignaturesOfInput(0, validator);
+    psbt.finalizeAllInputs();
   };
 
   const getBalance = async () => {
