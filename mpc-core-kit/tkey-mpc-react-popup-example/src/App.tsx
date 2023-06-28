@@ -465,10 +465,8 @@ function App() {
       uiConsole("tKey not initialized yet");
       return;
     }
-    // const keyDetails = await tKey.getKeyDetails();
 
     uiConsole("TSS Public Key: ", tKey.getTSSPub(), "With Factors/Shares:", tKey.getMetadata().getShareDescription());
-    // return keyDetails;
   };
 
   const logout = (): void => {
@@ -521,65 +519,11 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    // const address = ECPair.fromPublicKey(web3.publicKey);
     uiConsole("Bitcoin address", signingParams.btcAddress);
     return signingParams.btcAddress;
   };
 
   const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
-
-  const getAccountsBTC = async () => {
-    const keyPair = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"));
-    console.log("keyPair.publicKey", keyPair.publicKey.toString("hex"));
-
-    const { address } = payments.p2pkh({ pubkey: keyPair.publicKey, network: networks.testnet });
-    console.log("address", address);
-    // mqtWdwCmPcgVcvwRrusALyXyQniVTq5gnu
-
-    // WARNING: The code below will produce a different address!!!
-    //
-    let key2 = "045096027229bbea7aeb34a8c6658db7eba26c130bc0770a452f008ca745863d5c3455f2c14365e4695650f7b8967117fc38e00581ffe42e80b0cef0640e91de3f";
-    // let compress = ecc.pointCompress(Buffer.from(key2, "hex"), true);
-    const publicKeyECC = getPubKeyECC(new BN(privateKey, "hex"));
-    const publicKey2 = ECPair.fromPublicKey(Buffer.from(key2, "hex"), { network: networks.testnet, compressed: true });
-    const textpubkey = publicKey2.publicKey.toString("hex");
-    console.log("publicKeyECC", textpubkey);
-    // const { address: wrongAddress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
-    // console.log("wrongAddress", wrongAddress);
-  };
-
-  const bitcoinTx = async () => {
-    // const keyPair = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"), { network: networks.testnet });
-
-    // unspent transaction
-    const txId = "f836024a6bc965c7a1e6ecb60e6e469d9538ca19f77aa6100fc449cad8caa74f";
-
-    // fetch transaction from testnet
-    const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
-    console.log("txHex", txHex);
-
-    
-    const outAddr = await getAccounts();
-    // const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
-    const psbt = new Psbt({ network: networks.testnet })
-      .addInput({
-        hash: txId,
-        index: 1,
-        nonWitnessUtxo: Buffer.from(txHex, "hex"),
-      })
-      .addOutput({
-        address: outAddr,
-        value: 20,
-      });
-
-    // const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
-    // encode to send tx to signer
-    const hexTx = psbt.toBase64();
-
-    // psbt.signInput(0, keyPair);
-    // psbt.validateSignaturesOfInput(0, validator);
-    // psbt.finalizeAllInputs();
-  };
 
   const getBalance = async () => {
     if (!web3) {
@@ -639,10 +583,8 @@ function App() {
       return }
     
     // unspent transaction
-    // const txId = "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6";
-    const txId = bitcoinUTXID;
-    // const total = 1423122; // 0.01423122
-    const total = 170; // 0.01423122 // 0.0000017
+    const txId = bitcoinUTXID; // looks like this "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6"
+    const total = 170; // 0.0000017
     const value = 20;
     const miner = 50;
 
@@ -650,7 +592,6 @@ function App() {
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
     console.log("txHex", txHex);
 
-    // const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
     const outAddr = await getAccounts();
     console.log(outAddr, typeof outAddr)
     const psbt = new Psbt({ network: networks.testnet })
@@ -765,19 +706,6 @@ function App() {
       <button onClick={() => initializeNewKey(true)} className="card">
         MockLogin
       </button>
-
-      {/* <h2 className="subtitle">Bitcoin</h2> */}
-      {/* <div className="flex-container">
-        <button onClick={getAccountsBTC} className="card">
-          Get Accounts
-        </button>
-      </div>
-
-      <div className="flex-container">
-        <button onClick={bitcoinTx} className="card">
-          BTC tx
-        </button>
-      </div> */}
 
       <p>Mock Login Seed Email</p>
       <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
