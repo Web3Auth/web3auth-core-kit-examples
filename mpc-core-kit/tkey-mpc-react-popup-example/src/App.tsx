@@ -15,6 +15,7 @@ import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
 import { testnet } from "bitcoinjs-lib/src/networks";
 import { p2pkh } from "bitcoinjs-lib/src/payments";
+import { sign } from "crypto";
 
 const { getTSSPubKey } = utils;
 const ECPair = ECPairFactory(ecc);
@@ -516,8 +517,8 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    const address = web3.publicKey;
-    uiConsole(address);
+    // const address = ECPair.fromPublicKey(web3.publicKey);
+    uiConsole("Bitcoin address", signingParams.btcAddress);
     return address;
   };
 
@@ -621,9 +622,12 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    const { btcAddress } = signingParams;
+    // const { btcAddress } = signingParams;
     // unspent transaction
-    const txId = "f836024a6bc965c7a1e6ecb60e6e469d9538ca19f77aa6100fc449cad8caa74f";
+    const txId = "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6";
+    const total = 1423122; // 0.01423122
+    const value = 20;
+    const miner = 1000;
 
     // fetch transaction from testnet
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
@@ -633,29 +637,27 @@ function App() {
     const psbt = new Psbt({ network: networks.testnet })
       .addInput({
         hash: txId,
-        index: 1,
+        index: 0,
         nonWitnessUtxo: Buffer.from(txHex, "hex"),
       })
       .addOutput({
         address: outAddr,
-        value: 20,
+        value: value,
+      })
+      .addOutput({
+        address: signingParams.btcAddress,
+        value: total - value - miner,
       });
 
-    // const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
-    // const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
-    // Submit transaction to the blockchain and wait for it to be mined
     uiConsole("Sending transaction...");
 
     await psbt.signInputAsync(0, web3);
     psbt.validateSignaturesOfInput(0, BTCValidator);
-    console.log("psbt", psbt.validateSignaturesOfInput(0, BTCValidator));
+    const validation = psbt.validateSignaturesOfInput(0, BTCValidator);
+    uiConsole(validation ? "Validated" : "failed");
+    console.log(psbt.finalizeAllInputs().extractTransaction().toHex());
 
-    // const receipt = await web3.eth.sendTransaction({
-    //   from: fromAddress,
-    //   to: destination,
-    //   value: amount,
-    // });
-    // uiConsole(receipt);
+    // add broadcast transaction
   };
 
   const loggedInView = (
@@ -702,21 +704,21 @@ function App() {
       </div>
       <h2 className="subtitle">Blockchain Calls</h2>
       <div className="flex-container">
-        <button onClick={getChainID} className="card">
+        {/* <button onClick={getChainID} className="card">
           Get Chain ID
-        </button>
+        </button> */}
 
         <button onClick={getAccounts} className="card">
           Get Accounts
         </button>
 
-        <button onClick={getBalance} className="card">
+        {/* <button onClick={getBalance} className="card">
           Get Balance
-        </button>
+        </button> */}
 
-        <button onClick={signMessage} className="card">
+        {/* <button onClick={signMessage} className="card">
           Sign Message
-        </button>
+        </button> */}
 
         <button onClick={sendTransaction} className="card">
           Send Transaction
