@@ -738,8 +738,8 @@ function App() {
         MockLogin
       </button>
 
-      <h2 className="subtitle">Bitcoin</h2>
-      <div className="flex-container">
+      {/* <h2 className="subtitle">Bitcoin</h2> */}
+      {/* <div className="flex-container">
         <button onClick={getAccountsBTC} className="card">
           Get Accounts
         </button>
@@ -749,7 +749,7 @@ function App() {
         <button onClick={bitcoinTx} className="card">
           BTC tx
         </button>
-      </div>
+      </div> */}
 
       <p>Mock Login Seed Email</p>
       <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
@@ -762,7 +762,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
           Web3Auth Core Kit tKey MPC Beta
         </a>{" "}
-        & ReactJS Ethereum Example
+        & ReactJS Bitcoin Example
       </h1>
 
       <div className="grid">{user ? loggedInView : unloggedInView}</div>
