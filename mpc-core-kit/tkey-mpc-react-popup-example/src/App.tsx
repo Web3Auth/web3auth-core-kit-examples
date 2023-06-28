@@ -13,7 +13,7 @@ import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
 import { address, networks, payments, Psbt, Transaction } from "bitcoinjs-lib";
 import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
-import { testnet } from "bitcoinjs-lib/src/networks";
+import { bitcoin, testnet } from "bitcoinjs-lib/src/networks";
 import { p2pkh } from "bitcoinjs-lib/src/payments";
 import { sign } from "crypto";
 
@@ -49,6 +49,8 @@ function App() {
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
   const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
+  const [bitcoinUTXID, setBitcoinUTXID] = useState<string | null>(null);
+  const [fundingTxIndex, setFundingTxIndex] = useState<string | null>(null);
   const [sessionManager, setSessionManager] = useState<OpenloginSessionManager<typeof signingParams>>(new OpenloginSessionManager({}));
 
   // Init Service Provider inside the useEffect Method
@@ -178,7 +180,9 @@ function App() {
     const localMockVerifierId = localStorage.getItem("mockVerifierId");
     if (localMockVerifierId) verifierId = localMockVerifierId;
     else verifierId = Math.round(Math.random() * 100000) + "@example.com";
-    setMockVerifierId(verifierId);
+    setMockVerifierId(verifierId);  
+    setBitcoinUTXID("Enter UTXID here")
+    setFundingTxIndex("FundingTxIndex (often 0)")
   }, []);
 
   const triggerMockLogin = async () => {
@@ -519,7 +523,7 @@ function App() {
     }
     // const address = ECPair.fromPublicKey(web3.publicKey);
     uiConsole("Bitcoin address", signingParams.btcAddress);
-    return address;
+    return signingParams.btcAddress;
   };
 
   const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
@@ -554,7 +558,9 @@ function App() {
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
     console.log("txHex", txHex);
 
-    const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    
+    const outAddr = await getAccounts();
+    // const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
     const psbt = new Psbt({ network: networks.testnet })
       .addInput({
         hash: txId,
@@ -622,22 +628,35 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    // const { btcAddress } = signingParams;
+    if (bitcoinUTXID?.length !== 64) {
+      uiConsole("invalid bitcoin utxid");
+      return;
+    }
+    try {
+      parseInt(fundingTxIndex as string);
+    } catch (e) { 
+      uiConsole("invalid funding tx index");
+      return }
+    
     // unspent transaction
-    const txId = "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6";
-    const total = 1423122; // 0.01423122
+    // const txId = "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6";
+    const txId = bitcoinUTXID;
+    // const total = 1423122; // 0.01423122
+    const total = 170; // 0.01423122 // 0.0000017
     const value = 20;
-    const miner = 1000;
+    const miner = 50;
 
     // fetch transaction from testnet
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
     console.log("txHex", txHex);
 
-    const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    // const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    const outAddr = await getAccounts();
+    console.log(outAddr, typeof outAddr)
     const psbt = new Psbt({ network: networks.testnet })
       .addInput({
         hash: txId,
-        index: 0,
+        index: parseInt(fundingTxIndex as string),
         nonWitnessUtxo: Buffer.from(txHex, "hex"),
       })
       .addOutput({
@@ -649,15 +668,14 @@ function App() {
         value: total - value - miner,
       });
 
-    uiConsole("Sending transaction...");
-
+    uiConsole("Signing transaction...");
     await psbt.signInputAsync(0, web3);
     psbt.validateSignaturesOfInput(0, BTCValidator);
     const validation = psbt.validateSignaturesOfInput(0, BTCValidator);
-    uiConsole(validation ? "Validated" : "failed");
-    console.log(psbt.finalizeAllInputs().extractTransaction().toHex());
-
-    // add broadcast transaction
+    const signedTransaction = psbt.finalizeAllInputs().extractTransaction().toHex()
+    uiConsole("Signed Transaction: ", signedTransaction, "Copy the above into https://blockstream.info/testnet/tx/push");
+    console.log(validation ? "Validated" : "failed");
+    console.log("signedTransaction: ", signedTransaction );
   };
 
   const loggedInView = (
@@ -709,7 +727,12 @@ function App() {
         </button> */}
 
         <button onClick={getAccounts} className="card">
-          Get Accounts
+          Get Bitcoin Address
+        </button>
+
+
+        <button onClick={()=> window.open("https://coinfaucet.eu/en/btc-testnet/", "_blank")} className="card">
+          Get Testnet Bitcoin from Faucet
         </button>
 
         {/* <button onClick={getBalance} className="card">
@@ -720,8 +743,11 @@ function App() {
           Sign Message
         </button> */}
 
+      <input value={bitcoinUTXID as string} onChange={(e) => setBitcoinUTXID(e.target.value)}></input>
+      <input value={fundingTxIndex as string} onChange={(e) => setFundingTxIndex(e.target.value)}></input>
+
         <button onClick={sendTransaction} className="card">
-          Send Transaction
+          Sign PSBT Transaction
         </button>
       </div>
 
