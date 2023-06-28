@@ -99,7 +99,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(parties, clientIndex, network);
   
       // setup mock shares, sockets and tss wasm files.
-      const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], currentSession), tss.default(tssImportUrl)]);
+      const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], randomSessionNonce.toString("hex")), tss.default(tssImportUrl)]);
 
       const participatingServerDKGIndexes = [1, 2, 3];
       const dklsCoeff = getDKLSCoeff(true, participatingServerDKGIndexes, tssShare2Index);
