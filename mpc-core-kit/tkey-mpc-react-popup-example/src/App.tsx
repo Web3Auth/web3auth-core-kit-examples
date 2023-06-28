@@ -13,11 +13,11 @@ import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
 import { address, networks, payments, Psbt, Transaction } from "bitcoinjs-lib";
 import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
-import { TinySecp256k1Interface } from "bitcoinjs-lib/src/types";
-import { pbkdf2Sync, sign } from "crypto";
-import { bitcoin } from "bitcoinjs-lib/src/networks";
+import { testnet } from "bitcoinjs-lib/src/networks";
+import { p2pkh } from "bitcoinjs-lib/src/payments";
 
 const { getTSSPubKey } = utils;
+const ECPair = ECPairFactory(ecc);
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -41,6 +41,7 @@ function App() {
   const [user, setUser] = useState<any>(null);
   const [metadataKey, setMetadataKey] = useState<any>();
   const [localFactorKey, setLocalFactorKey] = useState<BN | null>(null);
+  const [tssPubKey, setTssPubkey] = useState<any>(null);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
@@ -307,8 +308,13 @@ function App() {
 
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
       const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2PubKey, tssShare2Index);
-      const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
+      // console.log("tssPub", tssPubKey);
 
+      const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
+      const prefixedCompressedTSSPubKey = Buffer.from(`04${compressedTSSPubKey.toString("hex")}`, "hex");
+      const ECPubKey = ECPair.fromPublicKey(prefixedCompressedTSSPubKey, { network: testnet });
+      const { address: btcAddress } = p2pkh({ pubkey: ECPubKey.publicKey, network: testnet });
+      // console.log(btcAddress);
       // 5. save factor key and other metadata
       if (
         !existingUser ||
@@ -323,6 +329,8 @@ function App() {
       const signingParams = {
         oAuthShare: loginResponse.privateKey,
         factorKey,
+        btcAddress,
+        btcPublicKey: ECPubKey.publicKey,
         tssNonce,
         tssShare2,
         tssShare2Index,
@@ -339,6 +347,8 @@ function App() {
         "Successfully logged in & initialised MPC TKey SDK",
         "TSS Public Key: ",
         tKey.getTSSPub(),
+        "BTC Address:",
+        btcAddress,
         "Metadata Key",
         metadataKey.privKey.toString("hex"),
         "With Factors/Shares:",
@@ -504,7 +514,7 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    const address = (await web3.eth.getAccounts())[0];
+    const address = web3.publicKey;
     uiConsole(address);
     return address;
   };
@@ -512,31 +522,30 @@ function App() {
   const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
 
   const getAccountsBTC = async () => {
-    const ECPair = ECPairFactory(ecc);
-
     const keyPair = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"));
     console.log("keyPair.publicKey", keyPair.publicKey.toString("hex"));
 
     const { address } = payments.p2pkh({ pubkey: keyPair.publicKey, network: networks.testnet });
     console.log("address", address);
+    // mqtWdwCmPcgVcvwRrusALyXyQniVTq5gnu
 
     // WARNING: The code below will produce a different address!!!
     //
-    // const publicKeyECC = getPubKeyECC(new BN(privateKey, 'hex'));
-    // console.log("publicKeyECC", publicKeyECC.toString("hex"));
+    let key2 = "045096027229bbea7aeb34a8c6658db7eba26c130bc0770a452f008ca745863d5c3455f2c14365e4695650f7b8967117fc38e00581ffe42e80b0cef0640e91de3f";
+    // let compress = ecc.pointCompress(Buffer.from(key2, "hex"), true);
+    const publicKeyECC = getPubKeyECC(new BN(privateKey, "hex"));
+    const publicKey2 = ECPair.fromPublicKey(Buffer.from(key2, "hex"), { network: networks.testnet, compressed: true });
+    const textpubkey = publicKey2.publicKey.toString("hex");
+    console.log("publicKeyECC", textpubkey);
     // const { address: wrongAddress } = payments.p2pkh({ pubkey: publicKeyECC, network: networks.testnet });
     // console.log("wrongAddress", wrongAddress);
   };
 
   const bitcoinTx = async () => {
-    const ECPair = ECPairFactory(ecc);
-    const keyPair = ECPair.fromPrivateKey(
-      Buffer.from(privateKey, "hex"),
-      { network: networks.testnet },
-    );
+    // const keyPair = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"), { network: networks.testnet });
 
     // unspent transaction
-    const txId = "a220e3352d1241c5be72293b6870c517b2946ce5f5f6a4b310c775827abdc34e";
+    const txId = "f836024a6bc965c7a1e6ecb60e6e469d9538ca19f77aa6100fc449cad8caa74f";
 
     // fetch transaction from testnet
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
@@ -544,25 +553,23 @@ function App() {
 
     const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
     const psbt = new Psbt({ network: networks.testnet })
-    .addInput({
-      hash: txId,
-      index: 0,
-      nonWitnessUtxo: Buffer.from(txHex, "hex"),
-    })
-    .addOutput({
-      address: outAddr,
-      value: 2e4,
-    });
+      .addInput({
+        hash: txId,
+        index: 1,
+        nonWitnessUtxo: Buffer.from(txHex, "hex"),
+      })
+      .addOutput({
+        address: outAddr,
+        value: 20,
+      });
 
-    psbt.signInput(0, keyPair);
+    // encode to send tx to signer
+    const hexTx = psbt.toBase64();
 
-    const validator = (
-      pubkey: Buffer,
-      msghash: Buffer,
-      signature: Buffer,
-    ): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
-    psbt.validateSignaturesOfInput(0, validator);
-    psbt.finalizeAllInputs();
+    // psbt.signInput(0, keyPair);
+    // const validator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+    // psbt.validateSignaturesOfInput(0, validator);
+    // psbt.finalizeAllInputs();
   };
 
   const getBalance = async () => {
@@ -612,19 +619,38 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    const fromAddress = (await web3.eth.getAccounts())[0];
+    const { btcAddress } = signingParams;
+    // unspent transaction
+    const txId = "f836024a6bc965c7a1e6ecb60e6e469d9538ca19f77aa6100fc449cad8caa74f";
 
-    const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
-    const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
+    // fetch transaction from testnet
+    const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
+    console.log("txHex", txHex);
 
+    const outAddr = "mvu3DMxuHNsp58qKtiiT4rBUTmpJJRf3yx";
+    const psbt = new Psbt({ network: networks.testnet })
+      .addInput({
+        hash: txId,
+        index: 1,
+        nonWitnessUtxo: Buffer.from(txHex, "hex"),
+      })
+      .addOutput({
+        address: outAddr,
+        value: 20,
+      });
+
+    // const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
+    // const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
     // Submit transaction to the blockchain and wait for it to be mined
-    uiConsole("Sending transaction...");
-    const receipt = await web3.eth.sendTransaction({
-      from: fromAddress,
-      to: destination,
-      value: amount,
-    });
-    uiConsole(receipt);
+    uiConsole("Sending transaction...", web3.publicKey);
+
+    await psbt.signInputAsync(0, web3);
+    // const receipt = await web3.eth.sendTransaction({
+    //   from: fromAddress,
+    //   to: destination,
+    //   value: amount,
+    // });
+    // uiConsole(receipt);
   };
 
   const loggedInView = (

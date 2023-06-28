@@ -12,6 +12,8 @@ import type { provider } from "web3-core";
 import { fetchLocalConfig } from "@toruslabs/fnd-base";
 import { TORUS_NETWORK, TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
 import { utils } from "@toruslabs/tss-client";
+import { Signer, SignerAsync } from "bitcoinjs-lib";
+import { testnet } from "bitcoinjs-lib/src/networks";
 const { getDKLSCoeff, setupSockets } = utils;
 
 const network = TORUS_NETWORK.SAPPHIRE_DEVNET;
@@ -26,7 +28,6 @@ const DELIMITERS = {
   Delimiter4: "\u0017",
 };
 
-
 export function getEcCrypto(): any {
   // eslint-disable-next-line new-cap
   return new EC.ec("secp256k1");
@@ -37,11 +38,11 @@ export function generateTSSEndpoints(parties: number, clientIndex: number, netwo
   console.log("generateEndpoints node indexes", nodeIndexes);
   const networkConfig = fetchLocalConfig(network);
   if (!networkConfig) {
-    throw new Error(`Invalid network: ${network}`)
+    throw new Error(`Invalid network: ${network}`);
   }
 
   if (!networkConfig.torusNodeTSSEndpoints) {
-    throw new Error(`Invalid network: ${network}, endpoint not found`)
+    throw new Error(`Invalid network: ${network}, endpoint not found`);
   }
   const endpoints = [];
   const tssWSEndpoints = [];
@@ -54,7 +55,7 @@ export function generateTSSEndpoints(parties: number, clientIndex: number, netwo
       endpoints.push(null);
       tssWSEndpoints.push(null);
     } else {
-      endpoints.push(networkConfig.torusNodeTSSEndpoints[nodeIndexes[i] ?  nodeIndexes[i] - 1 : i]);
+      endpoints.push(networkConfig.torusNodeTSSEndpoints[nodeIndexes[i] ? nodeIndexes[i] - 1 : i]);
       tssWSEndpoints.push(networkConfig.torusNodeEndpoints[nodeIndexes[i] ? nodeIndexes[i] - 1 : i]);
     }
   }
@@ -62,7 +63,7 @@ export function generateTSSEndpoints(parties: number, clientIndex: number, netwo
   return {
     endpoints: endpoints,
     tssWSEndpoints: tssWSEndpoints,
-    partyIndexes: partyIndexes
+    partyIndexes: partyIndexes,
   };
 }
 
@@ -70,25 +71,23 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
   try {
     const ethereumSigningProvider = new EthereumSigningProvider({
       config: {
-        chainConfig
-      }
+        chainConfig,
+      },
     });
 
-    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures} = signingParams;
+    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, btcAddress, btcPublicKey } = signingParams;
+    // console.log("signingParams", compressedTSSPubKey.toString("hex"));
 
     const { verifier, verifierId } = loginReponse.userInfo;
 
     const vid = `${verifier}${DELIMITERS.Delimiter1}${verifierId}`;
     const sessionId = `${vid}${DELIMITERS.Delimiter2}default${DELIMITERS.Delimiter3}${tssNonce}${DELIMITERS.Delimiter4}`;
 
-
     /*
     pass user's private key here.
     after calling setupProvider, we can use
     */
-    const sign = async (msgHash: Buffer) => {
-
-
+    const sign = async (hash: Buffer, lowR?: boolean | undefined) => {
       const randomSessionNonce = keccak256(generatePrivate().toString("hex") + Date.now());
 
       // session is needed for authentication to the web3auth infrastructure holding the factor 1
@@ -97,7 +96,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       // 1. setup
       // generate endpoints for servers
       const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(parties, clientIndex, network);
-  
+
       // setup mock shares, sockets and tss wasm files.
       const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], currentSession), tss.default(tssImportUrl)]);
 
@@ -131,11 +130,12 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       }
       client.precompute(tss, { signatures, server_coeffs: serverCoeffs });
       await client.ready();
-      const { r, s, recoveryParam } = await client.sign(tss as any, Buffer.from(msgHash).toString("base64"), true, "", "keccak256", {
+      const { r, s, recoveryParam } = await client.sign(tss as any, Buffer.from(hash).toString("base64"), true, "", "keccak256", {
         signatures,
       });
       await client.cleanup(tss, { signatures, server_coeffs: serverCoeffs });
-      return { v: recoveryParam, r: Buffer.from(r.toString("hex"), "hex"), s: Buffer.from(s.toString("hex"), "hex") };
+      const sig = { v: recoveryParam, r: Buffer.from(r.toString("hex"), "hex"), s: Buffer.from(s.toString("hex"), "hex") };
+      return Promise.resolve(Buffer.from("0", "hex"));
     };
 
     if (!compressedTSSPubKey) {
@@ -146,16 +146,38 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       return compressedTSSPubKey;
     };
 
-    await ethereumSigningProvider.setupProvider({ sign, getPublic });
-    console.log(ethereumSigningProvider.provider);
-    const web3 = new Web3(ethereumSigningProvider.provider as provider);
-    return web3;
+    const toAsyncSigner = (signer: Signer): SignerAsync => {
+      const ret: SignerAsync = {
+        publicKey: signer.publicKey,
+        sign: (hash: Buffer, lowR?: boolean | undefined): Promise<Buffer> => {
+          return new Promise((resolve, rejects): void => {
+            // setTimeout(() => {
+            try {
+              debugger;
+              const r = signer.sign(hash, lowR);
+              resolve(r);
+            } catch (e) {
+              rejects(e);
+            }
+            // }, 10);
+          });
+        },
+        network: testnet,
+      };
+      return ret;
+    };
+
+    const btcSigner = toAsyncSigner({ publicKey: btcPublicKey, sign: sign as any });
+    return btcSigner;
+    // await ethereumSigningProvider.setupProvider({ sign, getPublic });
+    // // console.log(ethereumSigningProvider.provider);
+    // const web3 = new Web3(ethereumSigningProvider.provider as provider);
+    // return web3;
   } catch (e) {
     console.error(e);
     return null;
   }
 };
-
 
 export type FactorKeyCloudMetadata = {
   deviceShare: ShareStore;
@@ -184,7 +206,6 @@ const fetchDeviceShareFromTkey = async (tKey: any) => {
     throw new Error(err);
   }
 };
-
 
 export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: BN, tssIndex: number, factorKeyDescription: string) => {
   if (!tKey) {
@@ -234,7 +255,7 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
   const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
   const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
   const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-  
+
   const factorEncs = JSON.parse(JSON.stringify(tKey.metadata.factorEncs[tKey.tssTag]));
   const factorPubID = newFactorPub.x.toString(16, 64);
   factorEncs[factorPubID] = {
@@ -254,10 +275,16 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
     tssTag: tKey.tssTag,
     factorPubs: updatedFactorPubs,
     factorEncs,
-  });    
+  });
 };
 
-export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN, signatures: any) => {
+export const addNewTSSShareAndFactor = async (
+  tKey: any,
+  newFactorPub: Point,
+  newFactorTSSIndex: number,
+  factorKeyForExistingTSSShare: BN,
+  signatures: any
+) => {
   try {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot add factor pub");
@@ -268,25 +295,25 @@ export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, ne
     if (!tKey.metadata.factorPubs || !Array.isArray(tKey.metadata.factorPubs[tKey.tssTag])) {
       throw new Error("factorPubs does not exist");
     }
-  
+
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
     const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
     const existingTSSIndexes = existingFactorPubs.map((fb: any) => tKey.getFactorEncs(fb).tssIndex);
     const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
     const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
-  
+
     tKey.metadata.addTSSData({
       tssTag: tKey.tssTag,
       factorPubs: updatedFactorPubs,
     });
-  
+
     const rssNodeDetails = await tKey._getRssNodeDetails();
     const { serverEndpoints, serverPubKeys, serverThreshold } = rssNodeDetails;
     const randomSelectedServers = randomSelection(
       new Array(rssNodeDetails.serverEndpoints.length).fill(null).map((_, i) => i + 1),
       Math.ceil(rssNodeDetails.serverEndpoints.length / 2)
     );
-  
+
     const verifierNameVerifierId = tKey.serviceProvider.getVerifierNameVerifierId();
     await tKey._refreshTSSShares(true, tssShare, tssIndex, updatedFactorPubs, updatedTSSIndexes, verifierNameVerifierId, {
       selectedServers: randomSelectedServers,
@@ -295,8 +322,7 @@ export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, ne
       serverThreshold,
       authSignatures: signatures,
     });
-  }
-  catch(err) {
+  } catch (err) {
     console.error(err);
     throw err;
   }
