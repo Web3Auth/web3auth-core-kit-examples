@@ -44,19 +44,17 @@ function App() {
     }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const provider = await coreKitInstance.connect(
-        {
-          aggregateVerifierIdentifier: 'aggregate-sapphire',
-          aggregateVerifierType: 'single_id_verifier',
-          subVerifierDetailsArray: [
-            {
-              typeOfLogin: 'google',
-              verifier: 'w3a-google',
-              clientId: '774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-            }
-          ]
-        }
-      );
+      const provider = await coreKitInstance.connect({
+        aggregateVerifierIdentifier: "aggregate-sapphire",
+        aggregateVerifierType: "single_id_verifier",
+        subVerifierDetailsArray: [
+          {
+            typeOfLogin: "google",
+            verifier: "w3a-google",
+            clientId: "774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com",
+          },
+        ],
+      });
 
       if (provider) setProvider(provider);
     } catch (error) {
