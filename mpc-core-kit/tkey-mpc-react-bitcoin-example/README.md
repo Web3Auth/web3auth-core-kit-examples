@@ -1,4 +1,4 @@
-# Web3Auth MPC Beta React Popup Example
+# Web3Auth MPC Beta React Bitcoin Example
 
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/tkey)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's tKey MPC Beta in a React environ
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/tkey/tkey-mpc-beta-react-popup-example w3a-tkey-mpc-beta-example
+npx degit Web3Auth/web3auth-core-kit-examples/tkey/tkey-mpc-beta-react-bitcoin-example w3a-tkey-mpc-bitcoin-example
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-tkey-mpc-beta-example
+cd w3a-tkey-mpc-bitcoin-example
 npm install
 npm run start
 # or
-cd w3a-tkey-mpc-beta-example
+cd w3a-tkey-mpc-bitcoin-example
 yarn
 yarn start
 ```
