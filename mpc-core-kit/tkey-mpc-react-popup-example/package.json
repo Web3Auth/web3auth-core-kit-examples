@@ -27,7 +27,7 @@
 		"html-webpack-plugin": "^5.5.0",
 		"jsrsasign": "^10.6.1",
 		"keccak256": "^1.0.6",
-		"@types/jest": "^27.5.2",
+		"@types/jest": "^29.5.2",
 		"@types/node": "^17.0.45",
 		"@types/react": "^18.0.25",
 		"@types/react-dom": "^18.0.9",
