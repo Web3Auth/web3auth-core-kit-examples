@@ -1,10 +1,10 @@
-# Web3Auth iOS x Firebase Example
+# Web3Auth SFA iOS x Firebase Example
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/ios)
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-ios)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://web3auth.io/community)
 
 
-[Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
+[Join our Community Portal](https://web3auth.io/community) to get support and stay up to date with the latest news and updates.
 
 This example demonstrates how to use Web3Auth in iOS.
 
@@ -13,13 +13,13 @@ This example demonstrates how to use Web3Auth in iOS.
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/ios/ios-firebase-example w3a-ios-firebase
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-ios/ios-sfa-firebase-example w3a-sfa-ios-firebase
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-ios-firebase
+cd w3a-sfa-ios-firebase
 # run project in Xcode
 ```
 
