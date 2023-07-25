@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "appauth-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/openid/AppAuth-iOS.git",
+      "state" : {
+        "revision" : "71cde449f13d453227e687458144bde372d30fc7",
+        "version" : "1.6.2"
+      }
+    },
+    {
       "identity" : "bigint",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/attaswift/BigInt",
@@ -23,17 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
-        "revision" : "eee9ad754926c40a0f7e73f152357d37b119b7fa",
-        "version" : "1.7.1"
-      }
-    },
-    {
-      "identity" : "customauth-swift-sdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/customauth-swift-sdk",
-      "state" : {
-        "branch" : "master",
-        "revision" : "db234de0aed06f0f0e9112066b754fe193ea7209"
+        "revision" : "32f641cf24fc7abc1c591a2025e9f2f572648b0f",
+        "version" : "1.7.2"
       }
     },
     {
@@ -82,6 +82,15 @@
       }
     },
     {
+      "identity" : "googlesignin-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/GoogleSignIn-iOS",
+      "state" : {
+        "revision" : "7932d33686c1dc4d7df7a919aae47361d1cdfda4",
+        "version" : "7.0.0"
+      }
+    },
+    {
       "identity" : "googleutilities",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
@@ -109,12 +118,30 @@
       }
     },
     {
+      "identity" : "gtmappauth",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/GTMAppAuth.git",
+      "state" : {
+        "revision" : "cee3c709307912d040bd1e06ca919875a92339c6",
+        "version" : "2.0.0"
+      }
+    },
+    {
       "identity" : "jwtdecode.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/auth0/JWTDecode.swift.git",
+      "location" : "https://github.com/auth0/JWTDecode.swift",
       "state" : {
-        "revision" : "3cd207fb9e943b6168a117baa3936c823204c2dc",
-        "version" : "2.6.3"
+        "revision" : "58af7278797871e460d79496621b3e5366b865b2",
+        "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "keychain-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/evgenyneu/keychain-swift.git",
+      "state" : {
+        "revision" : "d108a1fa6189e661f91560548ef48651ed8d93b9",
+        "version" : "20.0.0"
       }
     },
     {
@@ -124,15 +151,6 @@
       "state" : {
         "revision" : "0706abcc6b0bd9cedfbb015ba840e4a780b5159b",
         "version" : "1.22.2"
-      }
-    },
-    {
-      "identity" : "libtkey-pkg",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/libtkey-pkg/",
-      "state" : {
-        "branch" : "master",
-        "revision" : "54452e80d237615b2615b1d0b41802e6682ed762"
       }
     },
     {
@@ -163,6 +181,24 @@
       }
     },
     {
+      "identity" : "session-manager-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Web3Auth/session-manager-swift.git",
+      "state" : {
+        "revision" : "c35ff97dededda353279111d0ee8468eac46213a",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "single-factor-auth-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c5eb96594103b3753330959c57791346d6c9b7d3"
+      }
+    },
+    {
       "identity" : "swift-protobuf",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
@@ -172,12 +208,21 @@
       }
     },
     {
+      "identity" : "tkey-rust-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/torusresearch/tkey-rust-ios",
+      "state" : {
+        "branch" : "master",
+        "revision" : "5ddc5ea6dea44cc84fa8d2aee7cb24cc3f5f9f49"
+      }
+    },
+    {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "902bf105ecfb5cb83dc1911692163289633316f5",
-        "version" : "4.0.0"
+        "revision" : "93823201f248ce15dab59c027790da4b73375aed",
+        "version" : "5.0.0"
       }
     },
     {

@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
-        "revision" : "eee9ad754926c40a0f7e73f152357d37b119b7fa",
-        "version" : "1.7.1"
+        "revision" : "32f641cf24fc7abc1c591a2025e9f2f572648b0f",
+        "version" : "1.7.2"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/torusresearch/customauth-swift-sdk",
       "state" : {
         "branch" : "master",
-        "revision" : "db234de0aed06f0f0e9112066b754fe193ea7209"
+        "revision" : "a894ed86d3688d141626fd93580a13bd8d29fefa"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/JWTDecode.swift.git",
       "state" : {
-        "revision" : "3cd207fb9e943b6168a117baa3936c823204c2dc",
-        "version" : "2.6.3"
+        "revision" : "58af7278797871e460d79496621b3e5366b865b2",
+        "version" : "3.1.0"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/torusresearch/libtkey-pkg/",
       "state" : {
         "branch" : "master",
-        "revision" : "54452e80d237615b2615b1d0b41802e6682ed762"
+        "revision" : "5ddc5ea6dea44cc84fa8d2aee7cb24cc3f5f9f49"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "902bf105ecfb5cb83dc1911692163289633316f5",
-        "version" : "4.0.0"
+        "revision" : "93823201f248ce15dab59c027790da4b73375aed",
+        "version" : "5.0.0"
       }
     },
     {

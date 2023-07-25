@@ -8,15 +8,22 @@ struct LoginView: View {
         List {
             Button(
                 action: {
-                        // TODO: This should go to loading view until login is completed, should return to this view on cancel/error, go to threshold key view on success.
                         clicked = true
                         vm.loginWithCustomAuth()
                 },
                 label: {
-                    Text("Sign In With Google via Firebase")
+                    Text("SignIn with JWT via Firebase")
                 }
             ).disabled(clicked)
-
+            Button(
+                action: {
+                        clicked = true
+                        vm.loginWithGoogleFirebase()
+                },
+                label: {
+                    Text("SignIn with Google via Firebase")
+                }
+            ).disabled(clicked)
         }
     }
 }
