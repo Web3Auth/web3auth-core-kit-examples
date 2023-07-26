@@ -1,4 +1,5 @@
 import SwiftUI
+import SingleFactorAuth
 import tkey_pkg
 
 enum SpinnerLocation {
@@ -6,7 +7,7 @@ enum SpinnerLocation {
 }
 
 struct ThresholdKeyView: View {
-    @State var userData: [String: Any]
+    @State var userData: TorusKey!
     @State private var showAlert = false
     @State private var alertContent = ""
     @State private var totalShares = 0
@@ -75,19 +76,9 @@ struct ThresholdKeyView: View {
                             Task {
                                 showSpinner = SpinnerLocation.init_reconstruct_btn
 
-                                guard let fetchKey = userData["publicAddress"] as? String else {
-                                    alertContent = "Failed to get public address from userinfo"
-                                    showAlert = true
-                                    showSpinner = SpinnerLocation.nowhere
-                                    return
-                                }
+                                let fetchKey = userData.getPublicAddress()
 
-                                guard let postboxkey = userData["privateKey"] as? String else {
-                                    alertContent = "Failed to get postboxkey"
-                                    showAlert = true
-                                    showSpinner = SpinnerLocation.nowhere
-                                    return
-                                }
+                                let postboxkey = userData.getPrivateKey()
 
                                 guard let storage_layer = try? StorageLayer(enable_logging: true, host_url: "https://metadata.tor.us", server_time_offset: 2) else {
                                     alertContent = "Failed to create storage layer"
@@ -144,7 +135,7 @@ struct ThresholdKeyView: View {
                                 } while !finishedFetch
                                 // There are 0 locally available shares for this tkey
                                 if shareCount == 0 {
-                                    guard let reconstructionDetails = try? await threshold_key.reconstruct() else {
+                                    guard (try? await threshold_key.reconstruct()) != nil else {
                                         alertContent = "Failed to reconstruct key. \(key_details.required_shares) more share(s) required. If you have security question share, we suggest you to enter security question PW to recover your account"
                                         resetAccount = true
                                         showAlert = true
@@ -262,11 +253,7 @@ struct ThresholdKeyView: View {
                                             
                                             let share = try threshold_key.output_share(shareIndex: securityQuestionShareIndex, shareType: nil)
                                             
-                                            guard let fetchKey = userData["publicAddress"] as? String else {
-                                                alertContent = "Failed to get public address from userinfo"
-                                                showAlert = true
-                                                return
-                                            }
+                                            let fetchKey = userData.getPublicAddress()
                                             
                                             let saveId = fetchKey + ":" + String(shareCount)
                                             //save the security question share locally
@@ -397,7 +384,7 @@ struct ThresholdKeyView: View {
                                     showAlert = true
                                     alertContent = "Resetting your accuont.."
                                     do {
-                                        let postboxkey = userData["privateKey"] as! String
+                                        let postboxkey = userData.getPrivateKey()
                                         let temp_storage_layer = try StorageLayer(enable_logging: true, host_url: "https://metadata.tor.us", server_time_offset: 2)
                                         let temp_service_provider = try ServiceProvider(enable_logging: true, postbox_key: postboxkey)
                                         let temp_threshold_key = try ThresholdKey(
