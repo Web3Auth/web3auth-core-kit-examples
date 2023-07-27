@@ -3,19 +3,8 @@
  */
 
 import {AppRegistry} from 'react-native';
-import {name as appName} from './app.json';
-
-// global variables required to be replaced for web3auth packages to work
-if (!global.Buffer) {
-  global.Buffer = require('buffer').Buffer;
-}
-
-global.process.version = 'v16.0.0';
-if (!global.process.version) {
-  global.process = require('process');
-  console.log({process: global.process});
-}
-
+import './globals';
+import 'react-native-get-random-values';
 import App from './App';
-
+import {name as appName} from './app.json';
 AppRegistry.registerComponent(appName, () => App);

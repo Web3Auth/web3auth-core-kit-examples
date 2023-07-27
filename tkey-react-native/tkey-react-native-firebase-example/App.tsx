@@ -8,15 +8,12 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import {tKeyInstance, getNewTKeyInstance} from './tkey';
+import {tKeyInstance, ethereumPrivateKeyProvider} from './tkey';
 import RPC from './ethersRPC'; // for using ethers.js
 import auth from '@react-native-firebase/auth';
 // @ts-ignore
 import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
-
-import Web3Auth from '@web3auth/node-sdk';
-import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 
 async function signInWithEmailPassword() {
   try {
@@ -31,7 +28,6 @@ async function signInWithEmailPassword() {
 }
 
 export default function App() {
-  const [tKey, setTKey] = useState<typeof tKeyInstance>(tKeyInstance);
   const [privateKey, setPrivateKey] = useState<string | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
@@ -47,37 +43,19 @@ export default function App() {
     setChangePasswordShareModalVisibility,
   ] = useState<boolean>(false);
 
-  const web3auth = new Web3Auth({
-    clientId:
-      'BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk', // Get your Client ID from Web3Auth Dashboard
-    web3AuthNetwork: 'cyan',
-    usePnPKey: false, // By default, this sdk returns CoreKitKey
-  });
-
-  const privateKeyProvider = new EthereumPrivateKeyProvider({
-    config: {
-      /*
-        pass the chain config that you want to connect with
-        all chainConfig fields are required.
-        */
-      chainConfig: {
-        chainId: '0x1',
-        rpcTarget: 'https://rpc.ankr.com/eth',
-        displayName: 'mainnet',
-        blockExplorer: 'https://etherscan.io/',
-        ticker: 'ETH',
-        tickerName: 'Ethereum',
-      },
-    },
-  });
-
   useEffect(() => {
-    try {
-      web3auth.init({provider: privateKeyProvider});
-    } catch (error) {
-      uiConsole(error, 'mounted caught');
-    }
-  });
+    const init = async () => {
+      // Initialization of Service Provider
+      try {
+        await (tKeyInstance.serviceProvider as any).init(
+          ethereumPrivateKeyProvider,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    init();
+  }, []);
 
   const parseToken = (token: any) => {
     try {
@@ -104,28 +82,24 @@ export default function App() {
       const verifier = 'web3auth-firebase-examples';
       const verifierId = parsedToken.sub;
 
-      const OAuthShareProvider = await web3auth.connect({
-        verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
-        verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
-        idToken,
-      });
-      const OAuthShareKey = await OAuthShareProvider!.request({
-        method: 'eth_private_key',
-      });
+      const loginResponse = await (tKeyInstance.serviceProvider as any).connect(
+        {
+          verifier,
+          verifierId,
+          idToken,
+        },
+      );
 
-      tKey.serviceProvider.postboxKey = OAuthShareKey as any;
-      setOAuthShare(OAuthShareKey);
-      (tKey.serviceProvider as any).verifierName = verifier;
-      (tKey.serviceProvider as any).verifierId = verifierId;
+      setOAuthShare(await loginResponse.request({method: 'eth_private_key'}));
 
-      await tKey.initialize();
+      await tKeyInstance.initialize();
 
-      const {requiredShares} = tKey.getKeyDetails();
+      const {requiredShares} = tKeyInstance.getKeyDetails();
 
       uiConsole('requiredShares', requiredShares);
 
       if (requiredShares <= 0) {
-        const reconstructedKey = await tKey.reconstructKey();
+        const reconstructedKey = await tKeyInstance.reconstructKey();
         const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
         await setPrivateKey(finalPrivateKey);
         uiConsole('Private Key: ' + finalPrivateKey);
@@ -142,7 +116,7 @@ export default function App() {
   };
 
   const recoverShare = async (password: string) => {
-    if (!tKey) {
+    if (!tKeyInstance) {
       uiConsole('tKey not initialized yet');
       return;
     }
@@ -151,18 +125,22 @@ export default function App() {
       try {
         setLoading(true);
         await (
-          tKey.modules.securityQuestions as any
+          tKeyInstance.modules.securityQuestions as any
         ).inputShareFromSecurityQuestions(password); // 2/2 flow
-        const {requiredShares} = tKey.getKeyDetails();
+        const {requiredShares} = tKeyInstance.getKeyDetails();
         if (requiredShares <= 0) {
-          const reconstructedKey = await tKey.reconstructKey();
+          const reconstructedKey = await tKeyInstance.reconstructKey();
           const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
           await setPrivateKey(finalPrivateKey);
           uiConsole('Private Key: ' + finalPrivateKey);
         }
-        const newShare = await tKey.generateNewShare();
-        const shareStore = await tKey.outputShareStore(newShare.newShareIndex);
-        await (tKey.modules.webStorage as any).storeDeviceShare(shareStore);
+        const newShare = await tKeyInstance.generateNewShare();
+        const shareStore = await tKeyInstance.outputShareStore(
+          newShare.newShareIndex,
+        );
+        await (tKeyInstance.modules.webStorage as any).storeDeviceShare(
+          shareStore,
+        );
         uiConsole('Successfully logged you in with the recovery password.');
       } catch (error) {
         uiConsole(error);
@@ -175,7 +153,7 @@ export default function App() {
   };
 
   const changeSecurityQuestionAndAnswer = async (password: string) => {
-    if (!tKey) {
+    if (!tKeyInstance) {
       uiConsole('tKey not initialized yet');
       return;
     }
@@ -184,7 +162,7 @@ export default function App() {
       try {
         setLoading(true);
         await (
-          tKey.modules.securityQuestions as any
+          tKeyInstance.modules.securityQuestions as any
         ).changeSecurityQuestionAndAnswer(password, 'whats your password?');
         uiConsole('Successfully changed new share with password.');
       } catch (error) {
@@ -196,12 +174,12 @@ export default function App() {
       setLoading(false);
     }
 
-    const keyDetails = await tKey.getKeyDetails();
+    const keyDetails = await tKeyInstance.getKeyDetails();
     uiConsole(keyDetails);
   };
 
   const generateNewShareWithPassword = async (password: string) => {
-    if (!tKey) {
+    if (!tKeyInstance) {
       uiConsole('tKey not initialized yet');
       return;
     }
@@ -209,7 +187,7 @@ export default function App() {
       try {
         setLoading(true);
         await (
-          tKey.modules.securityQuestions as any
+          tKeyInstance.modules.securityQuestions as any
         ).generateNewShareWithSecurityQuestions(
           password,
           'whats your password?',
@@ -226,23 +204,23 @@ export default function App() {
   };
 
   const getKeyDetails = async () => {
-    if (!tKey) {
+    if (!tKeyInstance) {
       uiConsole('tKey not initialized yet');
       return;
     }
 
     setConsoleUI('Getting Key Details');
-    uiConsole(await tKey.getKeyDetails());
+    uiConsole(await tKeyInstance.getKeyDetails());
   };
 
   const resetAccount = async () => {
-    if (!tKey) {
+    if (!tKeyInstance) {
       uiConsole('tKey not initialized yet');
       return;
     }
     try {
       uiConsole(oAuthShare);
-      await tKey.storageLayer.setMetadata({
+      await tKeyInstance.storageLayer.setMetadata({
         privKey: oAuthShare as any,
         input: {message: 'KEY_NOT_FOUND'},
       });
@@ -282,8 +260,6 @@ export default function App() {
     setPrivateKey(null);
     setOAuthShare(null);
     setUserInfo('');
-    const newTkey = getNewTKeyInstance();
-    setTKey(newTkey);
   };
 
   const uiConsole = (...args: any) => {
