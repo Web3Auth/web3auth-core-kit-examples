@@ -67,7 +67,7 @@ function App() {
     const init = async () => {
       try {
         
-        // Initialising Web3Auth Single Factor Auth SDK
+        // Initializing Web3Auth Single Factor Auth SDK
         const web3authSfa = new Web3Auth({
           clientId, // Get your Client ID from Web3Auth Dashboard
           chainConfig,
@@ -77,9 +77,17 @@ function App() {
         setWeb3authSFAuth(web3authSfa);
         const provider = new EthereumPrivateKeyProvider({ config: { chainConfig } })
 
-        web3authSfa.init(provider);
+        await web3authSfa.init(provider);
 
-        // Initialising Web3Auth Core SDK
+        // checks if the user is already logged in
+        if (web3authSfa.provider) {
+          setProvider(web3authSfa.provider)
+          const userinfo = await web3authSfa.authenticateUser();
+          setIdToken(userinfo.idToken);
+          setUsesSfaSDK(true);
+        }
+
+        // Initializing Web3Auth Core SDK
         const web3authNoModal = new Web3AuthNoModal({
           clientId,
           chainConfig,
@@ -245,7 +253,7 @@ function App() {
     const idToken = await user.getIdToken(true);
   
     // web3auth instance must be initialized before calling this function
-    // as decribed in login with mfa flow above
+    // as described in login with mfa flow above
     const web3AuthProvider = await web3authNoModal.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
       loginProvider: "jwt",
       extraLoginOptions: {
@@ -381,7 +389,7 @@ function App() {
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth/react-evm-sfa-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-one-key-flow-example"
           target="_blank"
           rel="noopener noreferrer"
         >
