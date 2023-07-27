@@ -16,5 +16,10 @@
             "directory": "single-factor-auth/*",
             "changeProcessCWD": true
         }
+    ],
+    "cSpell.words": [
+        "appspot",
+        "firebaseapp",
+        "Sfaprovider"
     ]
 }
