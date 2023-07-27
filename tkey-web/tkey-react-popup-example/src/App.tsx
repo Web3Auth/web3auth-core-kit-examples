@@ -1,56 +1,81 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import swal from 'sweetalert';
-import {tKey} from "./tkey"
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { ethereumPrivateKeyProvider, tKey } from "./tkey"
 import Web3 from "web3";
+
+// Firebase libraries for custom authentication
+import { initializeApp } from "firebase/app";
+import {
+	GoogleAuthProvider,
+	getAuth,
+	signInWithPopup,
+	UserCredential,
+} from "firebase/auth";
+
+const verifier = "web3auth-firebase-examples";
+
+const firebaseConfig = {
+	apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
+	authDomain: "web3auth-oauth-logins.firebaseapp.com",
+	projectId: "web3auth-oauth-logins",
+	storageBucket: "web3auth-oauth-logins.appspot.com",
+	messagingSenderId: "461819774167",
+	appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
+};
+
 
 function App() {
 	const [user, setUser] = useState<any>(null);
 	const [privateKey, setPrivateKey] = useState<any>();
 	const [oAuthShare, setOAuthShare] = useState<any>();
 	const [provider, setProvider] = useState<any>();
+	const app = initializeApp(firebaseConfig);
 
 	// Init Service Provider inside the useEffect Method
 	useEffect(() => {
 		const init = async () => {
 			// Initialization of Service Provider
 			try {
-				await (tKey.serviceProvider as any).init();
+				await (tKey.serviceProvider as any).init(ethereumPrivateKeyProvider);
 			} catch (error) {
-			  console.error(error);
+				console.error(error);
 			}
-		  };
-		  init();
-		const ethProvider = async() => {
-			const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
-			  config: {
-				/*
-				pass the chain config that you want to connect with
-				all chainConfig fields are required.
-				*/
-				chainConfig: {
-				  chainId: "0x13881",
-				  rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
-				  displayName: "Polygon Testnet",
-				  blockExplorer: "https://mumbai.polygonscan.com",
-				  ticker: "MATIC",
-				  tickerName: "Matic",
-				},
-			  },
-			});
-			/*
-			pass user's private key here.
-			after calling setupProvider, we can use
-			*/
-			if(privateKey){
+		};
+		init();
+		const ethProvider = async () => {
+			if (privateKey) {
 				await ethereumPrivateKeyProvider.setupProvider(privateKey);
 				console.log(ethereumPrivateKeyProvider.provider);
 				setProvider(ethereumPrivateKeyProvider.provider);
 			}
-		  }
+		}
 		ethProvider();
 	}, [privateKey]);
+
+	const signInWithGoogle = async (): Promise<UserCredential> => {
+		try {
+			const auth = getAuth(app);
+			const googleProvider = new GoogleAuthProvider();
+			const res = await signInWithPopup(auth, googleProvider);
+			console.log(res);
+			return res;
+		} catch (err) {
+			console.error(err);
+			throw err;
+		}
+	};
+
+	const parseToken = (token: any) => {
+		try {
+			const base64Url = token.split(".")[1];
+			const base64 = base64Url.replace("-", "+").replace("_", "/");
+			return JSON.parse(window.atob(base64 || ""));
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	};
 
 	const triggerLogin = async () => {
 		if (!tKey) {
@@ -59,14 +84,20 @@ function App() {
 		}
 		try {
 			// Triggering Login using Service Provider ==> opens the popup
-			const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
-				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-			});
-			setUser(loginResponse.userInfo);
-			setOAuthShare(loginResponse.privateKey);
+			const loginRes = await signInWithGoogle();
+			// get the id token from firebase
+			const idToken = await loginRes.user.getIdToken(true);
+			const { sub } = parseToken(idToken);
+
+			const loginResponse = await (tKey.serviceProvider as any).connect({
+				verifier,
+				verifierId: sub,
+				idToken,
+			  });
+			console.log(loginResponse);
+			setUser(await loginResponse.request({ method: "eth_private_key" }));
+
+			setOAuthShare(await loginResponse.request({ method: "eth_private_key" }));
 			// uiConsole('Public Key : ' + loginResponse.publicAddress);
 			// uiConsole('Email : ' + loginResponse.userInfo.email);
 		} catch (error) {
@@ -82,7 +113,7 @@ function App() {
 		try {
 			await triggerLogin(); // Calls the triggerLogin() function above
 			// Initialization of tKey
-			await tKey.initialize(); // 1/2 flow
+			await tKey.initialize(); 
 			// Gets the deviceShare
 			try {
 				await (tKey.modules.webStorage as any).inputShareFromWebStorage(); // 2/2 flow
@@ -180,12 +211,12 @@ function App() {
 				await tKey.inputShare(value, "mnemonic"); // 2/2 flow
 				// const { requiredShares } = tKey.getKeyDetails();
 				// if (requiredShares <= 0) {
-					const reconstructedKey = await tKey.reconstructKey();
-					console.log(reconstructedKey)
-					uiConsole(
-						'Private Key: ' + reconstructedKey.privKey.toString("hex"),
-						);
-						setPrivateKey(reconstructedKey?.privKey.toString("hex"))
+				const reconstructedKey = await tKey.reconstructKey();
+				console.log(reconstructedKey)
+				uiConsole(
+					'Private Key: ' + reconstructedKey.privKey.toString("hex"),
+				);
+				setPrivateKey(reconstructedKey?.privKey.toString("hex"))
 				// }
 			} catch (error) {
 				uiConsole(error);
@@ -245,16 +276,16 @@ function App() {
 			return;
 		}
 		try {
-		uiConsole(oAuthShare);
-		  await tKey.storageLayer.setMetadata({
-			privKey: oAuthShare,
-			input: { message: "KEY_NOT_FOUND" },
-		  });
-		  uiConsole("Reset Account Successful.");
+			uiConsole(oAuthShare);
+			await tKey.storageLayer.setMetadata({
+				privKey: oAuthShare,
+				input: { message: "KEY_NOT_FOUND" },
+			});
+			uiConsole("Reset Account Successful.");
 		} catch (e) {
-		  uiConsole(e);
+			uiConsole(e);
 		}
-	  };
+	};
 
 	const logout = (): void => {
 		uiConsole('Log out');
@@ -269,7 +300,7 @@ function App() {
 		uiConsole(privateKey);
 	};
 
-	const getChainID = async() => {
+	const getChainID = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
@@ -279,7 +310,7 @@ function App() {
 		uiConsole(chainId)
 	}
 
-	const getAccounts = async() => {
+	const getAccounts = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
@@ -289,7 +320,7 @@ function App() {
 		uiConsole(address)
 	}
 
-	const getBalance = async() => {
+	const getBalance = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
@@ -298,11 +329,11 @@ function App() {
 		const address = (await web3.eth.getAccounts())[0];
 		const balance = web3.utils.fromWei(
 			await web3.eth.getBalance(address) // Balance is in wei
-		  );
+		);
 		uiConsole(balance)
 	}
 
-	const signMessage = async(): Promise<any> => {
+	const signMessage = async (): Promise<any> => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
@@ -311,14 +342,14 @@ function App() {
 		const fromAddress = (await web3.eth.getAccounts())[0];
 		const originalMessage = [
 			{
-			  type: "string",
-			  name: "fullName",
-			  value: "Satoshi Nakamoto",
+				type: "string",
+				name: "fullName",
+				value: "Satoshi Nakamoto",
 			},
 			{
-			  type: "uint32",
-			  name: "userId",
-			  value: "1212",
+				type: "uint32",
+				name: "userId",
+				value: "1212",
 			},
 		];
 		const params = [originalMessage, fromAddress];
@@ -332,7 +363,7 @@ function App() {
 		uiConsole(signedMessage)
 	}
 
-	const sendTransaction = async() => {
+	const sendTransaction = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
@@ -414,7 +445,7 @@ function App() {
 						Get Balance
 					</button>
 				</div>
-				
+
 				<div>
 					<button onClick={signMessage} className='card'>
 						Sign Message
