@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Dialog, Input } from "@rneui/themed";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import Web3Auth from "@web3auth/node-sdk";
 import { decode as atob } from "base-64";
 // @ts-ignore
 import React, { useEffect, useState } from "react";
@@ -10,10 +9,9 @@ import { ActivityIndicator, Button, Dimensions, ScrollView, StyleSheet, Text, Vi
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 
 import RPC from "./ethersRPC"; // for using ethers.js
-import { getNewTKeyInstance, tKeyInstance } from "./tkey";
+import { ethereumPrivateKeyProvider, tKeyInstance } from "./tkey";
 
 const Home = () => {
-  const [tKey, setTKey] = useState<typeof tKeyInstance>(tKeyInstance);
   const [privateKey, setPrivateKey] = useState<string | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
@@ -24,36 +22,19 @@ const Home = () => {
   const [passwordShareModalVisibility, setPasswordShareModalVisibility] = useState<boolean>(false);
   const [changePasswordShareModalVisibility, setChangePasswordShareModalVisibility] = useState<boolean>(false);
 
-  const web3auth = new Web3Auth({
-    clientId: "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk", // Get your Client ID from Web3Auth Dashboard
-    web3AuthNetwork: "cyan",
-    usePnPKey: false, // By default, this sdk returns CoreKitKey
-  });
-
-  const privateKeyProvider = new EthereumPrivateKeyProvider({
-    config: {
-      /*
-        pass the chain config that you want to connect with
-        all chainConfig fields are required.
-        */
-      chainConfig: {
-        chainId: "0x1",
-        rpcTarget: "https://rpc.ankr.com/eth",
-        displayName: "mainnet",
-        blockExplorer: "https://etherscan.io/",
-        ticker: "ETH",
-        tickerName: "Ethereum",
-      },
-    },
-  });
-
   useEffect(() => {
-    try {
-      web3auth.init({ provider: privateKeyProvider });
-    } catch (error) {
-      uiConsole(error, "mounted caught");
-    }
-  });
+    const init = async () => {
+      // Initialization of Service Provider
+      try {
+        await (tKeyInstance.serviceProvider as any).init(
+          ethereumPrivateKeyProvider,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    init();
+  }, []);
 
   const { authorize, clearSession, getCredentials } = useAuth0();
 
@@ -92,28 +73,25 @@ const Home = () => {
       const verifier = "web3auth-auth0-demo";
       const verifierId = parsedToken.sub;
 
-      const OAuthShareProvider = await web3auth.connect({
-        verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
-        verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
-        idToken,
-      });
-      const OAuthShareKey = await OAuthShareProvider?.request({
-        method: "eth_private_key",
-      });
-
-      tKey.serviceProvider.postboxKey = OAuthShareKey as any;
+      const loginResponse = await (tKeyInstance.serviceProvider as any).connect(
+        {
+          verifier,
+          verifierId,
+          idToken,
+        },
+      );
+      const OAuthShareKey = await loginResponse.request({ method: 'eth_private_key' });
+      uiConsole('OAuthShareKey', OAuthShareKey);
       setOAuthShare(OAuthShareKey);
-      (tKey.serviceProvider as any).verifierName = verifier;
-      (tKey.serviceProvider as any).verifierId = verifierId;
 
-      await tKey.initialize();
+      await tKeyInstance.initialize();
 
-      const { requiredShares } = tKey.getKeyDetails();
+      const { requiredShares } = tKeyInstance.getKeyDetails();
 
       uiConsole("requiredShares", requiredShares);
 
       if (requiredShares <= 0) {
-        const reconstructedKey = await tKey.reconstructKey();
+        const reconstructedKey = await tKeyInstance.reconstructKey();
         const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
         await setPrivateKey(finalPrivateKey);
         uiConsole(`Private Key: ${finalPrivateKey}`);
@@ -130,25 +108,22 @@ const Home = () => {
   };
 
   const recoverShare = async (password: string) => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
+    if (!tKeyInstance) {
+      uiConsole("tKeyInstance not initialized yet");
       return;
     }
 
     if (password.length > 10) {
       try {
         setLoading(true);
-        await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(password); // 2/2 flow
-        const { requiredShares } = tKey.getKeyDetails();
+        await (tKeyInstance.modules.securityQuestions as any).inputShareFromSecurityQuestions(password); // 2/2 flow
+        const { requiredShares } = tKeyInstance.getKeyDetails();
         if (requiredShares <= 0) {
-          const reconstructedKey = await tKey.reconstructKey();
+          const reconstructedKey = await tKeyInstance.reconstructKey();
           const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
           await setPrivateKey(finalPrivateKey);
           uiConsole(`Private Key: ${finalPrivateKey}`);
         }
-        const newShare = await tKey.generateNewShare();
-        const shareStore = await tKey.outputShareStore(newShare.newShareIndex);
-        await (tKey.modules.webStorage as any).storeDeviceShare(shareStore);
         uiConsole("Successfully logged you in with the recovery password.");
       } catch (error) {
         uiConsole(error);
@@ -161,15 +136,15 @@ const Home = () => {
   };
 
   const changeSecurityQuestionAndAnswer = async (password: string) => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
+    if (!tKeyInstance) {
+      uiConsole("tKeyInstance not initialized yet");
       return;
     }
 
     if (password.length > 10) {
       try {
         setLoading(true);
-        await (tKey.modules.securityQuestions as any).changeSecurityQuestionAndAnswer(password, "whats your password?");
+        await (tKeyInstance.modules.securityQuestions as any).changeSecurityQuestionAndAnswer(password, "whats your password?");
         uiConsole("Successfully changed new share with password.");
       } catch (error) {
         uiConsole("Error", (error as any)?.message.toString(), "error");
@@ -180,19 +155,19 @@ const Home = () => {
       setLoading(false);
     }
 
-    const keyDetails = await tKey.getKeyDetails();
+    const keyDetails = await tKeyInstance.getKeyDetails();
     uiConsole(keyDetails);
   };
 
   const generateNewShareWithPassword = async (password: string) => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
+    if (!tKeyInstance) {
+      uiConsole("tKeyInstance not initialized yet");
       return;
     }
     if (password.length > 10) {
       try {
         setLoading(true);
-        await (tKey.modules.securityQuestions as any).generateNewShareWithSecurityQuestions(password, "whats your password?");
+        await (tKeyInstance.modules.securityQuestions as any).generateNewShareWithSecurityQuestions(password, "whats your password?");
         uiConsole("Successfully generated new share with password.");
       } catch (error) {
         uiConsole("Error", (error as any)?.message.toString(), "error");
@@ -205,23 +180,23 @@ const Home = () => {
   };
 
   const getKeyDetails = async () => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
+    if (!tKeyInstance) {
+      uiConsole("tKeyInstance not initialized yet");
       return;
     }
 
     setConsoleUI("Getting Key Details");
-    uiConsole(await tKey.getKeyDetails());
+    uiConsole(await tKeyInstance.getKeyDetails());
   };
 
   const resetAccount = async () => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
+    if (!tKeyInstance) {
+      uiConsole("tKeyInstance not initialized yet");
       return;
     }
     try {
       uiConsole(oAuthShare);
-      await tKey.storageLayer.setMetadata({
+      await tKeyInstance.storageLayer.setMetadata({
         privKey: oAuthShare as any,
         input: { message: "KEY_NOT_FOUND" },
       });
@@ -258,16 +233,10 @@ const Home = () => {
     uiConsole(message);
   };
   const logout = async () => {
-    try {
-      setPrivateKey(null);
-      setOAuthShare(null);
-      setUserInfo("");
-      const newTkey = getNewTKeyInstance();
-      setTKey(newTkey);
-      await clearSession({ customScheme: "{YOUR_CUSTOM_SCHEME}" });
-    } catch (e) {
-      console.log(e);
-    }
+    await clearSession({ customScheme: "auth0.com.tkeyrnauth0" });
+    setPrivateKey(null);
+    setOAuthShare(null);
+    setUserInfo('');
   };
 
   const uiConsole = (...args: any) => {
