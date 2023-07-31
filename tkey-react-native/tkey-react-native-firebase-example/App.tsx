@@ -90,7 +90,11 @@ export default function App() {
         },
       );
 
-      setOAuthShare(await loginResponse.request({method: 'eth_private_key'}));
+      const OAuthShareKey = await loginResponse.request({
+        method: 'eth_private_key',
+      });
+      uiConsole('OAuthShareKey', OAuthShareKey);
+      setOAuthShare(OAuthShareKey);
 
       await tKeyInstance.initialize();
 
@@ -134,13 +138,6 @@ export default function App() {
           await setPrivateKey(finalPrivateKey);
           uiConsole('Private Key: ' + finalPrivateKey);
         }
-        const newShare = await tKeyInstance.generateNewShare();
-        const shareStore = await tKeyInstance.outputShareStore(
-          newShare.newShareIndex,
-        );
-        await (tKeyInstance.modules.webStorage as any).storeDeviceShare(
-          shareStore,
-        );
         uiConsole('Successfully logged you in with the recovery password.');
       } catch (error) {
         uiConsole(error);
