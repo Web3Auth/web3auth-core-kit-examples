@@ -7,6 +7,7 @@ import {
   View,
   Dimensions,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import {tKeyInstance, ethereumPrivateKeyProvider} from './tkey';
 import RPC from './ethersRPC'; // for using ethers.js
@@ -33,7 +34,6 @@ export default function App() {
   const [privateKey, setPrivateKey] = useState<string | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
-  const [tKeyPubX, setTKeyPubX] = useState<any>(null);
   const [userInfo, setUserInfo] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [recoveryPassword, setRecoveryPassword] = useState<string>('');
@@ -101,36 +101,33 @@ export default function App() {
 
       await tKeyInstance.initialize();
 
-      const deviceShare = await getDeviceShare();
-
-      if (deviceShare && deviceShare.toString() !== '0') {
-        try {
-          await tKeyInstance.inputShare(deviceShare);
-        } catch (error) {
-          uiConsole(error);
-        }
-      }
-
-      const {requiredShares} = tKeyInstance.getKeyDetails();
+      var {requiredShares} = tKeyInstance.getKeyDetails();
 
       uiConsole('requiredShares', requiredShares);
+      const deviceShare = await getDeviceShare();
 
-      if (requiredShares <= 0) {
-        const reconstructedKey = await tKeyInstance.reconstructKey();
-        const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
-        await setPrivateKey(finalPrivateKey);
-        uiConsole('Private Key: ' + finalPrivateKey);
-
-        const metadata = await tKeyInstance.getMetadata();
-        const TKeyPubX = metadata.pubKey.x.toString(16, 64);
-        setTKeyPubX(TKeyPubX);
-        if (!deviceShare || deviceShare.toString() !== '0') {
-          setDeviceShare();
+      if (requiredShares > 0) {
+        if (deviceShare) {
+          try {
+            await tKeyInstance.inputShare(deviceShare);
+          } catch (error) {
+            uiConsole(error);
+          }
         }
-      } else {
-        toggleRecoveryModalVisibility();
+        var {requiredShares} = tKeyInstance.getKeyDetails();
+        if (requiredShares > 0) {
+          await toggleRecoveryModalVisibility();
+          setLoading(false);
+          return;
+        }
       }
-
+      const reconstructedKey = await tKeyInstance.reconstructKey();
+      const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
+      await setPrivateKey(finalPrivateKey);
+      uiConsole(`Private Key: ${finalPrivateKey}`);
+      if (!deviceShare) {
+        setDeviceShare();
+      }
       setLoading(false);
       uiConsole('Logged In');
     } catch (e) {
@@ -151,18 +148,12 @@ export default function App() {
         await (
           tKeyInstance.modules.securityQuestions as any
         ).inputShareFromSecurityQuestions(password); // 2/2 flow
-        const {requiredShares} = tKeyInstance.getKeyDetails();
-        if (requiredShares <= 0) {
-          const reconstructedKey = await tKeyInstance.reconstructKey();
-          const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
-          await setPrivateKey(finalPrivateKey);
-          uiConsole('Private Key: ' + finalPrivateKey);
-
-          const metadata = await tKeyInstance.getMetadata();
-          const TKeyPubX = metadata.pubKey.x.toString(16, 64);
-          setTKeyPubX(TKeyPubX);
-          setDeviceShare();
-        }
+        const reconstructedKey = await tKeyInstance.reconstructKey();
+        const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
+        await setPrivateKey(finalPrivateKey);
+        uiConsole('Private Key: ' + finalPrivateKey);
+        setLoading(false);
+        setDeviceShare();
         uiConsole('Successfully logged you in with the recovery password.');
       } catch (error) {
         uiConsole(error);
@@ -176,6 +167,8 @@ export default function App() {
 
   const setDeviceShare = async () => {
     try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
       const generateShareResult = await tKeyInstance.generateNewShare();
       const share = await tKeyInstance.outputShareStore(
         generateShareResult.newShareIndex,
@@ -192,6 +185,8 @@ export default function App() {
 
   const getDeviceShare = async () => {
     try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
       const shareHex = await EncryptedStorage.getItem(`deviceShare${tKeyPubX}`);
       const shareBN = new BN(shareHex as any, 'hex');
       uiConsole('Device Share Captured Successfully', shareBN);
@@ -203,6 +198,8 @@ export default function App() {
 
   const deleteDeviceShare = async () => {
     try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
       await EncryptedStorage.removeItem(`deviceShare${tKeyPubX}`);
       uiConsole('Device Share Deleted');
     } catch (error) {
@@ -404,27 +401,51 @@ export default function App() {
     <View style={styles.buttonArea}>
       {setPasswordShareModal}
       {changePasswordShareModal}
-      <Button title="Get User Info" onPress={() => uiConsole(userInfo)} />
-      <Button title="Get Key Details" onPress={() => getKeyDetails()} />
-      <Button title="Get Chain ID" onPress={() => getChainId()} />
-      <Button
-        title="Set Password Share"
-        onPress={() => togglePasswordShareModalVisibility()}
-      />
-      <Button
-        title="Change Password Share"
-        onPress={() => toggleChangePasswordShareModalVisibility()}
-      />
-      <Button title="Get Accounts" onPress={() => getAccounts()} />
-      <Button title="Get Balance" onPress={() => getBalance()} />
-      <Button title="Send Transaction" onPress={() => sendTransaction()} />
-      <Button title="Sign Message" onPress={() => signMessage()} />
-      <Button title="Get Private Key" onPress={() => uiConsole(privateKey)} />
-      <Button title="Set Device Share" onPress={() => setDeviceShare()} />
-      <Button title="Get Device Share" onPress={() => getDeviceShare()} />
-      <Button title="Delete Device Share" onPress={() => deleteDeviceShare()} />
-      <Button title="Reset Account" onPress={resetAccount} />
-      <Button title="Log Out" onPress={logout} />
+      <TouchableOpacity onPress={() => uiConsole(userInfo)}>
+        <Text>Get User Info</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getKeyDetails}>
+        <Text>Get Key Details</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getChainId}>
+        <Text>Get Chain ID</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={togglePasswordShareModalVisibility}>
+        <Text>Set Password Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={toggleChangePasswordShareModalVisibility}>
+        <Text>Change Password Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getAccounts}>
+        <Text>Get Accounts</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getBalance}>
+        <Text>Get Balance</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={sendTransaction}>
+        <Text>Send Transaction</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={signMessage}>
+        <Text>Sign Message</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => uiConsole(privateKey)}>
+        <Text>Get Private Key</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={setDeviceShare}>
+        <Text>Set Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getDeviceShare}>
+        <Text>Get Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={deleteDeviceShare}>
+        <Text>Delete Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={resetAccount}>
+        <Text>Reset Account</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={logout}>
+        <Text>Log Out</Text>
+      </TouchableOpacity>
     </View>
   );
 
