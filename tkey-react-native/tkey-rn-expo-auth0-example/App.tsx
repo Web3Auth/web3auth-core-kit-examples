@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Dialog, Input } from "@rneui/themed";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { decode as atob } from "base-64";
 // @ts-ignore
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Button, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, TouchableOpacity, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
+import * as SecureStore from "expo-secure-store";
+import BN from 'bn.js';
 
 import RPC from "./ethersRPC"; // for using ethers.js
 import { ethereumPrivateKeyProvider, tKeyInstance } from "./tkey";
@@ -86,19 +87,33 @@ const Home = () => {
 
       await tKeyInstance.initialize();
 
-      const { requiredShares } = tKeyInstance.getKeyDetails();
+      var { requiredShares } = tKeyInstance.getKeyDetails();
 
       uiConsole("requiredShares", requiredShares);
+      const deviceShare = await getDeviceShare();
 
-      if (requiredShares <= 0) {
-        const reconstructedKey = await tKeyInstance.reconstructKey();
-        const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
-        await setPrivateKey(finalPrivateKey);
-        uiConsole(`Private Key: ${finalPrivateKey}`);
-      } else {
-        toggleRecoveryModalVisibility();
+      if (requiredShares > 0) {
+        if (deviceShare) {
+          try {
+            await tKeyInstance.inputShare(deviceShare);
+          } catch (error) {
+            uiConsole(error);
+          }
+        }
+        var { requiredShares } = tKeyInstance.getKeyDetails();
+        if (requiredShares > 0) {
+          await toggleRecoveryModalVisibility();
+          setLoading(false);
+          return;
+        }
       }
-
+      const reconstructedKey = await tKeyInstance.reconstructKey();
+      const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
+      await setPrivateKey(finalPrivateKey);
+      uiConsole(`Private Key: ${finalPrivateKey}`);
+      if (!deviceShare) {
+        setDeviceShare();
+      }
       setLoading(false);
       uiConsole("Logged In");
     } catch (e) {
@@ -117,13 +132,11 @@ const Home = () => {
       try {
         setLoading(true);
         await (tKeyInstance.modules.securityQuestions as any).inputShareFromSecurityQuestions(password); // 2/2 flow
-        const { requiredShares } = tKeyInstance.getKeyDetails();
-        if (requiredShares <= 0) {
-          const reconstructedKey = await tKeyInstance.reconstructKey();
-          const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
-          await setPrivateKey(finalPrivateKey);
-          uiConsole(`Private Key: ${finalPrivateKey}`);
-        }
+        const reconstructedKey = await tKeyInstance.reconstructKey();
+        const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
+        await setPrivateKey(finalPrivateKey);
+        uiConsole(`Private Key: ${finalPrivateKey}`);
+        setDeviceShare();
         uiConsole("Successfully logged you in with the recovery password.");
       } catch (error) {
         uiConsole(error);
@@ -132,6 +145,52 @@ const Home = () => {
     } else {
       uiConsole("Error", "Password must be >= 11 characters", "error");
       setLoading(false);
+    }
+  };
+
+  const setDeviceShare = async () => {
+    try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
+      const generateShareResult = await tKeyInstance.generateNewShare();
+      const share = await tKeyInstance.outputShareStore(
+        generateShareResult.newShareIndex,
+      ).share.share;
+      SecureStore.setItemAsync(
+        `deviceShare${tKeyPubX}`,
+        share.toString(16, 64)
+      );
+      uiConsole('Device Share Set', share.toString(16, 64));
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
+  const getDeviceShare = async () => {
+    try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
+      const shareHex = await SecureStore.getItemAsync(`deviceShare${tKeyPubX}`);
+      if (shareHex && shareHex !== '0') {
+        const shareBN = new BN(shareHex as any, 'hex');
+        uiConsole('Device Share Captured Successfully across', tKeyPubX, ":", shareBN);
+        return shareBN;
+      }
+      uiConsole('Device Share Not found');
+      return null;
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
+  const deleteDeviceShare = async () => {
+    try {
+      const metadata = await tKeyInstance.getMetadata();
+      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
+      await SecureStore.deleteItemAsync(`deviceShare${tKeyPubX}`);
+      uiConsole('Device Share Deleted');
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
   };
 
@@ -253,14 +312,13 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <Button
-        title="Submit"
+      <TouchableOpacity
         onPress={async () => {
           await recoverShare(recoveryPassword);
           toggleRecoveryModalVisibility();
           setLoading(false);
         }}
-      />
+      ><Text>Submit</Text></TouchableOpacity>
     </Dialog>
   );
 
@@ -273,14 +331,13 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <Button
-        title="Submit"
+      <TouchableOpacity
         onPress={async () => {
           await generateNewShareWithPassword(recoveryPassword);
           togglePasswordShareModalVisibility();
           setLoading(false);
         }}
-      />
+      ><Text>Submit</Text></TouchableOpacity>
     </Dialog>
   );
 
@@ -293,14 +350,13 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <Button
-        title="Submit"
+      <TouchableOpacity
         onPress={async () => {
           await changeSecurityQuestionAndAnswer(recoveryPassword);
           toggleChangePasswordShareModalVisibility();
           setLoading(false);
         }}
-      />
+      ><Text>Submit</Text></TouchableOpacity>
     </Dialog>
   );
 
@@ -308,27 +364,30 @@ const Home = () => {
     <View style={styles.buttonArea}>
       {setPasswordShareModal}
       {changePasswordShareModal}
-      <Button title="Get User Info" onPress={() => uiConsole(userInfo)} />
-      <Button title="Get Key Details" onPress={() => getKeyDetails()} />
-      <Button title="Get Chain ID" onPress={() => getChainId()} />
-      <Button title="Set Password Share" onPress={() => togglePasswordShareModalVisibility()} />
-      <Button title="Change Password Share" onPress={() => toggleChangePasswordShareModalVisibility()} />
-      <Button title="Get Accounts" onPress={() => getAccounts()} />
-      <Button title="Get Balance" onPress={() => getBalance()} />
-      <Button title="Send Transaction" onPress={() => sendTransaction()} />
-      <Button title="Sign Message" onPress={() => signMessage()} />
-      <Button title="Get Private Key" onPress={() => uiConsole(privateKey)} />
-      <Button title="Reset Account" onPress={resetAccount} />
-      <Button title="Log Out" onPress={logout} />
+      <TouchableOpacity onPress={() => uiConsole(userInfo)} ><Text>Get User Info</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getKeyDetails} ><Text>Get Key Details</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getChainId} ><Text>Get Chain ID</Text></TouchableOpacity>
+      <TouchableOpacity onPress={togglePasswordShareModalVisibility} ><Text>Set Password Share</Text></TouchableOpacity>
+      <TouchableOpacity onPress={toggleChangePasswordShareModalVisibility} ><Text>Change Password Share</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getAccounts} ><Text>Get Accounts</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getBalance} ><Text>Get Balance</Text></TouchableOpacity>
+      <TouchableOpacity onPress={sendTransaction} ><Text>Send Transaction</Text></TouchableOpacity>
+      <TouchableOpacity onPress={signMessage} ><Text>Sign Message</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => uiConsole(privateKey)} ><Text>Get Private Key</Text></TouchableOpacity>
+      <TouchableOpacity onPress={setDeviceShare} ><Text>Set Device Share</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getDeviceShare} ><Text>Get Device Share</Text></TouchableOpacity>
+      <TouchableOpacity onPress={deleteDeviceShare} ><Text>Delete Device Share</Text></TouchableOpacity>
+      <TouchableOpacity onPress={resetAccount} ><Text>Reset Account</Text></TouchableOpacity>
+      <TouchableOpacity onPress={logout} ><Text>Log Out</Text></TouchableOpacity>
     </View>
   );
 
   const unloggedInView = (
     <View style={styles.buttonArea}>
       {recoveryModal}
-      <Button title="Login with Web3Auth" onPress={login} />
+      <TouchableOpacity onPress={login} ><Text>Login with Web3Auth</Text></TouchableOpacity>
       {loading && <ActivityIndicator />}
-      <Button title="Reset Account" onPress={resetAccount} />
+      <TouchableOpacity onPress={resetAccount} ><Text>Reset Account</Text></TouchableOpacity>
     </View>
   );
 
