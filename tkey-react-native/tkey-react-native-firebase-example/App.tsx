@@ -17,6 +17,7 @@ import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import BN from 'bn.js';
+import {ShareSerializationModule} from '@tkey/share-serialization';
 
 async function signInWithEmailPassword() {
   try {
@@ -37,6 +38,7 @@ export default function App() {
   const [userInfo, setUserInfo] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [recoveryPassword, setRecoveryPassword] = useState<string>('');
+  const [recoveryMnemonic, setRecoveryMnemonic] = useState<string>('');
   const [recoveryModalVisibility, setRecoveryModalVisibility] =
     useState<boolean>(false);
   const [passwordShareModalVisibility, setPasswordShareModalVisibility] =
@@ -121,13 +123,7 @@ export default function App() {
           return;
         }
       }
-      const reconstructedKey = await tKeyInstance.reconstructKey();
-      const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
-      await setPrivateKey(finalPrivateKey);
-      uiConsole(`Private Key: ${finalPrivateKey}`);
-      if (!deviceShare) {
-        setDeviceShare();
-      }
+      await reconstructKey();
       setLoading(false);
       uiConsole('Logged In');
     } catch (e) {
@@ -136,7 +132,22 @@ export default function App() {
     }
   };
 
-  const recoverShare = async (password: string) => {
+  const reconstructKey = async () => {
+    try {
+      const reconstructedKey = await tKeyInstance.reconstructKey();
+      const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
+      const deviceShare = await getDeviceShare();
+      await setPrivateKey(finalPrivateKey);
+      uiConsole(`Private Key: ${finalPrivateKey}`);
+      if (!deviceShare) {
+        setDeviceShare();
+      }
+    } catch (e) {
+      uiConsole(e);
+    }
+  };
+
+  const recoverPasswordShare = async (password: string) => {
     if (!tKeyInstance) {
       uiConsole('tKeyInstance not initialized yet');
       return;
@@ -148,12 +159,7 @@ export default function App() {
         await (
           tKeyInstance.modules.securityQuestions as any
         ).inputShareFromSecurityQuestions(password); // 2/2 flow
-        const reconstructedKey = await tKeyInstance.reconstructKey();
-        const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
-        await setPrivateKey(finalPrivateKey);
-        uiConsole('Private Key: ' + finalPrivateKey);
-        setLoading(false);
-        setDeviceShare();
+        await reconstructKey();
         uiConsole('Successfully logged you in with the recovery password.');
       } catch (error) {
         uiConsole(error);
@@ -161,6 +167,25 @@ export default function App() {
       }
     } else {
       uiConsole('Error', 'Password must be >= 11 characters', 'error');
+      setLoading(false);
+    }
+  };
+
+  const recoverMnemonicShare = async (mnemonic: string) => {
+    if (!tKeyInstance) {
+      uiConsole('tKeyInstance not initialized yet');
+      return;
+    }
+    try {
+      setLoading(true);
+      const share = await (
+        tKeyInstance.modules.shareSerialization as ShareSerializationModule
+      ).deserialize(mnemonic, 'mnemonic');
+      await tKeyInstance.inputShare(share);
+      await reconstructKey();
+      uiConsole('Input Mnemonic Successful.');
+    } catch (error) {
+      uiConsole(error);
       setLoading(false);
     }
   };
@@ -187,10 +212,19 @@ export default function App() {
     try {
       const metadata = await tKeyInstance.getMetadata();
       const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      const shareHex = await EncryptedStorage.getItem(`deviceShare${tKeyPubX}`);
-      const shareBN = new BN(shareHex as any, 'hex');
-      uiConsole('Device Share Captured Successfully', shareBN);
-      return shareBN;
+      const shareHex = await SecureStore.getItemAsync(`deviceShare${tKeyPubX}`);
+      if (shareHex && shareHex !== '0') {
+        const shareBN = new BN(shareHex as any, 'hex');
+        uiConsole(
+          'Device Share Captured Successfully across',
+          tKeyPubX,
+          ':',
+          shareBN,
+        );
+        return shareBN;
+      }
+      uiConsole('Device Share Not found');
+      return null;
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
@@ -255,6 +289,25 @@ export default function App() {
     } else {
       uiConsole('Error', 'Password must be >= 11 characters', 'error');
       setLoading(false);
+    }
+  };
+
+  const exportMnemonic = async () => {
+    if (!tKeyInstance) {
+      uiConsole('tKeyInstance not initialized yet');
+      return;
+    }
+    try {
+      const generateShareResult = await tKeyInstance.generateNewShare();
+      const share = await tKeyInstance.outputShareStore(
+        generateShareResult.newShareIndex,
+      ).share.share;
+      const mnemonic = await (
+        tKeyInstance.modules.shareSerialization as ShareSerializationModule
+      ).serialize(share, 'mnemonic');
+      uiConsole(mnemonic);
+    } catch (error) {
+      uiConsole(error);
     }
   };
 
@@ -339,7 +392,19 @@ export default function App() {
       <Button
         title="Submit"
         onPress={async () => {
-          await recoverShare(recoveryPassword);
+          await recoverPasswordShare(recoveryPassword);
+          toggleRecoveryModalVisibility();
+          setLoading(false);
+        }}
+      />
+      <Input
+        placeholder="Recovery Mnemonic"
+        onChangeText={value => setRecoveryMnemonic(value)}
+      />
+      <Button
+        title="Submit"
+        onPress={async () => {
+          await recoverMnemonicShare(recoveryMnemonic);
           toggleRecoveryModalVisibility();
           setLoading(false);
         }}
@@ -439,6 +504,9 @@ export default function App() {
       </TouchableOpacity>
       <TouchableOpacity onPress={deleteDeviceShare}>
         <Text>Delete Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={exportMnemonic}>
+        <Text>Export Mnemonic Share</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={resetAccount}>
         <Text>Reset Account</Text>
