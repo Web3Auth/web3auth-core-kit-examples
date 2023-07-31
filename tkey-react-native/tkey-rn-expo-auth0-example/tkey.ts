@@ -51,6 +51,6 @@ export const tKeyInstance = new ThresholdKey({
   modules: {
     shareTransfer: shareTransferModule,
     securityQuestions: securityQuestionsModule,
-    shareSerializationModule: shareSerializationModule,
+    shareSerialization: shareSerializationModule,
   },
 });
