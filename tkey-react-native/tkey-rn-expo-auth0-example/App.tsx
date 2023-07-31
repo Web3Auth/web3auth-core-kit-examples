@@ -4,7 +4,7 @@ import { Dialog, Input } from "@rneui/themed";
 import { decode as atob } from "base-64";
 // @ts-ignore
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, TouchableOpacity, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Button, TouchableOpacity, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import * as SecureStore from "expo-secure-store";
 import BN from 'bn.js';
@@ -136,6 +136,7 @@ const Home = () => {
         const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
         await setPrivateKey(finalPrivateKey);
         uiConsole(`Private Key: ${finalPrivateKey}`);
+        setLoading(false);
         setDeviceShare();
         uiConsole("Successfully logged you in with the recovery password.");
       } catch (error) {
@@ -312,13 +313,14 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <TouchableOpacity
+      <Button
+        title="Submit"
         onPress={async () => {
           await recoverShare(recoveryPassword);
           toggleRecoveryModalVisibility();
           setLoading(false);
         }}
-      ><Text>Submit</Text></TouchableOpacity>
+      />
     </Dialog>
   );
 
@@ -331,13 +333,14 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <TouchableOpacity
+      <Button
+        title="Submit"
         onPress={async () => {
           await generateNewShareWithPassword(recoveryPassword);
           togglePasswordShareModalVisibility();
           setLoading(false);
         }}
-      ><Text>Submit</Text></TouchableOpacity>
+      />
     </Dialog>
   );
 
@@ -350,13 +353,14 @@ const Home = () => {
       <Dialog.Title title="Enter Recovery Share" />
       <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
       {loading && <ActivityIndicator />}
-      <TouchableOpacity
+      <Button
+        title="Submit"
         onPress={async () => {
           await changeSecurityQuestionAndAnswer(recoveryPassword);
           toggleChangePasswordShareModalVisibility();
           setLoading(false);
         }}
-      ><Text>Submit</Text></TouchableOpacity>
+      />
     </Dialog>
   );
 
@@ -385,9 +389,9 @@ const Home = () => {
   const unloggedInView = (
     <View style={styles.buttonArea}>
       {recoveryModal}
-      <TouchableOpacity onPress={login} ><Text>Login with Web3Auth</Text></TouchableOpacity>
+      <Button title="Login with Web3Auth" onPress={login} />
       {loading && <ActivityIndicator />}
-      <TouchableOpacity onPress={resetAccount} ><Text>Reset Account</Text></TouchableOpacity>
+      <Button title="Reset Account" onPress={resetAccount} />
     </View>
   );
 
