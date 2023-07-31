@@ -14,6 +14,8 @@ import auth from '@react-native-firebase/auth';
 // @ts-ignore
 import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import BN from 'bn.js';
 
 async function signInWithEmailPassword() {
   try {
@@ -31,6 +33,7 @@ export default function App() {
   const [privateKey, setPrivateKey] = useState<string | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
+  const [tKeyPubX, setTKeyPubX] = useState<any>(null);
   const [userInfo, setUserInfo] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [recoveryPassword, setRecoveryPassword] = useState<string>('');
@@ -98,6 +101,16 @@ export default function App() {
 
       await tKeyInstance.initialize();
 
+      const deviceShare = await getDeviceShare();
+
+      if (deviceShare && deviceShare.toString() !== '0') {
+        try {
+          await tKeyInstance.inputShare(deviceShare);
+        } catch (error) {
+          uiConsole(error);
+        }
+      }
+
       const {requiredShares} = tKeyInstance.getKeyDetails();
 
       uiConsole('requiredShares', requiredShares);
@@ -107,6 +120,13 @@ export default function App() {
         const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
         await setPrivateKey(finalPrivateKey);
         uiConsole('Private Key: ' + finalPrivateKey);
+
+        const metadata = await tKeyInstance.getMetadata();
+        const TKeyPubX = metadata.pubKey.x.toString(16, 64);
+        setTKeyPubX(TKeyPubX);
+        if (!deviceShare || deviceShare.toString() !== '0') {
+          setDeviceShare();
+        }
       } else {
         toggleRecoveryModalVisibility();
       }
@@ -121,7 +141,7 @@ export default function App() {
 
   const recoverShare = async (password: string) => {
     if (!tKeyInstance) {
-      uiConsole('tKey not initialized yet');
+      uiConsole('tKeyInstance not initialized yet');
       return;
     }
 
@@ -137,6 +157,11 @@ export default function App() {
           const finalPrivateKey = reconstructedKey?.privKey.toString('hex');
           await setPrivateKey(finalPrivateKey);
           uiConsole('Private Key: ' + finalPrivateKey);
+
+          const metadata = await tKeyInstance.getMetadata();
+          const TKeyPubX = metadata.pubKey.x.toString(16, 64);
+          setTKeyPubX(TKeyPubX);
+          setDeviceShare();
         }
         uiConsole('Successfully logged you in with the recovery password.');
       } catch (error) {
@@ -149,9 +174,45 @@ export default function App() {
     }
   };
 
+  const setDeviceShare = async () => {
+    try {
+      const generateShareResult = await tKeyInstance.generateNewShare();
+      const share = await tKeyInstance.outputShareStore(
+        generateShareResult.newShareIndex,
+      ).share.share;
+      EncryptedStorage.setItem(
+        `deviceShare${tKeyPubX}`,
+        share.toString(16, 64),
+      );
+      uiConsole('Device Share Set', share.toString(16, 64));
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
+  const getDeviceShare = async () => {
+    try {
+      const shareHex = await EncryptedStorage.getItem(`deviceShare${tKeyPubX}`);
+      const shareBN = new BN(shareHex as any, 'hex');
+      uiConsole('Device Share Captured Successfully', shareBN);
+      return shareBN;
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
+  const deleteDeviceShare = async () => {
+    try {
+      await EncryptedStorage.removeItem(`deviceShare${tKeyPubX}`);
+      uiConsole('Device Share Deleted');
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
   const changeSecurityQuestionAndAnswer = async (password: string) => {
     if (!tKeyInstance) {
-      uiConsole('tKey not initialized yet');
+      uiConsole('tKeyInstance not initialized yet');
       return;
     }
 
@@ -177,7 +238,7 @@ export default function App() {
 
   const generateNewShareWithPassword = async (password: string) => {
     if (!tKeyInstance) {
-      uiConsole('tKey not initialized yet');
+      uiConsole('tKeyInstance not initialized yet');
       return;
     }
     if (password.length > 10) {
@@ -202,7 +263,7 @@ export default function App() {
 
   const getKeyDetails = async () => {
     if (!tKeyInstance) {
-      uiConsole('tKey not initialized yet');
+      uiConsole('tKeyInstance not initialized yet');
       return;
     }
 
@@ -212,7 +273,7 @@ export default function App() {
 
   const resetAccount = async () => {
     if (!tKeyInstance) {
-      uiConsole('tKey not initialized yet');
+      uiConsole('tKeyInstance not initialized yet');
       return;
     }
     try {
@@ -359,6 +420,9 @@ export default function App() {
       <Button title="Send Transaction" onPress={() => sendTransaction()} />
       <Button title="Sign Message" onPress={() => signMessage()} />
       <Button title="Get Private Key" onPress={() => uiConsole(privateKey)} />
+      <Button title="Set Device Share" onPress={() => setDeviceShare()} />
+      <Button title="Get Device Share" onPress={() => getDeviceShare()} />
+      <Button title="Delete Device Share" onPress={() => deleteDeviceShare()} />
       <Button title="Reset Account" onPress={resetAccount} />
       <Button title="Log Out" onPress={logout} />
     </View>
