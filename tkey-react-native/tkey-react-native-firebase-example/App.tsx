@@ -212,7 +212,7 @@ export default function App() {
     try {
       const metadata = await tKeyInstance.getMetadata();
       const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      const shareHex = await SecureStore.getItemAsync(`deviceShare${tKeyPubX}`);
+      const shareHex = await EncryptedStorage.getItem(`deviceShare${tKeyPubX}`);
       if (shareHex && shareHex !== '0') {
         const shareBN = new BN(shareHex as any, 'hex');
         uiConsole(
