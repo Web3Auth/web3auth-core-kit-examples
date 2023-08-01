@@ -20,7 +20,7 @@
     "@web3auth/ethereum-provider": "^6.1.1",
     "empty-module": "^0.0.2",
     "ethers": "^5.7.0",
-    "expo": "~48.0.18",
+    "expo": "~49.0.6",
     "expo-auth-session": "^4.0.3",
     "expo-constants": "^14.2.1",
     "expo-secure-store": "^12.3.1",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@ethersproject/shims": "^5.7.0",
-    "@expo/webpack-config": "^18.0.1",
+    "@expo/webpack-config": "^18.1.0",
     "base-64": "^1.0.0",
     "bn.js": "^5.2.1",
     "buffer": "^6.0.3",
