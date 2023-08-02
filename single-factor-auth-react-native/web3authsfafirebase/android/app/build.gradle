@@ -119,18 +119,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:32.2.0')
-
-}
-
-plugins {
-    id 'com.android.application'
-
-    // Add the Google services Gradle plugin
-    id 'com.google.gms.google-services'
-
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

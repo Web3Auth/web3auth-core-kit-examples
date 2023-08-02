@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = "33.0.0"
-        minSdkVersion = 21
+        minSdkVersion = 24
         compileSdkVersion = 33
         targetSdkVersion = 33
 
@@ -18,8 +18,5 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath 'com.google.gms:google-services:4.3.15'
-    }
-    plugins {
-        id 'com.google.gms.google-services' version '4.3.15' apply false
     }
 }
