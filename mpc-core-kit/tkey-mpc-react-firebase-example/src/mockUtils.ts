@@ -2,10 +2,10 @@ import KJUR from "jsrsasign";
 
 import TorusUtils from "@toruslabs/torus.js";
 import { TORUS_NETWORK } from "@toruslabs/constants";
-import { NODE_DETAILS_SAPPHIRE_DEVNET } from "@toruslabs/fnd-base";
+import { getSapphireNodeDetails } from "@toruslabs/fnd-base";
 
 
-const { torusNodeSSSEndpoints } = NODE_DETAILS_SAPPHIRE_DEVNET
+const { torusNodeSSSEndpoints } = getSapphireNodeDetails(TORUS_NETWORK.SAPPHIRE_DEVNET)
 
 const torusNodeEndpoints = torusNodeSSSEndpoints as string[]
 
@@ -45,10 +45,10 @@ export async function fetchPostboxKeyAndSigs(opts: any) {
   const { verifierName, verifierId } = opts;
   const token = generateIdToken(verifierId);
 
-  const retrieveSharesResponse = await torus.retrieveShares(torusNodeEndpoints, verifierName, { verifier_id: verifierId }, token);
+  const retrieveSharesResponse = await torus.retrieveShares(torusNodeEndpoints, [1,2,3,4,5] , verifierName, { verifier_id: verifierId }, token);
 
   const signatures: any = [];
-  retrieveSharesResponse.sessionTokenData.filter((session) => {
+  retrieveSharesResponse.sessionData.sessionTokenData.filter((session) => {
     if (session) {
       signatures.push(
         JSON.stringify({
@@ -62,6 +62,6 @@ export async function fetchPostboxKeyAndSigs(opts: any) {
 
   return {
     signatures,
-    postboxkey: retrieveSharesResponse.privKey.toString(),
+    postboxkey: retrieveSharesResponse.sessionData.sessionAuthKey.toString(),
   };
 }

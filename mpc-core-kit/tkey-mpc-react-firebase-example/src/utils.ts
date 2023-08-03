@@ -10,7 +10,7 @@ import keccak256 from "keccak256";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 import { fetchLocalConfig } from "@toruslabs/fnd-base";
-import { TORUS_NETWORK, TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
+import { TORUS_NETWORK } from "@toruslabs/constants";
 import { utils } from "@toruslabs/tss-client";
 const { getDKLSCoeff, setupSockets } = utils;
 
@@ -33,7 +33,7 @@ export function getEcCrypto(): any {
 }
 const ec = getEcCrypto();
 
-export function generateTSSEndpoints(parties: number, clientIndex: number, network: TORUS_SAPPHIRE_NETWORK_TYPE, nodeIndexes: number[] = []) {
+export function generateTSSEndpoints(parties: number, clientIndex: number, network: any, nodeIndexes: number[] = []) {
   console.log("generateEndpoints node indexes", nodeIndexes);
   const networkConfig = fetchLocalConfig(network);
   if (!networkConfig) {

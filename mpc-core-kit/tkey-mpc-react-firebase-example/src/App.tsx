@@ -5,13 +5,30 @@ import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
-import { tKey } from "./tkey";
+import { tKey, chainConfig } from "./tkey";
 import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
-import { fetchPostboxKeyAndSigs} from "./mockUtils";
+import { fetchPostboxKeyAndSigs } from "./mockUtils";
 import { utils } from "@toruslabs/tss-client";
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
+import { TorusServiceProvider } from "@tkey-mpc/service-provider-torus";
 
 const { getTSSPubKey } = utils;
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
+  authDomain: "web3auth-oauth-logins.firebaseapp.com",
+  projectId: "web3auth-oauth-logins",
+  storageBucket: "web3auth-oauth-logins.appspot.com",
+  messagingSenderId: "461819774167",
+  appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
+};
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -31,6 +48,7 @@ function App() {
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
   const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
+  const app = initializeApp(firebaseConfig);
 
   // Init Service Provider inside the useEffect Method
 
@@ -63,14 +81,7 @@ function App() {
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
-      const chainConfig = {
-        chainId: "0x5",
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        displayName: "Goerli Testnet",
-        blockExplorer: "https://goerli.etherscan.io",
-        ticker: "ETH",
-        tickerName: "Ethereum",
-      }
+
       const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
       setWeb3(web3Local);
     };
@@ -79,6 +90,30 @@ function App() {
     }
   }, [signingParams]);
 
+  const signInWithGoogle = async (): Promise<UserCredential> => {
+    try {
+      const auth = getAuth(app);
+      const googleProvider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, googleProvider);
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const parseToken = (token: any) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace("-", "+").replace("_", "/");
+      return JSON.parse(window.atob(base64 || ""));
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+
   const triggerLogin = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
@@ -86,12 +121,48 @@ function App() {
     }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
-				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-			});
+      // const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
+      // 	typeOfLogin: 'google',
+      // 	verifier: 'google-tkey-w3a',
+      // 	clientId:
+      // 		'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+      // });
+
+      const loginRes = await signInWithGoogle();
+      // get the id token from firebase
+      const idToken = await loginRes.user.getIdToken(true);
+
+      const parsedToken = parseToken(idToken);
+      const verifier = "web3auth-firebase-examples";
+      const verifier_id = parsedToken.sub;
+
+      const retrieveSharesResponse = await (tKey.serviceProvider as TorusServiceProvider).directWeb.getTorusKey(verifier, verifier_id, { verifier_id }, idToken)
+
+      const signatures: any = [];
+      retrieveSharesResponse.sessionData.sessionTokenData.filter((session) => {
+        if (session) {
+          signatures.push(
+            JSON.stringify({
+              data: session.token,
+              sig: session.signature,
+            })
+          );
+        }
+        return null;
+      });
+
+      const postboxKey = new BN(retrieveSharesResponse.sessionData.sessionAuthKey.toString(), "hex");
+
+      (tKey.serviceProvider as any).postboxKey = postboxKey;
+      (tKey.serviceProvider as any).verifierName = verifier;
+      (tKey.serviceProvider as any).verifierId = verifier_id;
+
+      const loginResponse = {
+        userInfo: parsedToken,
+        signatures,
+        privateKey: postboxKey,
+      };
+
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
       return loginResponse;
@@ -120,13 +191,14 @@ function App() {
       const verifierId = mockVerifierId;
 
       const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
-      tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
+      const postboxkeyBN = new BN(postboxkey, "hex");
+      tKey.serviceProvider.postboxKey = postboxkeyBN;
       (tKey.serviceProvider as any).verifierName = verifier;
       (tKey.serviceProvider as any).verifierId = verifierId;
       const loginResponse = {
         userInfo: { verifierId, verifier },
         signatures,
-        privateKey: postboxkey,
+        privateKey: postboxkeyBN,
       };
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
@@ -148,6 +220,11 @@ function App() {
       } else {
         loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
       }
+
+      if (!loginResponse) {
+        throw new Error("Login Failed, no loginResponse");
+      }
+
       setOAuthShare(loginResponse.privateKey);
 
       const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
@@ -191,7 +268,7 @@ function App() {
         if (factorKeyMetadata.message === "KEY_NOT_FOUND") {
           throw new Error("no metadata for your factor key, reset your account");
         }
-        
+
         const metadataShare = JSON.parse(factorKeyMetadata.message);
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
         uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
@@ -223,10 +300,10 @@ function App() {
       const tssShare2ECPK = ec.curve.g.mul(tssShare2);
       const tssShare2PubKey = { x: tssShare2ECPK.getX().toString("hex"), y: tssShare2ECPK.getY().toString("hex") };
 
-    
+
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
       const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2PubKey, tssShare2Index);
-    
+
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
@@ -323,8 +400,8 @@ function App() {
           }
         });
       }
-      uiConsole("backupFactorIndex:", backupFactorIndex+1);
-      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex+1, localFactorKey, signingParams.signatures);
+      uiConsole("backupFactorIndex:", backupFactorIndex + 1);
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex + 1, localFactorKey, signingParams.signatures);
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
