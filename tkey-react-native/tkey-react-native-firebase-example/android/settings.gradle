@@ -1,6 +1,4 @@
-rootProject.name = 'tkeyrnexample'
+rootProject.name = 'tkeyfirebaseexample'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
-includeBuild('../node_modules/react-native-gradle-plugin')
-include ':customauth-react-native-sdk'
-project(':customauth-react-native-sdk').projectDir = new File(rootProject.projectDir, '../node_modules/@toruslabs/customauth-react-native-sdk/android')
+includeBuild('../node_modules/@react-native/gradle-plugin')

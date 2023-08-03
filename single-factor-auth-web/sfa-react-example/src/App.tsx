@@ -49,7 +49,9 @@ const firebaseConfig = {
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
+    null
+  );
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const app = initializeApp(firebaseConfig);
@@ -60,12 +62,13 @@ function App() {
         // Initialising Web3Auth Single Factor Auth SDK
         const web3authSfa = new Web3Auth({
           clientId, // Get your Client ID from Web3Auth Dashboard
-          chainConfig,
           web3AuthNetwork: "testnet", // ["cyan", "testnet"]
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
         setWeb3authSFAuth(web3authSfa);
-        const provider = new EthereumPrivateKeyProvider({ config: { chainConfig } })
+        const provider = new EthereumPrivateKeyProvider({
+          config: { chainConfig },
+        });
 
         web3authSfa.init(provider);
       } catch (error) {
@@ -114,7 +117,7 @@ function App() {
         uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
         return;
       }
-      
+
       // get sub value from firebase id token
       const { sub } = parseToken(idToken);
 
@@ -260,20 +263,16 @@ function App() {
       </h1>
 
       {isLoggingIn ? (
-				<Loading />
-			) : (
+        <Loading />
+      ) : (
         <div className="grid">
-          {web3authSFAuth
-            ? provider
-              ? loginView
-              : logoutView
-            : null}
+          {web3authSFAuth ? (provider ? loginView : logoutView) : null}
         </div>
       )}
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth/sfa-react-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-react-example"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -9,15 +9,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
-import com.github.web3auth.singlefactorauth.SingleFactorAuth
-import com.github.web3auth.singlefactorauth.types.LoginParams
-import com.github.web3auth.singlefactorauth.types.SingleFactorAuthArgs
-import com.github.web3auth.singlefactorauth.types.TorusKey
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.web3auth.singlefactorauth.SingleFactorAuth
+import com.web3auth.singlefactorauth.types.LoginParams
+import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
+import com.web3auth.singlefactorauth.types.TorusKey
 import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +46,18 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut() }
 
+        val sessionResponse: CompletableFuture<TorusKey> =
+            singleFactorAuth.initialize(this.applicationContext)
+        sessionResponse.whenComplete { torusKey, error ->
+            if (torusKey != null) {
+                publicAddress = torusKey?.publicAddress.toString()
+                println("""Private Key: ${torusKey.privateKey?.toString(16)}""".trimIndent())
+                reRender()
+            } else {
+                Log.d("MainActivity_SFA", error.message ?: "Something went wrong")
+            }
+        }
+
         reRender()
     }
 
@@ -68,16 +81,21 @@ class MainActivity : AppCompatActivity() {
                             val sub = jwt.getClaim("sub").asString() //get sub claims
                             Log.d(TAG, "sub = $sub")
 
-                            loginParams = LoginParams("web3auth-firebase-examples", "$sub", "$idToken")
+                            loginParams =
+                                LoginParams("web3auth-firebase-examples", "$sub", "$idToken")
                             try {
-                                torusKey = singleFactorAuth.getKey(loginParams).get()
+                                torusKey = singleFactorAuth.getKey(
+                                    loginParams,
+                                    this.applicationContext,
+                                    86400
+                                ).get()
                             } catch (e: ExecutionException) {
                                 e.printStackTrace()
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
-                            publicAddress = torusKey!!.publicAddress
-                            println("""Private Key: ${torusKey!!.privateKey.toString(16)}""".trimIndent())
+                            publicAddress = torusKey?.publicAddress.toString()
+                            println("""Private Key: ${torusKey?.privateKey?.toString(16)}""".trimIndent())
                             println("""Public Address: $publicAddress""".trimIndent())
                             reRender()
                         };

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FirstFragment">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/resultView"
+                android:layout_width="match_parent"
+                android:layout_height="198dp" />
+
+            <ProgressBar
+                android:id="@+id/loadingIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textview_first"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="tkey Example"
+                    android:textAlignment="center" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="?android:attr/listDivider" />
+
+
+                <View
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <Button
+                    android:id="@+id/googleLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Login with Google" />
+
+                <Button
+                    android:id="@+id/createThresholdKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Init and Reconstruct tKey" />
+
+                <Button
+                    android:id="@+id/resetAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Account" />
+
+                <Button
+                    android:id="@+id/reconstructThresholdKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Reconstruct tKey" />
+
+                <Button
+                    android:id="@+id/getKeyDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Get Key Details" />
+
+                <Button
+                    android:id="@+id/generateNewShare"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Generate New Share" />
+
+                <Button
+                    android:id="@+id/deleteShare"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delete Recent Generated Share" />
+
+                <View
+                    android:id="@+id/divider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textview_first2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Security Question"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/addPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Add Password" />
+
+                <Button
+                    android:id="@+id/changePassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Change Password" />
+
+                <Button
+                    android:id="@+id/showPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show Password" />
+
+                <View
+                    android:id="@+id/divider5"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textview_first3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seed Phrase"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/setSeedPhrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set Seed Phrase" />
+
+                <Button
+                    android:id="@+id/changeSeedPhrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Change Seed Phrase" />
+
+                <Button
+                    android:id="@+id/getSeedPhrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Get Seed Phrase" />
+
+                <Button
+                    android:id="@+id/deleteSeedPhrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delete Seed Phrase" />
+
+                <View
+                    android:id="@+id/divider6"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textview_first4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Share Serialization"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/exportShare"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Export Share" />
+
+                <View
+                    android:id="@+id/divider7"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/textview_first5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Private Key"
+                    android:textAlignment="center" />
+
+                <Button
+                    android:id="@+id/setPrivateKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Set Private Key" />
+
+                <Button
+                    android:id="@+id/getPrivateKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Get Private Key" />
+
+                <Button
+                    android:id="@+id/getAccounts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Get Accounts" />
+
+                <View
+                    android:id="@+id/divider8"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:background="?android:attr/listDivider" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

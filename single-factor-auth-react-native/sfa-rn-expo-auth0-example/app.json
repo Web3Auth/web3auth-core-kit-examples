@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "web3authsfaauth0",
+    "slug": "web3authsfaauth0",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "react-native-auth0",
+        {
+          "domain": "shahbaz-torus.us.auth0.com",
+          "customScheme": "auth0.com.web3authsfaauth0"
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.web3authsfaauth0"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.web3authsfaauth0"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
