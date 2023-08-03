@@ -12,6 +12,7 @@ import BN from 'bn.js';
 import RPC from "./ethersRPC"; // for using ethers.js
 import { ethereumPrivateKeyProvider, tKeyInstance } from "./tkey";
 import { ShareSerializationModule } from "@tkey/share-serialization";
+import SfaServiceProvider from "@tkey/service-provider-sfa";
 
 const Home = () => {
   const [privateKey, setPrivateKey] = useState<string | null>();
@@ -76,14 +77,14 @@ const Home = () => {
       const verifier = "web3auth-auth0-demo";
       const verifierId = parsedToken.sub;
 
-      const loginResponse = await (tKeyInstance.serviceProvider as any).connect(
-        {
-          verifier,
-          verifierId,
-          idToken,
-        },
-      );
-      const OAuthShareKey = await loginResponse.request({ method: 'eth_private_key' });
+      const OAuthShareKey = await (
+        tKeyInstance.serviceProvider as SfaServiceProvider
+      ).connect({
+        verifier,
+        verifierId,
+        idToken,
+      });
+
       uiConsole('OAuthShareKey', OAuthShareKey);
       setOAuthShare(OAuthShareKey);
 

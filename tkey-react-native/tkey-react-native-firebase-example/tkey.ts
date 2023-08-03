@@ -22,7 +22,6 @@ const web3AuthOptions: any = {
   clientId, // Get your Client ID from Web3Auth Dashboard
   chainConfig,
   web3AuthNetwork: 'testnet', // ["cyan", "testnet"]
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
 };
 
 // Configuration of Service Provider

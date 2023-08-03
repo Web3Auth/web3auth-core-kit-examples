@@ -18,6 +18,7 @@ import {Dialog, Input} from '@rneui/themed';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import BN from 'bn.js';
 import {ShareSerializationModule} from '@tkey/share-serialization';
+import {SfaServiceProvider} from '@tkey/service-provider-sfa';
 
 async function signInWithEmailPassword() {
   try {
@@ -87,17 +88,14 @@ export default function App() {
       const verifier = 'web3auth-firebase-examples';
       const verifierId = parsedToken.sub;
 
-      const loginResponse = await (tKeyInstance.serviceProvider as any).connect(
-        {
-          verifier,
-          verifierId,
-          idToken,
-        },
-      );
-
-      const OAuthShareKey = await loginResponse.request({
-        method: 'eth_private_key',
+      const OAuthShareKey = await (
+        tKeyInstance.serviceProvider as SfaServiceProvider
+      ).connect({
+        verifier,
+        verifierId,
+        idToken,
       });
+
       uiConsole('OAuthShareKey', OAuthShareKey);
       setOAuthShare(OAuthShareKey);
 

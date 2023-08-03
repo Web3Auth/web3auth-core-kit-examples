@@ -12,7 +12,7 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "@tkey/core": "^9.0.0",
     "@tkey/security-questions": "^9.0.0",
-    "@tkey/service-provider-sfa": "^10.1.0",
+    "@tkey/service-provider-sfa": "^10.1.1",
     "@tkey/share-serialization": "^9.0.1",
     "@tkey/share-transfer": "^9.0.0",
     "@tkey/storage-layer-torus": "^9.0.0",
