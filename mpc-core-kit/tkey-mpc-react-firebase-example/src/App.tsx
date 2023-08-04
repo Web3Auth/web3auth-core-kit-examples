@@ -61,9 +61,8 @@ function App() {
     const init = async () => {
       // Initialization of Service Provider
       try {
-        await (tKey.serviceProvider as any).init({
-          skipSw: true,
-          skipPrefetch: true,
+        await (tKey.serviceProvider as TorusServiceProvider).init({
+          skipInit: true,
         });
       } catch (error) {
         console.error(error);
@@ -166,6 +165,8 @@ function App() {
 
       const tKeyLocalStore = gettKeyLocalStore(loginResponse);
 
+      console.log("key", tKeyLocalStore, loginResponse);
+
       console.log(tKeyLocalStore, loginResponse)
 
       let factorKey: BN | null = null;
@@ -252,7 +253,7 @@ function App() {
       // 5. save factor key and other metadata
       if (
         !existingUser ||
-        !(tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId)
+        !(tKeyLocalStore.verifier === loginResponse.verifier && tKeyLocalStore.verifierId === loginResponse.verifier_id)
       ) {
         await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       }
@@ -260,7 +261,7 @@ function App() {
 
       setLocalFactorKey(factorKey);
 
-      const nodeDetails = tKey.serviceProvider.getTSSNodeDetails()
+      const nodeDetails = await tKey.serviceProvider.getTSSNodeDetails()
 
       setSigningParams({
         tssNonce,
@@ -363,7 +364,7 @@ function App() {
   }
 
   const deleteTkeyLocalStore = async () => {
-    localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+    localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`);
     uiConsole("Successfully deleted tKey local store");
   }
 
@@ -406,7 +407,7 @@ function App() {
 
   const resetAccount = async () => {
     try {
-      localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+      localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`);
       await tKey.storageLayer.setMetadata({
         privKey: oAuthShare,
         input: { message: "KEY_NOT_FOUND" },

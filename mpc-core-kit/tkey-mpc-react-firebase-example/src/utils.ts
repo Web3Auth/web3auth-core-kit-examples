@@ -59,7 +59,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
 
     const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, nodeDetails } = signingParams;
 
-    const { verifier, verifierId } = loginReponse.userInfo;
+    const { verifier, verifier_id: verifierId } = loginReponse;
 
     const vid = `${verifier}${DELIMITERS.Delimiter1}${verifierId}`;
     const sessionId = `${vid}${DELIMITERS.Delimiter2}default${DELIMITERS.Delimiter3}${tssNonce}${DELIMITERS.Delimiter4}`;
@@ -205,14 +205,14 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
 };
 
 export const gettKeyLocalStore = (loginResponse: any) => {
-  return JSON.parse(localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`) || "{}");
+  return JSON.parse(localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`) || "{}");
 }
 
 export const settKeyLocalStore = (loginResponse: any, localFactorKey: BN) => {
-  localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`, JSON.stringify({
+  localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`, JSON.stringify({
     factorKey: localFactorKey.toString("hex"),
-    verifier: loginResponse.userInfo.verifier,
-    verifierId: loginResponse.userInfo.verifierId,
+    verifier: loginResponse.verifier,
+    verifierId: loginResponse.verifier_id,
   }));
 }
 
