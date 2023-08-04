@@ -220,6 +220,18 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
   await tKey.addShareDescription(factorIndex, JSON.stringify(params), true);
 };
 
+export const gettKeyLocalStore = (loginResponse: any) => {
+  return JSON.parse(localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`|| "{}") as string);
+}
+
+export const settKeyLocalStore = (loginResponse: any, localFactorKey: BN) => {
+  localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`, JSON.stringify({
+    factorKey: localFactorKey.toString("hex"),
+    verifier: loginResponse.userInfo.verifier,
+    verifierId: loginResponse.userInfo.verifierId,
+  }));
+}
+
 export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
   if (!tKey) {
     throw new Error("tkey does not exist, cannot copy factor pub");
