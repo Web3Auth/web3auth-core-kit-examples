@@ -54,14 +54,17 @@ function App() {
   useEffect(() => {
     if (!localFactorKey) return;
     settKeyLocalStore(loginResponse, localFactorKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localFactorKey]);
 
   useEffect(() => {
     const init = async () => {
       // Initialization of Service Provider
       try {
-        await (tKey.serviceProvider as any).init();
+        await (tKey.serviceProvider as any).init({
+          skipSw: true,
+          skipPrefetch: true,
+        });
       } catch (error) {
         console.error(error);
       }
@@ -121,19 +124,8 @@ function App() {
 
       const retrieveSharesResponse = await (tKey.serviceProvider as TorusServiceProvider).directWeb.getTorusKey(verifier, verifier_id, { verifier_id }, idToken)
 
-      const signatures: any = [];
-      retrieveSharesResponse.sessionData.sessionTokenData.filter((session) => {
-        if (session) {
-          signatures.push(
-            JSON.stringify({
-              data: session.token,
-              sig: session.signature,
-            })
-          );
-        }
-        return null;
-      });
-
+      const signatures: any = retrieveSharesResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
+      console.log("OAuth Response", retrieveSharesResponse, "askljfbhl", signatures);
       const OAuthShare = new BN(TorusUtils.getPostboxKey(retrieveSharesResponse), "hex");
 
       (tKey.serviceProvider as any).postboxKey = OAuthShare;
@@ -142,7 +134,9 @@ function App() {
 
       const loginResponse = {
         userInfo: parsedToken,
-        signatures: signatures.filter((sign: any) => sign !== null),
+        verifier,
+        verifier_id,
+        signatures: signatures,
         OAuthShare: OAuthShare,
       };
 
@@ -159,9 +153,9 @@ function App() {
       uiConsole("tKey not initialized yet");
       return;
     }
-    try { 
+    try {
       const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
-     
+
       if (!loginResponse) {
         throw new Error("Login Failed, no loginResponse");
       }
@@ -170,24 +164,29 @@ function App() {
 
       const { signatures } = loginResponse;
 
-      const tKeyLocalStore = await gettKeyLocalStore(loginResponse);
+      const tKeyLocalStore = gettKeyLocalStore(loginResponse);
+
+      console.log(tKeyLocalStore, loginResponse)
 
       let factorKey: BN | null = null;
 
       const existingUser = await isMetadataPresent(loginResponse.OAuthShare);
 
       if (!existingUser) {
+        console.log("New User");
         factorKey = new BN(generatePrivate());
         const deviceTSSShare = new BN(generatePrivate());
         const deviceTSSIndex = 2;
         const factorPub = getPubKeyPoint(factorKey);
         await tKey.initialize({ useTSS: true, factorPub, deviceTSSShare, deviceTSSIndex });
       } else {
-        if (tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId) {
+        if (tKeyLocalStore.verifier === loginResponse.verifier && tKeyLocalStore.verifierId === loginResponse.verifier_id) {
+          console.log("Using Local Store")
           factorKey = new BN(tKeyLocalStore.factorKey, "hex");
         }
         else {
           try {
+            console.log("Recovery Activated");
             factorKey = await swal('Enter your backup share', {
               content: 'input' as any,
             }).then(async value => {
@@ -199,6 +198,8 @@ function App() {
             throw new Error("Invalid backup share");
           }
         }
+
+
         if (factorKey === null) throw new Error("Backup share not found");
         const factorKeyMetadata = await tKey.storageLayer.getMetadata<{
           message: string;
@@ -208,15 +209,17 @@ function App() {
         if (factorKeyMetadata.message === "KEY_NOT_FOUND") {
           throw new Error("no metadata for your factor key, reset your account");
         }
-
         const metadataShare = JSON.parse(factorKeyMetadata.message);
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
         uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
         const metadataDeviceShare = metadataShare.deviceShare;
         await tKey.initialize({ neverInitializeNewKey: true });
         await tKey.inputShareStoreSafe(metadataDeviceShare, true);
-        await tKey.reconstructKey();
       }
+
+
+      await tKey.reconstructKey();
+
 
       // Checks the requiredShares to reconstruct the tKey, starts from 2 by default and each of the above share reduce it by one.
       const { requiredShares } = tKey.getKeyDetails();
@@ -257,12 +260,15 @@ function App() {
 
       setLocalFactorKey(factorKey);
 
+      const nodeDetails = tKey.serviceProvider.getTSSNodeDetails()
+
       setSigningParams({
         tssNonce,
         tssShare2,
         tssShare2Index,
         compressedTSSPubKey,
-        signatures
+        signatures,
+        nodeDetails,
       })
 
 
@@ -310,7 +316,6 @@ function App() {
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
       const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
-      await tKey._syncShareMetadata();
       await tKey.syncLocalMetadataTransitions();
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
@@ -594,7 +599,7 @@ function App() {
     <div className="container">
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
-          Web3Auth Core Kit tKey MPC Beta
+          Web3Auth tKey MPC Beta
         </a> {" "}
         & ReactJS Ethereum Example
       </h1>
