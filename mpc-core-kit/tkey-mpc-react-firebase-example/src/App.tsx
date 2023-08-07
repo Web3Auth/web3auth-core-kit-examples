@@ -81,6 +81,7 @@ function App() {
     if (signingParams) {
       localSetup();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signingParams]);
 
   const signInWithGoogle = async (): Promise<UserCredential> => {
@@ -124,7 +125,6 @@ function App() {
       const retrieveSharesResponse = await (tKey.serviceProvider as TorusServiceProvider).directWeb.getTorusKey(verifier, verifier_id, { verifier_id }, idToken)
 
       const signatures: any = retrieveSharesResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
-      console.log("OAuth Response", retrieveSharesResponse, "askljfbhl", signatures);
       const OAuthShare = new BN(TorusUtils.getPostboxKey(retrieveSharesResponse), "hex");
 
       (tKey.serviceProvider as any).postboxKey = OAuthShare;
@@ -338,6 +338,7 @@ function App() {
       const backupFactorPub = getPubKeyPoint(backupFactorKey);
       const tKeyShareDescriptions = await tKey.getMetadata().getShareDescription();
       let backupFactorIndex = 2;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (const [key, value] of Object.entries(tKeyShareDescriptions)) {
         // eslint-disable-next-line no-loop-func, array-callback-return
         value.map((factor: any) => {

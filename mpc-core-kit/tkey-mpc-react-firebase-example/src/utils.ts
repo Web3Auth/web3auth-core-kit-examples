@@ -9,11 +9,9 @@ import { EthereumSigningProvider } from "@web3auth-mpc/ethereum-provider";
 import keccak256 from "keccak256";
 import Web3 from "web3";
 import type { provider } from "web3-core";
-import { TORUS_NETWORK } from "@toruslabs/constants";
 import { utils } from "@toruslabs/tss-client";
 const { getDKLSCoeff, setupSockets } = utils;
 
-const network = TORUS_NETWORK.SAPPHIRE_DEVNET;
 const parties = 4;
 const clientIndex = parties - 1;
 const tssImportUrl = `https://sapphire-dev-2-2.authnetwork.dev/tss/v1/clientWasm`;
