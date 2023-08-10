@@ -1,9 +1,9 @@
 # Web3Auth (`@web3auth/single-factor-auth`) React Example
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/single-factor-auth/)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-web/)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
-[Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
+[Join our Community Portal](https://web3auth.io/community) to get support and stay up to date with the latest news and updates.
 
 This example demonstrates how to use Web3Auth's Single Factor Authentication in a React environment with Auth0 Twitter authentication.
 
@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's Single Factor Authentication in 
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth/sfa-react-auth0-twitter-example w3a-sfa-react-example
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-react-auth0-twitter-example w3a-sfa-react-a0-twitter-example
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-sfa-react-example
+cd w3a-sfa-react-a0-twitter-example
 npm install
 npm run start
 # or
-cd w3a-sfa-react-example
+cd w3a-sfa-react-a0-twitter-example
 yarn
 yarn start
 ```
@@ -34,4 +34,4 @@ yarn start
 - [Guides](https://web3auth.io/docs/guides)
 - [SDK / API References](https://web3auth.io/docs/sdk)
 - [Pricing](https://web3auth.io/pricing.html)
-- [Community Portal](https://community.web3auth.io)
+- [Community Portal](https://web3auth.io/community)

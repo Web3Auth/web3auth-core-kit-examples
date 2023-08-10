@@ -16,7 +16,6 @@ import "./App.css";
 
 const verifier = "w3a-auth0-twitter-example";
 
-
 const clientId =
   "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
@@ -75,7 +74,6 @@ function App() {
   };
 
   const login = async () => {
-
     // trying logging in with the Single Factor Auth SDK
     try {
       if (!web3authSFAuth) {
@@ -85,6 +83,7 @@ function App() {
       setIsLoggingIn(true);
       await loginWithPopup();
       const idToken = (await getIdTokenClaims())?.__raw.toString();
+      console.log(idToken);
       setIdToken(idToken!);
       const { sub } = parseToken(idToken);
       const web3authSfaprovider = await web3authSFAuth.connect({
@@ -225,7 +224,7 @@ function App() {
         <a target="_blank" href="http://web3auth.io/" rel="noreferrer">
           Web3Auth
         </a>{" "}
-        SFA React Auth0 Twitter Example
+        SFA React Auth0 GitHub Example
       </h1>
 
       {isLoggingIn ? (
