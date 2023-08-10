@@ -725,7 +725,7 @@ function App() {
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-mpc-beta-react-popup-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit/tkey-mpc-react-bitcoin-example"
           target="_blank"
           rel="noopener noreferrer"
         >
