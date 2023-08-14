@@ -35,7 +35,7 @@
     "react-scripts": "5.0.1",
     "sweetalert": "^2.1.2",
     "web-vitals": "^2.1.4",
-    "web3": "^1.8.2"
+    "web3": "^4.0.3"
   },
   "devDependencies": {
     "@types/eccrypto": "^1.1.3",
