@@ -1,13 +1,13 @@
 import "./App.css";
+import TorusUtils from "@toruslabs/torus.js";
 
-import { getPubKeyPoint } from "@tkey/common-types";
+import { getPubKeyPoint } from "@tkey-mpc/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { tKey } from "./tkey";
 import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
-import { fetchPostboxKeyAndSigs} from "./mockUtils";
 import { utils } from "@toruslabs/tss-client";
 
 const { getTSSPubKey } = utils;
@@ -30,23 +30,6 @@ function App() {
   const [oAuthShare, setOAuthShare] = useState<any>(null);
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
-  const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
-
-  // Init Service Provider inside the useEffect Method
-
-  useEffect(() => {
-    if (!localFactorKey) return;
-    localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`, JSON.stringify({
-      factorKey: localFactorKey.toString("hex"),
-      verifier: loginResponse.userInfo.verifier,
-      verifierId: loginResponse.userInfo.verifierId,
-    }));
-  }, [localFactorKey]);
-
-  useEffect(() => {
-    if (!mockVerifierId) return;
-    localStorage.setItem(`mockVerifierId`, mockVerifierId);
-  }, [mockVerifierId]);
 
   useEffect(() => {
     const init = async () => {
@@ -87,11 +70,13 @@ function App() {
     try {
       // Triggering Login using Service Provider ==> opens the popup
       const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
-				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
-				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-			});
+        typeOfLogin: 'google',
+        verifier: 'google-tkey-w3a',
+        clientId:
+          '774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+      });
+      console.log("loginResponse", loginResponse);
+
       setLoginResponse(loginResponse);
       setUser(loginResponse.userInfo);
       return loginResponse;
@@ -100,64 +85,27 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    let verifierId: string;
-
-    const localMockVerifierId = localStorage.getItem("mockVerifierId");
-    if (localMockVerifierId) verifierId = localMockVerifierId;
-    else verifierId = Math.round(Math.random() * 100000) + "@example.com";
-    setMockVerifierId(verifierId);
-
-  }, []);
-
-  const triggerMockLogin = async () => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
-      return;
-    }
-    try {
-      const verifier = "torus-test-health";
-      const verifierId = mockVerifierId;
-
-      const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({ verifierName: verifier, verifierId });
-      tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
-      (tKey.serviceProvider as any).verifierName = verifier;
-      (tKey.serviceProvider as any).verifierId = verifierId;
-      const loginResponse = {
-        userInfo: { verifierId, verifier },
-        signatures,
-        privateKey: postboxkey,
-      };
-      setLoginResponse(loginResponse);
-      setUser(loginResponse.userInfo);
-      return loginResponse;
-    } catch (error) {
-      uiConsole(error);
-    }
-  };
-
-  const initializeNewKey = async (mockLogin: boolean) => {
+  const initializeNewKey = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
       return;
     }
     try {
       let loginResponse;
-      if (mockLogin) {
-        loginResponse = await triggerMockLogin();
-      } else {
-        loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
-      }
-      setOAuthShare(loginResponse.privateKey);
 
-      const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
+      loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+
+      const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse), "hex");
+      setOAuthShare(OAuthShare);
+      //@ts-ignore
+      const signatures = loginResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
 
       const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       let factorKey: BN | null = null;
 
-      const existingUser = await isMetadataPresent(loginResponse.privateKey);
+      const existingUser = await isMetadataPresent(OAuthShare);
 
       if (!existingUser) {
         factorKey = new BN(generatePrivate());
@@ -191,7 +139,7 @@ function App() {
         if (factorKeyMetadata.message === "KEY_NOT_FOUND") {
           throw new Error("no metadata for your factor key, reset your account");
         }
-        
+
         const metadataShare = JSON.parse(factorKeyMetadata.message);
         if (!metadataShare.deviceShare || !metadataShare.tssShare) throw new Error("Invalid data from metadata");
         uiConsole("Metadata Share:", metadataShare.deviceShare, "Index:", metadataShare.tssIndex);
@@ -223,10 +171,10 @@ function App() {
       const tssShare2ECPK = ec.curve.g.mul(tssShare2);
       const tssShare2PubKey = { x: tssShare2ECPK.getX().toString("hex"), y: tssShare2ECPK.getY().toString("hex") };
 
-    
+
       // 4. derive tss pub key, tss pubkey is implicitly formed using the dkgPubKey and the userShare (as well as userTSSIndex)
       const tssPubKey = getTSSPubKey(tssShare1PubKey, tssShare2PubKey, tssShare2Index);
-    
+
       const compressedTSSPubKey = Buffer.from(`${tssPubKey.getX().toString(16, 64)}${tssPubKey.getY().toString(16, 64)}`, "hex");
 
       // 5. save factor key and other metadata
@@ -240,12 +188,15 @@ function App() {
 
       setLocalFactorKey(factorKey);
 
+      const nodeDetails = await tKey.serviceProvider.getTSSNodeDetails()
+
       setSigningParams({
         tssNonce,
         tssShare2,
         tssShare2Index,
         compressedTSSPubKey,
-        signatures
+        signatures,
+        nodeDetails,
       })
 
 
@@ -323,8 +274,8 @@ function App() {
           }
         });
       }
-      uiConsole("backupFactorIndex:", backupFactorIndex+1);
-      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex+1, localFactorKey, signingParams.signatures);
+      uiConsole("backupFactorIndex:", backupFactorIndex + 1);
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex + 1, localFactorKey, signingParams.signatures);
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
@@ -564,17 +515,9 @@ function App() {
   );
 
   const unloggedInView = (
-    <>
-      <button onClick={() => initializeNewKey(false)} className="card">
+      <button onClick={() => initializeNewKey()} className="card">
         Login
       </button>
-      <button onClick={() => initializeNewKey(true)} className="card">
-        MockLogin
-      </button>
-
-      <p>Mock Login Seed Email</p>
-      <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
-    </>
   );
 
   return (
