@@ -43,6 +43,18 @@ function App() {
     init();
   }, []);
 
+  useEffect(() => {
+    if (!localFactorKey) return;
+    localStorage.setItem(
+      `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`,
+      JSON.stringify({
+        factorKey: localFactorKey.toString("hex"),
+        verifier: loginResponse.userInfo.verifier,
+        verifierId: loginResponse.userInfo.verifierId,
+      })
+    );
+  }, [localFactorKey]);
+
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
@@ -91,9 +103,7 @@ function App() {
       return;
     }
     try {
-      let loginResponse;
-
-      loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+      const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
 
       const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse), "hex");
       setOAuthShare(OAuthShare);
