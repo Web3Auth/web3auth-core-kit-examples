@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Web3Auth } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './FireBaseConfig';
 
 // RPC libraries for blockchain calls
@@ -45,14 +44,11 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
 
-const email = 'fakasot288@viperace.com';
-
 function App() {
   const [idToken, setIdToken] = useState<string | null>(null);
-  //@ts-ignore
-  const[ user ] = useAuthState(auth);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState<string>("hello@web3auth.io");
 
   useEffect(() => {
     const init = async () => {
@@ -60,7 +56,7 @@ function App() {
         // Initialising Web3Auth Single Factor Auth SDK
         web3authSfa.init(ethereumPrivateKeyProvider);
       } catch (error) {
-        console.error(error);
+        uiConsole(error);
       }
     };
     init();
@@ -68,9 +64,10 @@ function App() {
 
   useEffect(() => {
     if(isSignInWithEmailLink(auth, window.location.href)) {
+      const email = localStorage.getItem('email_for_web3auth_sfa_demo') || 'hello@web3auth.io';
       signInWithEmailLink(auth, email, window.location.href)
       .then(async loginRes => {
-        console.log(loginRes);
+        uiConsole(loginRes);
         const idToken = await loginRes.user.getIdToken(true);
 
         setIdToken(idToken);
@@ -86,7 +83,7 @@ function App() {
         }
         setIsLoggedIn(true);
       }).catch((error) => {
-        console.log(error);
+        uiConsole(error);
       });
     }
   }, []);
@@ -98,7 +95,7 @@ function App() {
         handleCodeInApp: true,
       });
     } catch (error) {
-        console.error(error);
+        uiConsole(error);
     }
   }
 
@@ -108,7 +105,7 @@ function App() {
       const base64 = base64Url.replace("-", "+").replace("_", "/");
       return JSON.parse(window.atob(base64 || ""));
     } catch (err) {
-      console.error(err);
+      uiConsole(err);
       return null;
     }
   };
@@ -122,14 +119,14 @@ function App() {
   };
 
   const logout = async () => {
-      console.log(
+      uiConsole(
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
       );
       auth.signOut().then(()=>{
-        console.log('successfully logged out');
+        uiConsole('successfully logged out');
         setProvider(null);
       }).catch((err)=>{
-        console.log(err);
+        uiConsole(err);
       })
       return;
   };
@@ -179,6 +176,7 @@ function App() {
     if (el) {
       el.innerHTML = JSON.stringify(args || {}, null, 2);
     }
+    console.log(...args);
   }
 
   const loginView = (
@@ -224,10 +222,17 @@ function App() {
 
   const logoutView = (
     <>
-      <p>Email: {email}</p>
+      <p>Email:</p>
+      <input type="text" value={email} onChange={(e) => {
+        setEmail(e.target.value)
+        localStorage.setItem('email_for_web3auth_sfa_demo', e.target.value);
+        }} />
       <button onClick={signInWithEmailPasswordless} className="card">
       Login
       </button>
+      <div id="console" style={{ whiteSpace: "pre-line" }}>
+        <p style={{ whiteSpace: "pre-line" }}></p>
+      </div>
     </> 
   );
 
