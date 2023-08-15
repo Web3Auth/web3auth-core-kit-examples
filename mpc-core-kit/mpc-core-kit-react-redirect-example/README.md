@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's tKey MPC Beta in a React environ
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/tkey/tkey-mpc-beta-react-popup-example w3a-tkey-mpc-beta-example
+npx degit Web3Auth/web3auth-core-kit-examples/mpc-core-kit/mpc-core-kit-react-redirect-example w3a-mpc-core-kit-react-redirect-example
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-tkey-mpc-beta-example
+cd w3a-mpc-core-kit-react-redirect-example
 npm install
 npm run start
 # or
-cd w3a-tkey-mpc-beta-example
+cd w3a-mpc-core-kit-react-redirect-example
 yarn
 yarn start
 ```

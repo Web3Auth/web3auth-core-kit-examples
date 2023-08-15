@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { encrypt, getPubKeyECC, Point, randomSelection, ShareStore } from "@tkey/common-types";
+import { encrypt, getPubKeyECC, Point, randomSelection, ShareStore } from "@tkey-mpc/common-types";
 import EC from "elliptic";
 
 import { generatePrivate } from "@toruslabs/eccrypto";
@@ -9,12 +9,9 @@ import { EthereumSigningProvider } from "@web3auth-mpc/ethereum-provider";
 import keccak256 from "keccak256";
 import Web3 from "web3";
 import type { provider } from "web3-core";
-import { fetchLocalConfig } from "@toruslabs/fnd-base";
-import { TORUS_NETWORK, TORUS_SAPPHIRE_NETWORK_TYPE } from "@toruslabs/constants";
 import { utils } from "@toruslabs/tss-client";
 const { getDKLSCoeff, setupSockets } = utils;
 
-const network = TORUS_NETWORK.SAPPHIRE_DEVNET;
 const parties = 4;
 const clientIndex = parties - 1;
 const tssImportUrl = `https://sapphire-dev-2-2.authnetwork.dev/tss/v1/clientWasm`;
@@ -33,38 +30,22 @@ export function getEcCrypto(): any {
 }
 const ec = getEcCrypto();
 
-export function generateTSSEndpoints(parties: number, clientIndex: number, network: TORUS_SAPPHIRE_NETWORK_TYPE, nodeIndexes: number[] = []) {
-  console.log("generateEndpoints node indexes", nodeIndexes);
-  const networkConfig = fetchLocalConfig(network);
-  if (!networkConfig) {
-    throw new Error(`Invalid network: ${network}`)
-  }
-
-  if (!networkConfig.torusNodeTSSEndpoints) {
-    throw new Error(`Invalid network: ${network}, endpoint not found`)
-  }
-  const endpoints = [];
-  const tssWSEndpoints = [];
-  const partyIndexes = [];
-
+export const generateTSSEndpoints = (tssNodeEndpoints: string[], parties: number, clientIndex: number) => {
+  const endpoints: string[] = [];
+  const tssWSEndpoints: string[] = [];
+  const partyIndexes: number[] = [];
   for (let i = 0; i < parties; i++) {
     partyIndexes.push(i);
-
     if (i === clientIndex) {
-      endpoints.push(null);
-      tssWSEndpoints.push(null);
+      endpoints.push(null as any);
+      tssWSEndpoints.push(null as any);
     } else {
-      endpoints.push(networkConfig.torusNodeTSSEndpoints[nodeIndexes[i] ?  nodeIndexes[i] - 1 : i]);
-      tssWSEndpoints.push(networkConfig.torusNodeEndpoints[nodeIndexes[i] ? nodeIndexes[i] - 1 : i]);
+      endpoints.push(tssNodeEndpoints[i]);
+      tssWSEndpoints.push(new URL(tssNodeEndpoints[i]).origin);
     }
   }
-
-  return {
-    endpoints: endpoints,
-    tssWSEndpoints: tssWSEndpoints,
-    partyIndexes: partyIndexes
-  };
-}
+  return { endpoints, tssWSEndpoints, partyIndexes };
+};
 
 export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingParams: any) => {
   try {
@@ -74,7 +55,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       }
     });
 
-    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures} = signingParams;
+    const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, nodeDetails } = signingParams;
 
     const { verifier, verifierId } = loginReponse.userInfo;
 
@@ -96,7 +77,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
 
       // 1. setup
       // generate endpoints for servers
-      const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(parties, clientIndex, network);
+      const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(nodeDetails.serverEndpoints, parties, clientIndex);
   
       // setup mock shares, sockets and tss wasm files.
       const [sockets] = await Promise.all([setupSockets(tssWSEndpoints as string[], randomSessionNonce.toString("hex")), tss.default(tssImportUrl)]);

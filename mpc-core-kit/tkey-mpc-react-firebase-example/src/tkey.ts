@@ -4,12 +4,24 @@ import { TorusStorageLayer } from "@tkey-mpc/storage-layer-torus";
 import { ShareSerializationModule } from "@tkey-mpc/share-serialization";
 // Configuration of Service Provider
 
-const torusSp = new TorusServiceProvider({
+const web3AuthClientId =
+  "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+
+export const chainConfig = {
+  chainId: "0x5",
+  rpcTarget: "https://rpc.ankr.com/eth_goerli",
+  displayName: "Goerli Testnet",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
+
+const serviceProvider = new TorusServiceProvider({
   useTSS: true,
   customAuthArgs: {
     network: "sapphire_devnet",
-    web3AuthClientId: "YOUR_CLIENT_ID", // anything will work on localhost, but get one valid clientID before hosting, from https://dashboard.web3auth.io
-    baseUrl: `${window.location.origin}/serviceworker`,
+    web3AuthClientId, // anything will work on localhost, but get one valid clientID before hosting, from https://dashboard.web3auth.io
+    baseUrl: `${window.location.origin}`,
     enableLogging: true,
   },
 });
@@ -24,7 +36,7 @@ const shareSerializationModule = new ShareSerializationModule();
 // Instantiation of tKey
 export const tKey = new ThresholdKey({
   enableLogging: true,
-  serviceProvider: torusSp as any,
+  serviceProvider,
   storageLayer: storageLayer as any,
   manualSync: true,
   modules: {
