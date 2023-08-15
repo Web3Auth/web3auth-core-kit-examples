@@ -35,79 +35,72 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-function App() {
-  const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
-  const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
-    null
-  );
-  const [idToken, setIdToken] = useState<string | null>(null);
-  const[ user ] = useAuthState(auth);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [authUser, setAuthUser] = useState<any>(null);
-  const email = 'maharshi@tor.us';
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+});
 
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
+
+const email = 'fakasot288@viperace.com';
+
+function App() {
+  const [idToken, setIdToken] = useState<string | null>(null);
+  //@ts-ignore
+  const[ user ] = useAuthState(auth);
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       try {
         // Initialising Web3Auth Single Factor Auth SDK
-        const web3authSfa = new Web3Auth({
-          clientId, // Get your Client ID from Web3Auth Dashboard
-          web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-        });
-        setWeb3authSFAuth(web3authSfa);
-        const provider = new EthereumPrivateKeyProvider({
-          config: { chainConfig },
-        });
-        console.log(user);
-        web3authSfa.init(provider);
+        web3authSfa.init(ethereumPrivateKeyProvider);
       } catch (error) {
         console.error(error);
-        console.log(isLoggingIn);
       }
     };
     init();
-    if(user){
-      setIsLoggedIn(true);
-    }
-    else{
-      if(isSignInWithEmailLink(auth, window.location.href)) {
-        setIsLoggingIn(true);
-        signInWithEmailLink(auth, email, window.location.href)
-        .then((result) => {
-          console.log(result.user);
-          setIsLoggingIn(false);
-          setIsLoggedIn(true);
-        }).catch((error) => {
-          setIsLoggingIn(false);
-          uiConsole(error);
+  }, []);
+
+  useEffect(() => {
+    if(isSignInWithEmailLink(auth, window.location.href)) {
+      signInWithEmailLink(auth, email, window.location.href)
+      .then(async loginRes => {
+        console.log(loginRes);
+        const idToken = await loginRes.user.getIdToken(true);
+
+        setIdToken(idToken);
+
+        const web3authSfaprovider = await web3authSfa.connect({
+          verifier,
+          verifierId: loginRes.user.uid,
+          idToken: idToken,
         });
-      }
+
+        if (web3authSfaprovider) {
+          setProvider(web3authSfaprovider);
+        }
+        setIsLoggedIn(true);
+      }).catch((error) => {
+        console.log(error);
+      });
     }
   }, []);
 
-  // const signInWithGoogle = async (): Promise<any> => {
-  //   try {
-  //     const actionCodeSettings = {
-  //       url: window.location.href,
-  //       handleCodeInApp: true,
-  //     };
-  //     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-  //     // Obtain emailLink from the user.
-  //     let res = null;
-  //     if(isSignInWithEmailLink(auth, email)) {
-  //       res = await signInWithEmailLink(auth, email, window.location.href);
-  //     }
-  //     console.log(res);
-  //     return res;
-  //   } catch (err) {
-  //     console.error(err);
-  //     throw err;
-  //   }
-  // };
+  const signInWithEmailPasswordless = async (): Promise<any> => {
+    try {
+      await sendSignInLinkToEmail(auth, email, {
+        url: window.location.href,
+        handleCodeInApp: true,
+      });
+    } catch (error) {
+        console.error(error);
+    }
+  }
 
   const parseToken = (token: any) => {
     try {
@@ -120,63 +113,15 @@ function App() {
     }
   };
 
-  const login = async () => {
-      // login with firebase
-      // const loginRes = await signInWithGoogle();
-      // get the id token from firebase
-      // @ts-ignore
-      setIdToken(user.idToken);
-      console.log(user);
-  
-      // trying logging in with the Single Factor Auth SDK
-      try {
-        if (!web3authSFAuth) {
-          uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-          return;
-        }
-        console.log(user?.getIdToken);
-        // get sub value from firebase id token
-        const { sub } = parseToken(user?.getIdToken);
-  
-        const web3authSfaprovider = await web3authSFAuth.connect({
-          verifier,
-          verifierId: sub,
-          idToken: "",
-        });
-        if (web3authSfaprovider) {
-          setProvider(web3authSfaprovider);
-        }
-        setUsesSfaSDK(true);
-      } catch (err) {
-        // Single Factor Auth SDK throws an error if the user has already enabled MFA
-        console.error(err);
-    }
-
-    setIsLoggingIn(true);
-    sendSignInLinkToEmail(auth, email, {
-      url: window.location.href,
-      handleCodeInApp: true,
-    }).then(() => {
-      localStorage.setItem('emailForSignIn', email);
-      setIsLoggingIn(false);
-    }).catch((error) => {
-      setIsLoggingIn(false);
-      uiConsole(error);
-    });
-  };
-
   const getUserInfo = async () => {
-    if (usesSfaSDK) {
       uiConsole(
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
         parseToken(idToken)
       );
       return;
-    }
   };
 
   const logout = async () => {
-    if (usesSfaSDK) {
       console.log(
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
       );
@@ -187,7 +132,6 @@ function App() {
         console.log(err);
       })
       return;
-    }
   };
 
   const getAccounts = async () => {
@@ -195,7 +139,7 @@ function App() {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(provider as any);
     const userAccount = await rpc.getAccounts();
     uiConsole(userAccount);
   };
@@ -205,7 +149,7 @@ function App() {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(provider as any);
     const balance = await rpc.getBalance();
     uiConsole(balance);
   };
@@ -215,7 +159,7 @@ function App() {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(provider as any);
     const result = await rpc.signMessage();
     uiConsole(result);
   };
@@ -225,7 +169,7 @@ function App() {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(provider as any);
     const result = await rpc.signAndSendTransaction();
     uiConsole(result);
   };
@@ -281,7 +225,7 @@ function App() {
   const logoutView = (
     <>
       <p>Email: {email}</p>
-      <button onClick={login} className="card">
+      <button onClick={signInWithEmailPasswordless} className="card">
       Login
       </button>
     </> 
