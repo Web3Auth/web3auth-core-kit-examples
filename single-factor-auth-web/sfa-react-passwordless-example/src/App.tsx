@@ -5,6 +5,7 @@ import { Web3Auth } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { auth } from './FireBaseConfig';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
@@ -49,6 +50,7 @@ function App() {
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState<string>("hello@web3auth.io");
+  const[ user ] = useAuthState(auth);
 
   useEffect(() => {
     const init = async () => {
@@ -99,10 +101,11 @@ function App() {
     }
   }
 
-  const parseToken = (token: any) => {
+  function parseToken (token: any) {
     try {
       const base64Url = token.split(".")[1];
       const base64 = base64Url.replace("-", "+").replace("_", "/");
+      uiConsole(JSON.parse(window.atob(base64 || "")));
       return JSON.parse(window.atob(base64 || ""));
     } catch (err) {
       uiConsole(err);
@@ -112,22 +115,20 @@ function App() {
 
   const getUserInfo = async () => {
       uiConsole(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
-        parseToken(idToken)
+        "Get the user details directly from your login provider.",
+        user
       );
       return;
   };
 
   const logout = async () => {
-      uiConsole(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
-      );
       auth.signOut().then(()=>{
         uiConsole('successfully logged out');
         setProvider(null);
       }).catch((err)=>{
         uiConsole(err);
       })
+      web3authSfa.logout();
       return;
   };
 
@@ -185,6 +186,11 @@ function App() {
         <div>
           <button onClick={getUserInfo} className="card">
             Get User Info
+          </button>
+        </div>
+        <div>
+          <button onClick={() => parseToken(idToken)} className="card">
+            Get OAuth ID Token
           </button>
         </div>
         <div>
