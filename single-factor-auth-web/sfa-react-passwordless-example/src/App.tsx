@@ -14,7 +14,7 @@ import RPC from "./evm.ethers";
 import {
   signInWithEmailLink,
   isSignInWithEmailLink,
-  UserCredential,
+  // UserCredential,
   sendSignInLinkToEmail,
 } from "firebase/auth";
 
@@ -45,6 +45,7 @@ function App() {
   const[ user ] = useAuthState(auth);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [authUser, setAuthUser] = useState<any>(null);
   const email = 'maharshi@tor.us';
 
 
@@ -68,18 +69,16 @@ function App() {
         console.log(isLoggingIn);
       }
     };
-
-    if(!user) {
+    init();
+    if(user){
+      setIsLoggedIn(true);
+    }
+    else{
       if(isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailForSignIn');
-        if(!email) {
-          email = window.prompt('Please provide your email');
-        }
         setIsLoggingIn(true);
-        signInWithEmailLink(auth, localStorage.getItem('emailForSignIn')!, window.location.href)
+        signInWithEmailLink(auth, email, window.location.href)
         .then((result) => {
           console.log(result.user);
-          localStorage.removeItem('emailForSignIn');
           setIsLoggingIn(false);
           setIsLoggedIn(true);
         }).catch((error) => {
@@ -88,29 +87,27 @@ function App() {
         });
       }
     }
-
-    init();
   }, []);
 
-  const signInWithGoogle = async (): Promise<UserCredential> => {
-    try {
-      const actionCodeSettings = {
-        url: window.location.href,
-        handleCodeInApp: true,
-      };
-      await sendSignInLinkToEmail(auth, 'maharshi@tor.us', actionCodeSettings);
-      // Obtain emailLink from the user.
-      if(isSignInWithEmailLink(auth, 'maharshi@tor.us')) {
-        await signInWithEmailLink(auth, 'maharshi@tor.us', window.location.href);
-      }
-      const res = await signInWithEmailLink(auth, email, window.location.href);
-      console.log(res);
-      return res;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
+  // const signInWithGoogle = async (): Promise<any> => {
+  //   try {
+  //     const actionCodeSettings = {
+  //       url: window.location.href,
+  //       handleCodeInApp: true,
+  //     };
+  //     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  //     // Obtain emailLink from the user.
+  //     let res = null;
+  //     if(isSignInWithEmailLink(auth, email)) {
+  //       res = await signInWithEmailLink(auth, email, window.location.href);
+  //     }
+  //     console.log(res);
+  //     return res;
+  //   } catch (err) {
+  //     console.error(err);
+  //     throw err;
+  //   }
+  // };
 
   const parseToken = (token: any) => {
     try {
@@ -127,11 +124,9 @@ function App() {
       // login with firebase
       // const loginRes = await signInWithGoogle();
       // get the id token from firebase
-      const res = await signInWithGoogle();
-      const idToken = await res.user?.getIdToken();
       // @ts-ignore
-      setIdToken(idToken);
-      console.log(idToken);
+      setIdToken(user.idToken);
+      console.log(user);
   
       // trying logging in with the Single Factor Auth SDK
       try {
@@ -139,14 +134,14 @@ function App() {
           uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
           return;
         }
-  
+        console.log(user?.getIdToken);
         // get sub value from firebase id token
-        const { sub } = parseToken(idToken);
+        const { sub } = parseToken(user?.getIdToken);
   
         const web3authSfaprovider = await web3authSFAuth.connect({
           verifier,
           verifierId: sub,
-          idToken,
+          idToken: "",
         });
         if (web3authSfaprovider) {
           setProvider(web3authSfaprovider);
@@ -185,8 +180,12 @@ function App() {
       console.log(
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
       );
-      setProvider(null);
-      await auth.signOut();
+      auth.signOut().then(()=>{
+        console.log('successfully logged out');
+        setProvider(null);
+      }).catch((err)=>{
+        console.log(err);
+      })
       return;
     }
   };
