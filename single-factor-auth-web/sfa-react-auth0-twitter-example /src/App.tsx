@@ -14,7 +14,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "./Loading";
 import "./App.css";
 
-const verifier = "w3a-auth0-twitter-example";
+const verifier = "w3a-auth0-github";
 
 const clientId =
   "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
