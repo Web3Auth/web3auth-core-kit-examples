@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's Single Factor Authentication in 
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-react-auth0-twitter-example w3a-sfa-react-a0-twitter-example
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-react-auth0-github-example w3a-sfa-react-a0-github-example
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-sfa-react-a0-twitter-example
+cd w3a-sfa-react-a0-github-example
 npm install
 npm run start
 # or
-cd w3a-sfa-react-a0-twitter-example
+cd w3a-sfa-react-a0-github-example
 yarn
 yarn start
 ```
