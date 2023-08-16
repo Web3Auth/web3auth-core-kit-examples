@@ -129,6 +129,7 @@ function App() {
       }).catch((err)=>{
         uiConsole(err);
       })
+      setIsLoggedIn(false);
       web3authSfa.logout();
       return;
   };
