@@ -28,9 +28,9 @@ const clientId =
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x5",
-  rpcTarget: "https://rpc.ankr.com/eth_goerli",
-  displayName: "Goerli Testnet",
+  chainId: "0x1",
+  rpcTarget: "https://rpc.ankr.com/eth",
+  displayName: "Ethereum Mainnet",
   blockExplorer: "https://goerli.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
@@ -123,6 +123,46 @@ function App() {
       return;
   };
 
+  const authenticateUser = async () => {
+    try{
+      const userCredential = await web3authSfa.authenticateUser();
+      uiConsole(userCredential);
+    }
+    catch(err){
+      uiConsole(err);
+    }
+  };
+
+  const addChain = async () => {
+    try{
+      const newChain = {
+        chainId: "0x5",
+        displayName: "Goerli",
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        tickerName: "Goerli",
+        ticker: "ETH",
+        decimals: 18,
+        rpcTarget: "https://rpc.ankr.com/eth_goerli",
+        blockExplorer: "https://goerli.etherscan.io",
+      };
+      await web3authSfa.addChain(newChain);
+      uiConsole("Chain added successfully");
+    }
+    catch(err){
+      uiConsole(err);
+    }
+  };
+
+  const switchChain = async () => {
+    try{
+      await web3authSfa.switchChain({chainId: "0x5"});
+      uiConsole("Chain switched successfully");
+    }
+    catch(err){
+      uiConsole(err);
+    }
+  };
+
   const logout = async () => {
       auth.signOut().then(()=>{
         uiConsole('successfully logged out');
@@ -196,8 +236,23 @@ function App() {
           </button>
         </div>
         <div>
+          <button onClick={authenticateUser} className="card">
+            Authenticate User
+          </button>
+        </div>
+        <div>
           <button onClick={getAccounts} className="card">
             Get Accounts
+          </button>
+        </div>
+        <div>
+          <button onClick={addChain} className="card">
+            Add Chain
+          </button>
+        </div>
+        <div>
+          <button onClick={switchChain} className="card">
+            Switch Chain
           </button>
         </div>
         <div>
