@@ -10,6 +10,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
 import RPC from "./evm.ethers";
+import Loading from "./Loading";
 
 import {
   signInWithEmailLink,
@@ -49,6 +50,8 @@ function App() {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [email, setEmail] = useState<string>("hello@web3auth.io");
   const[ user ] = useAuthState(auth);
 
@@ -91,12 +94,15 @@ function App() {
   }, []);
 
   const signInWithEmailPasswordless = async (): Promise<any> => {
+    setIsLoading(true);
     try {
       await sendSignInLinkToEmail(auth, email, {
         url: window.location.href,
         handleCodeInApp: true,
       });
+      setIsLoading(false);
     } catch (error) {
+        setIsLoading(false);
         uiConsole(error);
     }
   }
@@ -251,13 +257,17 @@ function App() {
         SFA React Example
       </h1>
 
-        <div className="grid">
-          {isLoggedIn ? loginView : logoutView}
-        </div>
+        {isLoading ? (
+          <Loading /> 
+        ): (
+          <div className="grid">
+            {isLoggedIn ? loginView : logoutView}
+          </div>
+        )}
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-react-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-react-passwordless-example"
           target="_blank"
           rel="noopener noreferrer"
         >
