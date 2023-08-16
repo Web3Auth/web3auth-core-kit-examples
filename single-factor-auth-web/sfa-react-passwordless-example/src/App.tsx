@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { auth } from './FireBaseConfig';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -48,7 +48,6 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
 
 function App() {
   const [idToken, setIdToken] = useState<string | null>(null);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -77,15 +76,12 @@ function App() {
 
         setIdToken(idToken);
 
-        const web3authSfaprovider = await web3authSfa.connect({
+        await web3authSfa.connect({
           verifier,
           verifierId: loginRes.user.uid,
           idToken: idToken,
         });
 
-        if (web3authSfaprovider) {
-          setProvider(web3authSfaprovider);
-        }
         setIsLoggedIn(true);
       }).catch((error) => {
         uiConsole(error);
@@ -130,7 +126,6 @@ function App() {
   const logout = async () => {
       auth.signOut().then(()=>{
         uiConsole('successfully logged out');
-        setProvider(null);
       }).catch((err)=>{
         uiConsole(err);
       })
@@ -139,41 +134,41 @@ function App() {
   };
 
   const getAccounts = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider as any);
+    const rpc = new RPC(web3authSfa.provider);
     const userAccount = await rpc.getAccounts();
     uiConsole(userAccount);
   };
 
   const getBalance = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider as any);
+    const rpc = new RPC(web3authSfa.provider);
     const balance = await rpc.getBalance();
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider as any);
+    const rpc = new RPC(web3authSfa.provider);
     const result = await rpc.signMessage();
     uiConsole(result);
   };
 
   const sendTransaction = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider as any);
+    const rpc = new RPC(web3authSfa.provider);
     const result = await rpc.signAndSendTransaction();
     uiConsole(result);
   };
