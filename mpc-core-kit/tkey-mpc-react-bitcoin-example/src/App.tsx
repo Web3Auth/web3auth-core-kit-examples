@@ -1,21 +1,20 @@
 import "./App.css";
 
-import { getPubKeyECC, getPubKeyPoint } from "@tkey/common-types";
+import TorusUtils from "@toruslabs/torus.js";
+import { getPubKeyPoint } from "@tkey-mpc/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { tKey } from "./tkey";
 import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
-import { fetchPostboxKeyAndSigs } from "./mockUtils";
 import { utils } from "@toruslabs/tss-client";
 import { OpenloginSessionManager } from "@toruslabs/openlogin-session-manager";
-import { address, networks, payments, Psbt, Transaction } from "bitcoinjs-lib";
+import { networks, Psbt } from "bitcoinjs-lib";
 import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
-import { bitcoin, testnet } from "bitcoinjs-lib/src/networks";
+import { testnet } from "bitcoinjs-lib/src/networks";
 import { p2pkh } from "bitcoinjs-lib/src/payments";
-import { sign } from "crypto";
 
 const { getTSSPubKey } = utils;
 const ECPair = ECPairFactory(ecc);
@@ -30,25 +29,15 @@ const uiConsole = (...args: any[]): void => {
 
 const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => ECPair.fromPublicKey(pubkey).verify(msghash, signature);
 
-const chainConfig = {
-  chainId: "0x5",
-  rpcTarget: "https://rpc.ankr.com/eth_goerli",
-  displayName: "Goerli Testnet",
-  blockExplorer: "https://goerli.etherscan.io",
-  ticker: "ETH",
-  tickerName: "Ethereum",
-};
 
 function App() {
   const [loginResponse, setLoginResponse] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [metadataKey, setMetadataKey] = useState<any>();
   const [localFactorKey, setLocalFactorKey] = useState<BN | null>(null);
-  const [tssPubKey, setTssPubkey] = useState<any>(null);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
   const [web3, setWeb3] = useState<any>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
-  const [mockVerifierId, setMockVerifierId] = useState<string | null>(null);
   const [bitcoinUTXID, setBitcoinUTXID] = useState<string | null>(null);
   const [fundingTxIndex, setFundingTxIndex] = useState<string | null>(null);
   const [sessionManager, setSessionManager] = useState<OpenloginSessionManager<typeof signingParams>>(new OpenloginSessionManager({}));
@@ -66,11 +55,6 @@ function App() {
       })
     );
   }, [localFactorKey]);
-
-  useEffect(() => {
-    if (!mockVerifierId) return;
-    localStorage.setItem(`mockVerifierId`, mockVerifierId);
-  }, [mockVerifierId]);
 
   useEffect(() => {
     const init = async () => {
@@ -138,15 +122,7 @@ function App() {
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
-      const chainConfig = {
-        chainId: "0x5",
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        displayName: "Goerli Testnet",
-        blockExplorer: "https://goerli.etherscan.io",
-        ticker: "ETH",
-        tickerName: "Ethereum",
-      };
-      const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
+      const web3Local = await setupWeb3(loginResponse, signingParams);
       setWeb3(web3Local);
     };
     if (signingParams) {
@@ -175,60 +151,22 @@ function App() {
   };
 
   useEffect(() => {
-    let verifierId: string;
-
-    const localMockVerifierId = localStorage.getItem("mockVerifierId");
-    if (localMockVerifierId) verifierId = localMockVerifierId;
-    else verifierId = Math.round(Math.random() * 100000) + "@example.com";
-    setMockVerifierId(verifierId);  
     setBitcoinUTXID("Enter UTXID here")
     setFundingTxIndex("FundingTxIndex (often 0)")
   }, []);
 
-  const triggerMockLogin = async () => {
+  const initializeNewKey = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
       return;
     }
     try {
-      const verifier = "torus-test-health";
-      const verifierId = mockVerifierId;
-
-      const { signatures, postboxkey } = await fetchPostboxKeyAndSigs({
-        verifierName: verifier,
-        verifierId,
-      });
-      tKey.serviceProvider.postboxKey = new BN(postboxkey, "hex");
-      (tKey.serviceProvider as any).verifierName = verifier;
-      (tKey.serviceProvider as any).verifierId = verifierId;
-      const loginResponse = {
-        userInfo: { verifierId, verifier },
-        signatures,
-        privateKey: postboxkey,
-      };
-      setLoginResponse(loginResponse);
-      setUser(loginResponse.userInfo);
-      return loginResponse;
-    } catch (error) {
-      uiConsole(error);
-    }
-  };
-
-  const initializeNewKey = async (mockLogin: boolean) => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
-      return;
-    }
-    try {
-      let loginResponse;
-      if (mockLogin) {
-        loginResponse = await triggerMockLogin();
-      } else {
-        loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
-      }
-      setOAuthShare(loginResponse.privateKey);
-
-      const signatures = loginResponse.signatures.filter((sign: any) => sign !== null);
+      const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+      
+      const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse), "hex");
+      setOAuthShare(OAuthShare);
+      //@ts-ignore
+      const signatures = loginResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
 
       const tKeyLocalStoreString = localStorage.getItem(
         `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`
@@ -237,7 +175,7 @@ function App() {
 
       let factorKey: BN | null = null;
 
-      const existingUser = await isMetadataPresent(loginResponse.privateKey);
+      const existingUser = await isMetadataPresent(OAuthShare);
 
       if (!existingUser) {
         factorKey = new BN(generatePrivate());
@@ -267,6 +205,7 @@ function App() {
           }
         }
         if (factorKey === null) throw new Error("Backup share not found");
+        //@ts-ignore
         const factorKeyMetadata = await tKey.storageLayer.getMetadata<{
           message: string;
         }>({
@@ -333,6 +272,8 @@ function App() {
 
       setLocalFactorKey(factorKey);
 
+      const nodeDetails = await tKey.serviceProvider.getTSSNodeDetails()
+
       const signingParams = {
         oAuthShare: loginResponse.privateKey,
         factorKey,
@@ -344,6 +285,7 @@ function App() {
         compressedTSSPubKey,
         signatures,
         userInfo: loginResponse.userInfo,
+        nodeDetails,
       };
 
       setSigningParams(signingParams);
@@ -434,6 +376,7 @@ function App() {
       let backupFactorIndex = 2;
       for (const [key, value] of Object.entries(tKeyShareDescriptions)) {
         // eslint-disable-next-line no-loop-func, array-callback-return
+        //@ts-ignore
         value.map((factor: any) => {
           factor = JSON.parse(factor);
           if (factor.tssShareIndex > backupFactorIndex) {
@@ -504,16 +447,6 @@ function App() {
     }
   };
 
-  const getChainID = async () => {
-    if (!web3) {
-      uiConsole("web3 not initialized yet");
-      return;
-    }
-    const chainId = await web3.eth.getChainId();
-    uiConsole(chainId);
-    return chainId;
-  };
-
   const getAccounts = async () => {
     if (!web3) {
       uiConsole("web3 not initialized yet");
@@ -521,50 +454,6 @@ function App() {
     }
     uiConsole("Bitcoin address", signingParams.btcAddress);
     return signingParams.btcAddress;
-  };
-
-  const privateKey = "30e90ecd99f8f9dd4009ee08833b7ff80336efe959bb7bdb74d71495a2599f27";
-
-  const getBalance = async () => {
-    if (!web3) {
-      uiConsole("web3 not initialized yet");
-      return;
-    }
-    const address = (await web3.eth.getAccounts())[0];
-    const balance = web3.utils.fromWei(
-      await web3.eth.getBalance(address) // Balance is in wei
-    );
-    uiConsole(balance);
-    return balance;
-  };
-
-  const signMessage = async (): Promise<any> => {
-    if (!web3) {
-      uiConsole("web3 not initialized yet");
-      return;
-    }
-    const fromAddress = (await web3.eth.getAccounts())[0];
-    const originalMessage = [
-      {
-        type: "string",
-        name: "fullName",
-        value: "Satoshi Nakamoto",
-      },
-      {
-        type: "uint32",
-        name: "userId",
-        value: "1212",
-      },
-    ];
-    const params = [originalMessage, fromAddress];
-    const method = "eth_signTypedData";
-    const signedMessage = await (web3.currentProvider as any)?.sendAsync({
-      id: 1,
-      method,
-      params,
-      fromAddress,
-    });
-    uiConsole(signedMessage);
   };
 
   const sendTransaction = async () => {
@@ -663,26 +552,14 @@ function App() {
       </div>
       <h2 className="subtitle">Blockchain Calls</h2>
       <div className="flex-container">
-        {/* <button onClick={getChainID} className="card">
-          Get Chain ID
-        </button> */}
-
         <button onClick={getAccounts} className="card">
           Get Bitcoin Address
         </button>
-
 
         <button onClick={()=> window.open("https://coinfaucet.eu/en/btc-testnet/", "_blank")} className="card">
           Get Testnet Bitcoin from Faucet
         </button>
 
-        {/* <button onClick={getBalance} className="card">
-          Get Balance
-        </button> */}
-
-        {/* <button onClick={signMessage} className="card">
-          Sign Message
-        </button> */}
 
       <input value={bitcoinUTXID as string} onChange={(e) => setBitcoinUTXID(e.target.value)}></input>
       <input value={fundingTxIndex as string} onChange={(e) => setFundingTxIndex(e.target.value)}></input>
@@ -699,17 +576,9 @@ function App() {
   );
 
   const unloggedInView = (
-    <>
-      <button onClick={() => initializeNewKey(false)} className="card">
+    <button onClick={() => initializeNewKey()} className="card">
         Login
       </button>
-      <button onClick={() => initializeNewKey(true)} className="card">
-        MockLogin
-      </button>
-
-      <p>Mock Login Seed Email</p>
-      <input value={mockVerifierId as string} onChange={(e) => setMockVerifierId(e.target.value)}></input>
-    </>
   );
 
   return (

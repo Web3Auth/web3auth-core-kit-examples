@@ -1,7 +1,7 @@
-import ThresholdKey from "@tkey/core";
-import { TorusServiceProvider } from "@tkey/service-provider-torus";
-import { TorusStorageLayer } from "@tkey/storage-layer-torus";
-import { ShareSerializationModule } from "@tkey/share-serialization";
+import ThresholdKey from "@tkey-mpc/core";
+import { TorusServiceProvider } from "@tkey-mpc/service-provider-torus";
+import { TorusStorageLayer } from "@tkey-mpc/storage-layer-torus";
+import { ShareSerializationModule } from "@tkey-mpc/share-serialization";
 // Configuration of Service Provider
 
 const torusSp = new TorusServiceProvider({
