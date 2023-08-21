@@ -6,7 +6,7 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",
 		"@testing-library/user-event": "^13.5.0",
-		"@tkey/default": "^9.0.1",
+		"@tkey/default": "^11.0.0",
 		"@tkey/security-questions": "^9.0.0",
 		"@tkey/web-storage": "^9.0.0",
 		"@types/jest": "^27.5.2",
