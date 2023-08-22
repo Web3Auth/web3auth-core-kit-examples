@@ -1,6 +1,6 @@
 # Web3Auth Android SFA Example using Firebase for JWT
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/single-factor-auth-android/)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-android)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
 [Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
@@ -26,7 +26,7 @@ cd w3a-sfa-android
 
 - [Website](https://web3auth.io)
 - [Docs](https://web3auth.io/docs)
-- [Guides](https://web3auth.io/docs/guides)
+- [Guides](https://web3auth.io/docs/content-hub?type=guides)
 - [SDK / API References](https://web3auth.io/docs/sdk)
 - [Pricing](https://web3auth.io/pricing.html)
 - [Community Portal](https://community.web3auth.io)

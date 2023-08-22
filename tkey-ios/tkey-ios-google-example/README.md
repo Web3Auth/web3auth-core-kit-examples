@@ -1,6 +1,6 @@
 # Web3Auth tKey iOS Example with Google verifier
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/tkey-ios)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/tkey-ios)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
 
@@ -27,7 +27,7 @@ cd w3a-tkey-ios-google
 
 - [Website](https://web3auth.io)
 - [Docs](https://web3auth.io/docs)
-- [Guides](https://web3auth.io/docs/guides)
+- [Guides](https://web3auth.io/docs/content-hub?type=guides)
 - [SDK / API References](https://web3auth.io/docs/sdk)
 - [Pricing](https://web3auth.io/pricing.html)
 - [Community Portal](https://community.web3auth.io)
