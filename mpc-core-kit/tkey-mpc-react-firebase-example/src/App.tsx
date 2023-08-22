@@ -1,5 +1,5 @@
 import "./App.css";
-import TorusUtils from "@toruslabs/torus.js";
+import TorusUtils, { stripHexPrefix } from "@toruslabs/torus.js";
 
 import { getPubKeyPoint } from "@tkey-mpc/common-types";
 import BN from "bn.js";
@@ -17,6 +17,9 @@ import {
   UserCredential,
 } from "firebase/auth";
 import { TorusServiceProvider } from "@tkey-mpc/service-provider-torus";
+import Web3 from "web3";
+import { ethers, id } from "ethers";
+import { typedSignatureHash } from "@metamask/eth-sig-util";
 
 const { getTSSPubKey } = utils;
 
@@ -45,7 +48,7 @@ function App() {
   const [metadataKey, setMetadataKey] = useState<any>();
   const [localFactorKey, setLocalFactorKey] = useState<BN | null>(null);
   const [oAuthShare, setOAuthShare] = useState<any>(null);
-  const [web3, setWeb3] = useState<any>(null);
+  const [web3, setWeb3] = useState<Web3|null>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
   const app = initializeApp(firebaseConfig);
 
@@ -479,6 +482,21 @@ function App() {
       params,
       fromAddress,
     });
+
+    console.log(signedMessage)
+    // typedSignatureHash(originalMessage);
+
+    let hash = Buffer.from(stripHexPrefix(typedSignatureHash(originalMessage)), "hex")
+    // ethers.utils
+    // ethers..
+
+    const r = signedMessage.slice(0, 66);
+    const s = '0x' + signedMessage.slice(66, 130);
+    const v = '0x' + signedMessage.slice(130, 132);
+
+    let address = ethers.recoverAddress( hash, { r, s, v } ); 
+    console.log(address)
+    console.log(fromAddress)
     uiConsole(signedMessage);
   };
 
