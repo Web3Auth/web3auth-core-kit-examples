@@ -26,6 +26,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "eccrypto": "^1.1.6",
     "elliptic": "^6.5.4",
+    "ethers": "^6.7.1",
     "firebase": "^10.1.0",
     "html-webpack-plugin": "^5.5.3",
     "jsrsasign": "^10.8.6",
