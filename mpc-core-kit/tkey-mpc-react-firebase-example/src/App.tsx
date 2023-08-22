@@ -456,7 +456,19 @@ function App() {
     return balance;
   };
 
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
   const signMessage = async (): Promise<any> => {
+    let count = 0
+    let data : any[] = []
+    for (let i = 0; i < 30; i++) {
+      await signMessage0(count , data );
+      await delay(10000)
+      console.error("count", count)
+      console.error("data", data)
+    }
+  }
+  const signMessage0 = async (count : number, data : any[] ): Promise<any> => {
     if (!web3) {
       console.log("web3 not initialized yet");
       return;
@@ -483,20 +495,28 @@ function App() {
       fromAddress,
     });
 
-    console.log(signedMessage)
-    // typedSignatureHash(originalMessage);
-
+    // console.log("message", stripHexPrefix(typedSignatureHash(originalMessage)), "hex" );
     let hash = Buffer.from(stripHexPrefix(typedSignatureHash(originalMessage)), "hex")
-    // ethers.utils
-    // ethers..
 
     const r = signedMessage.slice(0, 66);
     const s = '0x' + signedMessage.slice(66, 130);
     const v = '0x' + signedMessage.slice(130, 132);
 
     let address = ethers.recoverAddress( hash, { r, s, v } ); 
-    console.log(address)
-    console.log(fromAddress)
+
+    if (address.toLowerCase() !== fromAddress.toLowerCase()) {
+      console.error(address)
+      console.error(fromAddress)
+      console.error(signedMessage)
+      count = count + 1
+    
+      data.push({
+        address,
+        fromAddress,
+        signedMessage,
+        count
+      })
+    }
     uiConsole(signedMessage);
   };
 
