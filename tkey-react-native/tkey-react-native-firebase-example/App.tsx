@@ -15,10 +15,10 @@ import auth from '@react-native-firebase/auth';
 // @ts-ignore
 import {decode as atob} from 'base-64';
 import {Dialog, Input} from '@rneui/themed';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import BN from 'bn.js';
 import {ShareSerializationModule} from '@tkey/share-serialization';
 import {SfaServiceProvider} from '@tkey/service-provider-sfa';
+import {ReactNativeStorageModule} from '@tkey/react-native-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 async function signInWithEmailPassword() {
   try {
@@ -190,17 +190,14 @@ export default function App() {
 
   const setDeviceShare = async () => {
     try {
-      const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
       const generateShareResult = await tKeyInstance.generateNewShare();
       const share = await tKeyInstance.outputShareStore(
         generateShareResult.newShareIndex,
-      ).share.share;
-      EncryptedStorage.setItem(
-        `deviceShare${tKeyPubX}`,
-        share.toString(16, 64),
       );
-      uiConsole('Device Share Set', share.toString(16, 64));
+      await (
+        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+      ).storeDeviceShare(share);
+      uiConsole('Device Share Set', JSON.stringify(share));
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
@@ -208,18 +205,16 @@ export default function App() {
 
   const getDeviceShare = async () => {
     try {
-      const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      const shareHex = await EncryptedStorage.getItem(`deviceShare${tKeyPubX}`);
-      if (shareHex && shareHex !== '0') {
-        const shareBN = new BN(shareHex as any, 'hex');
+      const share = await (
+        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+      ).getStoreFromReactNativeStorage();
+
+      if (share) {
         uiConsole(
           'Device Share Captured Successfully across',
-          tKeyPubX,
-          ':',
-          shareBN,
+          JSON.stringify(share),
         );
-        return shareBN;
+        return share;
       }
       uiConsole('Device Share Not found');
       return null;
@@ -231,8 +226,7 @@ export default function App() {
   const deleteDeviceShare = async () => {
     try {
       const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      await EncryptedStorage.removeItem(`deviceShare${tKeyPubX}`);
+      await EncryptedStorage.removeItem(metadata.pubKey.x.toString('hex'));
       uiConsole('Device Share Deleted');
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
