@@ -122,7 +122,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
       if (modifiedV <= 1) {
         modifiedV = modifiedV + 27;
       }
-      return { v: modifiedV, r: Buffer.from(r.toString("hex"), "hex"), s: Buffer.from(s.toString("hex"), "hex") };
+      return { v: modifiedV, r: Buffer.from(r.toString("hex", 64), "hex"), s: Buffer.from(s.toString("hex", 64), "hex") };
     };
 
     if (!compressedTSSPubKey) {
