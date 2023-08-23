@@ -13,6 +13,7 @@ import RPC from "./ethersRPC"; // for using ethers.js
 import { ethereumPrivateKeyProvider, tKeyInstance } from "./tkey";
 import { ShareSerializationModule } from "@tkey/share-serialization";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
+import ReactNativeStorageModule from "@tkey/react-native-storage";
 
 const Home = () => {
   const [privateKey, setPrivateKey] = useState<string | null>();
@@ -175,17 +176,14 @@ const Home = () => {
 
   const setDeviceShare = async () => {
     try {
-      const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
       const generateShareResult = await tKeyInstance.generateNewShare();
       const share = await tKeyInstance.outputShareStore(
         generateShareResult.newShareIndex,
-      ).share.share;
-      SecureStore.setItemAsync(
-        `deviceShare${tKeyPubX}`,
-        share.toString(16, 64)
       );
-      uiConsole('Device Share Set', share.toString(16, 64));
+      await (
+        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+      ).storeDeviceShare(share);
+      uiConsole('Device Share Set', JSON.stringify(share));
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
@@ -193,13 +191,16 @@ const Home = () => {
 
   const getDeviceShare = async () => {
     try {
-      const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      const shareHex = await SecureStore.getItemAsync(`deviceShare${tKeyPubX}`);
-      if (shareHex && shareHex !== '0') {
-        const shareBN = new BN(shareHex as any, 'hex');
-        uiConsole('Device Share Captured Successfully across', tKeyPubX, ":", shareBN);
-        return shareBN;
+      const share = await (
+        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+      ).getStoreFromReactNativeStorage();
+
+      if (share) {
+        uiConsole(
+          'Device Share Captured Successfully across',
+          JSON.stringify(share),
+        );
+        return share;
       }
       uiConsole('Device Share Not found');
       return null;
@@ -211,8 +212,7 @@ const Home = () => {
   const deleteDeviceShare = async () => {
     try {
       const metadata = await tKeyInstance.getMetadata();
-      const tKeyPubX = metadata.pubKey.x.toString(16, 64);
-      await SecureStore.deleteItemAsync(`deviceShare${tKeyPubX}`);
+      await SecureStore.deleteItemAsync(metadata.pubKey.x.toString('hex'));
       uiConsole('Device Share Deleted');
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
