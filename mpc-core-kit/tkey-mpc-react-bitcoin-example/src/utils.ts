@@ -6,13 +6,12 @@ import { generatePrivate } from "@toruslabs/eccrypto";
 import { Client } from "@toruslabs/tss-client";
 import * as tss from "@toruslabs/tss-lib";
 import keccak256 from "keccak256";
-import { TORUS_NETWORK } from "@toruslabs/constants";
 import { utils } from "@toruslabs/tss-client";
 import { Signer, SignerAsync } from "bitcoinjs-lib";
 import { testnet } from "bitcoinjs-lib/src/networks";
+import ThresholdKey from "@tkey-mpc/core/dist/types/core";
 const { getDKLSCoeff, setupSockets } = utils;
 
-const network = TORUS_NETWORK.SAPPHIRE_DEVNET;
 const parties = 4;
 const clientIndex = parties - 1;
 const tssImportUrl = `https://sapphire-dev-2-2.authnetwork.dev/tss/v1/clientWasm`;
@@ -166,7 +165,7 @@ export type FactorKeyCloudMetadata = {
   tssIndex: number;
 };
 
-const fetchDeviceShareFromTkey = async (tKey: any) => {
+const fetchDeviceShareFromTkey = async (tKey: ThresholdKey) => {
   if (!tKey) {
     console.error("tKey not initialized yet");
     return;
@@ -188,7 +187,7 @@ const fetchDeviceShareFromTkey = async (tKey: any) => {
   }
 };
 
-export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: BN, tssIndex: number, factorKeyDescription: string) => {
+export const addFactorKeyMetadata = async (tKey: ThresholdKey, factorKey: BN, tssShare: BN, tssIndex: number, factorKeyDescription: string) => {
   if (!tKey) {
     console.error("tKey not initialized yet");
     return;
@@ -222,7 +221,7 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
   await tKey.addShareDescription(factorIndex, JSON.stringify(params), true);
 };
 
-export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
+export const copyExistingTSSShareForNewFactor = async (tKey: ThresholdKey, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
   if (!tKey) {
     throw new Error("tkey does not exist, cannot copy factor pub");
   }
@@ -260,7 +259,7 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
 };
 
 export const addNewTSSShareAndFactor = async (
-  tKey: any,
+  tKey: ThresholdKey,
   newFactorPub: Point,
   newFactorTSSIndex: number,
   factorKeyForExistingTSSShare: BN,
