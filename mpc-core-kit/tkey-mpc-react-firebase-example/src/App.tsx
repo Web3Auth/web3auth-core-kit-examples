@@ -462,16 +462,21 @@ function App() {
     let count = 0
     let data : any[] = []
     for (let i = 0; i < 30; i++) {
-      await signMessage0(count , data );
-      await delay(10000)
-      console.error("count", count)
-      console.error("data", data)
+      
+      const b = await signMessage0(i , data );
+      if (b) {
+        count += 1;
+        console.error("round ", i);
+        console.error("count", count)
+        console.error("data", data)
+      }
+      await delay(5000)
     }
   }
-  const signMessage0 = async (count : number, data : any[] ): Promise<any> => {
+  const signMessage0 = async (count : number, data : any[] ): Promise<boolean> => {
     if (!web3) {
       console.log("web3 not initialized yet");
-      return;
+      return false;
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
     const originalMessage = [
@@ -500,14 +505,20 @@ function App() {
 
     const r = signedMessage.slice(0, 66);
     const s = '0x' + signedMessage.slice(66, 130);
-    const v = '0x' + signedMessage.slice(130, 132);
+    const v = BigInt('0x' + signedMessage.slice(130, 132)) - BigInt(27);
+    const v2 = (v + BigInt(1)) % BigInt(2);
 
-    let address = ethers.recoverAddress( hash, { r, s, v } ); 
+    let address = ethers.recoverAddress( hash, { r, s, v } );
+    let address2 = ethers.recoverAddress( hash, { r, s, v: v2 } );
 
+    let b = false;
     if (address.toLowerCase() !== fromAddress.toLowerCase()) {
-      console.error(address)
-      console.error(fromAddress)
-      console.error(signedMessage)
+      b = true;
+      console.error("hash", hash.toString('hex'))
+      console.error("address", address)
+      console.error("address2", address2)
+      console.error("fromAddress", fromAddress)
+      console.error("signedMessage", signedMessage)
       count = count + 1
     
       data.push({
@@ -516,8 +527,15 @@ function App() {
         signedMessage,
         count
       })
+    } else {
+      console.warn("hash", hash.toString('hex'))
+      console.warn("address", address)
+      console.warn("address2", address2)
+      console.warn("fromAddress", fromAddress)
+      console.warn("signedMessage", signedMessage)
     }
     uiConsole(signedMessage);
+    return b;
   };
 
   const sendTransaction = async () => {
