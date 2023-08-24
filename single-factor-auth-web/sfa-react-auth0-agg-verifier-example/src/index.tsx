@@ -10,14 +10,14 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <Auth0Provider
-    domain="shahbaz-torus.us.auth0.com"
-    clientId="yeQlVRUCS0OUOvL7W1ZSfwwTpg4HDdC3"
+    domain="web3auth.au.auth0.com"
+    clientId="QiEf8qZ9IoasbZsbHvjKZku4LdnRC1Ct"
     authorizationParams={{
-      redirect_uri: window.location.origin
+      redirect_uri: window.location.origin,
     }}
   >
-      <App />
-  </Auth0Provider>,
+    <App />
+  </Auth0Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
