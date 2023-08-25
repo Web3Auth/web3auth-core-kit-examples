@@ -1,17 +1,20 @@
 import "./App.css";
 import TorusUtils from "@toruslabs/torus.js";
-
 import { getPubKeyPoint } from "@tkey-mpc/common-types";
 import BN from "bn.js";
 import { generatePrivate } from "eccrypto";
 import { useEffect, useState } from "react";
 import swal from "sweetalert";
 import { tKey } from "./tkey";
-import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto } from "./utils";
+import { addFactorKeyMetadata, setupWeb3, copyExistingTSSShareForNewFactor, addNewTSSShareAndFactor, getEcCrypto, LoginResponse, SigningParams } from "./utils";
 import { utils } from "@toruslabs/tss-client";
+import { ShareSerializationModule } from "@tkey-mpc/share-serialization";
+import Web3 from "web3";
+import { TorusServiceProvider } from "@tkey-mpc/service-provider-torus";
+import { TorusLoginResponse } from "@toruslabs/customauth"
+import { CustomChainConfig } from "@web3auth/base";
 
 const { getTSSPubKey } = utils;
-
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -21,21 +24,29 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+const chainConfig: Omit<CustomChainConfig, "chainNamespace"> = {
+  chainId: "0x5",
+  rpcTarget: "https://rpc.ankr.com/eth_goerli",
+  displayName: "Goerli Testnet",
+  blockExplorer: "https://goerli.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+}
 
 function App() {
-  const [loginResponse, setLoginResponse] = useState<any>(null);
+  const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
   const [user, setUser] = useState<any>(null);
-  const [metadataKey, setMetadataKey] = useState<any>();
+  const [metadataKey, setMetadataKey] = useState<string | null>(null);
   const [localFactorKey, setLocalFactorKey] = useState<BN | null>(null);
-  const [oAuthShare, setOAuthShare] = useState<any>(null);
-  const [web3, setWeb3] = useState<any>(null);
-  const [signingParams, setSigningParams] = useState<any>(null);
+  const [oAuthShare, setOAuthShare] = useState<BN | null>(null);
+  const [web3, setWeb3] = useState<Web3 | null>(null);
+  const [signingParams, setSigningParams] = useState<SigningParams | null>(null);
 
   useEffect(() => {
     const init = async () => {
       // Initialization of Service Provider
       try {
-        await (tKey.serviceProvider as any).init();
+        await (tKey.serviceProvider as TorusServiceProvider).init({});
       } catch (error) {
         console.error(error);
       }
@@ -46,32 +57,26 @@ function App() {
   useEffect(() => {
     if (!localFactorKey) return;
     localStorage.setItem(
-      `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`,
+      `tKeyLocalStore\u001c${loginResponse!.userInfo.verifier}\u001c${loginResponse!.userInfo.verifierId}`,
       JSON.stringify({
         factorKey: localFactorKey.toString("hex"),
-        verifier: loginResponse.userInfo.verifier,
-        verifierId: loginResponse.userInfo.verifierId,
+        verifier: loginResponse!.userInfo.verifier,
+        verifierId: loginResponse!.userInfo.verifierId,
       })
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localFactorKey]);
 
   // sets up web3
   useEffect(() => {
     const localSetup = async () => {
-      const chainConfig = {
-        chainId: "0x5",
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        displayName: "Goerli Testnet",
-        blockExplorer: "https://goerli.etherscan.io",
-        ticker: "ETH",
-        tickerName: "Ethereum",
-      }
-      const web3Local = await setupWeb3(chainConfig, loginResponse, signingParams);
+      const web3Local = await setupWeb3(chainConfig, loginResponse!, signingParams!);
       setWeb3(web3Local);
     };
     if (signingParams) {
       localSetup();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signingParams]);
 
   const triggerLogin = async () => {
@@ -81,17 +86,15 @@ function App() {
     }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
+      const loginRes = await (tKey.serviceProvider as TorusServiceProvider).triggerLogin({
         typeOfLogin: 'google',
         verifier: 'google-tkey-w3a',
         clientId:
           '774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
       });
-      console.log("loginResponse", loginResponse);
 
-      setLoginResponse(loginResponse);
-      setUser(loginResponse.userInfo);
-      return loginResponse;
+      setUser(loginRes.userInfo);
+      return loginRes;
     } catch (error) {
       uiConsole(error);
     }
@@ -103,14 +106,30 @@ function App() {
       return;
     }
     try {
-      const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
+      const loginRes: TorusLoginResponse | undefined = await triggerLogin(); // Calls the triggerLogin() function above
 
-      const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse), "hex");
+      if (!loginRes) {
+        throw new Error("Login response not found");
+      }
+      
+      const OAuthShare: BN = new BN(TorusUtils.getPostboxKey(loginRes), "hex");
       setOAuthShare(OAuthShare);
       //@ts-ignore
-      const signatures = loginResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
+      const signatures: string[] = loginRes.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
 
-      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+
+      const loginResponse: LoginResponse = {
+        userInfo: loginRes.userInfo,
+        verifier: loginRes.userInfo.verifier,
+        verifier_id: loginRes.userInfo.verifierId,
+        signatures,
+        OAuthShare,
+      }
+
+      console.log("loginResponse", loginResponse);
+
+      setLoginResponse(loginResponse);
+      const tKeyLocalStoreString = localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`);
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
       let factorKey: BN | null = null;
@@ -124,7 +143,7 @@ function App() {
         const factorPub = getPubKeyPoint(factorKey);
         await tKey.initialize({ useTSS: true, factorPub, deviceTSSShare, deviceTSSIndex });
       } else {
-        if (tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId) {
+        if (tKeyLocalStore.verifier === loginResponse.verifier && tKeyLocalStore.verifierId === loginResponse.verifier_id) {
           factorKey = new BN(tKeyLocalStore.factorKey, "hex");
         }
         else {
@@ -133,7 +152,7 @@ function App() {
               content: 'input' as any,
             }).then(async value => {
               uiConsole(value);
-              return await (tKey.modules.shareSerialization as any).deserialize(value, "mnemonic");
+              return await (tKey.modules.shareSerialization as ShareSerializationModule).deserialize(value, "mnemonic");
             });
           } catch (error) {
             uiConsole(error);
@@ -190,7 +209,7 @@ function App() {
       // 5. save factor key and other metadata
       if (
         !existingUser ||
-        !(tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId)
+        !(tKeyLocalStore.verifier === loginResponse.verifier && tKeyLocalStore.verifierId === loginResponse.verifier_id)
       ) {
         await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       }
@@ -253,7 +272,7 @@ function App() {
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
+      const serializedShare = await (tKey.modules.shareSerialization as ShareSerializationModule).serialize(backupFactorKey, "mnemonic");
       await tKey.syncLocalMetadataTransitions();
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare)
 
@@ -285,11 +304,11 @@ function App() {
         });
       }
       uiConsole("backupFactorIndex:", backupFactorIndex + 1);
-      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex + 1, localFactorKey, signingParams.signatures);
+      await addNewTSSShareAndFactor(tKey, backupFactorPub, backupFactorIndex + 1, localFactorKey, signingParams!.signatures);
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
+      const serializedShare = await (tKey.modules.shareSerialization as ShareSerializationModule).serialize(backupFactorKey, "mnemonic");
 
       await tKey.syncLocalMetadataTransitions();
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
@@ -300,7 +319,7 @@ function App() {
   }
 
   const deleteTkeyLocalStore = async () => {
-    localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+    localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse!.verifier}\u001c${loginResponse!.verifier_id}`);
     uiConsole("Successfully deleted tKey local store");
   }
 
@@ -331,21 +350,21 @@ function App() {
     return user;
   };
 
-  const getLoginResponse = (): void => {
+  const getLoginResponse = (): LoginResponse => {
     uiConsole(loginResponse);
-    return loginResponse;
+    return loginResponse!;
   };
 
-  const getMetadataKey = (): void => {
+  const getMetadataKey = (): string => {
     uiConsole(metadataKey);
-    return metadataKey;
+    return metadataKey!;
   };
 
   const resetAccount = async () => {
     try {
-      localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
+      localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse!.verifier}\u001c${loginResponse!.verifier_id}`);
       await tKey.storageLayer.setMetadata({
-        privKey: oAuthShare,
+        privKey: oAuthShare!,
         input: { message: "KEY_NOT_FOUND" },
       });
       uiConsole("Reset Account Successful.");

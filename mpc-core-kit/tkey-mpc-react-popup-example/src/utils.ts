@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { encrypt, getPubKeyECC, Point, randomSelection, ShareStore } from "@tkey-mpc/common-types";
+import { encrypt, getPubKeyECC, Point, PointHex, randomSelection, ShareStore } from "@tkey-mpc/common-types";
 import EC from "elliptic";
 
 import { generatePrivate } from "@toruslabs/eccrypto";
@@ -10,7 +10,31 @@ import keccak256 from "keccak256";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 import { utils } from "@toruslabs/tss-client";
+import { CustomChainConfig } from "@web3auth/base";
+import ThresholdKey from "@tkey-mpc/core/dist/types/core";
+
 const { getDKLSCoeff, setupSockets } = utils;
+
+export type LoginResponse = {
+  userInfo: any,
+  verifier: string,
+  verifier_id: string,
+  signatures : string[],
+  OAuthShare: BN,
+}
+
+export type SigningParams = {
+  tssNonce: number,
+  tssShare2: BN,
+  tssShare2Index: number,
+  compressedTSSPubKey: Buffer,
+  signatures: string[],
+  nodeDetails : {
+    serverEndpoints: string[];
+    serverPubKeys: PointHex[];
+    serverThreshold: number;
+  },
+}
 
 const parties = 4;
 const clientIndex = parties - 1;
@@ -24,7 +48,7 @@ const DELIMITERS = {
 };
 
 
-export function getEcCrypto(): any {
+export function getEcCrypto(): EC.ec {
   // eslint-disable-next-line new-cap
   return new EC.ec("secp256k1");
 }
@@ -47,7 +71,7 @@ export const generateTSSEndpoints = (tssNodeEndpoints: string[], parties: number
   return { endpoints, tssWSEndpoints, partyIndexes };
 };
 
-export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingParams: any) => {
+export const setupWeb3 = async (chainConfig: Omit<CustomChainConfig, "chainNamespace">, loginReponse: LoginResponse, signingParams: SigningParams) => {
   try {
     const ethereumSigningProvider = new EthereumSigningProvider({
       config: {
@@ -57,7 +81,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
 
     const { tssNonce, tssShare2, tssShare2Index, compressedTSSPubKey, signatures, nodeDetails } = signingParams;
 
-    const { verifier, verifierId } = loginReponse.userInfo;
+    const { verifier, verifier_id: verifierId } = loginReponse;
 
     const vid = `${verifier}${DELIMITERS.Delimiter1}${verifierId}`;
     const sessionId = `${vid}${DELIMITERS.Delimiter2}default${DELIMITERS.Delimiter3}${tssNonce}${DELIMITERS.Delimiter4}`;
@@ -77,6 +101,7 @@ export const setupWeb3 = async (chainConfig: any, loginReponse: any, signingPara
 
       // 1. setup
       // generate endpoints for servers
+      
       const { endpoints, tssWSEndpoints, partyIndexes } = generateTSSEndpoints(nodeDetails.serverEndpoints, parties, clientIndex);
   
       // setup mock shares, sockets and tss wasm files.
@@ -144,7 +169,7 @@ export type FactorKeyCloudMetadata = {
   tssIndex: number;
 };
 
-const fetchDeviceShareFromTkey = async (tKey: any) => {
+const fetchDeviceShareFromTkey = async (tKey: ThresholdKey) => {
   if (!tKey) {
     console.error("tKey not initialized yet");
     return;
@@ -167,7 +192,7 @@ const fetchDeviceShareFromTkey = async (tKey: any) => {
 };
 
 
-export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: BN, tssIndex: number, factorKeyDescription: string) => {
+export const addFactorKeyMetadata = async (tKey: ThresholdKey, factorKey: BN, tssShare: BN, tssIndex: number, factorKeyDescription: string) => {
   if (!tKey) {
     console.error("tKey not initialized yet");
     return;
@@ -201,7 +226,19 @@ export const addFactorKeyMetadata = async (tKey: any, factorKey: BN, tssShare: B
   await tKey.addShareDescription(factorIndex, JSON.stringify(params), true);
 };
 
-export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
+export const gettKeyLocalStore = (loginResponse: LoginResponse) => {
+  return JSON.parse(localStorage.getItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`) || "{}");
+}
+
+export const settKeyLocalStore = (loginResponse: LoginResponse, localFactorKey: BN) => {
+  localStorage.setItem(`tKeyLocalStore\u001c${loginResponse.verifier}\u001c${loginResponse.verifier_id}`, JSON.stringify({
+    factorKey: localFactorKey.toString("hex"),
+    verifier: loginResponse.verifier,
+    verifierId: loginResponse.verifier_id,
+  }));
+}
+
+export const copyExistingTSSShareForNewFactor = async (tKey: ThresholdKey, newFactorPub: Point, factorKeyForExistingTSSShare: BN) => {
   if (!tKey) {
     throw new Error("tkey does not exist, cannot copy factor pub");
   }
@@ -238,7 +275,7 @@ export const copyExistingTSSShareForNewFactor = async (tKey: any, newFactorPub: 
   });    
 };
 
-export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN, signatures: any) => {
+export const addNewTSSShareAndFactor = async (tKey: ThresholdKey, newFactorPub: Point, newFactorTSSIndex: number, factorKeyForExistingTSSShare: BN, signatures: string[]) => {
   try {
     if (!tKey) {
       throw new Error("tkey does not exist, cannot add factor pub");
@@ -252,7 +289,7 @@ export const addNewTSSShareAndFactor = async (tKey: any, newFactorPub: Point, ne
   
     const existingFactorPubs = tKey.metadata.factorPubs[tKey.tssTag].slice();
     const updatedFactorPubs = existingFactorPubs.concat([newFactorPub]);
-    const existingTSSIndexes = existingFactorPubs.map((fb: any) => tKey.getFactorEncs(fb).tssIndex);
+    const existingTSSIndexes = existingFactorPubs.map((fb: Point) => tKey.getFactorEncs(fb).tssIndex);
     const updatedTSSIndexes = existingTSSIndexes.concat([newFactorTSSIndex]);
     const { tssShare, tssIndex } = await tKey.getTSSShare(factorKeyForExistingTSSShare);
   

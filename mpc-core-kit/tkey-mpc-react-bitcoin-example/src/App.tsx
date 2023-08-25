@@ -15,6 +15,10 @@ import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
 import { testnet } from "bitcoinjs-lib/src/networks";
 import { p2pkh } from "bitcoinjs-lib/src/payments";
+import { TorusServiceProvider } from "@tkey-mpc/service-provider-torus";
+import { ShareSerializationModule } from "@tkey-mpc/share-serialization";
+import {TorusLoginResponse} from "@toruslabs/customauth";
+import { SignerAsync } from "bitcoinjs-lib";
 
 const { getTSSPubKey } = utils;
 const ECPair = ECPairFactory(ecc);
@@ -31,12 +35,12 @@ const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boole
 
 
 function App() {
-  const [loginResponse, setLoginResponse] = useState<any>(null);
+  const [loginResponse, setLoginResponse] = useState<any | null>(null);
   const [user, setUser] = useState<any>(null);
-  const [metadataKey, setMetadataKey] = useState<any>();
+  const [metadataKey, setMetadataKey] = useState<string>();
   const [localFactorKey, setLocalFactorKey] = useState<BN | null>(null);
-  const [oAuthShare, setOAuthShare] = useState<any>(null);
-  const [web3, setWeb3] = useState<any>(null);
+  const [oAuthShare, setOAuthShare] = useState<BN | null>(null);
+  const [web3, setWeb3] = useState<SignerAsync | null>(null);
   const [signingParams, setSigningParams] = useState<any>(null);
   const [bitcoinUTXID, setBitcoinUTXID] = useState<string | null>(null);
   const [fundingTxIndex, setFundingTxIndex] = useState<string | null>(null);
@@ -47,13 +51,14 @@ function App() {
   useEffect(() => {
     if (!localFactorKey) return;
     localStorage.setItem(
-      `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`,
+      `tKeyLocalStore\u001c${loginResponse!.userInfo.verifier}\u001c${loginResponse!.userInfo.verifierId}`,
       JSON.stringify({
         factorKey: localFactorKey.toString("hex"),
-        verifier: loginResponse.userInfo.verifier,
-        verifierId: loginResponse.userInfo.verifierId,
+        verifier: loginResponse!.userInfo.verifier,
+        verifierId: loginResponse!.userInfo.verifierId,
       })
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localFactorKey]);
 
   useEffect(() => {
@@ -83,8 +88,8 @@ function App() {
           const metadataDeviceShare = metadataShare.deviceShare;
 
           tKey.serviceProvider.postboxKey = new BN(signingParams.oAuthShare, "hex");
-          (tKey.serviceProvider as any).verifierName = signingParams.userInfo.verifier;
-          (tKey.serviceProvider as any).verifierId = signingParams.userInfo.verifierId;
+          (tKey.serviceProvider as TorusServiceProvider).verifierName = signingParams.userInfo.verifier;
+          (tKey.serviceProvider as TorusServiceProvider).verifierId = signingParams.userInfo.verifierId;
 
           await tKey.initialize({ neverInitializeNewKey: true });
           await tKey.inputShareStoreSafe(metadataDeviceShare, true);
@@ -137,7 +142,7 @@ function App() {
     }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
+      const loginResponse: TorusLoginResponse = await (tKey.serviceProvider as TorusServiceProvider).triggerLogin({
         typeOfLogin: "google",
         verifier: "google-tkey-w3a",
         clientId: "774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com",
@@ -163,13 +168,13 @@ function App() {
     try {
       const loginResponse = await triggerLogin(); // Calls the triggerLogin() function above
       
-      const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse), "hex");
+      const OAuthShare = new BN(TorusUtils.getPostboxKey(loginResponse!), "hex");
       setOAuthShare(OAuthShare);
       //@ts-ignore
       const signatures = loginResponse.sessionData.sessionTokenData.filter(i => Boolean(i)).map((session) => JSON.stringify({ data: session.token, sig: session.signature }));
 
       const tKeyLocalStoreString = localStorage.getItem(
-        `tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`
+        `tKeyLocalStore\u001c${loginResponse!.userInfo.verifier}\u001c${loginResponse!.userInfo.verifierId}`
       );
       const tKeyLocalStore = JSON.parse(tKeyLocalStoreString || "{}");
 
@@ -189,7 +194,7 @@ function App() {
           deviceTSSIndex,
         });
       } else {
-        if (tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId) {
+        if (tKeyLocalStore.verifier === loginResponse!.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse!.userInfo.verifierId) {
           factorKey = new BN(tKeyLocalStore.factorKey, "hex");
         } else {
           try {
@@ -197,7 +202,7 @@ function App() {
               content: "input" as any,
             }).then(async (value) => {
               uiConsole(value);
-              return await (tKey.modules.shareSerialization as any).deserialize(value, "mnemonic");
+              return await (tKey.modules.shareSerialization as ShareSerializationModule).deserialize(value, "mnemonic");
             });
           } catch (error) {
             uiConsole(error);
@@ -264,7 +269,7 @@ function App() {
       // 5. save factor key and other metadata
       if (
         !existingUser ||
-        !(tKeyLocalStore.verifier === loginResponse.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse.userInfo.verifierId)
+        !(tKeyLocalStore.verifier === loginResponse!.userInfo.verifier && tKeyLocalStore.verifierId === loginResponse!.userInfo.verifierId)
       ) {
         await addFactorKeyMetadata(tKey, factorKey, tssShare2, tssShare2Index, "local storage share");
       }
@@ -275,7 +280,7 @@ function App() {
       const nodeDetails = await tKey.serviceProvider.getTSSNodeDetails()
 
       const signingParams = {
-        oAuthShare: loginResponse.privateKey,
+        oAuthShare: OAuthShare,
         factorKey,
         btcAddress,
         ecPublicKey: ECPubKey.publicKey,
@@ -284,7 +289,7 @@ function App() {
         tssShare2Index,
         compressedTSSPubKey,
         signatures,
-        userInfo: loginResponse.userInfo,
+        userInfo: loginResponse!.userInfo,
         nodeDetails,
       };
 
@@ -353,7 +358,7 @@ function App() {
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(localFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
+      const serializedShare = await (tKey.modules.shareSerialization as ShareSerializationModule).serialize(backupFactorKey, "mnemonic");
       await tKey.syncLocalMetadataTransitions();
       uiConsole("Successfully created manual backup. Manual Backup Factor: ", serializedShare);
     } catch (err) {
@@ -389,7 +394,7 @@ function App() {
 
       const { tssShare: tssShare2, tssIndex: tssIndex2 } = await tKey.getTSSShare(backupFactorKey);
       await addFactorKeyMetadata(tKey, backupFactorKey, tssShare2, tssIndex2, "manual share");
-      const serializedShare = await (tKey.modules.shareSerialization as any).serialize(backupFactorKey, "mnemonic");
+      const serializedShare = await (tKey.modules.shareSerialization as ShareSerializationModule).serialize(backupFactorKey, "mnemonic");
 
       await tKey.syncLocalMetadataTransitions();
       uiConsole(" Successfully created manual backup.Manual Backup Factor: ", serializedShare);
@@ -429,16 +434,16 @@ function App() {
     return loginResponse;
   };
 
-  const getMetadataKey = (): void => {
+  const getMetadataKey = (): string => {
     uiConsole(metadataKey);
-    return metadataKey;
+    return metadataKey!;
   };
 
   const resetAccount = async () => {
     try {
       localStorage.removeItem(`tKeyLocalStore\u001c${loginResponse.userInfo.verifier}\u001c${loginResponse.userInfo.verifierId}`);
       await tKey.storageLayer.setMetadata({
-        privKey: oAuthShare,
+        privKey: oAuthShare!,
         input: { message: "KEY_NOT_FOUND" },
       });
       uiConsole("Reset Account Successful.");
