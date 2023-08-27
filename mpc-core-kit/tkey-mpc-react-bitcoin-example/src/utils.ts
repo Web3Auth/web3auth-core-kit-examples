@@ -109,11 +109,7 @@ export const setupWeb3 = async (loginReponse: any, signingParams: any) => {
         signatures,
       });
       await client.cleanup(tss, { signatures, server_coeffs: serverCoeffs });
-      const sig = {
-        v: recoveryParam,
-        r: Buffer.from(r.toString("hex").padStart(64, "0"), "hex"),
-        s: Buffer.from(s.toString("hex").padStart(64, "0"), "hex"),
-      };
+      const sig = { v: recoveryParam, r: r.toArrayLike(Buffer, "be", 32), s: s.toArrayLike(Buffer, "be", 32) };
       const sigBuffer = Buffer.concat([sig.r, sig.s]);
       return Promise.resolve(sigBuffer);
     };
