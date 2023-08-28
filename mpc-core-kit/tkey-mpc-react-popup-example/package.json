@@ -7,7 +7,7 @@
 		"@ethereumjs/tx": "^4.1.1",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",
-		"@testing-library/user-event": "^13.5.0",
+		"@testing-library/user-event": "^14.4.3",
 		"@tkey-mpc/common-types": "^8.1.0",
 		"@tkey-mpc/core": "^8.1.0",
 		"@tkey-mpc/service-provider-torus": "^8.1.0",
