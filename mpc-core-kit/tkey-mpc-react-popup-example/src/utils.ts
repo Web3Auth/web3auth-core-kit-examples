@@ -141,7 +141,7 @@ export const setupWeb3 = async (chainConfig: Omit<CustomChainConfig, "chainNames
         signatures,
       });
       await client.cleanup(tss, { signatures, server_coeffs: serverCoeffs });
-      return { v: recoveryParam, r: Buffer.from(r.toString("hex"), "hex"), s: Buffer.from(s.toString("hex"), "hex") };
+      return { v: recoveryParam, r: r.toArrayLike(Buffer, "be", 32), s: s.toArrayLike(Buffer, "be", 32) };
     };
 
     if (!compressedTSSPubKey) {
