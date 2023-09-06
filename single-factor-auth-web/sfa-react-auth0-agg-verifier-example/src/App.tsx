@@ -2,25 +2,26 @@ import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
 import RPC from "./evm.ethers";
 
 import { useAuth0 } from "@auth0/auth0-react";
-import { auth } from './FireBaseConfig';
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+// import { auth } from './FireBaseConfig';
+// import {
+//   GoogleAuthProvider,
+//   signInWithPopup,
+// } from "firebase/auth";
 
 import "./App.css";
 
 import Loading from "./Loading";
 
-const verifier = "w3a-agg-auth0-firebase";
+const verifier = "w3a-agg-google-auth0";
 
 const clientId =
   "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
@@ -41,6 +42,9 @@ function App() {
   const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
+    null
+  );
   const { getIdTokenClaims, loginWithPopup } = useAuth0();
 
   useEffect(() => {
@@ -76,76 +80,37 @@ function App() {
       return null;
     }
   };
-  const signInWithGoogle = async () => {
-    try {
-      const googleProvider = new GoogleAuthProvider();
-      const res = await signInWithPopup(auth, googleProvider);
-      console.log(res);
-      const idToken = await res.user.getIdToken(true);
-      console.log("idToken", parseToken(idToken));
-      const { email } = parseToken(idToken);
-      console.log("email", email);
-      const subVerifierInfoArray = [
-        {
-          verifier: "w3a-google-firebase",
-          idToken: idToken!,
-        }
-      ]
-      await web3authSFAuth?.connect({
-        verifier,
-        verifierId: email,
-        idToken: idToken!,
-        subVerifierInfoArray,
-      });
-      setUsesSfaSDK(true);
-      setLoading(false);
-      setIsLoggedIn(true);
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-
-  // const loginAuth0GitHub = async () => {
-  //   // trying logging in with the Single Factor Auth SDK
+  // const signInWithGoogle = async () => {
   //   try {
-  //     if (!web3authSFAuth) {
-  //       uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-  //       return;
-  //     }
-  //     setLoading(true);
-  //     await loginWithPopup();
-  //     const idToken = (await getIdTokenClaims())?.__raw.toString();
-  //     setIdToken(idToken!);
+  //     const googleProvider = new GoogleAuthProvider();
+  //     const res = await signInWithPopup(auth, googleProvider);
+  //     console.log(res);
+  //     const idToken = await res.user.getIdToken(true);
   //     console.log("idToken", parseToken(idToken));
   //     const { email } = parseToken(idToken);
+  //     console.log("email", email);
   //     const subVerifierInfoArray = [
   //       {
-  //         verifier: "w3a-auth0-github",
+  //         verifier: "w3a-google-firebase",
   //         idToken: idToken!,
   //       }
   //     ]
-  //     const web3authSfaprovider = await web3authSFAuth.connect({
+  //     await web3authSFAuth?.connect({
   //       verifier,
   //       verifierId: email,
   //       idToken: idToken!,
   //       subVerifierInfoArray,
   //     });
-  //     if (web3authSfaprovider) {
-  //       setProvider(web3authSfaprovider);
-  //     }
   //     setUsesSfaSDK(true);
   //     setLoading(false);
   //     setIsLoggedIn(true);
   //   } catch (err) {
-  //     // Single Factor Auth SDK throws an error if the user has already enabled MFA
-  //     // One can use the Web3AuthNoModal SDK to handle this case
-  //     setLoading(false);
   //     console.error(err);
+  //     throw err;
   //   }
   // };
 
-  const loginAuth0EmailPasswordless = async () => {
+  const loginAuth0GitHub = async () => {
     // trying logging in with the Single Factor Auth SDK
     try {
       if (!web3authSFAuth) {
@@ -160,16 +125,92 @@ function App() {
       const { email } = parseToken(idToken);
       const subVerifierInfoArray = [
         {
-          verifier: "w3a-auth0-email-pswdles",
+          verifier: "w3a-auth0-github",
           idToken: idToken!,
         }
       ]
-      await web3authSFAuth.connect({
+      const web3authSfaprovider = await web3authSFAuth.connect({
         verifier,
         verifierId: email,
         idToken: idToken!,
         subVerifierInfoArray,
       });
+      if (web3authSfaprovider) {
+        setProvider(web3authSfaprovider);
+      }
+      setUsesSfaSDK(true);
+      setLoading(false);
+      setIsLoggedIn(true);
+    } catch (err) {
+      // Single Factor Auth SDK throws an error if the user has already enabled MFA
+      // One can use the Web3AuthNoModal SDK to handle this case
+      setLoading(false);
+      console.error(err);
+    }
+  };
+
+  // const loginAuth0EmailPasswordless = async () => {
+  //   // trying logging in with the Single Factor Auth SDK
+  //   try {
+  //     if (!web3authSFAuth) {
+  //       uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+  //       return;
+  //     }
+  //     setLoading(true);
+  //     await loginWithPopup();
+  //     const idToken = (await getIdTokenClaims())?.__raw.toString();
+  //     setIdToken(idToken!);
+  //     console.log("idToken", parseToken(idToken));
+  //     const { email } = parseToken(idToken);
+  //     const subVerifierInfoArray = [
+  //       {
+  //         verifier: "w3a-auth0-email-pswdles",
+  //         idToken: idToken!,
+  //       }
+  //     ]
+  //     await web3authSFAuth.connect({
+  //       verifier,
+  //       verifierId: email,
+  //       idToken: idToken!,
+  //       subVerifierInfoArray,
+  //     });
+  //     setUsesSfaSDK(true);
+  //     setLoading(false);
+  //     setIsLoggedIn(true);
+  //   } catch (err) {
+  //     // Single Factor Auth SDK throws an error if the user has already enabled MFA
+  //     // One can use the Web3AuthNoModal SDK to handle this case
+  //     setLoading(false);
+  //     console.error(err);
+  //   }
+  // };
+
+  const onSuccess = async (response: CredentialResponse) => {
+    try {
+      if (!web3authSFAuth) {
+        uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+        return;
+      }
+      setLoading(true);
+      const idToken = response.credential;
+      setIdToken(idToken!);
+      const { email } = parseToken(idToken);
+      console.log(email);
+      const subVerifierInfoArray = [
+        {
+          verifier: "w3a-google",
+          idToken: idToken!,
+        }
+      ]
+      const web3authSfaprovider = await web3authSFAuth.connect({
+        verifier,
+        verifierId: email,
+        idToken: idToken!,
+        subVerifierInfoArray,
+      });
+      if (web3authSfaprovider) {
+        setProvider(web3authSfaprovider);
+      }
       setUsesSfaSDK(true);
       setLoading(false);
       setIsLoggedIn(true);
@@ -202,41 +243,41 @@ function App() {
   };
 
   const getAccounts = async () => {
-    if (!web3authSFAuth?.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(web3authSFAuth?.provider!);
+    const rpc = new RPC(provider!);
     const userAccount = await rpc.getAccounts();
     uiConsole(userAccount);
   };
 
   const getBalance = async () => {
-    if (!web3authSFAuth?.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(web3authSFAuth?.provider!);
+    const rpc = new RPC(provider!);
     const balance = await rpc.getBalance();
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!web3authSFAuth?.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(web3authSFAuth?.provider!);
+    const rpc = new RPC(provider!);
     const result = await rpc.signMessage();
     uiConsole(result);
   };
 
   const sendTransaction = async () => {
-    if (!web3authSFAuth?.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(web3authSFAuth?.provider!);
+    const rpc = new RPC(provider!);
     const result = await rpc.signAndSendTransaction();
     uiConsole(result);
   };
@@ -291,12 +332,10 @@ function App() {
 
   const logoutView = (
     <>
-      <button onClick={loginAuth0EmailPasswordless} className="card">
-        Login using <b>Email Passwordless</b> [ via Auth0 ]
+      <button onClick={loginAuth0GitHub} className="card">
+        Login using <b>Github</b> [ via Auth0 ]
       </button>
-      <button onClick={signInWithGoogle} className="card">
-        Login using <b>Google</b> [ via Firebase ]
-      </button>
+      <GoogleLogin onSuccess={onSuccess} />
     </>
   );
 
