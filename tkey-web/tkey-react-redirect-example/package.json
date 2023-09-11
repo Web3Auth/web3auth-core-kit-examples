@@ -12,7 +12,7 @@
 		"@tkey/web-storage": "^9.0.0",
 		"@types/bn.js": "^5.1.1",
 		"@types/jest": "^27.5.2",
-		"@types/node": "^17.0.45",
+		"@types/node": "^20.6.0",
 		"@types/react": "^18.0.25",
 		"@types/react-dom": "^18.0.9",
 		"@web3auth/ethereum-provider": "^5.2.0",
