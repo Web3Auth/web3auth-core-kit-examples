@@ -18,7 +18,7 @@
 		"@toruslabs/customauth": "^16.0.1",
 		"@toruslabs/eslint-config-typescript": "^2.0.0",
 		"@toruslabs/fnd-base": "^12.0.0",
-		"@toruslabs/openlogin-session-manager": "^2.0.0",
+		"@toruslabs/openlogin-session-manager": "^3.0.0",
 		"@toruslabs/torus.js": "^10.0.5",
 		"@toruslabs/tss-client": "^1.6.1-alpha.0",
 		"@toruslabs/tss-lib": "^1.6.0-alpha.0",
