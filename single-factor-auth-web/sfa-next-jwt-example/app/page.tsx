@@ -7,8 +7,8 @@ import { Web3Auth } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // RPC libraries for blockchain calls
-// import RPC from "./evm.web3";
-import RPC from "./evm.ethers";
+import RPC from "./evm.web3";
+// import RPC from "./evm.ethers";
 
 import Loading from "./Loading";
 import "./App.css";
