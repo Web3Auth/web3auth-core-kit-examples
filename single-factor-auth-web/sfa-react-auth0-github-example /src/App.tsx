@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 
 // RPC libraries for blockchain calls
@@ -32,7 +32,7 @@ const chainConfig = {
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
+  const [provider, setProvider] = useState<IProvider | null>(
     null
   );
   const [idToken, setIdToken] = useState<string | null>(null);
