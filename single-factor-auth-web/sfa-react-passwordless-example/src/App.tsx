@@ -15,7 +15,6 @@ import Loading from "./Loading";
 import {
   signInWithEmailLink,
   isSignInWithEmailLink,
-  // UserCredential,
   sendSignInLinkToEmail,
 } from "firebase/auth";
 
