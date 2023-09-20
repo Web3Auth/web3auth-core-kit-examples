@@ -1,22 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import "./App.css";
 
+import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { useEffect, useState } from "react";
+
 // RPC libraries for blockchain calls
 import RPC from "./evm.web3";
 // import RPC from "./evm.ethers";
-
 import Loading from "./Loading";
-import "./App.css";
 
 const verifier = "w3a-jwt-for-sfa-web";
 
-const clientId =
-  "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -31,9 +30,7 @@ const chainConfig = {
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
-    null
-  );
+  const [provider, setProvider] = useState<IProvider | null>(null);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -47,11 +44,11 @@ function App() {
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
         setWeb3authSFAuth(web3authSfa);
-        const provider = new EthereumPrivateKeyProvider({
+        const privateKeyProvider = new EthereumPrivateKeyProvider({
           config: { chainConfig },
         });
 
-        web3authSfa.init(provider);
+        web3authSfa.init(privateKeyProvider);
       } catch (error) {
         console.error(error);
       }
@@ -83,6 +80,13 @@ function App() {
     return data?.token;
   };
 
+  function uiConsole(...args: any[]): void {
+    const el = document.querySelector("#console>p");
+    if (el) {
+      el.innerHTML = JSON.stringify(args || {}, null, 2);
+    }
+  }
+
   const login = async () => {
     // trying logging in with the Single Factor Auth SDK
     try {
@@ -91,14 +95,14 @@ function App() {
         return;
       }
       setIsLoggingIn(true);
-      const idToken = await getIdToken();
-      console.log(idToken);
-      setIdToken(idToken!);
-      const { sub } = parseToken(idToken);
+      const idTokenResult = await getIdToken();
+      console.log(idTokenResult);
+      setIdToken(idTokenResult!);
+      const { sub } = parseToken(idTokenResult);
       const web3authSfaprovider = await web3authSFAuth.connect({
         verifier,
         verifierId: sub,
-        idToken: idToken!,
+        idToken: idTokenResult!,
       });
       if (web3authSfaprovider) {
         setProvider(web3authSfaprovider);
@@ -119,7 +123,6 @@ function App() {
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
         parseToken(idToken)
       );
-      return;
     }
   };
 
@@ -129,7 +132,6 @@ function App() {
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
       );
       setProvider(null);
-      return;
     }
   };
 
@@ -172,13 +174,6 @@ function App() {
     const result = await rpc.signAndSendTransaction();
     uiConsole(result);
   };
-
-  function uiConsole(...args: any[]): void {
-    const el = document.querySelector("#console>p");
-    if (el) {
-      el.innerHTML = JSON.stringify(args || {}, null, 2);
-    }
-  }
 
   const loginView = (
     <>
@@ -236,13 +231,7 @@ function App() {
         SFA Next JWT Example
       </h1>
 
-      {isLoggingIn ? (
-        <Loading />
-      ) : (
-        <div className="grid">
-          {web3authSFAuth ? (provider ? loginView : logoutView) : null}
-        </div>
-      )}
+      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSFAuth ? (provider ? loginView : logoutView) : null}</div>}
 
       <footer className="footer">
         <a
