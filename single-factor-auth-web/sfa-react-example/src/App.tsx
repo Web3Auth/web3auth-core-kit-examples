@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 
 // RPC libraries for blockchain calls
@@ -11,29 +11,24 @@ import RPC from "./evm.ethers";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import {
-  GoogleAuthProvider,
-  getAuth,
-  signInWithPopup,
-  UserCredential,
-} from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
 import Loading from "./Loading";
 import "./App.css";
 
 const verifier = "web3auth-firebase-examples";
 
-const clientId =
-  "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
+  chainId: "0x1",
+  displayName: "Ethereum Mainnet",
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x5",
-  rpcTarget: "https://rpc.ankr.com/eth_goerli",
-  displayName: "Goerli Testnet",
-  blockExplorer: "https://goerli.etherscan.io",
-  ticker: "ETH",
   tickerName: "Ethereum",
+  ticker: "ETH",
+  decimals: 18,
+  rpcTarget: "https://rpc.ankr.com/eth",
+  blockExplorer: "https://etherscan.io",
 };
 
 // Your web app's Firebase configuration
@@ -46,31 +41,27 @@ const firebaseConfig = {
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
 
+// Initialising Web3Auth Single Factor Auth SDK
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+});
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
+
 function App() {
-  const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
-    null
-  );
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const app = initializeApp(firebaseConfig);
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Initialising Web3Auth Single Factor Auth SDK
-        const web3authSfa = new Web3Auth({
-          clientId, // Get your Client ID from Web3Auth Dashboard
-          web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-        });
-        setWeb3authSFAuth(web3authSfa);
-        const provider = new EthereumPrivateKeyProvider({
-          config: { chainConfig },
-        });
-
-        web3authSfa.init(provider);
+        web3authSfa.init(ethereumPrivateKeyProvider);
       } catch (error) {
         console.error(error);
       }
@@ -113,7 +104,7 @@ function App() {
 
     // trying logging in with the Single Factor Auth SDK
     try {
-      if (!web3authSFAuth) {
+      if (!web3authSfa) {
         uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
         return;
       }
@@ -121,16 +112,14 @@ function App() {
       // get sub value from firebase id token
       const { sub } = parseToken(idToken);
 
-      const web3authSfaprovider = await web3authSFAuth.connect({
+      await web3authSfa.connect({
         verifier,
         verifierId: sub,
         idToken,
       });
-      if (web3authSfaprovider) {
-        setProvider(web3authSfaprovider);
-      }
       setUsesSfaSDK(true);
       setIsLoggingIn(false);
+      setIsLoggedIn(true);
     } catch (err) {
       // Single Factor Auth SDK throws an error if the user has already enabled MFA
       // One can use the Web3AuthNoModal SDK to handle this case
@@ -154,49 +143,87 @@ function App() {
       console.log(
         "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
       );
-      setProvider(null);
+      web3authSfa.logout();
+      setIsLoggedIn(false);
       return;
     }
   };
 
   const getAccounts = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(web3authSfa.provider);
     const userAccount = await rpc.getAccounts();
     uiConsole(userAccount);
   };
 
   const getBalance = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(web3authSfa.provider);
     const balance = await rpc.getBalance();
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(web3authSfa.provider);
     const result = await rpc.signMessage();
     uiConsole(result);
   };
 
   const sendTransaction = async () => {
-    if (!provider) {
+    if (!web3authSfa.provider) {
       uiConsole("No provider found");
       return;
     }
-    const rpc = new RPC(provider);
+    const rpc = new RPC(web3authSfa.provider);
     const result = await rpc.signAndSendTransaction();
     uiConsole(result);
+  };
+
+  const authenticateUser = async () => {
+    try {
+      const userCredential = await web3authSfa.authenticateUser();
+      uiConsole(userCredential);
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+
+  const addChain = async () => {
+    try {
+      const newChain = {
+        chainId: "0x5",
+        displayName: "Goerli",
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        tickerName: "Goerli",
+        ticker: "ETH",
+        decimals: 18,
+        rpcTarget: "https://rpc.ankr.com/eth_goerli",
+        blockExplorer: "https://goerli.etherscan.io",
+      };
+      await web3authSfa.addChain(newChain);
+      uiConsole("Chain added successfully");
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+
+  const switchChain = async () => {
+    try {
+      await web3authSfa.switchChain({ chainId: "0x5" });
+      uiConsole("Chain switched successfully");
+    } catch (err) {
+      uiConsole(err);
+    }
   };
 
   function uiConsole(...args: any[]): void {
@@ -215,8 +242,28 @@ function App() {
           </button>
         </div>
         <div>
+          <button onClick={() => uiConsole(idToken)} className="card">
+            Get OAuth ID Token
+          </button>
+        </div>
+        <div>
+          <button onClick={authenticateUser} className="card">
+            Authenticate User
+          </button>
+        </div>
+        <div>
           <button onClick={getAccounts} className="card">
             Get Accounts
+          </button>
+        </div>
+        <div>
+          <button onClick={addChain} className="card">
+            Add Chain
+          </button>
+        </div>
+        <div>
+          <button onClick={switchChain} className="card">
+            Switch Chain
           </button>
         </div>
         <div>
@@ -262,13 +309,7 @@ function App() {
         SFA React Example
       </h1>
 
-      {isLoggingIn ? (
-        <Loading />
-      ) : (
-        <div className="grid">
-          {web3authSFAuth ? (provider ? loginView : logoutView) : null}
-        </div>
-      )}
+      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (isLoggedIn ? loginView : logoutView) : null}</div>}
 
       <footer className="footer">
         <a
