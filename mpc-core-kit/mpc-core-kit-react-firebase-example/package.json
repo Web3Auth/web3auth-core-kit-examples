@@ -1,5 +1,5 @@
 {
-  "name": "redirect-flow-example",
+  "name": "firebase-idtoken-flow-example",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,9 +12,10 @@
     "@types/react-dom": "^18.2.7",
     "@web3auth/mpc-core-kit": "^1.0.0",
     "browserify-zlib": "^0.2.0",
-	"copy-webpack-plugin": "^11.0.0",
-	"html-webpack-plugin": "^5.5.3",
-	"jsrsasign": "^10.6.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.3",
+	"firebase": "^10.1.0",
+    "jsrsasign": "^10.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

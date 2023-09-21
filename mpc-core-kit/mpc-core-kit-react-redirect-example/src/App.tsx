@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import swal from "sweetalert";
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK } from "@web3auth/mpc-core-kit"
+import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey, mnemonicToKey } from "@web3auth/mpc-core-kit";
 import Web3 from "web3";
+import type { provider } from "web3-core";
+
 import "./App.css";
+import { SafeEventEmitterProvider } from "@web3auth/base";
+import { BN } from "bn.js";
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -12,287 +15,212 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+const selectedNetwork = WEB3AUTH_NETWORK.MAINNET;
+
+const coreKitInstance = new Web3AuthMPCCoreKit(
+  {
+    web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
+    web3AuthNetwork: selectedNetwork,
+    uxMode: 'redirect'
+  }
+);
 
 function App() {
-  const [coreKitInstance, setCoreKitInstance] = useState<Web3AuthMPCCoreKit | null>(null);
-  const [provider, setProvider] = useState<any>(null);
+  const [backupFactorKey, setBackupFactorKey] = useState<string | undefined>(undefined);
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
+  const [web3, setWeb3] = useState<any>(undefined)
+  const [exportTssShareType, setExportTssShareType] = useState<TssShareType>(TssShareType.DEVICE);
+  const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
+  const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
+  const [answer, setAnswer] = useState<string | undefined>(undefined);
+  const [newAnswer, setNewAnswer] = useState<string | undefined>(undefined);
+  const [question, setQuestion] = useState<string | undefined>(undefined);
+  const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
+
+  const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
 
   useEffect(() => {
     const init = async () => {
-      // Initialization of Service Provider
+      await coreKitInstance.init();
+
+      if (coreKitInstance.provider) {
+        setProvider(coreKitInstance.provider);
+      }
+
+      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        uiConsole("required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]");
+      }
+
+      setCoreKitStatus(coreKitInstance.status);
+
       try {
-        const coreKitInstance = new Web3AuthMPCCoreKit(
-          {
-            web3AuthClientId: 'BILuyqFCuDXAqVmAuMbD3c4oWEFd7PUENVPyVC-zmsF9euHAvUjqbTCpKw6gO05DBif1YImIVtyaxmEbcLLlb6w',
-            web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
-            uxMode: 'redirect'
-          })
-        await coreKitInstance.init();
-        setCoreKitInstance(coreKitInstance);
-        if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-      } catch (error) {
-        console.error(error);
+        let result = securityQuestion.getQuestion(coreKitInstance!);
+        setQuestion(result);
+      } catch (e) {
+        setQuestion(undefined);
+        uiConsole(e);
       }
     };
     init();
   }, []);
 
   useEffect(() => {
-    const submitRedirectResult = async () => {
-      try {
-        const provider = await coreKitInstance?.handleRedirectResult();
-        if (provider) setProvider(provider);
-      } catch (error) {
-        if ((error as Error).message === "required more shares") {
-          uiConsole("first triggered", coreKitInstance);
-          recoverAccount();
-        }
-      }
+    if (provider) {
+      const web3 = new Web3(provider as provider);
+      setWeb3(web3);
     }
-    if (coreKitInstance && window.location.hash.includes("#state")) {
-      submitRedirectResult();
+  }, [provider])
+
+  
+  const keyDetails = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance not found');
     }
-  }, [coreKitInstance]);
+    uiConsole(coreKitInstance.getKeyDetails());
+  };
+
+  const listFactors = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance not found');
+    }
+    const factorPubs = coreKitInstance.tKey.metadata.factorPubs;
+    if (!factorPubs) {
+      throw new Error('factorPubs not found');
+    }
+    const pubsHex = factorPubs[coreKitInstance.tKey.tssTag].map((pub: any) => {
+      return Point.fromTkeyPoint(pub).toBufferSEC1(true).toString('hex');
+    });
+    uiConsole(pubsHex);
+  };
 
   const login = async () => {
-    if (!coreKitInstance) {
-      uiConsole("coreKitInstance not initialized yet");
-      return;
-    }
     try {
       // Triggering Login using Service Provider ==> opens the popup
-      const provider = await coreKitInstance.connect(
-        {
-          subVerifierDetails: {
-            typeOfLogin: 'google',
-            verifier: 'google-tkey-w3a',
-            clientId:
-              '774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
-          }
-        }
-      );
-
-      if (provider) setProvider(provider);
-    } catch (error) {
-      if ((error as Error).message === "required more shares") {
-        uiConsole("second triggered", coreKitInstance);
-        recoverAccount();
+      if (!coreKitInstance) {
+        throw new Error('initiated to login');
       }
-      uiConsole(error);
+      const verifierConfig = {
+        subVerifierDetails: {
+          typeOfLogin: 'google',
+          verifier: 'w3a-google-demo',
+          clientId:
+            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
+        }
+      } as SubVerifierDetailsParams;
+
+      await coreKitInstance.loginWithOauth(verifierConfig);
+      setCoreKitStatus(coreKitInstance.status);
+
+    } catch (error: unknown) {
+      console.error(error);
     }
   };
 
-  const recoverAccount = async () => {
+  const getDeviceShare = async () => {
+    const factorKey = await getWebBrowserFactor(coreKitInstance!);
+    setBackupFactorKey(factorKey);
+    uiConsole("Device share: ", factorKey);
+  }
+
+  const inputBackupFactorKey = async () => {
     if (!coreKitInstance) {
-      uiConsole("coreKitInstance not initialized yet", coreKitInstance);
-      return;
+      throw new Error("coreKitInstance not found");
     }
-    try {
+    if (!backupFactorKey) {
+      throw new Error("backupFactorKey not found");
+    }
+    const factorKey = new BN(backupFactorKey, "hex")
+    await coreKitInstance.inputFactorKey(factorKey);
 
-      swal({
-        title: "Please enter your recovery share",
-        text: "You can choose between your backup share or your security question share",
-        icon: "warning",
-        buttons: {
-          password: {
-            text: "Enter Password",
-            value: "password"
-          },
-          recoveryShare: {
-            text: "Enter Recovery Share",
-            value: "recoveryShare"
-          },
-          resetAccount : {
-            text: "CRITICAL Reset Account",
-            value: "resetAccount"
-          },
-          cancel: true,
-        },
-        dangerMode: true,
-      })
-        .then((value) => {
-          switch (value) {
-            case "password":
-              swal('Enter password (>10 characters)', {
-                content: 'input' as any,
-              }).then(async value => {
-                if (value.length > 10) {
-                  resetViaPassword(value);
-                } else {
-                  swal('Error', 'Password must be >= 11 characters', 'error');
-                }
-              });
-              break;
+    if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+      uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+    }
 
-            case "recoveryShare":
-              swal('Enter recovery share', {
-                content: 'input' as any,
-              }).then(async value => {
-                if (value.length > 10) {
-                  submitBackupShare(value);
-                } else {
-                  swal('Error', 'recovery share must be >= 11 characters', 'error');
-                }
-              });
-              break;
-
-              case "resetAccount":
-                resetAccount();
-                break;
-
-            default:
-              swal("Cannot Recover Account");
-          }
-        });
-    } catch (error) {
-      uiConsole(error);
+    if (coreKitInstance.provider) {
+      setProvider(coreKitInstance.provider);
     }
   }
 
-  const resetViaPassword = async (password: string) => {
+  const recoverSecurityQuestionFactor = async () => {
     if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
+      throw new Error("coreKitInstance not found");
     }
-    await coreKitInstance.recoverSecurityQuestionShare("What is your password?", password);
-    uiConsole('submitted');
-    if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-  }
-
-  const submitBackupShare = async (seedPhrase: string): Promise<void> => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
+    if (!answer) {
+      throw new Error("backupFactorKey not found");
     }
-    await coreKitInstance.inputBackupShare(seedPhrase);
-    uiConsole('submitted');
-    if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-  }
-
-  const resetAccount = async (): Promise<void> => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    await coreKitInstance.CRITICAL_resetAccount();
-    uiConsole('reset account successful');
-  }
-
-  const exportShare = async (): Promise<void> => {
-    if (!provider) {
-      throw new Error('provider is not set.');
-    }
-    const share = await coreKitInstance?.exportBackupShare();
-    console.log(share);
-    uiConsole(share);
-  }
-
-  const newPasswordShare = async () => {
-    swal('Enter password (>10 characters)', {
-      content: 'input' as any,
-    }).then(async value => {
-      if (value.length > 10) {
-        addSecurityQuestionShare(value);
-      } else {
-        swal('Error', 'Password must be >= 11 characters', 'error');
-      }
-    });
-  }
-
-  const addSecurityQuestionShare = async (password: string) => {
-    try {
-      if (!coreKitInstance) {
-        throw new Error("coreKitInstance is not set");
-      }
-      await coreKitInstance.addSecurityQuestionShare("What is your password?", password);
-      uiConsole('saved');
-    } catch (err) {
-      uiConsole(err);
-    }
-  }
-
-  const updatePasswordShare = async () => {
-    swal('Enter password (>10 characters)', {
-      content: 'input' as any,
-    }).then(async value => {
-      if (value.length > 10) {
-        changeSecurityQuestionShare(value);
-      } else {
-        swal('Error', 'Password must be >= 11 characters', 'error');
-      }
-    });
-  }
-
-
-  const changeSecurityQuestionShare = async (password: string) => {
-    try {
-      if (!coreKitInstance) {
-        throw new Error("coreKitInstance is not set");
-      }
-      await coreKitInstance.changeSecurityQuestionShare("What is your password?", password);
-      uiConsole('updated');
-    } catch (err) {
-      uiConsole(err);
-    }
-  }
-
-  const deletePasswordShare = async () => {
-    try {
-      if (!coreKitInstance) {
-        throw new Error("coreKitInstance is not set");
-      }
-      await coreKitInstance.deleteSecurityQuestionShare("What is your password?");
-      uiConsole('deleted');
-    } catch (err) {
-      uiConsole(err);
-    }
+    
+    let factorKey = await securityQuestion.recoverFactor(coreKitInstance, answer);
+    setBackupFactorKey(factorKey);
+    uiConsole("Security Question share: ", factorKey);
   }
 
   const logout = async () => {
     if (!coreKitInstance) {
-      uiConsole("coreKitInstance not initialized yet");
-      return;
+      throw new Error("coreKitInstance not found");
     }
-    uiConsole("Log out");
     await coreKitInstance.logout();
+    uiConsole("Log out");
     setProvider(null);
   };
 
-  const getUserInfo = () => {
+  const getUserInfo = (): void => {
     const user = coreKitInstance?.getUserInfo();
     uiConsole(user);
   };
 
-  const getKeyDetails = () => {
-    const keyDetails = coreKitInstance?.getKeyDetails();
-    uiConsole(keyDetails);
-  };
+  const exportFactor = async (): Promise<void> => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    uiConsole("export share type: ", exportTssShareType);
+    const factorKey = generateFactorKey();
+    await coreKitInstance.createFactor({
+      shareType: exportTssShareType,
+      factorKey: factorKey.private
+    });
+    let mnemonic = keyToMnemonic(factorKey.private.toString('hex'));
+    let key = mnemonicToKey(mnemonic);
+
+    uiConsole("Export factor key: ", factorKey);
+    console.log("menmonic : ", mnemonic);
+    console.log("key: ", key);  
+  }
+
+  const deleteFactor = async (): Promise<void> => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    const pubBuffer = Buffer.from(factorPubToDelete, 'hex');
+    const pub = Point.fromBufferSEC1(pubBuffer);
+    await coreKitInstance.deleteFactor(pub.toTkeyPoint());
+    uiConsole("factor deleted");
+  }
 
   const getChainID = async () => {
-    if (!provider) {
-      console.log("provider not initialized yet");
+    if (!web3) {
+      uiConsole("web3 not initialized yet");
       return;
     }
-    const web3 = new Web3(provider);
     const chainId = await web3.eth.getChainId();
     uiConsole(chainId);
     return chainId;
   };
 
   const getAccounts = async () => {
-    if (!provider) {
-      console.log("provider not initialized yet");
+    if (!web3) {
+      uiConsole("web3 not initialized yet");
       return;
     }
-    const web3 = new Web3(provider);
     const address = (await web3.eth.getAccounts())[0];
     uiConsole(address);
     return address;
   };
 
   const getBalance = async () => {
-    if (!provider) {
-      console.log("provider not initialized yet");
+    if (!web3) {
+      uiConsole("web3 not initialized yet");
       return;
     }
-    const web3 = new Web3(provider);
     const address = (await web3.eth.getAccounts())[0];
     const balance = web3.utils.fromWei(
       await web3.eth.getBalance(address) // Balance is in wei
@@ -302,11 +230,10 @@ function App() {
   };
 
   const signMessage = async (): Promise<any> => {
-    if (!provider) {
-      console.log("provider not initialized yet");
+    if (!web3) {
+      uiConsole("web3 not initialized yet");
       return;
     }
-    const web3 = new Web3(provider);
     const fromAddress = (await web3.eth.getAccounts())[0];
     const originalMessage = [
       {
@@ -331,12 +258,30 @@ function App() {
     uiConsole(signedMessage);
   };
 
+  const criticalResetAccount = async (): Promise<void> => {
+    // This is a critical function that should only be used for testing purposes
+    // Resetting your account means clearing all the metadata associated with it from the metadata server
+    // The key details will be deleted from our server and you will not be able to recover your account
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    //@ts-ignore
+    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
+    //   throw new Error("reset account is not recommended on mainnet");
+    // }
+    await coreKitInstance.tKey.storageLayer.setMetadata({
+      privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+      input: { message: "KEY_NOT_FOUND" },
+    });
+    uiConsole('reset');
+    setProvider(null);
+  }
+
   const sendTransaction = async () => {
-    if (!provider) {
-      console.log("provider not initialized yet");
+    if (!web3) {
+      uiConsole("web3 not initialized yet");
       return;
     }
-    const web3 = new Web3(provider);
     const fromAddress = (await web3.eth.getAccounts())[0];
 
     const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
@@ -352,17 +297,76 @@ function App() {
     uiConsole(receipt);
   };
 
+  const createSecurityQuestion = async ( question: string, answer: string ) => {
+    if (!coreKitInstance) { 
+      throw new Error("coreKitInstance is not set");
+    }
+    await securityQuestion.setSecurityQuestion({ mpcCoreKit: coreKitInstance, question, answer, shareType: TssShareType.RECOVERY });
+    setNewQuestion(undefined);
+    let result = await securityQuestion.getQuestion(coreKitInstance);
+    if (result) {
+      setQuestion(question);
+    }
+  }
+
+  const changeSecurityQuestion = async ( newQuestion: string, newAnswer: string, answer: string) => {
+    if (!coreKitInstance) { 
+      throw new Error("coreKitInstance is not set");
+    }
+    await securityQuestion.changeSecurityQuestion({ mpcCoreKit: coreKitInstance, newQuestion, newAnswer, answer });
+    let result = await securityQuestion.getQuestion(coreKitInstance);
+    if (result) {
+      setQuestion(question);
+    }
+  }
+
+  const deleteSecurityQuestion = async () => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    await securityQuestion.deleteSecurityQuestion(coreKitInstance);
+    setQuestion(undefined);
+
+  }
+
+  const enableMFA = async () => { 
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance is not set");
+    }
+    const factorKey = await coreKitInstance.enableMFA({});
+    const factorKeyMnemonic = await keyToMnemonic(factorKey);
+
+    uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
+  }
+
   const loggedInView = (
     <>
       <h2 className="subtitle">Account Details</h2>
       <div className="flex-container">
-
         <button onClick={getUserInfo} className="card">
           Get User Info
         </button>
-        
-        <button onClick={getKeyDetails} className="card">
-          Get Key Details
+
+        <button onClick={async () => uiConsole(await coreKitInstance.getTssPublicKey())} className="card">
+          Get Public Key
+        </button>
+
+        <button onClick={keyDetails} className="card">
+          Key Details
+        </button>
+
+        <button onClick={listFactors} className="card">
+          List Factors
+        </button>
+      </div>
+      <div className="flex-container">
+
+        <button onClick={criticalResetAccount} className="card">
+          [CRITICAL] Reset Account
+        </button>
+
+        <button onClick={async () => uiConsole(await coreKitInstance._UNSAFE_exportTssKey())} className="card">
+          [CAUTION] Export TSS Private Key
         </button>
 
         <button onClick={logout} className="card">
@@ -371,24 +375,71 @@ function App() {
 
       </div>
       <h2 className="subtitle">Recovery/ Key Manipulation</h2>
-      <div className="flex-container">
+      <div>
+        <h4 >Enabling MFA</h4>
+        <div className="flex-container">
+          <button onClick={enableMFA} className="card">
+            Enable MFA
+          </button>
+        </div>
+        <h4 >Manual Factors Manipulation</h4>
+        <div className="flex-container">
 
-        <button onClick={exportShare} className="card">
-          Export Backup Share
-        </button>
-        <button onClick={newPasswordShare} className="card">
-          New Password Share
-        </button>
-        <button onClick={updatePasswordShare} className="card">
-          Update Password Share
-        </button>
-        <button onClick={deletePasswordShare} className="card">
-          Delete Password Share
-        </button>
-        <button onClick={resetAccount} className="card">
-          CRITICAL Reset Account
-        </button>
+          <label>Share Type:</label>
+          <select value={exportTssShareType}onChange={(e) => setExportTssShareType(parseInt(e.target.value))}>
+            <option value={TssShareType.DEVICE}>Device Share</option>
+            <option value={TssShareType.RECOVERY}>Recovery Share</option>
+          </select>
+          <button onClick={exportFactor} className="card">
+            Export share
+          </button>
+        </div>
+        <div className="flex-container">
+        <label>Factor pub:</label>
+          <input value={factorPubToDelete} onChange={(e) => setFactorPubToDelete(e.target.value)}></input>
+          <button onClick={deleteFactor} className="card">
+            Delete Factor
+          </button>
+        </div>
+        <div className="flex-container">
+        <input value={backupFactorKey} onChange={(e) => setBackupFactorKey(e.target.value)}></input>
+          <button onClick={() => inputBackupFactorKey()} className="card">
+            Input Factor Key
+          </button>
+        </div>
 
+
+        <h4>Security Question</h4>
+
+        <div>{ question }</div>
+        <div className="flex-container">
+          <div className={ question ? " disabledDiv": ""}>
+            <label>Set Security Question:</label>
+            <input value={question} placeholder="question" onChange={(e) => setNewQuestion(e.target.value)}></input>
+            <input value={answer} placeholder="answer" onChange={(e) => setAnswer(e.target.value)}></input>
+            <button onClick={() => createSecurityQuestion(newQuestion!, answer!)} className="card">
+              Create Security Question
+            </button>
+          </div>
+
+          <div className={ !question ? " disabledDiv": ""}>
+            <label>Change Security Question:</label>
+            <input value={newQuestion} placeholder="newQuestion" onChange={(e) => setNewQuestion(e.target.value)}></input>
+            <input value={newAnswer} placeholder="newAnswer"  onChange={(e) => setNewAnswer(e.target.value)}></input>
+            <input value={answer} placeholder="oldAnswer" onChange={(e) => setAnswer(e.target.value)}></input>
+            <button onClick={() => changeSecurityQuestion(newQuestion!, newAnswer!, answer!)} className="card">
+              Change Security Question
+            </button>
+              
+          </div>
+        </div>
+        <div className="flex-container">
+        <div className={ !question ? "disabledDiv": ""}>
+            <button onClick={() => deleteSecurityQuestion()} className="card">
+              Delete Security Question
+            </button>
+          </div>
+        </div>
       </div>
       <h2 className="subtitle">Blockchain Calls</h2>
       <div className="flex-container">
@@ -412,34 +463,60 @@ function App() {
         <button onClick={sendTransaction} className="card">
           Send Transaction
         </button>
-
-      </div>
-
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
       </div>
     </>
   );
 
   const unloggedInView = (
-    <button onClick={() => login()} className="card">
-      Login
-    </button>
+    <>
+      <button onClick={() => login()} className="card">
+        Login
+      </button>
+      <div className={coreKitStatus=== COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv" } >
+
+        <button onClick={() => getDeviceShare()} className="card">
+          Get Device Share
+        </button>
+        <label>Backup/ Device factor key:</label>
+        <input value={backupFactorKey} onChange={(e) => setBackupFactorKey(e.target.value)}></input>
+        <button onClick={() => inputBackupFactorKey()} className="card">
+          Input Factor Key
+        </button>
+        <button onClick={criticalResetAccount} className="card">
+          [CRITICAL] Reset Account
+        </button>
+
+
+        <div className={ !question ? "disabledDiv" : ""}>
+
+        <label>Recover Using Security Answer:</label>
+          <label>{question}</label>
+          <input value={answer} onChange={(e) => setAnswer(e.target.value)}></input>
+          <button onClick={() => recoverSecurityQuestionFactor()} className="card">
+            Recover Using Security Answer
+          </button>
+        </div>
+      </div>
+      
+    </>
   );
 
   return (
     <div className="container">
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
-        Web3Auth Core Kit MPC Beta Redirect
+          Web3Auth MPC Core Kit 
         </a> {" "}
-        & ReactJS Ethereum Example
+        Redirect Flow Example
       </h1>
 
       <div className="grid">{provider ? loggedInView : unloggedInView}</div>
+      <div id="console" style={{ whiteSpace: "pre-line" }}>
+        <p style={{ whiteSpace: "pre-line" }}></p>
+      </div>
 
       <footer className="footer">
-        <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit/mpc-core-kit-react-redirect-example" target="_blank" rel="noopener noreferrer">
+        <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-mpc-beta-react-popup-example" target="_blank" rel="noopener noreferrer">
           Source code
         </a>
       </footer>

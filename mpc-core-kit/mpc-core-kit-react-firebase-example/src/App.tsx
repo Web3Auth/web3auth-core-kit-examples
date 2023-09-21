@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey } from "@web3auth/mpc-core-kit";
-import Web3 from "web3";
+import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, storeWebBrowserFactor, TssSecurityQuestion, generateFactorKey, COREKIT_STATUS, keyToMnemonic } from "@web3auth/mpc-core-kit";
+import Web3 from 'web3';
+import { initializeApp } from "firebase/app";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
 import type { provider } from "web3-core";
 
 import "./App.css";
@@ -15,13 +22,22 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
+  authDomain: "web3auth-oauth-logins.firebaseapp.com",
+  projectId: "web3auth-oauth-logins",
+  storageBucket: "web3auth-oauth-logins.appspot.com",
+  messagingSenderId: "461819774167",
+  appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
+};
+
 const selectedNetwork = WEB3AUTH_NETWORK.MAINNET;
 
 const coreKitInstance = new Web3AuthMPCCoreKit(
   {
     web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
     web3AuthNetwork: selectedNetwork,
-    uxMode: 'popup'
   }
 );
 
@@ -37,6 +53,7 @@ function App() {
   const [question, setQuestion] = useState<string | undefined>(undefined);
   const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
 
+  const app = initializeApp(firebaseConfig);
   const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
 
   useEffect(() => {
@@ -59,7 +76,7 @@ function App() {
       setWeb3(web3);
     }
   }, [provider])
-  
+
   const keyDetails = async () => {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance not found');
@@ -75,28 +92,42 @@ function App() {
     if (!factorPubs) {
       throw new Error('factorPubs not found');
     }
-    const pubsHex = factorPubs[coreKitInstance.tKey.tssTag].map((pub: any) => {
+    const pubsHex = factorPubs[coreKitInstance.tKey.tssTag].map(pub => {
       return Point.fromTkeyPoint(pub).toBufferSEC1(true).toString('hex');
     });
     uiConsole(pubsHex);
   };
 
+  const signInWithGoogle = async (): Promise<UserCredential> => {
+    try {
+      const auth = getAuth(app);
+      const googleProvider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, googleProvider);
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
   const login = async () => {
     try {
+      // Triggering Login using Service Provider ==> opens the popup
       if (!coreKitInstance) {
         throw new Error('initiated to login');
       }
-      const verifierConfig = {
-        subVerifierDetails: { 
-          typeOfLogin: 'google',
-          verifier: 'w3a-google-demo',
-          clientId:
-            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
-        }
-      } as SubVerifierDetailsParams;
+      const loginRes = await signInWithGoogle();
+      const idToken = await loginRes.user.getIdToken(true);
+      const parsedToken = parseToken(idToken);
 
-      await coreKitInstance.loginWithOauth(verifierConfig);
-      
+      const idTokenLoginParams = {
+        verifier: "w3a-firebase-demo",
+        verifierId: parsedToken.email,
+        idToken,
+      } as IdTokenLoginParams;
+
+      await coreKitInstance.loginWithJWT(idTokenLoginParams);
 
       try {
         let result = securityQuestion.getQuestion(coreKitInstance!);
@@ -107,19 +138,18 @@ function App() {
       }
 
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]");
-      }
+        uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"); 
+      } 
 
       if (coreKitInstance.provider) {
         setProvider(coreKitInstance.provider);
       }
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
+  };
 
   const getDeviceShare = async () => {
     const factorKey = await getWebBrowserFactor(coreKitInstance!);
@@ -338,7 +368,7 @@ function App() {
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   }
-
+  
   const loggedInView = (
     <>
       <h2 className="subtitle">Account Details</h2>
@@ -507,7 +537,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
           Web3Auth MPC Core Kit 
         </a> {" "}
-        Popup Flow Example
+        Firebase IdToken Example
       </h1>
 
       <div className="grid">{provider ? loggedInView : unloggedInView}</div>
