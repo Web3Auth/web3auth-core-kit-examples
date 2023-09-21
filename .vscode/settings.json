@@ -1,25 +1,24 @@
 {
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
     "eslint.workingDirectories": [
         {
-            "directory": "web-no-modal-sdk/**/*",
+            "directory": "mpc-core-kit/**/*",
             "changeProcessCWD": true
         },
         {
-            "directory": "web-modal-sdk/**/*",
+            "directory": "node-sdk/**/*",
             "changeProcessCWD": true
         },
         {
-            "directory": "wagmi-connector/*",
+            "directory": "single-factor-auth-web/**/*",
             "changeProcessCWD": true
         },
         {
-            "directory": "single-factor-auth/*",
+            "directory": "tkey-web/**/*",
             "changeProcessCWD": true
-        }
+        },
     ],
-    "cSpell.words": [
-        "appspot",
-        "firebaseapp",
-        "Sfaprovider"
-    ]
+    "cSpell.words": []
 }
