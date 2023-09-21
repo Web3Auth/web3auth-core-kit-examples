@@ -66,7 +66,6 @@ results in a standard cryptographic key provider specific to the user and applic
 
 | SDK   | Lang Framework | Directory                                                                                   |
 | :---- | :------------- | :------------------------------------------------------------------------------------------ |
-| `SFA` | `REACT`        | [single-factor-auth-React-One-Key-with-NoModal](/single-factor-auth-web/sfa-one-key-flow-example/) |
 | `SFA` | `REACT`        | [single-factor-auth-React](/single-factor-auth-web/sfa-react-example/) |
 | `SFA` | `REACT`        | [single-factor-auth-Vite](/single-factor-auth-web/sfa-react-vite-example/) |
 
