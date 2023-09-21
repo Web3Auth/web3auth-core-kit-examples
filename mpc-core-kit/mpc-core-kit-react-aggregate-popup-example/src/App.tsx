@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey } from "@web3auth/mpc-core-kit";
+import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, AggregateVerifierLoginParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey } from "@web3auth/mpc-core-kit";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 
@@ -87,16 +87,17 @@ function App() {
         throw new Error('initiated to login');
       }
       const verifierConfig = {
-        subVerifierDetails: { 
-          typeOfLogin: 'google',
-          verifier: 'w3a-google-demo',
-          clientId:
-            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
-        }
-      } as SubVerifierDetailsParams;
+        aggregateVerifierIdentifier: "aggregate-sapphire",
+        subVerifierDetailsArray: [
+          {
+            typeOfLogin: "google",
+            verifier: "w3a-google",
+            clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
+          },
+        ],
+      } as AggregateVerifierLoginParams;
 
       await coreKitInstance.loginWithOauth(verifierConfig);
-      
 
       try {
         let result = securityQuestion.getQuestion(coreKitInstance!);
@@ -120,6 +121,8 @@ function App() {
       uiConsole(error);
     }
   }
+
+
 
   const getDeviceShare = async () => {
     const factorKey = await getWebBrowserFactor(coreKitInstance!);
@@ -334,7 +337,7 @@ function App() {
       throw new Error("coreKitInstance is not set");
     }
     const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic(factorKey);
+    const factorKeyMnemonic = keyToMnemonic( factorKey);
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   }
@@ -507,7 +510,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
           Web3Auth MPC Core Kit 
         </a> {" "}
-        Popup Flow Example
+        Popup Aggregate Flow Example
       </h1>
 
       <div className="grid">{provider ? loggedInView : unloggedInView}</div>
