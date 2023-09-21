@@ -10,7 +10,7 @@ export default class EthereumRpc {
 
   async getAccounts(): Promise<string[]> {
     try {
-      const web3 = new Web3(this.provider as any);
+      const web3 = new Web3(this.provider as IProvider);
       const accounts = await web3.eth.getAccounts();
       return accounts;
     } catch (error: unknown) {
@@ -20,7 +20,7 @@ export default class EthereumRpc {
 
   async getBalance(): Promise<string> {
     try {
-      const web3 = new Web3(this.provider as any);
+      const web3 = new Web3(this.provider as IProvider);
       const accounts = await web3.eth.getAccounts();
       const balance = await web3.eth.getBalance(accounts[0]);
       return balance.toString();
@@ -31,7 +31,7 @@ export default class EthereumRpc {
 
   async signMessage(): Promise<string | undefined> {
     try {
-      const web3 = new Web3(this.provider as any);
+      const web3 = new Web3(this.provider as IProvider);
       const accounts = await web3.eth.getAccounts();
       const message = "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad";
       (web3.currentProvider as any)?.send(
@@ -54,7 +54,7 @@ export default class EthereumRpc {
 
   async signAndSendTransaction(): Promise<string> {
     try {
-      const web3 = new Web3(this.provider as any);
+      const web3 = new Web3(this.provider as IProvider);
       const accounts = await web3.eth.getAccounts();
 
       const txRes = await web3.eth.sendTransaction({

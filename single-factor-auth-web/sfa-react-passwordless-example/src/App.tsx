@@ -4,26 +4,21 @@ import { useEffect, useState } from "react";
 import { Web3Auth } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { auth } from './FireBaseConfig';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from "./FireBaseConfig";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
 import RPC from "./evm.ethers";
 import Loading from "./Loading";
 
-import {
-  signInWithEmailLink,
-  isSignInWithEmailLink,
-  sendSignInLinkToEmail,
-} from "firebase/auth";
+import { signInWithEmailLink, isSignInWithEmailLink, sendSignInLinkToEmail } from "firebase/auth";
 
 import "./App.css";
 
 const verifier = "web3auth-firebase-examples";
 
-const clientId =
-  "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -51,7 +46,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [email, setEmail] = useState<string>("hello@web3auth.io");
-  const[ user ] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
     const init = async () => {
@@ -66,25 +61,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if(isSignInWithEmailLink(auth, window.location.href)) {
-      const email = localStorage.getItem('email_for_web3auth_sfa_demo') || 'hello@web3auth.io';
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      const email = localStorage.getItem("email_for_web3auth_sfa_demo") || "hello@web3auth.io";
       signInWithEmailLink(auth, email, window.location.href)
-      .then(async loginRes => {
-        uiConsole(loginRes);
-        const idToken = await loginRes.user.getIdToken(true);
+        .then(async (loginRes) => {
+          uiConsole(loginRes);
+          const idToken = await loginRes.user.getIdToken(true);
 
-        setIdToken(idToken);
+          setIdToken(idToken);
 
-        await web3authSfa.connect({
-          verifier,
-          verifierId: loginRes.user.uid,
-          idToken: idToken,
+          await web3authSfa.connect({
+            verifier,
+            verifierId: loginRes.user.uid,
+            idToken: idToken,
+          });
+
+          setIsLoggedIn(true);
+        })
+        .catch((error) => {
+          uiConsole(error);
         });
-
-        setIsLoggedIn(true);
-      }).catch((error) => {
-        uiConsole(error);
-      });
     }
   }, []);
 
@@ -97,12 +93,12 @@ function App() {
       });
       setIsLoading(false);
     } catch (error) {
-        setIsLoading(false);
-        uiConsole(error);
+      setIsLoading(false);
+      uiConsole(error);
     }
-  }
+  };
 
-  function parseToken (token: any) {
+  function parseToken(token: any) {
     try {
       const base64Url = token.split(".")[1];
       const base64 = base64Url.replace("-", "+").replace("_", "/");
@@ -112,28 +108,24 @@ function App() {
       uiConsole(err);
       return null;
     }
-  };
+  }
 
   const getUserInfo = async () => {
-      uiConsole(
-        "Get the user details directly from your login provider.",
-        user
-      );
-      return;
+    uiConsole("Get the user details directly from your login provider.", user);
+    return;
   };
 
   const authenticateUser = async () => {
-    try{
+    try {
       const userCredential = await web3authSfa.authenticateUser();
       uiConsole(userCredential);
-    }
-    catch(err){
+    } catch (err) {
       uiConsole(err);
     }
   };
 
   const addChain = async () => {
-    try{
+    try {
       const newChain = {
         chainId: "0x5",
         displayName: "Goerli",
@@ -146,31 +138,32 @@ function App() {
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
-    }
-    catch(err){
+    } catch (err) {
       uiConsole(err);
     }
   };
 
   const switchChain = async () => {
-    try{
-      await web3authSfa.switchChain({chainId: "0x5"});
+    try {
+      await web3authSfa.switchChain({ chainId: "0x5" });
       uiConsole("Chain switched successfully");
-    }
-    catch(err){
+    } catch (err) {
       uiConsole(err);
     }
   };
 
   const logout = async () => {
-      auth.signOut().then(()=>{
-        uiConsole('successfully logged out');
-      }).catch((err)=>{
-        uiConsole(err);
+    auth
+      .signOut()
+      .then(() => {
+        uiConsole("successfully logged out");
       })
-      setIsLoggedIn(false);
-      web3authSfa.logout();
-      return;
+      .catch((err) => {
+        uiConsole(err);
+      });
+    setIsLoggedIn(false);
+    web3authSfa.logout();
+    return;
   };
 
   const getAccounts = async () => {
@@ -230,7 +223,7 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={() => parseToken(idToken)} className="card">
+          <button onClick={() => uiConsole(idToken)} className="card">
             Get OAuth ID Token
           </button>
         </div>
@@ -285,17 +278,21 @@ function App() {
   const logoutView = (
     <>
       <p>Email:</p>
-      <input type="text" value={email} onChange={(e) => {
-        setEmail(e.target.value)
-        localStorage.setItem('email_for_web3auth_sfa_demo', e.target.value);
-        }} />
+      <input
+        type="text"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          localStorage.setItem("email_for_web3auth_sfa_demo", e.target.value);
+        }}
+      />
       <button onClick={signInWithEmailPasswordless} className="card">
-      Login
+        Login
       </button>
       <div id="console" style={{ whiteSpace: "pre-line" }}>
         <p style={{ whiteSpace: "pre-line" }}></p>
       </div>
-    </> 
+    </>
   );
 
   return (
@@ -307,13 +304,7 @@ function App() {
         SFA React Example
       </h1>
 
-        {isLoading ? (
-          <Loading /> 
-        ): (
-          <div className="grid">
-            {isLoggedIn ? loginView : logoutView}
-          </div>
-        )}
+      {isLoading ? <Loading /> : <div className="grid">{isLoggedIn ? loginView : logoutView}</div>}
 
       <footer className="footer">
         <a

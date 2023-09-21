@@ -11,8 +11,8 @@ export default class EthereumRpc {
   async getAccounts(): Promise<string> {
     try {
       // For ethers v5
-      // const provider = new ethers.providers.Web3Provider(this.provider as any);
-      const provider = new ethers.BrowserProvider(this.provider as any);
+      // const provider = new ethers.providers.Web3Provider(this.provider as IProvider);
+      const provider = new ethers.BrowserProvider(this.provider as IProvider);
       // For ethers v5
       // const signer = provider.getSigner();
       const signer = await provider.getSigner();
@@ -26,8 +26,8 @@ export default class EthereumRpc {
   async getBalance(): Promise<string> {
     try {
       // For ethers v5
-      // const provider = new ethers.providers.Web3Provider(this.provider as any);
-      const provider = new ethers.BrowserProvider(this.provider as any);
+      // const provider = new ethers.providers.Web3Provider(this.provider as IProvider);
+      const provider = new ethers.BrowserProvider(this.provider as IProvider);
       // For ethers v5
       // const signer = provider.getSigner();
       const signer = await provider.getSigner();
@@ -50,8 +50,8 @@ export default class EthereumRpc {
   async signMessage(): Promise<string> {
     try {
       // For ethers v5
-      // const provider = new ethers.providers.Web3Provider(this.provider as any);
-      const provider = new ethers.BrowserProvider(this.provider as any);
+      // const provider = new ethers.providers.Web3Provider(this.provider as IProvider);
+      const provider = new ethers.BrowserProvider(this.provider as IProvider);
       // For ethers v5
       // const signer = provider.getSigner();
       const signer = await provider.getSigner();
@@ -68,8 +68,8 @@ export default class EthereumRpc {
   async signAndSendTransaction(): Promise<any> {
     try {
       // For ethers v5
-      // const provider = new ethers.providers.Web3Provider(this.provider as any);
-      const provider = new ethers.BrowserProvider(this.provider as any);
+      // const provider = new ethers.providers.Web3Provider(this.provider as IProvider);
+      const provider = new ethers.BrowserProvider(this.provider as IProvider);
       // For ethers v5
       // const signer = provider.getSigner();
       const signer = await provider.getSigner();

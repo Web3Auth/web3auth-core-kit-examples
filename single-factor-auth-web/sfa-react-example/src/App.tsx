@@ -11,29 +11,24 @@ import RPC from "./evm.ethers";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import {
-  GoogleAuthProvider,
-  getAuth,
-  signInWithPopup,
-  UserCredential,
-} from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
 import Loading from "./Loading";
 import "./App.css";
 
 const verifier = "web3auth-firebase-examples";
 
-const clientId =
-  "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
+  chainId: "0x1",
+  displayName: "Ethereum Mainnet",
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x5",
-  rpcTarget: "https://rpc.ankr.com/eth_goerli",
-  displayName: "Goerli Testnet",
-  blockExplorer: "https://goerli.etherscan.io",
-  ticker: "ETH",
   tickerName: "Ethereum",
+  ticker: "ETH",
+  decimals: 18,
+  rpcTarget: "https://rpc.ankr.com/eth",
+  blockExplorer: "https://etherscan.io",
 };
 
 // Your web app's Firebase configuration
@@ -194,6 +189,43 @@ function App() {
     uiConsole(result);
   };
 
+  const authenticateUser = async () => {
+    try {
+      const userCredential = await web3authSfa.authenticateUser();
+      uiConsole(userCredential);
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+
+  const addChain = async () => {
+    try {
+      const newChain = {
+        chainId: "0x5",
+        displayName: "Goerli",
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        tickerName: "Goerli",
+        ticker: "ETH",
+        decimals: 18,
+        rpcTarget: "https://rpc.ankr.com/eth_goerli",
+        blockExplorer: "https://goerli.etherscan.io",
+      };
+      await web3authSfa.addChain(newChain);
+      uiConsole("Chain added successfully");
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+
+  const switchChain = async () => {
+    try {
+      await web3authSfa.switchChain({ chainId: "0x5" });
+      uiConsole("Chain switched successfully");
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");
     if (el) {
@@ -210,8 +242,28 @@ function App() {
           </button>
         </div>
         <div>
+          <button onClick={() => uiConsole(idToken)} className="card">
+            Get OAuth ID Token
+          </button>
+        </div>
+        <div>
+          <button onClick={authenticateUser} className="card">
+            Authenticate User
+          </button>
+        </div>
+        <div>
           <button onClick={getAccounts} className="card">
             Get Accounts
+          </button>
+        </div>
+        <div>
+          <button onClick={addChain} className="card">
+            Add Chain
+          </button>
+        </div>
+        <div>
+          <button onClick={switchChain} className="card">
+            Switch Chain
           </button>
         </div>
         <div>
@@ -257,13 +309,7 @@ function App() {
         SFA React Example
       </h1>
 
-      {isLoggingIn ? (
-        <Loading />
-      ) : (
-        <div className="grid">
-          {web3authSfa ? (isLoggedIn ? loginView : logoutView) : null}
-        </div>
-      )}
+      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (isLoggedIn ? loginView : logoutView) : null}</div>}
 
       <footer className="footer">
         <a
