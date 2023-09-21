@@ -22,7 +22,7 @@ results in a standard cryptographic key provider specific to the user and applic
 | SDK                                          | Lang Framework | Directory                                                                                  |
 | :------------------------------------------- | :------------- | :----------------------------------------------------------------------------------------- |
 | `tKey` - MPC CoreKit PopUp FLow              | `REACT`        | [MPC CoreKit PopUp Example](/mpc-core-kit/mpc-core-kit-react-popup-example/)               |
-| `tKey` - MPC CoreKit PopUp Aggregate Example | `REACT`        | [MPC CoreKit Aggregate Example](/mpc-core-kit/mpc-core-kit-react-aggregate-popup-example/) |
+| `tKey` - MPC CoreKit PopUp Aggregate Example | `REACT`        | [MPC CoreKit Aggregate Example](/mpc-core-kit/mpc-core-kit-react-popup-aggregate-example) |
 | `tKey` - MPC CoreKit Redirect Example        | `REACT`        | [MPC CoreKit Redirect Example](/mpc-core-kit/mpc-core-kit-react-redirect-example/)         |
 | `tKey` - MPC CoreKit Firebase Example | `REACT` | [MPC CoreKit Firebase Example](/mpc-core-kit/mpc-core-kit-react-firebase-example/) |
 
