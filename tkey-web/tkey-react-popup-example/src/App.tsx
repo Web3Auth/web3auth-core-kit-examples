@@ -61,9 +61,9 @@ function App() {
 			// Triggering Login using Service Provider ==> opens the popup
 			const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
 				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
+				verifier: 'w3a-google-demo',
 				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+					'519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
 			});
 			setUser(loginResponse.userInfo);
 			setOAuthShare(loginResponse.privateKey);

@@ -6,7 +6,7 @@ import {tKey} from "./tkey"
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
 import BN from 'bn.js';
-
+import { TorusServiceProvider } from "@tkey/service-provider-torus";
 
 function App() {
 	const [user, setUser] = useState<any>(null);
@@ -22,7 +22,7 @@ function App() {
 				// Init is required for Redirect Flow but skip fetching sw.js and redirect.html )
 				(tKey.serviceProvider as any).init({skipInit: true});
 				if ( window.location.pathname === "/auth" && window.location.hash.includes("#state") ) {
-					let result = await (tKey.serviceProvider as any).directWeb.getRedirectResult();
+					let result = await (tKey.serviceProvider as TorusServiceProvider).customAuthInstance.getRedirectResult();
 					tKey.serviceProvider.postboxKey = new BN ( (result.result as any).privateKey!  , "hex");
 					setUser( (result.result as any).userInfo);
 					setOAuthShare((result.result as any).privateKey);
@@ -73,9 +73,9 @@ function App() {
 			// Triggering Login using Service Provider ==> redirects the user to google login page
 			const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
 				typeOfLogin: 'google',
-				verifier: 'google-tkey-w3a',
+				verifier: 'w3a-google-demo',
 				clientId:
-					'774338308167-q463s7kpvja16l4l0kko3nb925ikds2p.apps.googleusercontent.com',
+					'519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
 			});
 			setUser(loginResponse.userInfo);
 			setOAuthShare(loginResponse.privateKey);
