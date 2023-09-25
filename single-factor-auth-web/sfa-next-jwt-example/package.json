@@ -17,7 +17,7 @@
     "@web3auth/single-factor-auth": "^7.0.1",
     "browserify-fs": "^1.0.0",
     "bufferutil": "^4.0.7",
-    "eslint": "8.47.0",
+    "eslint": "8.50.0",
     "eslint-config-next": "13.4.19",
     "ethers": "^6.7.1",
     "fs": "^0.0.1-security",
