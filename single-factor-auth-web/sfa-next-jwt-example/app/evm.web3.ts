@@ -29,24 +29,23 @@ export default class EthereumRpc {
     }
   }
 
-  async signMessage(): Promise<string | undefined> {
+  async signMessage() {
     try {
-      const web3 = new Web3(this.provider as IProvider);
-      const accounts = await web3.eth.getAccounts();
-      const message = "0x47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad";
-      (web3.currentProvider as any)?.send(
-        {
-          method: "eth_sign",
-          params: [accounts[0], message],
-          from: accounts[0],
-        },
-        (err: Error, result: any) => {
-          if (err) {
-            return console.error(err);
-          }
-          return result;
-        }
+      const web3 = new Web3(this.provider as any);
+
+      // Get user's Ethereum public address
+      const fromAddress = (await web3.eth.getAccounts())[0];
+
+      const originalMessage = "YOUR_MESSAGE";
+
+      // Sign the message
+      const signedMessage = await web3.eth.personal.sign(
+        originalMessage,
+        fromAddress,
+        "test password!" // configure your own password here.
       );
+
+      return signedMessage;
     } catch (error) {
       return error as string;
     }
