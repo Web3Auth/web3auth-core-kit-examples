@@ -11,6 +11,7 @@ import {
   TssSecurityQuestion,
   generateFactorKey,
   mnemonicToKey,
+  FactorKeyTypeShareDescription,
 } from "@web3auth/mpc-core-kit";
 
 import swal from "sweetalert";
@@ -49,6 +50,7 @@ function App() {
   const [exportTssShareType, setExportTssShareType] = useState<TssShareType>(TssShareType.DEVICE);
   const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
+  const [showBackupPhraseScreen, setShowBackupPhraseScreen] = useState<boolean>(false);
   const [answer, setAnswer] = useState<string | undefined>(undefined);
   const [newAnswer, setNewAnswer] = useState<string | undefined>(undefined);
   const [question, setQuestion] = useState<string | undefined>(undefined);
@@ -257,7 +259,7 @@ function App() {
 
       // setup the sms recovery factor key and share in tkey.
       // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
-      await coreKitInstance.enableMFA({ factorKey: newBackUpFactorKey });
+      await coreKitInstance.enableMFA({ factorKey: newBackUpFactorKey, shareDescription: FactorKeyTypeShareDescription.Other });
       uiConsole("sms recovery setup complete");
     } catch (error: unknown) {
       console.error(error);
@@ -279,6 +281,8 @@ function App() {
       // check if we are setting up the sms recovery for the first time.
       // share descriptions contain the details of all the factors/ shares you set up for the user.
       const shareDescriptions = Object.values(keyDetails.shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
+      uiConsole(shareDescriptions);
+
       // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
       const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.MOBILE_SMS);
       if (!shareDescriptionsMobile) {
@@ -333,6 +337,8 @@ function App() {
       // check if we are setting up the sms recovery for the first time.
       // share descriptions contain the details of all the factors/ shares you set up for the user.
       const shareDescriptions = Object.values(coreKitInstance.getKeyDetails().shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
+      uiConsole(shareDescriptions);
+
       // for authenticator, we have set up a custom share/ factor with module type as "authenticator" defined in CustomFactorsModuleType.AUTHENTICATOR in this example.
       const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.AUTHENTICATOR);
       if (shareDescriptionsMobile) {
@@ -632,6 +638,21 @@ function App() {
           </button>
         </div>
 
+        <h4>SMS OTP</h4>
+        <div className="flex-container">
+          <input placeholder={"Enter number +{cc}-{number}"} value={number} onChange={(e) => setNumber(e.target.value)}></input>
+          <button onClick={setupSmsRecovery} className="card">
+            Setup SMS Recovery
+          </button>
+        </div>
+
+        <h4>Authenticator</h4>
+        <div className="flex-container">
+          <button onClick={setupAuthenticatorRecovery} className="card">
+            Setup Authenticator
+          </button>
+        </div>
+
         <h4>Security Question</h4>
 
         <div>{question}</div>
@@ -705,7 +726,12 @@ function App() {
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-
+        <button onClick={recoverViaNumber} className="card">
+          Recover using phone number
+        </button>
+        <button onClick={recoverViaAuthenticatorApp} className="card">
+          Recover using Authenticator
+        </button>
         <div className={!question ? "disabledDiv" : ""}>
           <label>Recover Using Security Answer:</label>
           <label>{question}</label>
