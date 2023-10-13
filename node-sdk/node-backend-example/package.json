@@ -1,16 +1,18 @@
 {
-  "name": "node-app",
-  "version": "0.0.1",
-  "description": "Web3Auth's Node SDK Demo App",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "MSA",
   "dependencies": {
-    "@web3auth/node-sdk": "^3.0.0"
-  }
+    "@web3auth/ethereum-provider": "^7.0.4",
+    "@web3auth/node-sdk": "^3.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "description": "Web3Auth's Node SDK Demo App",
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "node-app",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "version": "1.0.0"
 }
