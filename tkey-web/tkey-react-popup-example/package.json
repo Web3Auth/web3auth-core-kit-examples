@@ -22,7 +22,7 @@
 		"typescript": "^5.2.2",
 		"web-vitals": "^2.1.4",
 		"web3": "^1.8.1",
-		"workbox-background-sync": "^6.5.4",
+		"workbox-background-sync": "^7.0.0",
 		"workbox-broadcast-update": "^6.5.4",
 		"workbox-cacheable-response": "^6.5.4",
 		"workbox-core": "^6.5.4",
