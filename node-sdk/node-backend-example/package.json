@@ -2,7 +2,7 @@
   "author": "MSA",
   "dependencies": {
     "@web3auth/ethereum-provider": "^7.0.4",
-    "@web3auth/node-sdk": "^3.0.0",
+    "@web3auth/node-sdk": "^3.1.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2"
   },
