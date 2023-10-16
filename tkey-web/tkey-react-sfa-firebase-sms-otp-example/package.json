@@ -73,6 +73,8 @@
 	},
 	"devDependencies": {
 		"@types/eccrypto": "^1.1.4",
+		"@types/elliptic": "^6.4.15",
+		"@types/jsonwebtoken": "^9.0.3",
 		"buffer": "^6.0.3",
 		"process": "^0.11.10",
 		"react-app-rewired": "^2.2.1"

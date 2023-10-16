@@ -142,7 +142,8 @@ function App() {
 			if (requiredShares > 0) {
 				if (deviceShare) {
 				  try {
-					await tKey.inputShare(deviceShare);
+					// 2/2 flow
+					await (tKey.modules.webStorage as any).inputShareFromWebStorage();
 				  } catch (error) {
 					uiConsole(error);
 				  }
@@ -331,8 +332,7 @@ function App() {
 		  // check if we are setting up the sms recovery for the first time.
 		  // share descriptions contain the details of all the factors/ shares you set up for the user.
 		  const shareDescriptions = Object.values(keyDetails.shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
-		  uiConsole(shareDescriptions);
-	
+		  console.log("shareDescriptions", shareDescriptions);
 		  // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
 		  const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.MOBILE_SMS);
 		  if (!shareDescriptionsMobile) {
@@ -343,7 +343,8 @@ function App() {
 		  console.log("sms recovery already setup", shareDescriptionsMobile);
 	
 		  const { number } = shareDescriptionsMobile;
-		  const address = await getAccounts();
+		  const { pubKey } = await tKey.getKeyDetails();
+		  const address = `${pubKey.x.toString(16, 64)}${pubKey.y.toString(16, 64)}`;		  
 		  const result = await SmsPasswordless.requestSMSOTP(address);
 		  uiConsole("please use this code to verify your phone number", number, "code", result);
 		  console.log("otp code", result);
@@ -386,13 +387,14 @@ function App() {
 				return;
 			}
 	
-		  const { privKey } = privateKey;
+		  const privKey = privateKey;
 		  // check if we are setting up the sms recovery for the first time.
 		  // share descriptions contain the details of all the factors/ shares you set up for the user.
 		  const shareDescriptions = Object.values(tKey.getKeyDetails().shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
 		  // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
 		  const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.MOBILE_SMS);
 		  if (shareDescriptionsMobile) {
+			console.log("shareDescriptions", shareDescriptions);
 			console.log("sms recovery already setup");
 			uiConsole("sms console already setup");
 			return;
@@ -413,16 +415,29 @@ function App() {
 			uiConsole("Invalid verification code entered");
 		  }
 		  
-		  const address = await getAccounts();
-		  const newShare = await tKey.generateNewShare();
+		  const { pubKey } = await tKey.getKeyDetails();
+		  const address = `${pubKey.x.toString(16, 64)}${pubKey.y.toString(16, 64)}`;
+
 		  //get share index and BN from newShare
-		  const newShareBN = newShare.newShareStores.share.share.share;
+		  const newShare = await tKey.generateNewShare();
+		  const newShareIndex = newShare.newShareIndex.toString(16);
+		  const newShareBN = newShare.newShareStores[newShareIndex].share.share;
+
 		//   const newShareIndex = newShare.newShareIndex;
 		  await SmsPasswordless.addSmsRecovery(address, verificationCode, newShareBN);
+
 	
-		  // setup the sms recovery factor key and share in tkey.
-		  // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
-		//   await coreKitInstance.enableMFA({ factorKey: newShare, shareDescription: FactorKeyTypeShareDescription.Other });
+		  // setup the sms recovery share in tKey.
+		  // for sms otp, we have set up a custom share with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
+		  // add ShareDescription to tKey
+		  await tKey.addShareDescription(
+			newShareIndex,
+			JSON.stringify({
+				dateAdded: Date.now(),
+				module: CustomFactorsModuleType.MOBILE_SMS,
+			  }),
+			  true
+		  );
 		  uiConsole("sms recovery setup complete");
 		} catch (error: unknown) {
 		  console.error(error);

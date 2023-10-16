@@ -1,9 +1,8 @@
 import { post } from "@toruslabs/http-helpers";
 import BN from "bn.js";
 import type { ec } from "elliptic";
+import Ec from "elliptic";
 import { keccak256 } from "ethereum-cryptography/keccak";
-
-import { getEcCrypto } from "./utils";
 
 class SmsPasswordless {
   readonly smsbackendUrl: string = `${process.env.REACT_APP_BACKEND_ENDPOINT}/api/v1`;
@@ -17,7 +16,7 @@ class SmsPasswordless {
   }
 
   async registerSmsOTP(privKey: BN, number: string): Promise<string | undefined> {
-    const ec = getEcCrypto();
+    const ec = new Ec.ec("secp256k1");
     const privKeyPair: ec.KeyPair = ec.keyFromPrivate(privKey.toString(16, 64));
     const pubKey = privKeyPair.getPublic();
     const sig = ec.sign(keccak256(Buffer.from(number, "utf8")), Buffer.from(privKey.toString(16, 64), "hex"));
