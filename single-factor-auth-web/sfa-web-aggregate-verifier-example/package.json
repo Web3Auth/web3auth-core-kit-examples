@@ -1,5 +1,5 @@
 {
-  "name": "sfa-react-auth0-agg-verifier-example",
+  "name": "sfa-web-aggregate-verifier-example",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

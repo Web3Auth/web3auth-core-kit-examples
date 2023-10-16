@@ -1,5 +1,5 @@
 {
-  "name": "sfa-next-jwt-example",
+  "name": "sfa-web-custom-jwt-example",
   "version": "0.1.0",
   "private": true,
   "scripts": {

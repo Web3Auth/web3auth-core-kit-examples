@@ -1,5 +1,5 @@
 {
-  "name": "sfa-react-passwordless-example",
+  "name": "sfa-web-passwordless-example",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

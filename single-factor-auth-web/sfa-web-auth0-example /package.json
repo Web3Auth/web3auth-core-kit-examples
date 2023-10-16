@@ -1,5 +1,5 @@
 {
-  "name": "sfa-react-auth0-github-example",
+  "name": "sfa-web-auth0-example",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
