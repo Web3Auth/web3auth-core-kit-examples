@@ -396,7 +396,7 @@ function App() {
 		  if (shareDescriptionsMobile) {
 			console.log("shareDescriptions", shareDescriptions);
 			console.log("sms recovery already setup");
-			uiConsole("sms console already setup");
+			uiConsole("sms recovery already setup");
 			return;
 		  }
 	
@@ -428,7 +428,7 @@ function App() {
 
 	
 		  // setup the sms recovery share in tKey.
-		  // for sms otp, we have set up a custom share with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
+		  // for sms otp, we have set up a custom share with module type as defined in CustomFactorsModuleType.MOBILE_SMS in this example.
 		  // add ShareDescription to tKey
 		  await tKey.addShareDescription(
 			newShareIndex,
