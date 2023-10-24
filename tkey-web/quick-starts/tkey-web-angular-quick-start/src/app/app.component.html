@@ -1,0 +1,70 @@
+<div class="content">
+  <h1 class="title">
+    <a target="_blank" href="http://web3auth.io/">Web3Auth tKey</a> Angular
+    Quick Start
+  </h1>
+  <div class="setting">
+    <div
+      *ngIf="loggedIn; else elseBlock"
+      class="card-container"
+    >
+      <button class="card card-small" (click)="getUserInfo()">
+        Get User Info
+      </button>
+      <button (click)="keyDetails()" class='card card-small'>
+        Key Details
+      </button>
+      <button (click)="exportMnemonicShare()" class='card card-small'>
+        Generate Backup (Mnemonic)
+      </button>
+      <button class="card card-small" (click)="getAccounts()">
+        Get Accounts
+      </button>
+      <button class="card card-small" (click)="getBalance()">
+        Get Balance
+      </button>
+      <button class="card card-small" (click)="signMessage()">
+        Sign Message
+      </button>
+      <button class="card card-small" (click)="logout()">Log Out</button>
+      <button (click)="criticalResetAccount()" class="card card-small">
+        [CRITICAL] Reset Account
+      </button>
+    </div>
+    <ng-template #elseBlock>
+      <div class="card-container">
+        <button class="card card-small" (click)="login()">Login</button>
+        <div class="card-container" *ngIf="tKeyInitialised" >
+          <button (click)="getDeviceShare()" class="card card-small">
+            Get Device Share
+          </button>
+          <label>Backup/ Device Share:</label>
+          <input name="recoveryShareInputField" [(ngModel)]="recoveryShare" (ngModelChange)="getRecoveryShareInputEvent($event)" />
+          <button (click)="inputRecoveryShare(recoveryShare)" class="card card-small">
+            Input Recovery Share
+          </button>
+          <button (click)="criticalResetAccount()" class="card card-small">
+            [CRITICAL] Reset Account
+          </button>
+          <label>Recover Using Mnemonic Share:</label>
+            <input name="MnemonicShareInputField" [(ngModel)]="mnemonicShare" (ngModelChange)="getMnemonicShareInputEvent($event)" />
+            <button (click)="MnemonicToShareHex(mnemonicShare)" class="card card-small">
+              Get Recovery Share using Mnemonic
+            </button>
+          </div>
+      </div>
+    </ng-template>
+    <div class="console" id="console-ui">
+      <p class="code">Logged In</p>
+    </div>
+  </div>
+  <footer class="footer">
+    <a
+      href="https://github.com/Web3Auth/web3auth-pnp-examples/tree/main/web-no-modal-sdk/quick-starts/angular-no-modal-quick-start"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Source code
+    </a>
+  </footer>
+</div>

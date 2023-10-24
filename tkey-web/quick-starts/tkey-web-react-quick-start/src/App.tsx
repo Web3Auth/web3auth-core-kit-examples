@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { tKey, ethereumPrivateKeyProvider } from './tkey';
+import { tKey, chainConfig } from './tkey';
 import { ShareSerializationModule } from '@tkey/share-serialization';
 import { SfaServiceProvider } from '@tkey/service-provider-sfa';
 import { WebStorageModule } from '@tkey/web-storage';
-import { ethers } from 'ethers';
+import { Web3 } from 'web3';
+import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
 import "./App.css";
+import { IProvider } from "@web3auth/base";
 
 const verifier = "w3a-firebase-demo";
 
@@ -23,9 +25,15 @@ const firebaseConfig = {
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
 
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+  config: {
+    chainConfig,
+  },
+});
+
 function App() {
   const [tKeyInitialised, setTKeyInitialised] = useState(false);
-  const [privateKey, setPrivateKey] = useState<string | null>(null);
+  const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [recoveryShare, setRecoveryShare] = useState<string>("");
@@ -38,7 +46,7 @@ function App() {
     const init = async () => {
       // Initialization of Service Provider
       try {
-        await (tKey.serviceProvider as any).init(
+        await (tKey.serviceProvider as SfaServiceProvider).init(
           ethereumPrivateKeyProvider,
         );
       } catch (error) {
@@ -86,7 +94,7 @@ function App() {
         tKey.serviceProvider as SfaServiceProvider
       ).connect({
         verifier,
-        verifierId: userInfo.email,
+        verifierId: userInfo.sub,
         idToken,
       });
 
@@ -111,8 +119,9 @@ function App() {
     try {
       const reconstructedKey = await tKey.reconstructKey();
       const privateKey = reconstructedKey?.privKey.toString('hex');
-      setPrivateKey(privateKey);
 
+      await ethereumPrivateKeyProvider.setupProvider(privateKey);
+      setProvider(ethereumPrivateKeyProvider);
       setLoggedIn(true);
       setDeviceShare();
     } catch (e) {
@@ -228,46 +237,60 @@ function App() {
   };
 
   const logout = async () => {
-    setPrivateKey(null);
+    setProvider(null);
     setLoggedIn(false);
+    setUserInfo({});
     uiConsole("logged out");
   };
 
   const getAccounts = async () => {
-    if (!privateKey) {
-      uiConsole("no private key");
+    if (!provider) {
+      uiConsole("provider not initialized yet");
       return;
     }
-    const wallet = new ethers.Wallet(privateKey);
-    const address = await wallet.address;
+    const web3 = new Web3(provider as any);
+
+    // Get user's Ethereum public address
+    const address = await web3.eth.getAccounts();
     uiConsole(address);
   };
 
   const getBalance = async () => {
-    if (!privateKey) {
-      uiConsole("no private key");
+    if (!provider) {
+      uiConsole("provider not initialized yet");
       return;
     }
-    const ethersProvider = ethers.getDefaultProvider("https://rpc.ankr.com/eth");
-    const wallet = new ethers.Wallet(privateKey, ethersProvider);
-    const address = await wallet.address;
-    const balance = ethers.formatEther(await ethersProvider.getBalance(address));
+    const web3 = new Web3(provider as any);
+
+    // Get user's Ethereum public address
+    const address = (await web3.eth.getAccounts())[0];
+
+    // Get user's balance in ether
+    const balance = web3.utils.fromWei(
+      await web3.eth.getBalance(address), // Balance is in wei
+      "ether"
+    );
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!privateKey) {
-      uiConsole("no private key");
+    if (!provider) {
+      uiConsole("provider not initialized yet");
       return;
     }
-    const ethersProvider = ethers.getDefaultProvider("https://rpc.ankr.com/eth");
-    
-    const wallet = new ethers.Wallet(privateKey, ethersProvider);
+    const web3 = new Web3(provider as any);
 
-    const originalMessage = 'YOUR_MESSAGE';
+    // Get user's Ethereum public address
+    const fromAddress = (await web3.eth.getAccounts())[0];
+
+    const originalMessage = "YOUR_MESSAGE";
 
     // Sign the message
-    const signedMessage = await wallet.signMessage(originalMessage);
+    const signedMessage = await web3.eth.personal.sign(
+      originalMessage,
+      fromAddress,
+      "test password!" // configure your own password here.
+    );
     uiConsole(signedMessage);
   };
 
@@ -283,7 +306,7 @@ function App() {
       input: { message: "KEY_NOT_FOUND" },
     });
     uiConsole('reset');
-    setPrivateKey(null);
+    logout();
   }
 
 
@@ -375,7 +398,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/tkey" rel="noreferrer">
           Web3Auth tKey
         </a>{" "}
-         Quick Start
+         React Quick Start
       </h1>
 
       <div className="grid">{loggedIn ? loggedInView : unloggedInView}</div>
