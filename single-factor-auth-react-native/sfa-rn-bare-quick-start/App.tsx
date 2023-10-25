@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
-// @ts-ignore
 import {decode as atob} from 'base-64';
 import {IProvider} from '@web3auth/base';
 
@@ -48,7 +47,6 @@ const chainConfig = {
 const web3auth = new Web3Auth(EncryptedStorage, {
   clientId, // Get your Client ID from Web3Auth Dashboard
   web3AuthNetwork: 'sapphire_mainnet',
-  usePnPKey: false, // By default, this sdk returns CoreKitKey
 });
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
