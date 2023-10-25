@@ -2,7 +2,7 @@
 <template>
   <div id="app">
     <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/tkey" rel="noreferrer">
+      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
         Web3Auth MPC Core Kit
       </a>
       Vue.js Quick Start
@@ -87,7 +87,7 @@
     </div>
 
     <footer class="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
         target="_blank" rel="noopener noreferrer">
         Source code
       </a>

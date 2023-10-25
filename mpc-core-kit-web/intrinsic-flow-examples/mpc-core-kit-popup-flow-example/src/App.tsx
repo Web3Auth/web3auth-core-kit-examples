@@ -504,7 +504,7 @@ function App() {
   return (
     <div className="container">
       <h1 className="title">
-        <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
+        <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit 
         </a> {" "}
         Popup Flow Example
@@ -516,7 +516,7 @@ function App() {
       </div>
 
       <footer className="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit/mpc-core-kit-react-popup-example" target="_blank" rel="noopener noreferrer">
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/intrinsic-flow-examples/mpc-core-kit-popup-flow-example" target="_blank" rel="noopener noreferrer">
           Source code
         </a>
       </footer>

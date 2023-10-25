@@ -12,7 +12,7 @@ This example demonstrates how to use Web3Auth with EVM in Next.js
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/web-modal-sdk/evm/nextjs-evm-modal-example w3a-modal-evm-nextjs
+npx degit Web3Auth/web3auth-core-kit-examples/web-modal-sdk/evm/nextjs-evm-modal-example w3a-modal-evm-nextjs
 ```
 
 Install & Run:
