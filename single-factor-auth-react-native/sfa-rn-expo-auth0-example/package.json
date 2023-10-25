@@ -1,5 +1,5 @@
 {
-  "name": "web3authsfaauth0",
+  "name": "sfa-rn-expo-auth0-example",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import '@ethersproject/shims';
 import {
   Button,
   ScrollView,
@@ -8,14 +9,20 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import RPC from './ethersRPC'; // for using ethers.js
 import auth from '@react-native-firebase/auth';
 import EncryptedStorage from 'react-native-encrypted-storage';
 // @ts-ignore
 import {decode as atob} from 'base-64';
+import {IProvider} from '@web3auth/base';
 
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
+import {ethers} from 'ethers';
+
+const clientId =
+  'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
+
+const verifier = 'w3a-firebase-demo';
 
 async function signInWithEmailPassword() {
   try {
@@ -29,49 +36,40 @@ async function signInWithEmailPassword() {
   }
 }
 
+const chainConfig = {
+  chainId: '0x1', // Please use 0x1 for Mainnet
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  displayName: 'Ethereum Mainnet',
+  blockExplorer: 'https://etherscan.io/',
+  ticker: 'ETH',
+  tickerName: 'Ethereum',
+};
+
+const web3auth = new Web3Auth(EncryptedStorage, {
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: 'sapphire_mainnet',
+  usePnPKey: false, // By default, this sdk returns CoreKitKey
+});
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: {chainConfig},
+});
+
 export default function App() {
-  const [privateKey, setPrivateKey] = useState<string | null>();
+  const [provider, setProvider] = useState<IProvider | null>(null);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
-  const [web3auth, setWeb3Auth] = useState<Web3Auth | null>(null);
 
   useEffect(() => {
     async function init() {
       try {
-        const authProvider = new Web3Auth(EncryptedStorage, {
-          clientId:
-            'BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk', // Get your Client ID from Web3Auth Dashboard
-          web3AuthNetwork: 'cyan',
-          usePnPKey: false, // By default, this sdk returns CoreKitKey
-        });
+        await web3auth.init(privateKeyProvider);
+        setProvider(web3auth.provider);
 
-        const privateKeyProvider = new EthereumPrivateKeyProvider({
-          config: {
-            /*
-              pass the chain config that you want to connect with
-              all chainConfig fields are required.
-              */
-            chainConfig: {
-              chainId: '0x1',
-              rpcTarget: 'https://rpc.ankr.com/eth',
-              displayName: 'mainnet',
-              blockExplorer: 'https://etherscan.io/',
-              ticker: 'ETH',
-              tickerName: 'Ethereum',
-            },
-          },
-        });
-        setWeb3Auth(authProvider);
-        await authProvider.init(privateKeyProvider);
-
-        if (authProvider.connected) {
-          const finalPrivateKey = await authProvider.provider!.request({
-            method: 'eth_private_key',
-          });
-
-          setPrivateKey(finalPrivateKey as string);
-          uiConsole('Private Key: ' + finalPrivateKey);
+        if (web3auth.connected) {
+          setLoggedIn(true);
         }
       } catch (error) {
         uiConsole(error, 'mounted caught');
@@ -102,63 +100,82 @@ export default function App() {
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifier = 'web3auth-firebase-examples';
       const verifierId = parsedToken.sub;
-      const provider = await web3auth!.connect({
+      await web3auth!.connect({
         verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
         verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
         idToken,
       });
-      const finalPrivateKey = await provider!.request({
-        method: 'eth_private_key',
-      });
-
-      setPrivateKey(finalPrivateKey as string);
-      uiConsole('Private Key: ' + finalPrivateKey);
+      setProvider(web3auth.provider);
 
       setLoading(false);
-      uiConsole('Logged In');
+      if (web3auth.connected) {
+        setLoggedIn(true);
+        uiConsole('Logged In');
+      }
     } catch (e) {
       uiConsole(e);
       setLoading(false);
     }
   };
 
-  const getChainId = async () => {
-    setConsoleUI('Getting chain id');
-    const networkDetails = await RPC.getChainId();
-    uiConsole(networkDetails);
-  };
-
   const getAccounts = async () => {
     setConsoleUI('Getting account');
-    const address = await RPC.getAccounts(privateKey as string);
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
     uiConsole(address);
   };
   const getBalance = async () => {
     setConsoleUI('Fetching balance');
-    const balance = await RPC.getBalance(privateKey as string);
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
+
+    // Get user's balance in ether
+    // For ethers v5
+    // const balance = ethers.utils.formatEther(
+    // await ethersProvider.getBalance(address) // Balance is in wei
+    // );
+    const balance = ethers.formatEther(
+      await ethersProvider.getBalance(address), // Balance is in wei
+    );
+
     uiConsole(balance);
-  };
-  const sendTransaction = async () => {
-    setConsoleUI('Sending transaction');
-    const tx = await RPC.sendTransaction(privateKey as string);
-    uiConsole(tx);
   };
   const signMessage = async () => {
     setConsoleUI('Signing message');
-    const message = await RPC.signMessage(privateKey as string);
-    uiConsole(message);
-  };
-  const authenticateUser = async () => {
-    setConsoleUI('Authenticating user');
-    const data = await web3auth!
-      .authenticateUser()
-      .catch(error => console.log('error', error));
-    uiConsole(data);
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+    const originalMessage = 'YOUR_MESSAGE';
+
+    // Sign the message
+    const signedMessage = await signer.signMessage(originalMessage);
+    uiConsole(signedMessage);
   };
   const logout = async () => {
-    setPrivateKey(null);
+    web3auth.logout();
+    setProvider(null);
+    setLoggedIn(false);
     setUserInfo('');
   };
 
@@ -170,13 +187,9 @@ export default function App() {
   const loggedInView = (
     <View style={styles.buttonArea}>
       <Button title="Get User Info" onPress={() => uiConsole(userInfo)} />
-      <Button title="Get Chain ID" onPress={() => getChainId()} />
       <Button title="Get Accounts" onPress={() => getAccounts()} />
       <Button title="Get Balance" onPress={() => getBalance()} />
-      <Button title="Send Transaction" onPress={() => sendTransaction()} />
       <Button title="Sign Message" onPress={() => signMessage()} />
-      <Button title="Get Private Key" onPress={() => uiConsole(privateKey)} />
-      <Button title="Authenticate user" onPress={authenticateUser} />
       <Button title="Log Out" onPress={logout} />
     </View>
   );
@@ -190,7 +203,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {privateKey ? loggedInView : unloggedInView}
+      {loggedIn ? loggedInView : unloggedInView}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
