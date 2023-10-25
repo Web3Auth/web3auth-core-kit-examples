@@ -9,11 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tkey/default": "^11.0.2",
-    "@tkey/security-questions": "^11.0.2",
-    "@tkey/service-provider-sfa": "^11.0.0",
-    "@tkey/service-provider-torus": "^11.0.2",
-    "@tkey/web-storage": "^11.0.2",
     "@types/authenticator": "^1.1.2",
     "@types/eccrypto": "^1.1.3",
     "@types/elliptic": "^6.4.14",
