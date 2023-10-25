@@ -5,13 +5,13 @@ import { SfaServiceProvider } from '@tkey/service-provider-sfa';
 import { WebStorageModule } from '@tkey/web-storage';
 import { Web3 } from 'web3';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { IProvider } from "@web3auth/base";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
 import "./App.css";
-import { IProvider } from "@web3auth/base";
 
 const verifier = "w3a-firebase-demo";
 
@@ -151,21 +151,6 @@ function App() {
 
   const setDeviceShare = async () => {
     try {
-      // checking if a device share exists
-      const deviceShare = await getDeviceShare();
-
-      // checking if the share is valid, if valid, no need to generate new device share
-      if (deviceShare) {
-        const keyDetails = await tKey.getKeyDetails();
-        if (keyDetails.shareDescriptions[deviceShare.share.shareIndex.toString("hex")])
-        {
-          uiConsole('Device Share Already Present');
-          return;
-        } else {
-          uiConsole('Current Device Share is Invalid, Generating New Share.');
-        }
-      }
-
       const generateShareResult = await tKey.generateNewShare();
       const share = await tKey.outputShareStore(
         generateShareResult.newShareIndex,

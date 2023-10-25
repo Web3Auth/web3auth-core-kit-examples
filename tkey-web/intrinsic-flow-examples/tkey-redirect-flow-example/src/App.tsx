@@ -1,32 +1,70 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import swal from 'sweetalert';
-import {tKey} from "./tkey"
+import { useEffect, useState } from 'react';
+import { tKey } from "./tkey"
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
-import BN from 'bn.js';
+import { IProvider } from "@web3auth/base";
+import { WebStorageModule } from '@tkey/web-storage';
+import { ShareSerializationModule } from '@tkey/share-serialization';
+import { SecurityQuestionsModule } from '@tkey/security-questions';
+import swal from 'sweetalert';
 import { TorusServiceProvider } from "@tkey/service-provider-torus";
+import { TorusLoginResponse } from "@toruslabs/customauth";
+import TorusUtils from "@toruslabs/torus.js";
+
+
+import './App.css';
+import BN from 'bn.js';
+
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+	config: {
+		/*
+		pass the chain config that you want to connect with
+		all chainConfig fields are required.
+		*/
+		chainConfig: {
+			chainId: "0x13881",
+			rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
+			displayName: "Polygon Testnet",
+			blockExplorer: "https://mumbai.polygonscan.com",
+			ticker: "MATIC",
+			tickerName: "Matic",
+		},
+	},
+});
 
 function App() {
-	const [user, setUser] = useState<any>(null);
-	const [privateKey, setPrivateKey] = useState<any>();
-	const [oAuthShare, setOAuthShare] = useState<any>();
-	const [provider, setProvider] = useState<any>();
+	const [tKeyInitialised, setTKeyInitialised] = useState(false);
+	const [provider, setProvider] = useState<IProvider | null>(null);
+	const [loggedIn, setLoggedIn] = useState(false);
+	const [userInfo, setUserInfo] = useState({});
+	const [recoveryShare, setRecoveryShare] = useState<string>("");
+	const [passwordShare, setPasswordShare] = useState<string>("");
+	const [mnemonicShare, setMnemonicShare] = useState<string>("");
 
 	// Init Service Provider inside the useEffect Method
 	useEffect(() => {
 		const init = async () => {
 			// Initialization of Service Provider
 			try {
+				await (tKey.serviceProvider as TorusServiceProvider).init({ skipSw: true, skipPrefetch: true });
+				
 				// Init is required for Redirect Flow but skip fetching sw.js and redirect.html )
-				(tKey.serviceProvider as any).init({skipInit: true});
-				if ( window.location.pathname === "/auth" && window.location.hash.includes("#state") ) {
+				if (window.location.hash.includes("#state") ) {
 					let result = await (tKey.serviceProvider as TorusServiceProvider).customAuthInstance.getRedirectResult();
-					tKey.serviceProvider.postboxKey = new BN ( (result.result as any).privateKey!  , "hex");
-					setUser( (result.result as any).userInfo);
-					setOAuthShare((result.result as any).privateKey);
-					initializeNewKey();
+					tKey.serviceProvider.postboxKey =  new BN ( TorusUtils.getPostboxKey(result.result as TorusLoginResponse), "hex");
+					setUserInfo( (result.result as any).userInfo);
+					// Initialization of tKey
+					await tKey.initialize(); // 1/2 flow
+
+					setTKeyInitialised(true);
+
+					var { requiredShares } = tKey.getKeyDetails();
+
+					if (requiredShares > 0) {
+						uiConsole('Please enter your backup shares, requiredShares:', requiredShares);
+					} else {
+						await reconstructKey();
+					}
 				}
 
 			} catch (error) {
@@ -34,96 +72,87 @@ function App() {
 			}
 		  };
 		  init();
-		const ethProvider = async() => {
-			const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
-			  config: {
-				/*
-				pass the chain config that you want to connect with
-				all chainConfig fields are required.
-				*/
-				chainConfig: {
-				  chainId: "0x13881",
-				  rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
-				  displayName: "Polygon Testnet",
-				  blockExplorer: "https://mumbai.polygonscan.com",
-				  ticker: "MATIC",
-				  tickerName: "Matic",
-				},
-			  },
-			});
-			/*
-			pass user's private key here.
-			after calling setupProvider, we can use
-			*/
-			if(privateKey){
-				await ethereumPrivateKeyProvider.setupProvider(privateKey);
-				console.log(ethereumPrivateKeyProvider.provider);
-				setProvider(ethereumPrivateKeyProvider.provider);
-			}
-		  }
-		ethProvider();
-	}, [privateKey]);
+	}, []);
 
-	const triggerLogin = async () => {
+	const login = async () => {
 		if (!tKey) {
 			uiConsole("tKey not initialized yet");
 			return;
 		}
 		try {
-			// Triggering Login using Service Provider ==> redirects the user to google login page
-			const loginResponse = await (tKey.serviceProvider as any).triggerLogin({
+			// Triggering Login using Service Provider ==> opens the popup
+			(tKey.serviceProvider as any).triggerLogin({
 				typeOfLogin: 'google',
 				verifier: 'w3a-google-demo',
 				clientId:
 					'519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
 			});
-			setUser(loginResponse.userInfo);
-			setOAuthShare(loginResponse.privateKey);
-			// uiConsole('Public Key : ' + loginResponse.publicAddress);
-			// uiConsole('Email : ' + loginResponse.userInfo.email);
-
-			initializeNewKey();
-		} catch (error) {
-			console.log(error);
-			uiConsole(error);
-		}
-	};
-
-	const initializeNewKey = async () => {
-		if (!tKey) {
-			uiConsole("tKey not initialized yet");
-			return;
-		}
-		try {
-			// Initialization of tKey
-			await tKey.initialize(); // 1/2 flow
-			// Gets the deviceShare
-			console.log(tKey);
-			try {
-				// throw new Error('Device share not found');
-				await (tKey.modules.webStorage as any).inputShareFromWebStorage(); // 2/2 flow
-			} catch (e) {
-				uiConsole(e);
-				// await backupShareRecover();
-				await recoverShare();
-			}
-
-			console.log(tKey);
-			// Checks the requiredShares to reconstruct the tKey,
-			// starts from 2 by default and each of the above share reduce it by one.
-			const { requiredShares } = tKey.getKeyDetails();
-			console.log(tKey);
-			if (requiredShares <= 0) {
-				const reconstructedKey = await tKey.reconstructKey();
-				setPrivateKey(reconstructedKey?.privKey.toString("hex"))
-				uiConsole(
-					'Private Key: ' + reconstructedKey.privKey.toString("hex"),
-				);
-			}
 		} catch (error) {
 			uiConsole(error, 'caught');
 		}
 	};
+
+	const reconstructKey = async () => {
+		try {
+			const reconstructedKey = await tKey.reconstructKey();
+			const privateKey = reconstructedKey?.privKey.toString('hex');
+
+			await ethereumPrivateKeyProvider.setupProvider(privateKey);
+			setProvider(ethereumPrivateKeyProvider);
+			setLoggedIn(true);
+			setDeviceShare();
+		} catch (e) {
+			uiConsole(e);
+		}
+	};
+
+	const inputRecoveryShare = async (share: string) => {
+		try {
+			await tKey.inputShare(share);
+			await reconstructKey();
+			uiConsole('Recovery Share Input Successfully');
+			return;
+		} catch (error) {
+			uiConsole('Input Recovery Share Error:', error);
+		}
+	};
+
+	const setDeviceShare = async () => {
+		try {
+			const generateShareResult = await tKey.generateNewShare();
+			const share = await tKey.outputShareStore(
+				generateShareResult.newShareIndex,
+			);
+			await (
+				tKey.modules.webStorage as WebStorageModule
+			).storeDeviceShare(share);
+			uiConsole('Device Share Set', JSON.stringify(share));
+		} catch (error) {
+			uiConsole('Error', (error as any)?.message.toString(), 'error');
+		}
+	};
+
+	const getDeviceShare = async () => {
+		try {
+			const share = await (
+				tKey.modules.webStorage as WebStorageModule
+			).getDeviceShare();
+
+			if (share) {
+				uiConsole(
+					'Device Share Captured Successfully across',
+					JSON.stringify(share),
+				);
+				setRecoveryShare(share.share.share.toString('hex'));
+				return share;
+			}
+			uiConsole('Device Share Not found');
+			return null;
+		} catch (error) {
+			uiConsole('Error', (error as any)?.message.toString(), 'error');
+		}
+	};
+
 
 	const changeSecurityQuestionAndAnswer = async () => {
 		if (!tKey) {
@@ -135,7 +164,7 @@ function App() {
 			content: 'input' as any,
 		}).then(async value => {
 			if (value.length > 10) {
-				await (tKey.modules.securityQuestions as any).changeSecurityQuestionAndAnswer(value, 'whats your password?');
+				await (tKey.modules.securityQuestions as SecurityQuestionsModule).changeSecurityQuestionAndAnswer(value, 'whats your password?');
 				swal('Success', 'Successfully changed new share with password.', 'success');
 				uiConsole('Successfully changed new share with password.');
 			} else {
@@ -157,7 +186,7 @@ function App() {
 		}).then(async value => {
 			if (value.length > 10) {
 				try {
-					await (tKey.modules.securityQuestions as any).generateNewShareWithSecurityQuestions(
+					await (tKey.modules.securityQuestions as SecurityQuestionsModule).generateNewShareWithSecurityQuestions(
 						value,
 						'whats your password?',
 					);
@@ -172,82 +201,57 @@ function App() {
 		});
 	}
 
-	const generateMnemonic = async () => {
+	const RecoverPasswordShare = async (password: string) => {
 		if (!tKey) {
 			uiConsole("tKey not initialized yet");
 			return;
 		}
+
 		try {
-			const newShare = await tKey.generateNewShare();
-			const mnemonic = await tKey.outputShare(newShare.newShareIndex, "mnemonic");
-			uiConsole('Mnemonic: ' + mnemonic);
+			if (password.length > 10) {
+				await (tKey.modules.securityQuestions as SecurityQuestionsModule).inputShareFromSecurityQuestions(password);
+				await reconstructKey();
+				uiConsole('Successfully recovered new share with password.');
+				
+			} else {
+				throw new Error('Password must be >= 11 characters');
+			}
+		} catch (error) {
+			uiConsole(error);
+		}
+	}
+
+	const exportMnemonicShare = async () => {
+		try {
+			const generateShareResult = await tKey.generateNewShare();
+			const share = await tKey.outputShareStore(
+				generateShareResult.newShareIndex,
+			).share.share;
+			const mnemonic = await (
+				tKey.modules.shareSerialization as ShareSerializationModule
+			).serialize(share, 'mnemonic');
+			uiConsole(mnemonic);
+			return mnemonic;
 		} catch (error) {
 			uiConsole(error);
 		}
 	};
 
-	const backupShareRecover = async () => {
+	const MnemonicToShareHex = async (mnemonic: string) => {
 		if (!tKey) {
-			uiConsole("tKey not initialized yet");
+			uiConsole('tKey not initialized yet');
 			return;
 		}
-		// swal is just a pretty dialog box
-		swal('Enter mnemonic', {
-			content: 'input' as any,
-		}).then(async value => {
-			try {
-				await tKey.inputShare(value, "mnemonic"); // 2/2 flow
-				// const { requiredShares } = tKey.getKeyDetails();
-				// if (requiredShares <= 0) {
-					const reconstructedKey = await tKey.reconstructKey();
-					console.log(reconstructedKey)
-					uiConsole(
-						'Private Key: ' + reconstructedKey.privKey.toString("hex"),
-						);
-						setPrivateKey(reconstructedKey?.privKey.toString("hex"))
-				// }
-			} catch (error) {
-				uiConsole(error);
-			}
-		});
+		try {
+			const share = await (
+				tKey.modules.shareSerialization as ShareSerializationModule
+			).deserialize(mnemonic, 'mnemonic');
+			setRecoveryShare(share.toString("hex"));
+			return share;
+		} catch (error) {
+			uiConsole(error);
+		}
 	};
-	
-	const recoverShare = async () => {
-		if (!tKey) {
-			uiConsole("tKey not initialized yet");
-			return;
-		}
-		// swal is just a pretty dialog box
-		swal('Enter password (>10 characters)', {
-			content: 'input' as any,
-		}).then(async value => {
-			if (value.length > 10) {
-				try {
-					await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(value); // 2/2 flow
-					const { requiredShares } = tKey.getKeyDetails();
-					if (requiredShares <= 0) {
-						const reconstructedKey = await tKey.reconstructKey();
-						setPrivateKey(reconstructedKey?.privKey.toString("hex"))
-						uiConsole(
-							'Private Key: ' + reconstructedKey.privKey.toString("hex"),
-						);
-					}
-					const newShare = await tKey.generateNewShare();
-					const shareStore = await tKey.outputShareStore(newShare.newShareIndex);
-					await (tKey.modules.webStorage as any).storeDeviceShare(shareStore);
-					swal('Success', 'Successfully logged you in with the recovery password.', 'success');
-					uiConsole('Successfully logged you in with the recovery password.');
-				} catch (error) {
-					swal('Error', (error as any)?.message.toString(), 'error');
-					uiConsole(error);
-					logout();
-				}
-			} else {
-				swal('Error', 'Password must be >= 11 characters', 'error');
-				uiConsole('Looks like you entered an invalid password. Please try again via logging in or reset your account.');
-			}
-		});
-	}
 
 	const keyDetails = async () => {
 		if (!tKey) {
@@ -258,117 +262,118 @@ function App() {
 		uiConsole(keyDetails);
 	};
 
-	const resetAccount = async () => {
-		if (!tKey) {
-			uiConsole("tKey not initialized yet");
-			return;
+	const criticalResetAccount = async (): Promise<void> => {
+		// This is a critical function that should only be used for testing purposes
+		// Resetting your account means clearing all the metadata associated with it from the metadata server
+		// The key details will be deleted from our server and you will not be able to recover your account
+		if (!tKeyInitialised) {
+			throw new Error("tKeyInitialised is initialised yet");
 		}
-		try {
-		uiConsole(oAuthShare);
-		  await tKey.storageLayer.setMetadata({
-			privKey: oAuthShare,
+		await tKey.storageLayer.setMetadata({
+			privKey: tKey.serviceProvider.postboxKey,
 			input: { message: "KEY_NOT_FOUND" },
-		  });
-		  uiConsole("Reset Account Successful.");
-		} catch (e) {
-		  uiConsole(e);
-		}
-	  };
+		});
+		uiConsole('reset');
+		logout();
+	}
 
-	const logout = (): void => {
-		uiConsole('Log out');
-		setUser(null);
+	const logout = async () => {
+		setProvider(null);
+		setLoggedIn(false);
+		setUserInfo({});
+		uiConsole("logged out");
+	};
+	const getUserInfo = async () => {
+		uiConsole(userInfo);
 	};
 
-	const getUserInfo = (): void => {
-		uiConsole(user);
-	};
-
-	const getPrivateKey = (): void => {
-		uiConsole(privateKey);
-	};
-
-	const getChainID = async() => {
+	const getChainID = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
 		}
-		const web3 = new Web3(provider);
-		const chainId = await web3.eth.getChainId();
+		const web3 = new Web3(provider as any);
+
+		// Get the connected Chain's ID
+		const chainId = (await web3.eth.getChainId()).toString(16);
 		uiConsole(chainId)
 	}
 
-	const getAccounts = async() => {
+	const getAccounts = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
 		}
-		const web3 = new Web3(provider);
-		const address = (await web3.eth.getAccounts())[0];
+		const web3 = new Web3(provider as any);
+
+		// Get user's Ethereum public address
+		const address = await web3.eth.getAccounts();
 		uiConsole(address)
 	}
 
-	const getBalance = async() => {
+	const getBalance = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
 		}
-		const web3 = new Web3(provider);
+		const web3 = new Web3(provider as any);
+
+		// Get user's Ethereum public address
 		const address = (await web3.eth.getAccounts())[0];
+
+		// Get user's balance in ether
 		const balance = web3.utils.fromWei(
-			await web3.eth.getBalance(address) // Balance is in wei
-		  );
+			await web3.eth.getBalance(address), // Balance is in wei
+			"ether"
+		);
 		uiConsole(balance)
 	}
 
-	const signMessage = async(): Promise<any> => {
+	const signMessage = async (): Promise<any> => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
 		}
-		const web3 = new Web3(provider);
+		const web3 = new Web3(provider as any);
+
+		// Get user's Ethereum public address
 		const fromAddress = (await web3.eth.getAccounts())[0];
-		const originalMessage = [
-			{
-			  type: "string",
-			  name: "fullName",
-			  value: "Satoshi Nakamoto",
-			},
-			{
-			  type: "uint32",
-			  name: "userId",
-			  value: "1212",
-			},
-		];
-		const params = [originalMessage, fromAddress];
-		const method = "eth_signTypedData";
-		const signedMessage = await (web3.currentProvider as any)?.sendAsync({
-			id: 1,
-			method,
-			params,
+
+		const originalMessage = "YOUR_MESSAGE";
+
+		// Sign the message
+		const signedMessage = await web3.eth.personal.sign(
+			originalMessage,
 			fromAddress,
-		});
+			"test password!" // configure your own password here.
+		);
+
 		uiConsole(signedMessage)
 	}
 
-	const sendTransaction = async() => {
+	const sendTransaction = async () => {
 		if (!provider) {
 			console.log("provider not initialized yet");
 			return;
 		}
-		const web3 = new Web3(provider);
+		const web3 = new Web3(provider as any);
+
+		// Get user's Ethereum public address
 		const fromAddress = (await web3.eth.getAccounts())[0];
 
-		const destination = "0x7aFac68875d2841dc16F1730Fba43974060b907A";
-		const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
+		const destination = "0x4041FF26b6713FCd5659471521BA2e514E23750d";
+
+		// Convert amount to wei
+		const amount = web3.utils.toWei("0.04", "ether");
 
 		// Submit transaction to the blockchain and wait for it to be mined
 		const receipt = await web3.eth.sendTransaction({
 			from: fromAddress,
 			to: destination,
+			gasLimit: "21000",
+			maxFeePerGas: "300",
+			maxPriorityFeePerGas: "10",
 			value: amount,
-			maxPriorityFeePerGas: "5000000000", // Max priority fee per gas
-			maxFeePerGas: "6000000000000", // Max fee per gas
 		});
 		uiConsole(receipt)
 	}
@@ -390,6 +395,16 @@ function App() {
 					</button>
 				</div>
 				<div>
+					<button onClick={keyDetails} className='card'>
+						Key Details
+					</button>
+				</div>
+				<div>
+					<button onClick={exportMnemonicShare} className='card'>
+						Generate Backup (Mnemonic)
+					</button>
+				</div>
+				<div>
 					<button onClick={generateNewShareWithPassword} className='card'>
 						Generate Password Share
 					</button>
@@ -397,26 +412,6 @@ function App() {
 				<div>
 					<button onClick={changeSecurityQuestionAndAnswer} className='card'>
 						Change Password Share
-					</button>
-				</div>
-				<div>
-					<button onClick={generateMnemonic} className='card'>
-						Generate Backup (Mnemonic)
-					</button>
-				</div>
-				<div>
-					<button onClick={backupShareRecover} className='card'>
-						Input Backup Share
-					</button>
-				</div>
-				<div>
-					<button onClick={keyDetails} className='card'>
-						Key Details
-					</button>
-				</div>
-				<div>
-					<button onClick={getPrivateKey} className='card'>
-						Private Key
 					</button>
 				</div>
 				<div>
@@ -434,7 +429,7 @@ function App() {
 						Get Balance
 					</button>
 				</div>
-				
+
 				<div>
 					<button onClick={signMessage} className='card'>
 						Sign Message
@@ -451,22 +446,46 @@ function App() {
 					</button>
 				</div>
 				<div>
-					<button onClick={resetAccount} className='card'>
-						Reset Account (CAUTION)
+					<button onClick={criticalResetAccount} className="card">
+						[CRITICAL] Reset Account
 					</button>
 				</div>
-			</div>
-
-			<div id='console' style={{ whiteSpace: 'pre-line' }}>
-				<p style={{ whiteSpace: 'pre-line' }}></p>
 			</div>
 		</>
 	);
 
 	const unloggedInView = (
-		<button onClick={triggerLogin} className='card'>
-			Login
-		</button>
+		<>
+			<button onClick={login} className="card">
+				Login
+			</button>
+			<div className={tKeyInitialised ? "" : "disabledDiv"} >
+
+				<button onClick={() => getDeviceShare()} className="card">
+					Get Device Share
+				</button>
+				<label>Backup/ Device Share:</label>
+				<input value={recoveryShare} onChange={(e) => setRecoveryShare(e.target.value)}></input>
+				<button onClick={() => inputRecoveryShare(recoveryShare)} className="card">
+					Input Recovery Share
+				</button>
+				<button onClick={criticalResetAccount} className="card">
+					[CRITICAL] Reset Account
+				</button>
+				<label>Recover Using Mnemonic Share:</label>
+				<input value={mnemonicShare} onChange={(e) => setMnemonicShare(e.target.value)}></input>
+				<button onClick={() => MnemonicToShareHex(mnemonicShare)} className="card">
+					Get Recovery Share using Mnemonic
+				</button>
+				<br /><br />
+
+				<label>Enter your Password Share:</label>
+				<input value={passwordShare} onChange={(e) => setPasswordShare(e.target.value)}></input>
+				<button onClick={() => RecoverPasswordShare(passwordShare)} className="card">
+					Recover Account using Password
+				</button>
+			</div>
+		</>
 	);
 
 	return (
@@ -478,11 +497,16 @@ function App() {
 				& ReactJS Ethereum Example
 			</h1>
 
-			<div className='grid'>{user ? loggedInView : unloggedInView}</div>
+			<div className='grid'>{loggedIn ? loggedInView : unloggedInView}</div>
+
+
+			<div id='console' style={{ whiteSpace: 'pre-line' }}>
+				<p style={{ whiteSpace: 'pre-line' }}></p>
+			</div>
 
 			<footer className='footer'>
 				<a
-					href='https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-react-redirect-example'
+					href='https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-react-popup-example'
 					target='_blank'
 					rel='noopener noreferrer'
 				>

@@ -101,3 +101,13 @@
 	font-size: 16px;
 	font-family: monospace;
 }
+
+.disabledDiv {
+	pointer-events: none;
+	opacity: 0.4;
+  }
+  
+.flex-column {
+display: flex;
+flex-direction: column;
+}

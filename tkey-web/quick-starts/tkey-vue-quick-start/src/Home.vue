@@ -242,20 +242,6 @@ export default {
 
     const setDeviceShare = async () => {
       try {
-        // checking if a device share exists
-        const deviceShare = await getDeviceShare();
-
-        // checking if the share is valid, if valid, no need to generate new device share
-        if (deviceShare) {
-          const keyDetails = await tKey.getKeyDetails();
-          if (keyDetails.shareDescriptions[deviceShare.share.shareIndex.toString("hex")]) {
-            uiConsole('Device Share Already Present');
-            return;
-          } else {
-            uiConsole('Current Device Share is Invalid, Generating New Share.');
-          }
-        }
-
         const generateShareResult = await tKey.generateNewShare();
         const share = await tKey.outputShareStore(
           generateShareResult.newShareIndex,
