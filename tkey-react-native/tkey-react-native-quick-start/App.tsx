@@ -9,13 +9,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {tKey, ethereumPrivateKeyProvider} from './tkey';
+import {tKey, chainConfig} from './tkey';
 import {ShareSerializationModule} from '@tkey/share-serialization';
 import {SfaServiceProvider} from '@tkey/service-provider-sfa';
 import {ReactNativeStorageModule} from '@tkey/react-native-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
 import {ethers} from 'ethers';
+import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
+import {IProvider} from '@web3auth/base';
 
 import auth from '@react-native-firebase/auth';
 // @ts-ignore
@@ -27,7 +29,7 @@ const verifier = 'w3a-firebase-demo';
 async function signInWithEmailPassword() {
   try {
     const res = await auth().signInWithEmailAndPassword(
-      'custom+jwt@firebase.login',
+      'tkey-react-native-quick-start@firebase.login',
       'Testing@123',
     );
     return res;
@@ -36,9 +38,15 @@ async function signInWithEmailPassword() {
   }
 }
 
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+  config: {
+    chainConfig,
+  },
+});
+
 export default function App() {
   const [tKeyInitialised, setTKeyInitialised] = useState(false);
-  const [privateKey, setPrivateKey] = useState<string | null>();
+  const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [recoveryShare, setRecoveryShare] = useState<string>('');
@@ -80,7 +88,7 @@ export default function App() {
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifierId = parsedToken.email;
+      const verifierId = parsedToken.sub;
 
       await (tKey.serviceProvider as SfaServiceProvider).connect({
         verifier,
@@ -114,8 +122,9 @@ export default function App() {
     try {
       const reconstructedKey = await tKey.reconstructKey();
       const privateKey = reconstructedKey?.privKey.toString('hex');
-      setPrivateKey(privateKey);
 
+      await ethereumPrivateKeyProvider.setupProvider(privateKey);
+      setProvider(ethereumPrivateKeyProvider);
       setLoggedIn(true);
       setDeviceShare();
     } catch (e) {
@@ -139,30 +148,12 @@ export default function App() {
       uiConsole('tKey not initialized yet');
       return;
     }
-    const keyDetails = await tKey.getKeyDetails();
-    uiConsole(keyDetails);
+    const keyDetail = await tKey.getKeyDetails();
+    uiConsole(keyDetail);
   };
 
   const setDeviceShare = async () => {
     try {
-      // checking if a device share exists
-      const deviceShare = await getDeviceShare();
-
-      // checking if the share is valid, if valid, no need to generate new device share
-      if (deviceShare) {
-        const keyDetails = await tKey.getKeyDetails();
-        if (
-          keyDetails.shareDescriptions[
-            deviceShare.share.shareIndex.toString('hex')
-          ]
-        ) {
-          uiConsole('Device Share Already Present');
-          return;
-        } else {
-          uiConsole('Current Device Share is Invalid, Generating New Share.');
-        }
-      }
-
       const generateShareResult = await tKey.generateNewShare();
       const share = await tKey.outputShareStore(
         generateShareResult.newShareIndex,
@@ -243,55 +234,78 @@ export default function App() {
     uiConsole(userInfo);
   };
 
-  const logout = async () => {
-    setPrivateKey(null);
-    setLoggedIn(false);
-    setUserInfo({});
-    uiConsole('logged out');
-  };
-
   const getAccounts = async () => {
-    if (!privateKey) {
-      uiConsole('no private key');
+    if (!provider) {
+      uiConsole('provider not set');
       return;
     }
-    const wallet = new ethers.Wallet(privateKey);
-    const address = await wallet.address;
+    setConsoleUI('Getting account');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
     uiConsole(address);
   };
 
   const getBalance = async () => {
-    if (!privateKey) {
-      uiConsole('no private key');
+    if (!provider) {
+      uiConsole('provider not set');
       return;
     }
-    const ethersProvider = ethers.getDefaultProvider(
-      'https://rpc.ankr.com/eth',
-    );
-    const wallet = new ethers.Wallet(privateKey, ethersProvider);
-    const address = await wallet.address;
-    const balance = ethers.utils.formatEther(
-      await ethersProvider.getBalance(address),
+    setConsoleUI('Fetching balance');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
+
+    // Get user's balance in ether
+    // For ethers v5
+    // const balance = ethers.utils.formatEther(
+    // await ethersProvider.getBalance(address) // Balance is in wei
+    // );
+    const balance = ethers.formatEther(
+      await ethersProvider.getBalance(address), // Balance is in wei
     );
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!privateKey) {
-      uiConsole('no private key');
+    if (!provider) {
+      uiConsole('provider not set');
       return;
     }
-    const ethersProvider = ethers.getDefaultProvider(
-      'https://rpc.ankr.com/eth',
-    );
+    setConsoleUI('Signing message');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
 
-    const wallet = new ethers.Wallet(privateKey, ethersProvider);
-
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
     const originalMessage = 'YOUR_MESSAGE';
 
     // Sign the message
-    const signedMessage = await wallet.signMessage(originalMessage);
+    const signedMessage = await signer.signMessage(originalMessage);
     uiConsole(signedMessage);
+  };
+
+  const logout = async () => {
+    setProvider(null);
+    setLoggedIn(false);
+    setUserInfo({});
+    uiConsole('logged out');
   };
 
   const criticalResetAccount = async (): Promise<void> => {
@@ -337,6 +351,9 @@ export default function App() {
       <TouchableOpacity onPress={getDeviceShare}>
         <Text>Get Device Share</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={setDeviceShare}>
+        <Text>Set Device Share</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={deleteDeviceShare}>
         <Text>Delete Device Share</Text>
       </TouchableOpacity>
@@ -352,11 +369,20 @@ export default function App() {
   const unloggedInView = (
     <View style={styles.buttonArea}>
       <Button title="Login with Web3Auth" onPress={login} />
+      <Button
+        title="Get Device Share"
+        onPress={async () => {
+          await getDeviceShare();
+          setLoading(false);
+        }}
+        disabled={!tKeyInitialised}
+      />
       <Input
+        value={recoveryShare}
         placeholder="Recovery Share"
         onChangeText={value => setRecoveryShare(value)}
         disabled={!tKeyInitialised}
-        style={styles.inputField}
+        inputContainerStyle={styles.inputField}
       />
       <Button
         title="Input Recovery Share"
@@ -372,13 +398,14 @@ export default function App() {
         disabled={!tKeyInitialised}
       />
       <Input
+        value={mnemonicShare}
         placeholder="Enter Mnemonic Share"
         onChangeText={value => setMnemonicShare(value)}
         disabled={!tKeyInitialised}
-        style={styles.inputField}
+        inputContainerStyle={styles.inputField}
       />
       <Button
-        title="Get Recoverypod  Share using Mnemonic"
+        title="Get Recovery Share using Mnemonic"
         onPress={async () => {
           await MnemonicToShareHex(mnemonicShare);
           setLoading(false);
@@ -391,7 +418,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {privateKey ? loggedInView : unloggedInView}
+      {loggedIn ? loggedInView : unloggedInView}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
@@ -434,6 +461,6 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   inputField: {
-    width: '300%',
+    width: Dimensions.get('window').width - 90,
   },
 });

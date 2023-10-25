@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-native-firebase/app": "^18.5.0",
     "@react-native-firebase/auth": "^18.5.0",
-    "@rneui/themed": "^4.0.0-rc.7",
+    "@rneui/themed": "^4.0.0-rc.8",
     "@tkey/core": "^11.0.0",
     "@tkey/react-native-storage": "^11.0.0",
     "@tkey/service-provider-sfa": "^11.0.0",
@@ -20,13 +20,14 @@
     "@tkey/storage-layer-torus": "^11.0.0",
     "@web3auth/ethereum-provider": "^7.0.4",
     "base-64": "^1.0.0",
-    "ethers": "^5.7.0",
+    "ethers": "^6.8.0",
     "react": "18.2.0",
     "react-native": "0.72.0",
     "react-native-encrypted-storage": "^4.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-private-methods": "^7.22.5",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@ethersproject/shims": "^5.7.0",
