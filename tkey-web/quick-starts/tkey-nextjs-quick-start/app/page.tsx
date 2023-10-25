@@ -390,7 +390,7 @@ function App() {
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-react-quick-start"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey-web/quick-starts/tkey-nextjs-quick-start"
           target="_blank"
           rel="noopener noreferrer"
         >
