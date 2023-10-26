@@ -98,17 +98,17 @@ function App() {
     }
   };
 
-  function parseToken(token: any) {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      uiConsole(JSON.parse(window.atob(base64 || "")));
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      uiConsole(err);
-      return null;
-    }
-  }
+  // function parseToken(token: any) {
+  //   try {
+  //     const base64Url = token.split(".")[1];
+  //     const base64 = base64Url.replace("-", "+").replace("_", "/");
+  //     uiConsole(JSON.parse(window.atob(base64 || "")));
+  //     return JSON.parse(window.atob(base64 || ""));
+  //   } catch (err) {
+  //     uiConsole(err);
+  //     return null;
+  //   }
+  // }
 
   const getUserInfo = async () => {
     uiConsole("Get the user details directly from your login provider.", user);
