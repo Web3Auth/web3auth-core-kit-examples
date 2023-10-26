@@ -4,21 +4,13 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { RouterProvider } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
 root.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain="web3auth.au.auth0.com"
-      clientId="hiLqaop0amgzCC0AXo4w0rrG9abuJTdu"
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        connection: "github",
-      }}
-    >
-      <App />
-    </Auth0Provider>
+    <App />
   </React.StrictMode>
 );
 

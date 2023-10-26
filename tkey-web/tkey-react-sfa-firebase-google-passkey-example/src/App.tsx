@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
+import React, { FormEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 import { CustomFactorsModuleType } from "./constants";
 import swal from "sweetalert";
@@ -7,28 +9,40 @@ import { ethereumPrivateKeyProvider, tKey } from "./tkey";
 import Web3 from "web3";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
 import { WebStorageModule } from "@tkey/web-storage";
-import { auth } from "./FireBaseConfig";
-import { TorusServiceProvider } from "@tkey/service-provider-torus";
+import SmsPasswordless from "./smsService";
+import { get, post } from "@toruslabs/http-helpers";
 import TorusSdk from "@toruslabs/customauth";
-
 import BN from "bn.js";
 
-import { useAuth0 } from "@auth0/auth0-react";
-import { signInWithEmailLink, isSignInWithEmailLink, sendSignInLinkToEmail } from "firebase/auth";
-export const wcVerifier = "wallet-connect-test";
+// Firebase libraries for custom authentication
+import { initializeApp } from "firebase/app";
+import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
+  authDomain: "web3auth-oauth-logins.firebaseapp.com",
+  projectId: "web3auth-oauth-logins",
+  storageBucket: "web3auth-oauth-logins.appspot.com",
+  messagingSenderId: "461819774167",
+  appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
+};
 export const BACKEND_URL = "https://wc-admin.web3auth.com";
+
 function App() {
   const [user, setUser] = useState<any>(null);
   const [privateKey, setPrivateKey] = useState<any>();
   const [oAuthShare, setOAuthShare] = useState<any>();
   const [provider, setProvider] = useState<any>();
   const [idToken, setIdToken] = useState<string | null>(null);
-  const [email, setEmail] = useState<string>("hello@web3auth.io");
-  const [emailIdToken, setEmailIdToken] = useState<string | null>(null);
-
-  const { getIdTokenClaims, loginWithPopup } = useAuth0();
+  const [email, setEmail] = useState("");
+  const [isWebAuthnLoginEnabled, setIsWebAuthnLoginEnabled] = useState(false);
+  const [isWebAuthnRegistrationEnabled, setIsWebAuthnRegistrationEnabled] = useState(false);
   const [torusdirectsdk, setTorusdirectsdk] = useState<TorusSdk>();
-  const verifier = "w3a-auth0-github";
+
+  const app = initializeApp(firebaseConfig);
+
+  const isWebAuthnSupported = browserSupportsWebAuthn();
 
   // Init Service Provider inside the useEffect Method
   useEffect(() => {
@@ -39,18 +53,6 @@ function App() {
       } catch (error) {
         console.error(error);
       }
-
-      const torusdirectsdk = new TorusSdk({
-        baseUrl: window.location.origin,
-        // user will be redirect to auth page after login
-        redirectPathName: "auth",
-        enableLogging: true,
-        uxMode: "popup",
-        network: "testnet",
-        web3AuthClientId: "torus-default",
-      } as any);
-      await torusdirectsdk.init({ skipSw: true });
-      setTorusdirectsdk(torusdirectsdk);
     };
     init();
     const ethProvider = async () => {
@@ -65,30 +67,34 @@ function App() {
       }
     };
     ethProvider();
+    const torusSdk = async () => {
+      const torusdirectsdk = new TorusSdk({
+        baseUrl: window.location.origin,
+        // user will be redirect to auth page after login
+        redirectPathName: "auth",
+        enableLogging: true,
+        uxMode: "popup",
+        network: "testnet",
+        web3AuthClientId: "torus-default",
+      } as any);
+      await torusdirectsdk.init({ skipSw: true });
+      setTorusdirectsdk(torusdirectsdk);
+    };
+    torusSdk();
   }, [privateKey]);
 
-  // if signed by email passwordless, then we should login again with the IdToken
-  // derived from auth0
-
-  useEffect(() => {
-    (async () => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        const { sub } = parseToken(idToken!);
-        setUser(sub);
-
-        const OAuthShareKey = await (tKey.serviceProvider as SfaServiceProvider).connect({
-          verifier,
-          verifierId: sub,
-          idToken: idToken!,
-        });
-
-        uiConsole("OAuthShareKey", OAuthShareKey);
-        setOAuthShare(OAuthShareKey);
-
-        initializeNewKey();
-      }
-    })();
-  }, []);
+  const signInWithGoogle = async (): Promise<UserCredential> => {
+    try {
+      const auth = getAuth(app);
+      const googleProvider = new GoogleAuthProvider();
+      const res = await signInWithPopup(auth, googleProvider);
+      console.log(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
 
   const parseToken = (token: any) => {
     try {
@@ -107,19 +113,17 @@ function App() {
       return;
     }
     try {
-      await loginWithPopup();
-      // get the id token from auth0
-      const idToken = (await getIdTokenClaims())?.__raw.toString();
-      // if idToken is null, then the user has not logged in yet
-      if (!idToken) {
-        return;
-      }
+      const loginRes = await signInWithGoogle();
+      // get the id token from firebase
+      const idToken = await loginRes.user.getIdToken(true);
       setIdToken(idToken);
       console.log(idToken);
 
       // get sub value from firebase id token
       const { sub } = parseToken(idToken);
       setUser(sub);
+
+      const verifier = "web3auth-firebase-examples";
 
       const OAuthShareKey = await (tKey.serviceProvider as SfaServiceProvider).connect({
         verifier,
@@ -318,90 +322,130 @@ function App() {
       }
     });
   };
-  const setupEmailPasswordless = async () => {
-    try {
-      if (!torusdirectsdk) {
-        uiConsole("torusdirectsdk not initialized yet");
-        return;
-      }
-      // 2. after login, how to setup 2fa? --> use sfa, get the postboxkey and use it as a second share (security question module to encrypt)
-      // 3. same for passkey example --> currently not working at localhost:3000
 
-      // Triggering Login using Service Provider ==> opens the popup
-      const loginRes = await torusdirectsdk.triggerLogin({
-        typeOfLogin: "jwt",
-        verifier: wcVerifier,
-        jwtParams: {
-          domain: "https://wc-auth.web3auth.com",
-          verifierIdField: "name",
-          connection: "email",
-          login_hint: email,
-        },
-        clientId: "QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1",
-      });
-      console.log("loginRes", loginRes);
+  //   const recoverViaNumber = async (): Promise<void> => {
+  //     try {
+  //       if (!tKey) {
+  //         uiConsole("tKey not initialized yet");
+  //         return;
+  //       }
 
-      const postboxkey = loginRes.oAuthKeyData.privKey;
-      try {
-        await (tKey.modules.securityQuestions as any).generateNewShareWithSecurityQuestions(postboxkey, "whats your password?");
-        swal("Success", "Successfully generated new share with password.", "success");
-        uiConsole("Successfully generated new share with password.");
-      } catch (error) {
-        swal("Error", (error as any)?.message.toString(), "error");
-      }
+  //       const keyDetails = tKey.getKeyDetails();
+  //       if (!keyDetails) {
+  //         throw new Error("keyDetails is not set");
+  //       }
 
-      uiConsole("setup email passwordless complete");
-    } catch (error) {
-      uiConsole(error);
-    }
-  };
+  //       // check if we are setting up the sms recovery for the first time.
+  //       // share descriptions contain the details of all the factors/ shares you set up for the user.
+  //       const shareDescriptions = Object.values(keyDetails.shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
+  //       console.log("shareDescriptions", shareDescriptions);
+  //       // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
+  //       const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.MOBILE_SMS);
+  //       if (!shareDescriptionsMobile) {
+  //         console.error("sms recovery not setup");
+  //         uiConsole("sms recovery not setup");
+  //       }
 
-  const recoverWithEmailPasswordless = async () => {
-    try {
-      if (!torusdirectsdk) {
-        uiConsole("torusdirectsdk not initialized yet");
-        return;
-      }
-      // 2. after login, how to setup 2fa? --> use sfa, get the postboxkey and use it as a second share (security question module to encrypt)
-      // 3. same for passkey example --> currently not working at localhost:3000
+  //       console.log("sms recovery already setup", shareDescriptionsMobile);
 
-      // Triggering Login using customAuth
-      const loginRes = await torusdirectsdk.triggerLogin({
-        typeOfLogin: "jwt",
-        verifier: wcVerifier,
-        jwtParams: {
-          domain: "https://wc-auth.web3auth.com",
-          verifierIdField: "name",
-          connection: "email",
-          login_hint: email,
-        },
-        clientId: "QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1",
-      });
-      console.log("loginRes", loginRes);
+  //       const { number } = shareDescriptionsMobile;
+  //       const { pubKey } = await tKey.getKeyDetails();
+  //       const address = `${pubKey.x.toString(16, 64)}${pubKey.y.toString(16, 64)}`;
+  //       const result = await SmsPasswordless.requestSMSOTP(address);
+  //       uiConsole("please use this code to verify your phone number", number, "code", result);
+  //       console.log("otp code", result);
 
-      const postboxkey = loginRes.oAuthKeyData.privKey;
+  //       const verificationCode = await swal("Enter your backup share, please enter the correct code first time :)", {
+  //         content: "input" as any,
+  //       }).then((value) => {
+  //         return value;
+  //       });
 
-      await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(postboxkey); // 2/2 flow
-      const { requiredShares } = tKey.getKeyDetails();
-      if (requiredShares <= 0) {
-        const reconstructedKey = await tKey.reconstructKey();
-        setPrivateKey(reconstructedKey?.privKey.toString("hex"));
-        uiConsole("Private Key: " + reconstructedKey.privKey.toString("hex"));
-      }
+  //       if (!verificationCode || verificationCode.length !== 6) {
+  //         console.error("Invalid verification code entered");
+  //         uiConsole("Invalid verification code entered");
+  //       }
 
-      uiConsole("recover with email passwordless complete");
-    } catch (error) {
-      uiConsole(error);
-    }
-  };
+  //       const newShare = await SmsPasswordless.verifySMSOTPRecovery(address, verificationCode);
+  //       if (!newShare) {
+  //         throw new Error("Invalid verification code entered");
+  //       }
+  //       await tKey.inputShare(newShare);
+  //       const { requiredShares } = tKey.getKeyDetails();
+  //       if (requiredShares <= 0) {
+  //         const reconstructedKey = await tKey.reconstructKey();
+  //         setPrivateKey(reconstructedKey?.privKey.toString("hex"));
+  //         uiConsole("Private Key: " + reconstructedKey.privKey.toString("hex"));
+  //       }
+  //     } catch (error: unknown) {
+  //       console.error(error);
+  //       uiConsole((error as Error).message);
+  //     }
+  //   };
 
-  // const registerEmail = async () => {
-  //   const OauthShareKey = await signInWithEmailPasswordless();
-  //   if (!OauthShareKey) {
-  //     return;
-  //   }
-  //   await tKey.inputShare(OauthShareKey);
-  // };
+  //   const setupSmsRecovery = async (): Promise<void> => {
+  //     try {
+  //       if (!tKey) {
+  //         uiConsole("tKey not initialized yet");
+  //         return;
+  //       }
+
+  //       const privKey = privateKey;
+  //       // check if we are setting up the sms recovery for the first time.
+  //       // share descriptions contain the details of all the factors/ shares you set up for the user.
+  //       const shareDescriptions = Object.values(tKey.getKeyDetails().shareDescriptions).map((i) => ((i || [])[0] ? JSON.parse(i[0]) : {}));
+  //       // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
+  //       const shareDescriptionsMobile = shareDescriptions.find((shareDescription) => shareDescription.module === CustomFactorsModuleType.MOBILE_SMS);
+  //       if (shareDescriptionsMobile) {
+  //         console.log("shareDescriptions", shareDescriptions);
+  //         console.log("sms recovery already setup");
+  //         uiConsole("sms recovery already setup");
+  //         return;
+  //       }
+
+  //       const result = await SmsPasswordless.registerSmsOTP(privKey, number);
+  //       uiConsole("please use this code to verify your phone number", result);
+  //       console.log("otp code", result);
+
+  //       const verificationCode = await swal("Enter your backup share, please enter the correct code first time :)", {
+  //         content: "input" as any,
+  //       }).then((value) => {
+  //         return value;
+  //       });
+
+  //       if (!verificationCode || verificationCode.length !== 6) {
+  //         console.error("Invalid verification code entered");
+  //         uiConsole("Invalid verification code entered");
+  //       }
+
+  //       const { pubKey } = await tKey.getKeyDetails();
+  //       const address = `${pubKey.x.toString(16, 64)}${pubKey.y.toString(16, 64)}`;
+
+  //       //get share index and BN from newShare
+  //       const newShare = await tKey.generateNewShare();
+  //       const newShareIndex = newShare.newShareIndex.toString(16);
+  //       const newShareBN = newShare.newShareStores[newShareIndex].share.share;
+
+  //       //   const newShareIndex = newShare.newShareIndex;
+  //       await SmsPasswordless.addSmsRecovery(address, verificationCode, newShareBN);
+
+  //       // setup the sms recovery share in tKey.
+  //       // for sms otp, we have set up a custom share with module type as defined in CustomFactorsModuleType.MOBILE_SMS in this example.
+  //       // add ShareDescription to tKey
+  //       await tKey.addShareDescription(
+  //         newShareIndex,
+  //         JSON.stringify({
+  //           dateAdded: Date.now(),
+  //           module: CustomFactorsModuleType.MOBILE_SMS,
+  //         }),
+  //         true
+  //       );
+  //       uiConsole("sms recovery setup complete");
+  //     } catch (error: unknown) {
+  //       console.error(error);
+  //       uiConsole((error as Error).message);
+  //     }
+  //   };
 
   const keyDetails = async () => {
     if (!tKey) {
@@ -540,6 +584,104 @@ function App() {
     console.log(...args);
   };
 
+  //passkey logic
+
+  const onEmailChanged = async (e: FormEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const newEmail = e.currentTarget.value;
+    setEmail(newEmail);
+    if (isWebAuthnSupported && newEmail.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+      try {
+        console.log("fetching webauthn status");
+        const url = new URL(`${BACKEND_URL}/api/v2/webauthn`);
+        url.searchParams.append("email", newEmail);
+        const response = await get<{ success: boolean; data: { webauthn_enabled: boolean; cred_id: string; public_key: string } }>(url.href);
+        if (response.success) {
+          setIsWebAuthnLoginEnabled(true);
+        } else {
+          setIsWebAuthnRegistrationEnabled(true);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const recoverWithPassKey = async () => {
+    try {
+      const url = new URL(`${BACKEND_URL}/api/v2/webauthn-generate-authentication-options`);
+      url.searchParams.append("email", email);
+      const resp = (await get(url.href)) as any;
+      const attestationResponse = await startAuthentication(resp);
+      const url2 = new URL(`${BACKEND_URL}/api/v2/webauthn-verify-authentication`);
+      const resp2 = await post<{ verified: boolean; id_token: string }>(url2.href, { attestationResponse, email });
+      if (resp2.verified) {
+        // Registration successful
+        console.log("Login successful");
+        // get id token
+        const passKeyIdToken = resp2.id_token;
+
+        const loginRes = await torusdirectsdk.triggerLogin({
+          typeOfLogin: "jwt",
+          verifier: wcVerifier,
+          jwtParams: {
+            domain: "https://wc-auth.web3auth.com",
+            verifierIdField: "name",
+            connection: "email",
+            login_hint: email,
+          },
+          clientId: "QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1",
+        });
+        console.log("loginRes", loginRes);
+  
+        const postboxkey = loginRes.oAuthKeyData.privKey;
+  
+        await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(postboxkey); // 2/2 flow
+        const { requiredShares } = tKey.getKeyDetails();
+        if (requiredShares <= 0) {
+          const reconstructedKey = await tKey.reconstructKey();
+          setPrivateKey(reconstructedKey?.privKey.toString("hex"));
+          uiConsole("Private Key: " + reconstructedKey.privKey.toString("hex"));
+        }
+  
+        uiConsole("recover with email passwordless complete");
+      } else {
+        throw new Error("Login failed");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const triggerPassKeyRegistration = async () => {
+    try {
+      const url = new URL(`${BACKEND_URL}/api/v2/webauthn-generate-registration-options`);
+      url.searchParams.append("email", email);
+      const resp = (await get(url.href)) as any;
+      const attestationResponse = await startRegistration(resp);
+      const url2 = new URL(`${BACKEND_URL}/api/v2/webauthn-verify-registration`);
+      const resp2 = await post<{ verified: boolean; id_token: string }>(url2.href, { attestationResponse, email });
+      if (resp2.verified) {
+        // Registration successful
+        console.log("Registration successful");
+        setIsWebAuthnRegistrationEnabled(false);
+        setIsWebAuthnLoginEnabled(true);
+        // get id token
+        const idToken = resp2.id_token;
+        const { sub } = parseToken(idToken);
+        const verifier = "w3a-firebase-demo";
+        const loginDetails = await torusdirectsdk?.getTorusKey(verifier, sub, { verifier_id: sub }, idToken as string);
+
+        const oauthKey = loginDetails?.oAuthKeyData.privKey;
+        // use security question module here
+      } else {
+        throw new Error("Registration failed");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const loggedInView = (
     <>
       <div className="flex-container">
@@ -617,24 +759,37 @@ function App() {
       </div>
 
       <hr />
-      <h4>email passwordless logic</h4>
+      <h4>sms otp logic</h4>
 
-      <p>Email:</p>
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          localStorage.setItem("email_for_web3auth_sfa_demo", e.target.value);
-        }}
-      />
-      <button onClick={setupEmailPasswordless} className="card">
-        setup backup share with Email passwordless
-      </button>
+      <div>
+        <div className="flex-container">
+          <input placeholder={"Enter your email.."} value={email} onChange={(e) => onEmailChanged(e)}></input>
 
-      <button onClick={recoverWithEmailPasswordless} className="card">
-        recover with Email Passwordless
-      </button>
+          <button onClick={triggerPassKeyRegistration} className="card">
+            Register with PassKey
+          </button>
+          <button onClick={recoverWithPassKey} className="card">
+            Recover with PassKey
+          </button>
+        </div>
+      </div>
+
+      {/* <Text type="secondary">Enter your email: </Text>
+          <Input size="large" type="email" placeholder="Enter your email..." onChange={(e) => onEmailChanged(e)} value={email} />
+
+          <Button size="large" type="primary" onClick={triggerEmailLogin} style={{ width: "100%", marginTop: "12px" }}>
+            Login
+          </Button>
+          {isWebAuthnRegistrationEnabled && (
+            <Button size="large" type="default" onClick={triggerPassKeyRegistration} style={{ width: "100%", marginTop: "12px" }}>
+              Register with PassKey
+            </Button>
+          )}
+          {isWebAuthnLoginEnabled && (
+            <Button size="large" type="default" onClick={triggerPassKeyLogin} style={{ width: "100%", marginTop: "12px" }}>
+              Login with PassKey
+            </Button>
+          )} */}
 
       <div id="console" style={{ whiteSpace: "pre-line" }}>
         <p style={{ whiteSpace: "pre-line" }}></p>
@@ -654,17 +809,13 @@ function App() {
         <a target="_blank" href="http://web3auth.io/" rel="noreferrer">
           Web3Auth (tKey)
         </a>
-        & Auth0 + GitHub + Email-passwordless Ethereum Example
+        & ReactJS Ethereum Example
       </h1>
 
       <div className="grid">{user ? loggedInView : unloggedInView}</div>
 
       <footer className="footer">
-        <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey/tkey-react-redirect-example"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/tkey-web" target="_blank" rel="noopener noreferrer">
           Source code
         </a>
       </footer>
