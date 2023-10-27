@@ -7,31 +7,38 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Button, TouchableOpacity, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import * as SecureStore from "expo-secure-store";
-import BN from 'bn.js';
-
-import RPC from "./ethersRPC"; // for using ethers.js
-import { ethereumPrivateKeyProvider, tKeyInstance } from "./tkey";
+import { tKey, chainConfig } from "./tkey";
 import { ShareSerializationModule } from "@tkey/share-serialization";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
 import ReactNativeStorageModule from "@tkey/react-native-storage";
+import '@ethersproject/shims';
+import {ethers} from 'ethers';
+import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
+import {IProvider} from '@web3auth/base';
+
+const verifier = 'w3a-auth0-demo';
+
+const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+  config: {
+    chainConfig,
+  },
+});
 
 const Home = () => {
-  const [privateKey, setPrivateKey] = useState<string | null>();
+  const [tKeyInitialised, setTKeyInitialised] = useState(false);
+  const [provider, setProvider] = useState<IProvider | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
+  const [recoveryShare, setRecoveryShare] = useState<string>('');
+  const [mnemonicShare, setMnemonicShare] = useState<string>('');
+  const [consoleUI, setConsoleUI] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [oAuthShare, setOAuthShare] = useState<any>(null);
-  const [userInfo, setUserInfo] = useState<string>("");
-  const [consoleUI, setConsoleUI] = useState<string>("");
-  const [recoveryPassword, setRecoveryPassword] = useState<string>("");
-  const [recoveryMnemonic, setRecoveryMnemonic] = useState<string>("");
-  const [recoveryModalVisibility, setRecoveryModalVisibility] = useState<boolean>(false);
-  const [passwordShareModalVisibility, setPasswordShareModalVisibility] = useState<boolean>(false);
-  const [changePasswordShareModalVisibility, setChangePasswordShareModalVisibility] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
       // Initialization of Service Provider
       try {
-        await (tKeyInstance.serviceProvider as any).init(
+        await (tKey.serviceProvider as any).init(
           ethereumPrivateKeyProvider,
         );
       } catch (error) {
@@ -75,45 +82,33 @@ const Home = () => {
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifier = "web3auth-auth0-demo";
       const verifierId = parsedToken.sub;
 
       const OAuthShareKey = await (
-        tKeyInstance.serviceProvider as SfaServiceProvider
+        tKey.serviceProvider as SfaServiceProvider
       ).connect({
         verifier,
         verifierId,
         idToken,
       });
 
-      uiConsole('OAuthShareKey', OAuthShareKey);
-      setOAuthShare(OAuthShareKey);
+      await tKey.initialize();
 
-      await tKeyInstance.initialize();
+      setTKeyInitialised(true);
 
-      var { requiredShares } = tKeyInstance.getKeyDetails();
+      var {requiredShares} = tKey.getKeyDetails();
 
-      uiConsole("requiredShares", requiredShares);
-      const deviceShare = await getDeviceShare();
+
+      uiConsole('requiredShares', requiredShares);
 
       if (requiredShares > 0) {
-        if (deviceShare) {
-          try {
-            await tKeyInstance.inputShare(deviceShare);
-          } catch (error) {
-            uiConsole(error);
-          }
-        }
-        var { requiredShares } = tKeyInstance.getKeyDetails();
-        if (requiredShares > 0) {
-          await toggleRecoveryModalVisibility();
-          setLoading(false);
-          return;
-        }
+        uiConsole(
+          'Please enter your backup shares, requiredShares:',
+          requiredShares,
+        );
+      } else {
+        await reconstructKey();
       }
-      await reconstructKey();
-      setLoading(false);
-      uiConsole("Logged In");
     } catch (e) {
       uiConsole(e);
       setLoading(false);
@@ -122,66 +117,46 @@ const Home = () => {
 
   const reconstructKey = async () => {
     try {
-      const reconstructedKey = await tKeyInstance.reconstructKey();
-      const finalPrivateKey = reconstructedKey?.privKey.toString("hex");
-      const deviceShare = await getDeviceShare();
-      await setPrivateKey(finalPrivateKey);
-      uiConsole(`Private Key: ${finalPrivateKey}`);
-      if (!deviceShare) {
-        setDeviceShare();
-      }
-    } catch (error) {
-      uiConsole(error);
-    }
-  }
+      const reconstructedKey = await tKey.reconstructKey();
+      const privateKey = reconstructedKey?.privKey.toString('hex');
 
-  const recoverPasswordShare = async (password: string) => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
-      return;
-    }
-
-    if (password.length > 10) {
-      try {
-        setLoading(true);
-        await (tKeyInstance.modules.securityQuestions as any).inputShareFromSecurityQuestions(password); // 2/2 flow
-        await reconstructKey();
-        uiConsole("Successfully logged you in with the recovery password.");
-      } catch (error) {
-        uiConsole(error);
-        setLoading(false);
-      }
-    } else {
-      uiConsole("Error", "Password must be >= 11 characters", "error");
-      setLoading(false);
+      await ethereumPrivateKeyProvider.setupProvider(privateKey);
+      setProvider(ethereumPrivateKeyProvider);
+      setLoggedIn(true);
+      setDeviceShare();
+    } catch (e) {
+      uiConsole(e);
     }
   };
 
-  const recoverMnemonicShare = async (mnemonic: string) => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
+  const inputRecoveryShare = async (share: string) => {
+    try {
+      await tKey.inputShare(share);
+      await reconstructKey();
+      uiConsole('Recovery Share Input Successfully');
+      return;
+    } catch (error) {
+      uiConsole('Input Recovery Share Error:', error);
+    }
+  };
+
+  const keyDetails = async () => {
+    if (!tKey) {
+      uiConsole('tKey not initialized yet');
       return;
     }
-    try {
-      setLoading(true);
-      const share = await (tKeyInstance.modules.shareSerialization as ShareSerializationModule).deserialize(mnemonic, "mnemonic");
-      await tKeyInstance.inputShare(share);
-      await reconstructKey();
-      uiConsole("Input Mnemonic Successful.");
-    } catch (error) {
-      uiConsole(error);
-      setLoading(false);
-    }
-  }
+    const keyDetail = await tKey.getKeyDetails();
+    uiConsole(keyDetail);
+  };
 
   const setDeviceShare = async () => {
     try {
-      const generateShareResult = await tKeyInstance.generateNewShare();
-      const share = await tKeyInstance.outputShareStore(
+      const generateShareResult = await tKey.generateNewShare();
+      const share = await tKey.outputShareStore(
         generateShareResult.newShareIndex,
       );
       await (
-        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+        tKey.modules.reactNativeStorage as ReactNativeStorageModule
       ).storeDeviceShare(share);
       uiConsole('Device Share Set', JSON.stringify(share));
     } catch (error) {
@@ -192,7 +167,7 @@ const Home = () => {
   const getDeviceShare = async () => {
     try {
       const share = await (
-        tKeyInstance.modules.reactNativeStorage as ReactNativeStorageModule
+        tKey.modules.reactNativeStorage as ReactNativeStorageModule
       ).getStoreFromReactNativeStorage();
 
       if (share) {
@@ -200,6 +175,7 @@ const Home = () => {
           'Device Share Captured Successfully across',
           JSON.stringify(share),
         );
+        setRecoveryShare(share.share.share.toString('hex'));
         return share;
       }
       uiConsole('Device Share Not found');
@@ -211,7 +187,7 @@ const Home = () => {
 
   const deleteDeviceShare = async () => {
     try {
-      const metadata = await tKeyInstance.getMetadata();
+      const metadata = await tKey.getMetadata();
       await SecureStore.deleteItemAsync(metadata.pubKey.x.toString('hex'));
       uiConsole('Device Share Deleted');
     } catch (error) {
@@ -219,125 +195,130 @@ const Home = () => {
     }
   };
 
-  const changeSecurityQuestionAndAnswer = async (password: string) => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
-      return;
-    }
-
-    if (password.length > 10) {
-      try {
-        setLoading(true);
-        await (tKeyInstance.modules.securityQuestions as any).changeSecurityQuestionAndAnswer(password, "whats your password?");
-        uiConsole("Successfully changed new share with password.");
-      } catch (error) {
-        uiConsole("Error", (error as any)?.message.toString(), "error");
-        setLoading(false);
-      }
-    } else {
-      uiConsole("Error", "Password must be >= 11 characters", "error");
-      setLoading(false);
-    }
-
-    const keyDetails = await tKeyInstance.getKeyDetails();
-    uiConsole(keyDetails);
-  };
-
-  const generateNewShareWithPassword = async (password: string) => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
-      return;
-    }
-    if (password.length > 10) {
-      try {
-        setLoading(true);
-        await (tKeyInstance.modules.securityQuestions as any).generateNewShareWithSecurityQuestions(password, "whats your password?");
-        uiConsole("Successfully generated new share with password.");
-      } catch (error) {
-        uiConsole("Error", (error as any)?.message.toString(), "error");
-        setLoading(false);
-      }
-    } else {
-      uiConsole("Error", "Password must be >= 11 characters", "error");
-      setLoading(false);
-    }
-  };
-
-  const exportMnemonic = async () => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
-      return;
-    }
+  const exportMnemonicShare = async () => {
     try {
-      const generateShareResult = await tKeyInstance.generateNewShare();
-      const share = await tKeyInstance.outputShareStore(
+      const generateShareResult = await tKey.generateNewShare();
+      const share = await tKey.outputShareStore(
         generateShareResult.newShareIndex,
       ).share.share;
-      const mnemonic = await (tKeyInstance.modules.shareSerialization as ShareSerializationModule).serialize(share, "mnemonic");
+      const mnemonic = await (
+        tKey.modules.shareSerialization as ShareSerializationModule
+      ).serialize(share, 'mnemonic');
       uiConsole(mnemonic);
+      return mnemonic;
     } catch (error) {
       uiConsole(error);
     }
-  }
-
-  const getKeyDetails = async () => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
-      return;
-    }
-
-    setConsoleUI("Getting Key Details");
-    uiConsole(await tKeyInstance.getKeyDetails());
   };
 
-  const resetAccount = async () => {
-    if (!tKeyInstance) {
-      uiConsole("tKeyInstance not initialized yet");
+  const MnemonicToShareHex = async (mnemonic: string) => {
+    if (!tKey) {
+      uiConsole('tKey not initialized yet');
       return;
     }
     try {
-      uiConsole(oAuthShare);
-      await tKeyInstance.storageLayer.setMetadata({
-        privKey: oAuthShare as any,
-        input: { message: "KEY_NOT_FOUND" },
-      });
-      uiConsole("Reset Account Successful.");
-    } catch (e) {
-      uiConsole(e);
+      const share = await (
+        tKey.modules.shareSerialization as ShareSerializationModule
+      ).deserialize(mnemonic, 'mnemonic');
+      setRecoveryShare(share.toString('hex'));
+      return share;
+    } catch (error) {
+      uiConsole(error);
     }
   };
 
-  const getChainId = async () => {
-    setConsoleUI("Getting chain id");
-    const networkDetails = await RPC.getChainId();
-    uiConsole(networkDetails);
+
+  const getUserInfo = async () => {
+    uiConsole(userInfo);
   };
 
   const getAccounts = async () => {
-    setConsoleUI("Getting account");
-    const address = await RPC.getAccounts(privateKey as string);
+    if (!provider) {
+      uiConsole('provider not set');
+      return;
+    }
+    setConsoleUI('Getting account');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
     uiConsole(address);
   };
+
   const getBalance = async () => {
-    setConsoleUI("Fetching balance");
-    const balance = await RPC.getBalance(privateKey as string);
+    if (!provider) {
+      uiConsole('provider not set');
+      return;
+    }
+    setConsoleUI('Fetching balance');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
+
+    // Get user's balance in ether
+    // For ethers v5
+    // const balance = ethers.utils.formatEther(
+    // await ethersProvider.getBalance(address) // Balance is in wei
+    // );
+    const balance = ethers.formatEther(
+      await ethersProvider.getBalance(address), // Balance is in wei
+    );
     uiConsole(balance);
   };
-  const sendTransaction = async () => {
-    setConsoleUI("Sending transaction");
-    const tx = await RPC.sendTransaction(privateKey as string);
-    uiConsole(tx);
-  };
+
   const signMessage = async () => {
-    setConsoleUI("Signing message");
-    const message = await RPC.signMessage(privateKey as string);
-    uiConsole(message);
+    if (!provider) {
+      uiConsole('provider not set');
+      return;
+    }
+    setConsoleUI('Signing message');
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(provider!);
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+    const originalMessage = 'YOUR_MESSAGE';
+
+    // Sign the message
+    const signedMessage = await signer.signMessage(originalMessage);
+    uiConsole(signedMessage);
   };
+
   const logout = async () => {
-    await clearSession({ customScheme: "auth0.com.tkeyrnauth0" });
-    setPrivateKey(null);
-    setOAuthShare(null);
-    setUserInfo('');
+    setProvider(null);
+    setLoggedIn(false);
+    setUserInfo({});
+    uiConsole('logged out');
+  };
+
+  const criticalResetAccount = async (): Promise<void> => {
+    // This is a critical function that should only be used for testing purposes
+    // Resetting your account means clearing all the metadata associated with it from the metadata server
+    // The key details will be deleted from our server and you will not be able to recover your account
+    if (!tKeyInitialised) {
+      throw new Error('tKeyInitialised is initialised yet');
+    }
+    await tKey.storageLayer.setMetadata({
+      privKey: tKey.serviceProvider.postboxKey,
+      input: {message: 'KEY_NOT_FOUND'},
+    });
+    uiConsole('reset');
+    logout();
   };
 
   const uiConsole = (...args: any) => {
@@ -345,110 +326,99 @@ const Home = () => {
     console.log(...args);
   };
 
-  const toggleRecoveryModalVisibility = async () => {
-    setRecoveryModalVisibility(!recoveryModalVisibility);
-  };
-
-  const recoveryModal = (
-    <Dialog isVisible={recoveryModalVisibility} onBackdropPress={toggleRecoveryModalVisibility}>
-      <Dialog.Title title="Enter Recovery Share" />
-      {loading && <ActivityIndicator />}
-      <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
-      <Button
-        title="Submit"
-        onPress={async () => {
-          await recoverPasswordShare(recoveryPassword);
-          toggleRecoveryModalVisibility();
-          setLoading(false);
-        }}
-      />
-      <Input placeholder="Recovery Mnemonic" onChangeText={(value) => setRecoveryMnemonic(value)} />
-      <Button
-        title="Submit"
-        onPress={async () => {
-          await recoverMnemonicShare(recoveryMnemonic);
-          toggleRecoveryModalVisibility();
-          setLoading(false);
-        }}
-      />
-    </Dialog>
-  );
-
-  const togglePasswordShareModalVisibility = async () => {
-    setPasswordShareModalVisibility(!passwordShareModalVisibility);
-  };
-
-  const setPasswordShareModal = (
-    <Dialog isVisible={passwordShareModalVisibility} onBackdropPress={togglePasswordShareModalVisibility}>
-      <Dialog.Title title="Enter Recovery Share" />
-      <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
-      {loading && <ActivityIndicator />}
-      <Button
-        title="Submit"
-        onPress={async () => {
-          await generateNewShareWithPassword(recoveryPassword);
-          togglePasswordShareModalVisibility();
-          setLoading(false);
-        }}
-      />
-    </Dialog>
-  );
-
-  const toggleChangePasswordShareModalVisibility = async () => {
-    setChangePasswordShareModalVisibility(!changePasswordShareModalVisibility);
-  };
-
-  const changePasswordShareModal = (
-    <Dialog isVisible={changePasswordShareModalVisibility} onBackdropPress={toggleChangePasswordShareModalVisibility}>
-      <Dialog.Title title="Enter Recovery Share" />
-      <Input placeholder="Recovery Password" onChangeText={(value) => setRecoveryPassword(value)} />
-      {loading && <ActivityIndicator />}
-      <Button
-        title="Submit"
-        onPress={async () => {
-          await changeSecurityQuestionAndAnswer(recoveryPassword);
-          toggleChangePasswordShareModalVisibility();
-          setLoading(false);
-        }}
-      />
-    </Dialog>
-  );
 
   const loggedInView = (
     <View style={styles.buttonArea}>
-      {setPasswordShareModal}
-      {changePasswordShareModal}
-      <TouchableOpacity onPress={() => uiConsole(userInfo)} ><Text>Get User Info</Text></TouchableOpacity>
-      <TouchableOpacity onPress={getKeyDetails} ><Text>Get Key Details</Text></TouchableOpacity>
-      <TouchableOpacity onPress={getChainId} ><Text>Get Chain ID</Text></TouchableOpacity>
-      <TouchableOpacity onPress={togglePasswordShareModalVisibility} ><Text>Set Password Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={toggleChangePasswordShareModalVisibility} ><Text>Change Password Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={getAccounts} ><Text>Get Accounts</Text></TouchableOpacity>
-      <TouchableOpacity onPress={getBalance} ><Text>Get Balance</Text></TouchableOpacity>
-      <TouchableOpacity onPress={sendTransaction} ><Text>Send Transaction</Text></TouchableOpacity>
-      <TouchableOpacity onPress={signMessage} ><Text>Sign Message</Text></TouchableOpacity>
-      <TouchableOpacity onPress={() => uiConsole(privateKey)} ><Text>Get Private Key</Text></TouchableOpacity>
-      <TouchableOpacity onPress={setDeviceShare} ><Text>Set Device Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={getDeviceShare} ><Text>Get Device Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={deleteDeviceShare} ><Text>Delete Device Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={exportMnemonic} ><Text>Export Mnemonic Share</Text></TouchableOpacity>
-      <TouchableOpacity onPress={resetAccount} ><Text>Reset Account</Text></TouchableOpacity>
-      <TouchableOpacity onPress={logout} ><Text>Log Out</Text></TouchableOpacity>
+      <TouchableOpacity onPress={getUserInfo}>
+        <Text>Get User Info</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={keyDetails}>
+        <Text>Get Key Details</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={exportMnemonicShare}>
+        <Text>Generate Backup (Mnemonic)</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getAccounts}>
+        <Text>Get Accounts</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getBalance}>
+        <Text>Get Balance</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={signMessage}>
+        <Text>Sign Message</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={getDeviceShare}>
+        <Text>Get Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={setDeviceShare}>
+        <Text>Set Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={deleteDeviceShare}>
+        <Text>Delete Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={logout}>
+        <Text>Log Out</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={criticalResetAccount}>
+        <Text>[CRITICAL] Reset Account</Text>
+      </TouchableOpacity>
     </View>
   );
 
   const unloggedInView = (
     <View style={styles.buttonArea}>
-      {recoveryModal}
       <Button title="Login with Web3Auth" onPress={login} />
+      <Button
+        title="Get Device Share"
+        onPress={async () => {
+          await getDeviceShare();
+          setLoading(false);
+        }}
+        disabled={!tKeyInitialised}
+      />
+      <Input
+        value={recoveryShare}
+        placeholder="Recovery Share"
+        onChangeText={value => setRecoveryShare(value)}
+        disabled={!tKeyInitialised}
+        inputContainerStyle={styles.inputField}
+      />
+      <Button
+        title="Input Recovery Share"
+        onPress={async () => {
+          await inputRecoveryShare(recoveryShare);
+          setLoading(false);
+        }}
+        disabled={!tKeyInitialised}
+      />
+      <Button
+        title="Reset Account"
+        onPress={criticalResetAccount}
+        disabled={!tKeyInitialised}
+      />
+      <Input
+        value={mnemonicShare}
+        placeholder="Enter Mnemonic Share"
+        onChangeText={value => setMnemonicShare(value)}
+        disabled={!tKeyInitialised}
+        inputContainerStyle={styles.inputField}
+      />
+      <Button
+        title="Get Recovery Share using Mnemonic"
+        onPress={async () => {
+          await MnemonicToShareHex(mnemonicShare);
+          setLoading(false);
+        }}
+        disabled={!tKeyInitialised}
+      />
       {loading && <ActivityIndicator />}
-      <Button title="Reset Account" onPress={resetAccount} />
     </View>
   );
 
+
   return (
     <View style={styles.container}>
-      {privateKey ? loggedInView : unloggedInView}
+      {loggedIn ? loggedInView : unloggedInView}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
@@ -461,7 +431,7 @@ const Home = () => {
 
 const App = () => {
   return (
-    <Auth0Provider domain={"shahbaz-torus.us.auth0.com"} clientId={"294QRkchfq2YaXUbPri7D6PH7xzHgQMT"}>
+    <Auth0Provider domain={"https://web3auth.au.auth0.com"} clientId={"hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O"}>
       <Home />
     </Auth0Provider>
   );
@@ -470,33 +440,36 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingTop: 50,
     paddingBottom: 30,
   },
   consoleArea: {
     margin: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     flex: 1,
   },
   consoleUI: {
     flex: 1,
-    backgroundColor: "#CCCCCC",
-    color: "#ffffff",
+    backgroundColor: '#CCCCCC',
+    color: '#ffffff',
     padding: 10,
-    width: Dimensions.get("window").width - 60,
+    width: Dimensions.get('window').width - 60,
   },
   consoleText: {
     padding: 10,
   },
   buttonArea: {
     flex: 2,
-    alignItems: "center",
-    justifyContent: "space-around",
+    alignItems: 'center',
+    justifyContent: 'space-around',
     paddingBottom: 30,
+  },
+  inputField: {
+    width: Dimensions.get('window').width - 90,
   },
 });
 

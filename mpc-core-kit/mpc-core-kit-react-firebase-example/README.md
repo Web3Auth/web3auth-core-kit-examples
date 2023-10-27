@@ -1,1 +1,0 @@
-# MPC Core Kit React Firebase Example
