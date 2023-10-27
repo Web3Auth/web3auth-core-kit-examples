@@ -102,7 +102,6 @@ function App() {
     try {
       const auth = getAuth(app);
       const googleProvider = new GoogleAuthProvider();
-      googleProvider.addScope("email");
       const res = await signInWithPopup(auth, googleProvider);
       console.log(res);
       return res;
