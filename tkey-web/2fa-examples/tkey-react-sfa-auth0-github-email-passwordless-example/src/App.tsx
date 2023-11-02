@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import { CustomFactorsModuleType } from "./constants";
 import swal from "sweetalert";
-import { ethereumPrivateKeyProvider, tKey } from "./tkey";
+import { ethereumPrivateKeyProvider, tKey, clientId } from "./tkey";
 import Web3 from "web3";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
 import { WebStorageModule } from "@tkey/web-storage";
@@ -13,10 +13,21 @@ import TorusSdk from "@toruslabs/customauth";
 
 import BN from "bn.js";
 
+
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { signInWithEmailLink, isSignInWithEmailLink, sendSignInLinkToEmail } from "firebase/auth";
 export const wcVerifier = "wallet-connect-test";
 export const BACKEND_URL = "https://wc-admin.web3auth.com";
+
+
+const torusdirectsdk = new TorusSdk({
+  baseUrl: `${window.location.origin}/serviceworker`,
+  enableLogging: true,
+  network: "sapphire_mainnet",
+  web3AuthClientId: clientId,
+} as any);
+
 function App() {
   const [user, setUser] = useState<any>(null);
   const [privateKey, setPrivateKey] = useState<any>();
@@ -27,7 +38,6 @@ function App() {
   const [emailIdToken, setEmailIdToken] = useState<string | null>(null);
 
   const { getIdTokenClaims, loginWithPopup } = useAuth0();
-  const [torusdirectsdk, setTorusdirectsdk] = useState<TorusSdk>();
   const verifier = "w3a-auth0-github";
 
   // Init Service Provider inside the useEffect Method
@@ -39,18 +49,7 @@ function App() {
       } catch (error) {
         console.error(error);
       }
-
-      const torusdirectsdk = new TorusSdk({
-        baseUrl: window.location.origin,
-        // user will be redirect to auth page after login
-        redirectPathName: "auth",
-        enableLogging: true,
-        uxMode: "popup",
-        network: "testnet",
-        web3AuthClientId: "torus-default",
-      } as any);
-      await torusdirectsdk.init({ skipSw: true });
-      setTorusdirectsdk(torusdirectsdk);
+      await torusdirectsdk.init();
     };
     init();
     const ethProvider = async () => {
@@ -66,29 +65,6 @@ function App() {
     };
     ethProvider();
   }, [privateKey]);
-
-  // if signed by email passwordless, then we should login again with the IdToken
-  // derived from auth0
-
-  useEffect(() => {
-    (async () => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        const { sub } = parseToken(idToken!);
-        setUser(sub);
-
-        const OAuthShareKey = await (tKey.serviceProvider as SfaServiceProvider).connect({
-          verifier,
-          verifierId: sub,
-          idToken: idToken!,
-        });
-
-        uiConsole("OAuthShareKey", OAuthShareKey);
-        setOAuthShare(OAuthShareKey);
-
-        initializeNewKey();
-      }
-    })();
-  }, []);
 
   const parseToken = (token: any) => {
     try {
@@ -118,8 +94,9 @@ function App() {
       console.log(idToken);
 
       // get sub value from firebase id token
-      const { sub } = parseToken(idToken);
-      setUser(sub);
+      const parsedToken = parseToken(idToken!);
+      const {sub} = parsedToken;
+      setUser(parsedToken);
 
       const OAuthShareKey = await (tKey.serviceProvider as SfaServiceProvider).connect({
         verifier,
@@ -320,7 +297,7 @@ function App() {
   };
   const setupEmailPasswordless = async () => {
     try {
-      if (!torusdirectsdk) {
+      if (!torusdirectsdk.isInitialized) {
         uiConsole("torusdirectsdk not initialized yet");
         return;
       }
@@ -330,7 +307,7 @@ function App() {
       // Triggering Login using Service Provider ==> opens the popup
       const loginRes = await torusdirectsdk.triggerLogin({
         typeOfLogin: "jwt",
-        verifier: wcVerifier,
+        verifier: "email-passwordless-web3auth",
         jwtParams: {
           domain: "https://wc-auth.web3auth.com",
           verifierIdField: "name",
@@ -368,7 +345,7 @@ function App() {
       // Triggering Login using customAuth
       const loginRes = await torusdirectsdk.triggerLogin({
         typeOfLogin: "jwt",
-        verifier: wcVerifier,
+        verifier: "email-passwordless-web3auth",
         jwtParams: {
           domain: "https://wc-auth.web3auth.com",
           verifierIdField: "name",

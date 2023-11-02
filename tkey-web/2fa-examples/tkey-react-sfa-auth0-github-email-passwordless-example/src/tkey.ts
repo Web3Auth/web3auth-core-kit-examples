@@ -6,7 +6,7 @@ import { ShareTransferModule } from "@tkey/share-transfer";
 import { ShareSerializationModule } from "@tkey/share-serialization";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { WebStorageModule } from "@tkey/web-storage";
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+export const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainId: "0x1",
