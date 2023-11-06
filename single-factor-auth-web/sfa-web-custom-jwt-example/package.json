@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@types/node": "20.5.3",
-    "@types/react": "18.2.21",
+    "@types/react": "18.2.36",
     "@types/react-dom": "18.2.7",
     "@web3auth/base": "^7.0.4",
     "@web3auth/ethereum-provider": "^7.0.4",
