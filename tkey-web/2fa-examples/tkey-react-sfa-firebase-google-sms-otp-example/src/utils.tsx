@@ -32,9 +32,8 @@ export const getEcCrypto = () => {
 };
 
 export const getHashedPrivateKey = (postboxKey: string, clientId: string): BN => {
-    const uid = `${postboxKey}_${clientId}`;
-    let hashUid = keccak256(Buffer.from(uid, "utf8"));
-    hashUid = hashUid.replace("0x", "");
-    return new BN(hashUid, "hex");
-  };
-
+  const uid = `${postboxKey}_${clientId}`;
+  let hashUid = keccak256(Buffer.from(uid, "utf8"));
+  hashUid = hashUid.replace("0x", "");
+  return new BN(hashUid, "hex");
+};

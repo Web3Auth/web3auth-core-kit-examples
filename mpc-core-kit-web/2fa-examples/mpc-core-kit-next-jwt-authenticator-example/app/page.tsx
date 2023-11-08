@@ -21,7 +21,6 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // Import Single Factor Auth SDK for no redirect flow
 import { useEffect, useState } from "react";
-import { CustomFactorsModuleType } from "./constants";
 import swal from "sweetalert";
 import Web3 from "web3";
 import Loading from "./Loading";
@@ -34,31 +33,6 @@ import AuthenticatorService from "./authenticatorService";
 
 const verifier = "w3a-jwt-for-sfa-web";
 
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
-
-const chainConfig = {
-  chainId: "0x1",
-  displayName: "Ethereum Mainnet",
-  chainNamespace: CHAIN_NAMESPACES.EIP155,
-  tickerName: "Ethereum",
-  ticker: "ETH",
-  decimals: 18,
-  rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://etherscan.io",
-};
-
-const privateKeyProvider = new EthereumPrivateKeyProvider({
-  config: { chainConfig },
-});
-
-const selectedNetwork = WEB3AUTH_NETWORK.MAINNET;
-
-const coreKitInstance = new Web3AuthMPCCoreKit({
-  web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-  web3AuthNetwork: selectedNetwork,
-  uxMode: "redirect",
-});
-
 function App() {
   const [backupFactorKey, setBackupFactorKey] = useState<string | undefined>("");
   // const [loginResponse, setLoginResponse] = useState<any>(null);
@@ -67,11 +41,7 @@ function App() {
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
   const [web3, setWeb3] = useState<any>(null);
   const [seedPhrase, setSeedPhrase] = useState<string>("");
-  const [answer, setAnswer] = useState<string | undefined>(undefined);
-  const [newAnswer, setNewAnswer] = useState<string | undefined>(undefined);
   const [question, setQuestion] = useState<string | undefined>("");
-  const [questionInput, setQuestionInput] = useState<string>("");
-  const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [autoRecover, setAutoRecover] = useState(false);
   const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
@@ -482,11 +452,6 @@ function App() {
     return chainId;
   };
 
-  // const deleteLocalStore = () => {
-  //   localStorage.removeItem("corekit_store");
-  //   uiConsole("local tkey share deleted, pls logout.");
-  // };
-
   const getAccounts = async () => {
     if (!web3) {
       console.log("web3 not initialized yet");
@@ -618,76 +583,6 @@ function App() {
     setIsLoading(false);
   };
 
-  const createSecurityQuestion = async (question: string, answer: string) => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      if (!question || !answer) {
-        throw new Error("question or answer is not set");
-      }
-      await securityQuestion.setSecurityQuestion({ mpcCoreKit: coreKitInstance, question, answer, shareType: TssShareType.RECOVERY });
-      setNewQuestion(undefined);
-      const result = await securityQuestion.getQuestion(coreKitInstance);
-      if (result) {
-        setQuestion(question);
-      }
-      uiConsole("Security Question created");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const changeSecurityQuestion = async (newQuestion: string, newAnswer: string, answer: string) => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      if (!newQuestion || !newAnswer || !answer) {
-        throw new Error("newQuestion, newAnswer or answer is not set");
-      }
-      await securityQuestion.changeSecurityQuestion({ mpcCoreKit: coreKitInstance, newQuestion, newAnswer, answer });
-      const result = await securityQuestion.getQuestion(coreKitInstance);
-      if (result) {
-        setQuestion(question);
-      }
-      uiConsole("Security Question changed");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const deleteSecurityQuestion = async () => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      await securityQuestion.deleteSecurityQuestion(coreKitInstance);
-      setQuestion(undefined);
-      uiConsole("Security Question deleted");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
   const getFactorPublicKeys = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
@@ -777,38 +672,6 @@ function App() {
             </div>
           </div>
 
-          {/* <h4>Security Question</h4>
-
-          <div>{question}</div>
-          <div className="flex-container">
-            <div className={question ? " disabledDiv" : ""}>
-              <p>Set Security Question</p>
-              <input value={questionInput} placeholder="question" onChange={(e) => setQuestionInput(e.target.value)}></input>
-              <input value={answer} placeholder="answer" onChange={(e) => setAnswer(e.target.value)}></input>
-              <button onClick={() => createSecurityQuestion(questionInput, answer!)} className="card">
-                Create Security Question
-              </button>
-            </div>
-            <div className={!question ? " disabledDiv" : ""}>
-              <p>Change Security Question</p>
-
-              <div>
-                <input value={newQuestion} placeholder="newQuestion" onChange={(e) => setNewQuestion(e.target.value)}></input>
-                <input value={newAnswer} placeholder="newAnswer" onChange={(e) => setNewAnswer(e.target.value)}></input>
-                <input value={answer} placeholder="oldAnswer" onChange={(e) => setAnswer(e.target.value)}></input>
-              </div>
-              <button onClick={() => changeSecurityQuestion(newQuestion!, newAnswer!, answer!)} className="card">
-                Change Security Question
-              </button>
-            </div>
-          </div>
-          <div className="flex-container">
-            <div className={!question ? "disabledDiv" : ""}>
-              <button onClick={() => deleteSecurityQuestion()} className="card">
-                Delete Security Question
-              </button>
-            </div>
-          </div> */}
           <h2 className="subtitle">Blockchain Calls</h2>
           <div className="flex-container">
             <button onClick={getChainID} className="card">
@@ -859,14 +722,6 @@ function App() {
         <button onClick={recoverViaAuthenticatorApp} className="card">
           Recover using Authenticator App
         </button>
-        <div className={!question ? "" : ""}>
-          {/* <label>Recover Using Security Answer:</label>
-          <label>{question}</label> */}
-          {/* <input value={answer} onChange={(e) => setAnswer(e.target.value)}></input> */}
-          <button onClick={() => recoverSecurityQuestionFactor()} className="card">
-            Recover Using Security Answer
-          </button>
-        </div>
 
         <div className="centerFlex">
           <p>Backup/ Device factor key:</p>

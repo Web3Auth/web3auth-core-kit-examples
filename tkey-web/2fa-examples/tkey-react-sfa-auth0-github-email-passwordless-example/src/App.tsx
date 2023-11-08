@@ -1,25 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import { CustomFactorsModuleType } from "./constants";
 import swal from "sweetalert";
 import { ethereumPrivateKeyProvider, tKey, clientId } from "./tkey";
 import Web3 from "web3";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
 import { WebStorageModule } from "@tkey/web-storage";
-import { auth } from "./FireBaseConfig";
-import { TorusServiceProvider } from "@tkey/service-provider-torus";
+
 import TorusSdk from "@toruslabs/customauth";
 
-import BN from "bn.js";
-
-
-
 import { useAuth0 } from "@auth0/auth0-react";
-import { signInWithEmailLink, isSignInWithEmailLink, sendSignInLinkToEmail } from "firebase/auth";
 export const wcVerifier = "wallet-connect-test";
 export const BACKEND_URL = "https://wc-admin.web3auth.com";
-
 
 const torusdirectsdk = new TorusSdk({
   baseUrl: `${window.location.origin}/serviceworker`,
@@ -35,7 +27,6 @@ function App() {
   const [provider, setProvider] = useState<any>();
   const [idToken, setIdToken] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("hello@web3auth.io");
-  const [emailIdToken, setEmailIdToken] = useState<string | null>(null);
 
   const { getIdTokenClaims, loginWithPopup } = useAuth0();
   const verifier = "w3a-auth0-github";
@@ -95,7 +86,7 @@ function App() {
 
       // get sub value from firebase id token
       const parsedToken = parseToken(idToken!);
-      const {sub} = parsedToken;
+      const { sub } = parsedToken;
       setUser(parsedToken);
 
       const OAuthShareKey = await (tKey.serviceProvider as SfaServiceProvider).connect({
@@ -227,16 +218,6 @@ function App() {
     }
   };
 
-  // const deleteDeviceShare = async () => {
-  // 	try {
-  // 	  const metadata = await tKey.getMetadata();
-  // 	  await EncryptedStorage.removeItem(metadata.pubKey.x.toString('hex'));
-  // 	  uiConsole('Device Share Deleted');
-  // 	} catch (error) {
-  // 	  uiConsole('Error', (error as any)?.message.toString(), 'error');
-  // 	}
-  // };
-
   const backupShareRecover = async () => {
     if (!tKey) {
       uiConsole("tKey not initialized yet");
@@ -261,50 +242,15 @@ function App() {
     });
   };
 
-  const recoverShare = async () => {
-    if (!tKey) {
-      uiConsole("tKey not initialized yet");
-      return;
-    }
-    // swal is just a pretty dialog box
-    swal("Enter password (>10 characters)", {
-      content: "input" as any,
-    }).then(async (value) => {
-      if (value.length > 10) {
-        try {
-          await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(value); // 2/2 flow
-          const { requiredShares } = tKey.getKeyDetails();
-          if (requiredShares <= 0) {
-            const reconstructedKey = await tKey.reconstructKey();
-            setPrivateKey(reconstructedKey?.privKey.toString("hex"));
-            uiConsole("Private Key: " + reconstructedKey.privKey.toString("hex"));
-          }
-          const newShare = await tKey.generateNewShare();
-          const shareStore = await tKey.outputShareStore(newShare.newShareIndex);
-          await (tKey.modules.webStorage as any).storeDeviceShare(shareStore);
-          swal("Success", "Successfully logged you in with the recovery password.", "success");
-          uiConsole("Successfully logged you in with the recovery password.");
-        } catch (error) {
-          swal("Error", (error as any)?.message.toString(), "error");
-          uiConsole(error);
-          logout();
-        }
-      } else {
-        swal("Error", "Password must be >= 11 characters", "error");
-        uiConsole("Looks like you entered an invalid password. Please try again via logging in or reset your account.");
-      }
-    });
-  };
   const setupEmailPasswordless = async () => {
     try {
       if (!torusdirectsdk.isInitialized) {
         uiConsole("torusdirectsdk not initialized yet");
         return;
       }
-      // 2. after login, how to setup 2fa? --> use sfa, get the postboxkey and use it as a second share (security question module to encrypt)
-      // 3. same for passkey example --> currently not working at localhost:3000
 
       // Triggering Login using Service Provider ==> opens the popup
+      console.log("starting login");
       const loginRes = await torusdirectsdk.triggerLogin({
         typeOfLogin: "jwt",
         verifier: "email-passwordless-web3auth",
@@ -339,8 +285,6 @@ function App() {
         uiConsole("torusdirectsdk not initialized yet");
         return;
       }
-      // 2. after login, how to setup 2fa? --> use sfa, get the postboxkey and use it as a second share (security question module to encrypt)
-      // 3. same for passkey example --> currently not working at localhost:3000
 
       // Triggering Login using customAuth
       const loginRes = await torusdirectsdk.triggerLogin({
@@ -371,14 +315,6 @@ function App() {
       uiConsole(error);
     }
   };
-
-  // const registerEmail = async () => {
-  //   const OauthShareKey = await signInWithEmailPasswordless();
-  //   if (!OauthShareKey) {
-  //     return;
-  //   }
-  //   await tKey.inputShare(OauthShareKey);
-  // };
 
   const keyDetails = async () => {
     if (!tKey) {

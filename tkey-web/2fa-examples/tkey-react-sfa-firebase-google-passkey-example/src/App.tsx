@@ -1,18 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
-import React, { FormEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
 import "./App.css";
-import { CustomFactorsModuleType } from "./constants";
 import swal from "sweetalert";
 import { ethereumPrivateKeyProvider, tKey } from "./tkey";
 import Web3 from "web3";
 import SfaServiceProvider from "@tkey/service-provider-sfa";
 import { WebStorageModule } from "@tkey/web-storage";
-import SmsPasswordless from "./smsService";
 import { get, post } from "@toruslabs/http-helpers";
 import TorusSdk from "@toruslabs/customauth";
-import BN from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
@@ -28,6 +24,7 @@ const firebaseConfig = {
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
 export const BACKEND_URL = "https://wc-admin.web3auth.com";
+export const wcVerifier = "wallet-connect-test";
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -609,6 +606,9 @@ function App() {
 
   const recoverWithPassKey = async () => {
     try {
+      if (!torusdirectsdk) {
+        throw new Error("torusdirectsdk not initialized yet");
+      }
       const url = new URL(`${BACKEND_URL}/api/v2/webauthn-generate-authentication-options`);
       url.searchParams.append("email", email);
       const resp = (await get(url.href)) as any;
@@ -633,9 +633,9 @@ function App() {
           clientId: "QQRQNGxJ80AZ5odiIjt1qqfryPOeDcb1",
         });
         console.log("loginRes", loginRes);
-  
+
         const postboxkey = loginRes.oAuthKeyData.privKey;
-  
+
         await (tKey.modules.securityQuestions as any).inputShareFromSecurityQuestions(postboxkey); // 2/2 flow
         const { requiredShares } = tKey.getKeyDetails();
         if (requiredShares <= 0) {
@@ -643,7 +643,7 @@ function App() {
           setPrivateKey(reconstructedKey?.privKey.toString("hex"));
           uiConsole("Private Key: " + reconstructedKey.privKey.toString("hex"));
         }
-  
+
         uiConsole("recover with email passwordless complete");
       } else {
         throw new Error("Login failed");

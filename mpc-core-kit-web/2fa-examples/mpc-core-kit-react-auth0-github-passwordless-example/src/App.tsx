@@ -19,7 +19,6 @@ import {
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
 import TorusSdk from "@toruslabs/customauth";
-import { get, post } from "@toruslabs/http-helpers";
 import Loading from "./Loading";
 import type { provider } from "web3-core";
 import BN from "bn.js";
@@ -40,11 +39,8 @@ function App() {
   const [coreKitInstance, setCoreKitInstance] = useState<Web3AuthMPCCoreKit | null>(null);
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
   const [backupFactorKey, setBackupFactorKey] = useState<string | undefined>("");
-  const [user, setUser] = useState<any>(null);
-  const [privateKey, setPrivateKey] = useState<any>();
-  const [oAuthShare, setOAuthShare] = useState<any>();
+
   const [provider, setProvider] = useState<any>();
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("hello@web3auth.io");
   const [isLoading, setIsLoading] = useState(false);
   const [autoRecover, setAutoRecover] = useState(false);
@@ -52,7 +48,6 @@ function App() {
   const [web3, setWeb3] = useState<any>(null);
   const [question, setQuestion] = useState<string | undefined>("");
   const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
-  const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
 
   const { getIdTokenClaims, loginWithPopup } = useAuth0();
   const verifier = "w3a-auth0-github";
@@ -335,11 +330,6 @@ function App() {
     return chainId;
   };
 
-  // const deleteLocalStore = () => {
-  //   localStorage.removeItem("corekit_store");
-  //   uiConsole("local tkey share deleted, pls logout.");
-  // };
-
   const getAccounts = async () => {
     if (!web3) {
       console.log("web3 not initialized yet");
@@ -471,76 +461,6 @@ function App() {
     setIsLoading(false);
   };
 
-  const createSecurityQuestion = async (question: string, answer: string) => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      if (!question || !answer) {
-        throw new Error("question or answer is not set");
-      }
-      await securityQuestion.setSecurityQuestion({ mpcCoreKit: coreKitInstance, question, answer, shareType: TssShareType.RECOVERY });
-      setNewQuestion(undefined);
-      const result = await securityQuestion.getQuestion(coreKitInstance);
-      if (result) {
-        setQuestion(question);
-      }
-      uiConsole("Security Question created");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const changeSecurityQuestion = async (newQuestion: string, newAnswer: string, answer: string) => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      if (!newQuestion || !newAnswer || !answer) {
-        throw new Error("newQuestion, newAnswer or answer is not set");
-      }
-      await securityQuestion.changeSecurityQuestion({ mpcCoreKit: coreKitInstance, newQuestion, newAnswer, answer });
-      const result = await securityQuestion.getQuestion(coreKitInstance);
-      if (result) {
-        setQuestion(question);
-      }
-      uiConsole("Security Question changed");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
-  const deleteSecurityQuestion = async () => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    setIsLoading(true);
-    try {
-      await securityQuestion.deleteSecurityQuestion(coreKitInstance);
-      setQuestion(undefined);
-      uiConsole("Security Question deleted");
-    } catch (e) {
-      if ((e as any).message) {
-        uiConsole((e as any).message);
-      } else {
-        uiConsole(e);
-      }
-    }
-    setIsLoading(false);
-  };
-
   const getFactorPublicKeys = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
@@ -662,17 +582,9 @@ function App() {
               Get User Info
             </button>
 
-            {/* <button onClick={getLoginResponse} className="card">
-          See Login Response
-        </button> */}
-
             <button onClick={keyDetails} className="card">
               Key Details
             </button>
-
-            {/* <button onClick={deleteLocalStore} className="card">
-              Delete local store (enables Recovery Flow)
-            </button> */}
 
             <button onClick={criticalResetAccount} className="card">
               Reset Account (CAUTION)
@@ -726,40 +638,6 @@ function App() {
             </button>
           </div>
 
-          {/* to test security question logic, uncomment this block */}
-
-          {/* <h4>Security Question</h4>
-
-          <div>{question}</div>
-          <div className="flex-container">
-            <div className={question ? " disabledDiv" : ""}>
-              <p>Set Security Question</p>
-              <input value={questionInput} placeholder="question" onChange={(e) => setQuestionInput(e.target.value)}></input>
-              <input value={answer} placeholder="answer" onChange={(e) => setAnswer(e.target.value)}></input>
-              <button onClick={() => createSecurityQuestion(questionInput, answer!)} className="card">
-                Create Security Question
-              </button>
-            </div>
-            <div className={!question ? " disabledDiv" : ""}>
-              <p>Change Security Question</p>
-
-              <div>
-                <input value={newQuestion} placeholder="newQuestion" onChange={(e) => setNewQuestion(e.target.value)}></input>
-                <input value={newAnswer} placeholder="newAnswer" onChange={(e) => setNewAnswer(e.target.value)}></input>
-                <input value={answer} placeholder="oldAnswer" onChange={(e) => setAnswer(e.target.value)}></input>
-              </div>
-              <button onClick={() => changeSecurityQuestion(newQuestion!, newAnswer!, answer!)} className="card">
-                Change Security Question
-              </button>
-            </div>
-          </div>
-          <div className="flex-container">
-            <div className={!question ? "disabledDiv" : ""}>
-              <button onClick={() => deleteSecurityQuestion()} className="card">
-                Delete Security Question
-              </button>
-            </div>
-          </div> */}
           <h2 className="subtitle">Blockchain Calls</h2>
           <div className="flex-container">
             <button onClick={getChainID} className="card">

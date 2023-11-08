@@ -1,4 +1,4 @@
 export const CustomFactorsModuleType = {
-    MOBILE_SMS: 'Other',
-    AUTHENTICATOR: 'Other',
+  MOBILE_SMS: "Other",
+  AUTHENTICATOR: "Other",
 };

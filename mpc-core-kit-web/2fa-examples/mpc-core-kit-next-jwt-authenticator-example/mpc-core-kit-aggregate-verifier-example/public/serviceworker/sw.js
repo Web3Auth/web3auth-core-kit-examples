@@ -1,23 +1,23 @@
 /* eslint-disable */
 function getScope() {
-	return self.registration.scope;
+  return self.registration.scope;
 }
 
-self.addEventListener('message', function (event) {
-	if (event.data && event.data.type === 'SKIP_WAITING') {
-		self.skipWaiting();
-	}
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
-self.addEventListener('fetch', function (event) {
-	try {
-		const url = new URL(event.request.url);
-		if (url.pathname.includes('redirect') && url.href.includes(getScope())) {
-			event.respondWith(
-				new Response(
-					new Blob(
-						[
-							`
+self.addEventListener("fetch", function (event) {
+  try {
+    const url = new URL(event.request.url);
+    if (url.pathname.includes("redirect") && url.href.includes(getScope())) {
+      event.respondWith(
+        new Response(
+          new Blob(
+            [
+              `
                 <!DOCTYPE html>
                 <html lang="en">
                   <head>
@@ -308,16 +308,16 @@ self.addEventListener('fetch', function (event) {
                   </body>
                 </html>
                                         
-                ${''}
+                ${""}
                   `,
-						],
-						{ type: 'text/html' },
-					),
-				),
-			);
-		}
-	} catch (error) {
-		console.log('Hello');
-		console.error(error);
-	}
+            ],
+            { type: "text/html" }
+          )
+        )
+      );
+    }
+  } catch (error) {
+    console.log("Hello");
+    console.error(error);
+  }
 });

@@ -71,7 +71,6 @@ function App() {
 
   const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
 
-
   useEffect(() => {
     const init = async () => {
       const coreKitInstance = new Web3AuthMPCCoreKit({
@@ -139,7 +138,7 @@ function App() {
       const loginRes = await signInWithGoogle();
       const idToken = await loginRes.user.getIdToken(true);
       const parsedToken = parseToken(idToken);
-	  console.log("token",parsedToken);
+      console.log("token", parsedToken);
 
       const idTokenLoginParams = {
         verifier: "w3a-firebase-demo",
@@ -157,14 +156,16 @@ function App() {
         uiConsole(e);
       }
 
-	  if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"); 
-      } 
+      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        uiConsole(
+          "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+        );
+      }
 
-	  setCoreKitStatus(coreKitInstance.status);
+      setCoreKitStatus(coreKitInstance.status);
 
       if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-	  try {
+      try {
         const question = await securityQuestion.getQuestion(coreKitInstance);
         console.log(question);
         if (question) {
@@ -378,7 +379,6 @@ function App() {
       await SmsPasswordless.addSmsRecovery(address, verificationCode, newBackUpFactorKey);
 
       // setup the sms recovery factor key and share in tkey.
-      // for sms otp, we have set up a custom share/ factor with module type as "mobile_sms" defined in CustomFactorsModuleType.MOBILE_SMS in this example.
       await coreKitInstance.createFactor({
         factorKey: newBackUpFactorKey,
         shareDescription: FactorKeyTypeShareDescription.Other,
@@ -994,8 +994,6 @@ function App() {
         <button onClick={() => login()} className="card">
           Login
         </button>
-
-
       </div>
       <div>
         <input type="checkbox" checked={autoRecover} onChange={(e) => setAutoRecover(e.target.checked)}></input> <span>Continue After Recovery</span>
@@ -1049,7 +1047,7 @@ function App() {
       <div className="container">
         <h1 className="title">
           <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
-            Web3Auth MPC Core Kit FireBase + SMS OTP 
+            Web3Auth MPC Core Kit FireBase + SMS OTP
           </a>{" "}
           & ReactJS Ethereum Example
         </h1>

@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, AggregateVerifierLoginParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey } from "@web3auth/mpc-core-kit";
+import {
+  Web3AuthMPCCoreKit,
+  WEB3AUTH_NETWORK,
+  Point,
+  AggregateVerifierLoginParams,
+  TssShareType,
+  keyToMnemonic,
+  getWebBrowserFactor,
+  COREKIT_STATUS,
+  TssSecurityQuestion,
+  generateFactorKey,
+} from "@web3auth/mpc-core-kit";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 
@@ -17,18 +28,16 @@ const uiConsole = (...args: any[]): void => {
 
 const selectedNetwork = WEB3AUTH_NETWORK.MAINNET;
 
-const coreKitInstance = new Web3AuthMPCCoreKit(
-  {
-    web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
-    web3AuthNetwork: selectedNetwork,
-    uxMode: 'popup'
-  }
-);
+const coreKitInstance = new Web3AuthMPCCoreKit({
+  web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+  web3AuthNetwork: selectedNetwork,
+  uxMode: "popup",
+});
 
 function App() {
   const [backupFactorKey, setBackupFactorKey] = useState<string | undefined>(undefined);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
-  const [web3, setWeb3] = useState<any>(undefined)
+  const [web3, setWeb3] = useState<any>(undefined);
   const [exportTssShareType, setExportTssShareType] = useState<TssShareType>(TssShareType.DEVICE);
   const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
@@ -48,7 +57,6 @@ function App() {
       }
 
       setCoreKitStatus(coreKitInstance.status);
-
     };
     init();
   }, []);
@@ -58,25 +66,25 @@ function App() {
       const web3 = new Web3(provider as provider);
       setWeb3(web3);
     }
-  }, [provider])
-  
+  }, [provider]);
+
   const keyDetails = async () => {
     if (!coreKitInstance) {
-      throw new Error('coreKitInstance not found');
+      throw new Error("coreKitInstance not found");
     }
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
   const listFactors = async () => {
     if (!coreKitInstance) {
-      throw new Error('coreKitInstance not found');
+      throw new Error("coreKitInstance not found");
     }
     const factorPubs = coreKitInstance.tKey.metadata.factorPubs;
     if (!factorPubs) {
-      throw new Error('factorPubs not found');
+      throw new Error("factorPubs not found");
     }
     const pubsHex = factorPubs[coreKitInstance.tKey.tssTag].map((pub: any) => {
-      return Point.fromTkeyPoint(pub).toBufferSEC1(true).toString('hex');
+      return Point.fromTkeyPoint(pub).toBufferSEC1(true).toString("hex");
     });
     uiConsole(pubsHex);
   };
@@ -84,7 +92,7 @@ function App() {
   const login = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
       const verifierConfig = {
         aggregateVerifierIdentifier: "aggregate-sapphire",
@@ -108,7 +116,9 @@ function App() {
       }
 
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]");
+        uiConsole(
+          "required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]"
+        );
       }
 
       if (coreKitInstance.provider) {
@@ -116,19 +126,16 @@ function App() {
       }
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
-
-
+  };
 
   const getDeviceShare = async () => {
     const factorKey = await getWebBrowserFactor(coreKitInstance!);
     setBackupFactorKey(factorKey);
     uiConsole("Device share: ", factorKey);
-  }
+  };
 
   const inputBackupFactorKey = async () => {
     if (!coreKitInstance) {
@@ -137,17 +144,19 @@ function App() {
     if (!backupFactorKey) {
       throw new Error("backupFactorKey not found");
     }
-    const factorKey = new BN(backupFactorKey, "hex")
+    const factorKey = new BN(backupFactorKey, "hex");
     await coreKitInstance.inputFactorKey(factorKey);
 
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-      uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+      uiConsole(
+        "required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+      );
     }
 
     if (coreKitInstance.provider) {
       setProvider(coreKitInstance.provider);
     }
-  }
+  };
 
   const recoverSecurityQuestionFactor = async () => {
     if (!coreKitInstance) {
@@ -156,11 +165,11 @@ function App() {
     if (!answer) {
       throw new Error("backupFactorKey not found");
     }
-    
+
     let factorKey = await securityQuestion.recoverFactor(coreKitInstance, answer);
     setBackupFactorKey(factorKey);
     uiConsole("Security Question share: ", factorKey);
-  }
+  };
 
   const logout = async () => {
     if (!coreKitInstance) {
@@ -184,20 +193,20 @@ function App() {
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: exportTssShareType,
-      factorKey: factorKey.private
+      factorKey: factorKey.private,
     });
     uiConsole("Export factor key: ", factorKey);
-  }
+  };
 
   const deleteFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    const pubBuffer = Buffer.from(factorPubToDelete, 'hex');
+    const pubBuffer = Buffer.from(factorPubToDelete, "hex");
     const pub = Point.fromBufferSEC1(pubBuffer);
     await coreKitInstance.deleteFactor(pub.toTkeyPoint());
     uiConsole("factor deleted");
-  }
+  };
 
   const getChainID = async () => {
     if (!web3) {
@@ -276,9 +285,9 @@ function App() {
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
-    uiConsole('reset');
+    uiConsole("reset");
     setProvider(null);
-  }
+  };
 
   const sendTransaction = async () => {
     if (!web3) {
@@ -300,8 +309,8 @@ function App() {
     uiConsole(receipt);
   };
 
-  const createSecurityQuestion = async ( question: string, answer: string ) => {
-    if (!coreKitInstance) { 
+  const createSecurityQuestion = async (question: string, answer: string) => {
+    if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
     await securityQuestion.setSecurityQuestion({ mpcCoreKit: coreKitInstance, question, answer, shareType: TssShareType.RECOVERY });
@@ -310,10 +319,10 @@ function App() {
     if (result) {
       setQuestion(question);
     }
-  }
+  };
 
-  const changeSecurityQuestion = async ( newQuestion: string, newAnswer: string, answer: string) => {
-    if (!coreKitInstance) { 
+  const changeSecurityQuestion = async (newQuestion: string, newAnswer: string, answer: string) => {
+    if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
     await securityQuestion.changeSecurityQuestion({ mpcCoreKit: coreKitInstance, newQuestion, newAnswer, answer });
@@ -321,7 +330,7 @@ function App() {
     if (result) {
       setQuestion(question);
     }
-  }
+  };
 
   const deleteSecurityQuestion = async () => {
     if (!coreKitInstance) {
@@ -329,18 +338,17 @@ function App() {
     }
     await securityQuestion.deleteSecurityQuestion(coreKitInstance);
     setQuestion(undefined);
+  };
 
-  }
-
-  const enableMFA = async () => { 
+  const enableMFA = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
     const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic( factorKey);
+    const factorKeyMnemonic = keyToMnemonic(factorKey);
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
-  }
+  };
 
   const loggedInView = (
     <>
@@ -363,7 +371,6 @@ function App() {
         </button>
       </div>
       <div className="flex-container">
-
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
@@ -375,21 +382,19 @@ function App() {
         <button onClick={logout} className="card">
           Log Out
         </button>
-
       </div>
       <h2 className="subtitle">Recovery/ Key Manipulation</h2>
       <div>
-        <h4 >Enabling MFA</h4>
+        <h4>Enabling MFA</h4>
         <div className="flex-container">
           <button onClick={enableMFA} className="card">
             Enable MFA
           </button>
         </div>
-        <h4 >Manual Factors Manipulation</h4>
+        <h4>Manual Factors Manipulation</h4>
         <div className="flex-container">
-
           <label>Share Type:</label>
-          <select value={exportTssShareType}onChange={(e) => setExportTssShareType(parseInt(e.target.value))}>
+          <select value={exportTssShareType} onChange={(e) => setExportTssShareType(parseInt(e.target.value))}>
             <option value={TssShareType.DEVICE}>Device Share</option>
             <option value={TssShareType.RECOVERY}>Recovery Share</option>
           </select>
@@ -398,25 +403,24 @@ function App() {
           </button>
         </div>
         <div className="flex-container">
-        <label>Factor pub:</label>
+          <label>Factor pub:</label>
           <input value={factorPubToDelete} onChange={(e) => setFactorPubToDelete(e.target.value)}></input>
           <button onClick={deleteFactor} className="card">
             Delete Factor
           </button>
         </div>
         <div className="flex-container">
-        <input value={backupFactorKey} onChange={(e) => setBackupFactorKey(e.target.value)}></input>
+          <input value={backupFactorKey} onChange={(e) => setBackupFactorKey(e.target.value)}></input>
           <button onClick={() => inputBackupFactorKey()} className="card">
             Input Factor Key
           </button>
         </div>
 
-
         <h4>Security Question</h4>
 
-        <div>{ question }</div>
+        <div>{question}</div>
         <div className="flex-container">
-          <div className={ question ? " disabledDiv": ""}>
+          <div className={question ? " disabledDiv" : ""}>
             <label>Set Security Question:</label>
             <input value={question} placeholder="question" onChange={(e) => setNewQuestion(e.target.value)}></input>
             <input value={answer} placeholder="answer" onChange={(e) => setAnswer(e.target.value)}></input>
@@ -425,19 +429,18 @@ function App() {
             </button>
           </div>
 
-          <div className={ !question ? " disabledDiv": ""}>
+          <div className={!question ? " disabledDiv" : ""}>
             <label>Change Security Question:</label>
             <input value={newQuestion} placeholder="newQuestion" onChange={(e) => setNewQuestion(e.target.value)}></input>
-            <input value={newAnswer} placeholder="newAnswer"  onChange={(e) => setNewAnswer(e.target.value)}></input>
+            <input value={newAnswer} placeholder="newAnswer" onChange={(e) => setNewAnswer(e.target.value)}></input>
             <input value={answer} placeholder="oldAnswer" onChange={(e) => setAnswer(e.target.value)}></input>
             <button onClick={() => changeSecurityQuestion(newQuestion!, newAnswer!, answer!)} className="card">
               Change Security Question
             </button>
-              
           </div>
         </div>
         <div className="flex-container">
-        <div className={ !question ? "disabledDiv": ""}>
+          <div className={!question ? "disabledDiv" : ""}>
             <button onClick={() => deleteSecurityQuestion()} className="card">
               Delete Security Question
             </button>
@@ -446,7 +449,6 @@ function App() {
       </div>
       <h2 className="subtitle">Blockchain Calls</h2>
       <div className="flex-container">
-
         <button onClick={getChainID} className="card">
           Get Chain ID
         </button>
@@ -475,8 +477,7 @@ function App() {
       <button onClick={() => login()} className="card">
         Login
       </button>
-      <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv" } >
-
+      <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
         <button onClick={() => getDeviceShare()} className="card">
           Get Device Share
         </button>
@@ -489,10 +490,8 @@ function App() {
           [CRITICAL] Reset Account
         </button>
 
-
-        <div className={ !question ? "disabledDiv" : ""}>
-
-        <label>Recover Using Security Answer:</label>
+        <div className={!question ? "disabledDiv" : ""}>
+          <label>Recover Using Security Answer:</label>
           <label>{question}</label>
           <input value={answer} onChange={(e) => setAnswer(e.target.value)}></input>
           <button onClick={() => recoverSecurityQuestionFactor()} className="card">
@@ -500,7 +499,6 @@ function App() {
           </button>
         </div>
       </div>
-      
     </>
   );
 
@@ -508,8 +506,8 @@ function App() {
     <div className="container">
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
-          Web3Auth MPC Core Kit 
-        </a> {" "}
+          Web3Auth MPC Core Kit
+        </a>{" "}
         Popup Aggregate Flow Example
       </h1>
 
@@ -519,7 +517,11 @@ function App() {
       </div>
 
       <footer className="footer">
-        <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example" target="_blank" rel="noopener noreferrer">
+        <a
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Source code
         </a>
       </footer>

@@ -130,8 +130,6 @@ function App() {
     }
   }, [provider]);
 
-
-
   const keyDetails = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance not found");
@@ -160,7 +158,7 @@ function App() {
       const loginRes = await signInWithGoogle();
       const idToken = await loginRes.user.getIdToken(true);
       const parsedToken = parseToken(idToken);
-	    console.log("token",parsedToken);
+      console.log("token", parsedToken);
 
       const idTokenLoginParams = {
         verifier: "w3a-firebase-demo",
@@ -178,14 +176,16 @@ function App() {
         uiConsole(e);
       }
 
-	  if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"); 
-      } 
+      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        uiConsole(
+          "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+        );
+      }
 
-	  setCoreKitStatus(coreKitInstance.status);
+      setCoreKitStatus(coreKitInstance.status);
 
       if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
-	  try {
+      try {
         const question = await securityQuestion.getQuestion(coreKitInstance);
         console.log(question);
         if (question) {
@@ -352,7 +352,6 @@ function App() {
     uiConsole("submitted");
     if (coreKitInstance.provider) setProvider(coreKitInstance.provider);
   };
-
 
   const getChainID = async () => {
     if (!web3) {
@@ -594,7 +593,7 @@ function App() {
 
       const url = new URL(`${BACKEND_URL}/api/v2/webauthn-generate-authentication-options`);
       url.searchParams.append("email", email);
-      const resp = await get(url.href) as any;
+      const resp = (await get(url.href)) as any;
       const attestationResponse = await startAuthentication(resp);
       const url2 = new URL(`${BACKEND_URL}/api/v2/webauthn-verify-authentication`);
       const resp2 = await post<{ verified: boolean; id_token: string }>(url2.href, { attestationResponse, email });
@@ -607,7 +606,7 @@ function App() {
         const verifier = "w3a-firebase-demo";
         const loginDetails = await torusdirectsdk?.getTorusKey(verifier, sub, { verifier_id: sub }, idToken as string);
 
-        const oauthKey = loginDetails?.oAuthKeyData.privKey
+        const oauthKey = loginDetails?.oAuthKeyData.privKey;
         const backupFactorKey = new BN(oauthKey?.toString()!, "hex");
 
         if (autoRecover) {
@@ -617,7 +616,6 @@ function App() {
           setBackupFactorKey(backupFactorKey.toString("hex"));
           uiConsole("Authenticator App share: ", backupFactorKey.toString("hex"));
         }
-
       } else {
         throw new Error("Login failed");
       }
@@ -628,14 +626,13 @@ function App() {
 
   const triggerPassKeyRegistration = async () => {
     try {
-
       if (!coreKitInstance) {
         throw new Error("initiated to login");
       }
 
       const url = new URL(`${BACKEND_URL}/api/v2/webauthn-generate-registration-options`);
       url.searchParams.append("email", email);
-      const resp = await get(url.href) as any;
+      const resp = (await get(url.href)) as any;
       const attestationResponse = await startRegistration(resp);
       const url2 = new URL(`${BACKEND_URL}/api/v2/webauthn-verify-registration`);
       const resp2 = await post<{ verified: boolean; id_token: string }>(url2.href, { attestationResponse, email });
@@ -649,7 +646,7 @@ function App() {
         const verifier = "w3a-firebase-demo";
         const loginDetails = await torusdirectsdk?.getTorusKey(verifier, sub, { verifier_id: sub }, idToken as string);
 
-        const oauthKey = loginDetails?.oAuthKeyData.privKey
+        const oauthKey = loginDetails?.oAuthKeyData.privKey;
         const newBackUpFactorKey = new BN(oauthKey?.toString()!, "hex");
 
         await coreKitInstance.createFactor({
@@ -661,7 +658,6 @@ function App() {
           },
         });
         uiConsole("authenticator recovery setup complete");
-
       } else {
         throw new Error("Registration failed");
       }
@@ -823,8 +819,6 @@ function App() {
         <button onClick={() => login()} className="card">
           Login
         </button>
-
-
       </div>
       <div>
         <input type="checkbox" checked={autoRecover} onChange={(e) => setAutoRecover(e.target.checked)}></input> <span>Continue After Recovery</span>
@@ -883,7 +877,7 @@ function App() {
       <div className="container">
         <h1 className="title">
           <a target="_blank" href="https://web3auth.io/docs/guides/mpc" rel="noreferrer">
-            Web3Auth MPC Core Kit FireBase + PassKey 
+            Web3Auth MPC Core Kit FireBase + PassKey
           </a>{" "}
           & ReactJS Ethereum Example
         </h1>
