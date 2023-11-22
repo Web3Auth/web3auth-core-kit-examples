@@ -9,7 +9,7 @@ import { SecurityQuestionsModule } from '@tkey/security-questions';
 import swal from 'sweetalert';
 import { TorusServiceProvider } from "@tkey/service-provider-torus";
 import { TorusLoginResponse } from "@toruslabs/customauth";
-import TorusUtils from "@toruslabs/torus.js";
+import TorusUtils, { Share } from "@toruslabs/torus.js";
 
 
 import './App.css';
@@ -51,10 +51,24 @@ function App() {
 				// Init is required for Redirect Flow but skip fetching sw.js and redirect.html )
 				if (window.location.hash.includes("#state") ) {
 					let result = await (tKey.serviceProvider as TorusServiceProvider).customAuthInstance.getRedirectResult();
+					const privKey = (result.result as TorusLoginResponse).finalKeyData.privKey;
 					tKey.serviceProvider.postboxKey =  new BN ( TorusUtils.getPostboxKey(result.result as TorusLoginResponse), "hex");
+					const postboxKey = tKey.serviceProvider.postboxKey;
 					setUserInfo( (result.result as any).userInfo);
+
+					const shareDetail:Share = await tKey.storageLayer.getMetadata({ privKey: postboxKey })
+					console.log(shareDetail);
+
 					// Initialization of tKey
-					await tKey.initialize(); // 1/2 flow
+					if(!!shareDetail.share){
+						await tKey.initialize();
+						// await tKey.inputShareStoreSafe(shareDetail.share);
+					} else {
+						await tKey.initialize({importKey: new BN(privKey as string, "hex"), delete1OutOf1: true}); // 1/2 flow
+					}
+
+					// await tKey.initialize({importKey: new BN(privKey as string, "hex"), delete1OutOf1: true});
+					
 
 					setTKeyInitialised(true);
 

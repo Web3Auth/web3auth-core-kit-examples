@@ -102,14 +102,26 @@ function App() {
     const loginRes = await signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
+    
     const userInfo = parseToken(idToken);
     setUserInfo(userInfo);
     
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: userInfo.email,
+      verifierId: userInfo.sub,
       idToken,
     });
+    const idToken2 = await loginRes.user.getIdToken(true);
+
+    const postboxKey = await web3auth.getPostboxKey({
+      verifier,
+      verifierId: userInfo.sub,
+      idToken: idToken2,
+    });
+    console.log("postboxKey", postboxKey);
+    console.log("priv key from provider", await web3authProvider?.request({
+      method: "eth_private_key"
+    }));
 
     if (web3authProvider) {
       setLoggedIn(true);
@@ -118,7 +130,16 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    uiConsole(userInfo);
+    uiConsole(await web3auth.getUserInfo());
+  };
+
+  const authenticateUser = async () => {
+    if (!web3auth.ready) {
+      uiConsole("web3auth initialised yet");
+      return;
+    }
+    
+    uiConsole(await web3auth.authenticateUser());
   };
 
   const logout = async () => {
@@ -193,6 +214,11 @@ function App() {
         <div>
           <button onClick={getUserInfo} className="card">
             Get User Info
+          </button>
+        </div>
+        <div>
+          <button onClick={authenticateUser} className="card">
+            Authenticate User
           </button>
         </div>
         <div>

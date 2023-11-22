@@ -21,5 +21,6 @@ export const tKey = new ThresholdKey({
     uxMode: "redirect",
     network: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_MAINNET,
   },
+  manualSync: true,
 });
 
