@@ -15,16 +15,77 @@ import {SfaServiceProvider} from '@tkey/service-provider-sfa';
 import {ReactNativeStorageModule} from '@tkey/react-native-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
-import {ethers} from 'ethers';
+import {ethers, keccak256} from 'ethers';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 import {IProvider} from '@web3auth/base';
-
+import 'react-native-url-polyfill/auto';
 import auth from '@react-native-firebase/auth';
-// @ts-ignore
-import {decode as atob} from 'base-64';
-import {Input} from '@rneui/themed';
+import * as TssLibNode from '@toruslabs/tss-lib-rn';
 
+import {Input} from '@rneui/themed';
+import {
+  COREKIT_STATUS,
+  MemoryStorage,
+  TssShareType,
+  WEB3AUTH_NETWORK,
+  Web3AuthMPCCoreKit,
+  parseToken,
+} from '@web3auth/mpc-core-kit';
+import * as jwt from 'jsonwebtoken';
 const verifier = 'w3a-firebase-demo';
+
+const privateKey1 =
+  'MEECAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEJzAlAgEBBCCD7oLrcKae+jVZPGx52Cb/lKhdKxpXjl9eGNa1MlY57A==';
+const jwtPrivateKey = `-----BEGIN PRIVATE KEY-----\n${privateKey1}\n-----END PRIVATE KEY-----`;
+const alg: jwt.Algorithm = 'ES256';
+
+const mockLogin2 = async (email: string) => {
+  const req = new Request(
+    'https://li6lnimoyrwgn2iuqtgdwlrwvq0upwtr.lambda-url.eu-west-1.on.aws/',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        verifier: 'torus-key-test',
+        scope: 'email',
+        extraPayload: {email},
+        alg: 'ES256',
+      }),
+    },
+  );
+
+  const resp = await fetch(req);
+  const bodyJson = (await resp.json()) as {token: string};
+  const idToken = bodyJson.token;
+  const parsedToken = parseToken(idToken);
+  return {idToken, parsedToken};
+};
+
+export const mockLogin = async (email: string) => {
+  const iat = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: 'torus-key-test',
+    aud: 'torus-key-test',
+    name: email,
+    email,
+    scope: 'email',
+    iat,
+    eat: iat + 120,
+  };
+
+  const algo = {
+    expiresIn: 120,
+    algorithm: alg,
+  };
+
+  const token = jwt.sign(payload, jwtPrivateKey, algo);
+  // const idToken = token;
+  // const parsedToken = parseToken(idToken);
+  // return {idToken, parsedToken, testing: 'testing'};
+  return {testing: 'testing', token};
+};
 
 async function signInWithEmailPassword() {
   try {
@@ -53,12 +114,38 @@ export default function App() {
   const [mnemonicShare, setMnemonicShare] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [coreKitInstance, setCoreKitInstance] =
+    useState<Web3AuthMPCCoreKit | null>(null);
+  const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
+    COREKIT_STATUS.NOT_INITIALIZED,
+  );
 
   useEffect(() => {
     const init = async () => {
       // Initialization of Service Provider
       try {
         await (tKey.serviceProvider as any).init(ethereumPrivateKeyProvider);
+        const coreKitInstancelocal = new Web3AuthMPCCoreKit({
+          web3AuthClientId: 'torus-key-test',
+          web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
+          uxMode: 'react-native',
+          storageKey: new MemoryStorage(),
+          tssLib: TssLibNode,
+        });
+        await coreKitInstancelocal.init();
+        setCoreKitInstance(coreKitInstancelocal);
+
+        console.log(coreKitStatus);
+        if (coreKitInstancelocal.provider) {
+          // setProvider(coreKitInstancelocal.provider);
+        }
+        if (coreKitInstancelocal.status === COREKIT_STATUS.REQUIRED_SHARE) {
+          uiConsole(
+            'required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]',
+          );
+        }
+
+        setCoreKitStatus(coreKitInstancelocal.status);
       } catch (error) {
         console.error(error);
       }
@@ -66,18 +153,24 @@ export default function App() {
     init();
   }, []);
 
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace('-', '+').replace('_', '/');
-      return JSON.parse(atob(base64 || ''));
-    } catch (err) {
-      uiConsole(err);
-      return null;
-    }
-  };
+  // const parseToken = (token: any) => {
+  //   try {
+  //     const base64Url = token.split('.')[1];
+  //     const base64 = base64Url.replace('-', '+').replace('_', '/');
+  //     return JSON.parse(atob(base64 || ''));
+  //   } catch (err) {
+  //     uiConsole(err);
+  //     return null;
+  //   }
+  // };
 
   const login = async () => {
+    // uiConsole('Logging in');
+    // let me = new URL('https://www.google.com');
+    // uiConsole(me);
+    // if (me) {
+    //   return;
+    // }
     try {
       setConsoleUI('Logging in');
       setLoading(true);
@@ -95,7 +188,36 @@ export default function App() {
         verifierId,
         idToken,
       });
+      if (!coreKitInstance) {
+        uiConsole('coreKitInstance not initialized yet');
+        return;
+      }
 
+      let mlogin = await mockLogin2('testing0001');
+      uiConsole('mlogin');
+      await coreKitInstance.loginWithJWT({
+        verifier: 'torus-test-health',
+        verifierId: mlogin.parsedToken.email,
+        idToken: mlogin.idToken,
+      });
+
+      setCoreKitStatus(coreKitInstance.status);
+
+      let msg = 'hello world';
+      let msgHash = keccak256(Buffer.from(msg));
+      uiConsole('msgHash', msgHash);
+      let signature = await coreKitInstance.sign(
+        Buffer.from(msgHash.substring(2), 'hex'),
+      );
+      console.log(signature);
+
+      const factor = await coreKitInstance.createFactor({
+        shareType: TssShareType.RECOVERY,
+      });
+      console.log(factor);
+      // if (coreKitInstance.provider) {
+      //   setProvider(coreKitInstance.provider);
+      // }
       await tKey.initialize();
 
       setTKeyInitialised(true);

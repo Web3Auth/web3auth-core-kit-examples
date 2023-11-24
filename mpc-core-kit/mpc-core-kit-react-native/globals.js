@@ -12,3 +12,15 @@ if (!global.process.version) {
 }
 
 process.browser = true;
+
+
+const TextEncodingPolyfill = require('text-encoding');
+// const WebAssembly = require('react-native-webassembly');
+
+// const BigInt = require('big-integer')
+Object.assign(global, {
+  TextEncoder: TextEncodingPolyfill.TextEncoder,
+  TextDecoder: TextEncodingPolyfill.TextDecoder,
+  // WebAssembly: WebAssembly,
+  // BigInt: BigInt,
+});
