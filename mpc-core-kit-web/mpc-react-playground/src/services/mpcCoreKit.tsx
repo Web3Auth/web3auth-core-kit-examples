@@ -445,6 +445,8 @@ export const MPCCoreKitProvider = ({ children }: IMPCCoreKitProps) => {
         console.log("setting wallet provider");
         setWalletProvider(coreKitInstance.provider);
       }
+      uiConsole("recover with sms complete");
+      setCoreKitStatus(coreKitInstance.status);
     } catch (error: unknown) {
       console.error(error);
       if ((error as any).ok === false) {

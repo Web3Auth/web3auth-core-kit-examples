@@ -73,6 +73,10 @@ function Recover() {
             <h1 className="w-11/12 px-4 pt-16 sm:px-6 lg:px-8 text-2xl font-bold text-center sm:text-3xl">
               Welcome to Web3Auth MPC Core Kit Playground
             </h1>
+            <h3>
+              you might have been redirected to this page because you required more shares.
+              <br /> please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]
+            </h3>
             <div className="py-16 w-11/12 ">
               <Tabs tabData={TabData} />
               {(() => {
@@ -154,7 +158,7 @@ function Recover() {
         ) : (
           <div className=" w-full h-full flex flex-1 flex-col bg-gray-50 items-center justify-center overflow-scroll p-4">
             <h1 className="text-2xl font-bold text-center sm:text-3xl">Welcome to Web3Auth MPC Core Kit Playground</h1>
-            <p className="max-w-md mx-auto mt-4 text-center text-gray-500">Please connect to Web3Auth to get started.</p>
+            <p className="max-w-md mx-auto mt-4 text-center text-gray-500">Finished recovering your Account. Enjoy your playground App!</p>
           </div>
         )}
       </div>
