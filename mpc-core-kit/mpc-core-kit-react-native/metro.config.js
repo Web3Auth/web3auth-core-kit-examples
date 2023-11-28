@@ -1,14 +1,16 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
-const {getDefaultConfig} = require('metro-config');
+// const {getDefaultConfig} = require('metro-config');
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
-module.exports = (async () => {
-  const {
-    resolver: {sourceExts, assetExts},
-  } = await getDefaultConfig(__dirname);
+// module.exports = (async () => {
+  //   const {
+    //     resolver: {sourceExts, assetExts},
+  //   } = await getDefaultConfig(__dirname);
 
-  const defaultSourceExts = [...sourceExts, 'svg', 'mjs', 'cjs'];
+  //   const defaultSourceExts = [...sourceExts, 'svg', 'mjs', 'cjs'];
 
-  return {
+  //   return {
+const config =  {
     resolver: {
       extraNodeModules: {
         assert: require.resolve('empty-module'), // assert can be polyfilled here if needed
@@ -22,11 +24,11 @@ module.exports = (async () => {
         stream: require.resolve('readable-stream'),
       },
 
-      assetExts: assetExts.filter(ext => ext !== 'svg'),
+      // assetExts: assetExts.filter(ext => ext !== 'svg'),
 
-      sourceExts: process.env.TEST_REACT_NATIVE
-        ? ['e2e.js'].concat(defaultSourceExts)
-        : defaultSourceExts,
+      // sourceExts: process.env.TEST_REACT_NATIVE
+        //   ? ['e2e.js'].concat(defaultSourceExts)
+        //   : defaultSourceExts,
     },
     transformer: {
       getTransformOptions: async () => ({
@@ -37,4 +39,7 @@ module.exports = (async () => {
       }),
     },
   };
-})();
+
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+// })();

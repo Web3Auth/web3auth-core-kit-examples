@@ -19,7 +19,6 @@ import {ethers, keccak256} from 'ethers';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 import {IProvider} from '@web3auth/base';
 import 'react-native-url-polyfill/auto';
-import auth from '@react-native-firebase/auth';
 import * as TssLibNode from '@toruslabs/tss-lib-rn';
 
 import {Input} from '@rneui/themed';
@@ -32,7 +31,8 @@ import {
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
-const verifier = 'w3a-firebase-demo';
+// const verifier = 'w3a-firebase-demo';
+const verifier = 'torus-test-health';
 
 const privateKey1 =
   'MEECAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEJzAlAgEBBCCD7oLrcKae+jVZPGx52Cb/lKhdKxpXjl9eGNa1MlY57A==';
@@ -87,18 +87,6 @@ export const mockLogin = async (email: string) => {
   return {testing: 'testing', token};
 };
 
-async function signInWithEmailPassword() {
-  try {
-    const res = await auth().signInWithEmailAndPassword(
-      'tkey-react-native-quick-start@firebase.login',
-      'Testing@123',
-    );
-    return res;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: {
     chainConfig,
@@ -135,7 +123,6 @@ export default function App() {
         await coreKitInstancelocal.init();
         setCoreKitInstance(coreKitInstancelocal);
 
-        console.log(coreKitStatus);
         if (coreKitInstancelocal.provider) {
           // setProvider(coreKitInstancelocal.provider);
         }
@@ -146,11 +133,13 @@ export default function App() {
         }
 
         setCoreKitStatus(coreKitInstancelocal.status);
+        console.log(coreKitStatus);
       } catch (error) {
         console.error(error);
       }
     };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // const parseToken = (token: any) => {
@@ -174,14 +163,14 @@ export default function App() {
     try {
       setConsoleUI('Logging in');
       setLoading(true);
-      const loginRes = await signInWithEmailPassword();
+      const loginRes = await mockLogin2('emaileample2');
       uiConsole('Login success', loginRes);
-      const idToken = await loginRes!.user.getIdToken(true);
+      const idToken = await loginRes.idToken;
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifierId = parsedToken.sub;
+      const verifierId = parsedToken.email;
 
       await (tKey.serviceProvider as SfaServiceProvider).connect({
         verifier,

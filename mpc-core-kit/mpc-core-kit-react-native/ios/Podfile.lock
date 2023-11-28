@@ -9,43 +9,43 @@ PODS:
     - React-Core (= 0.72.0)
     - React-jsi (= 0.72.0)
     - ReactCommon/turbomodule/core (= 0.72.0)
-  - Firebase/Auth (10.15.0):
+  - Firebase/Auth (10.18.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 10.15.0)
-  - Firebase/CoreOnly (10.15.0):
-    - FirebaseCore (= 10.15.0)
-  - FirebaseAppCheckInterop (10.16.0)
-  - FirebaseAuth (10.15.0):
-    - FirebaseAppCheckInterop (~> 10.0)
+    - FirebaseAuth (~> 10.18.0)
+  - Firebase/CoreOnly (10.18.0):
+    - FirebaseCore (= 10.18.0)
+  - FirebaseAppCheckInterop (10.18.0)
+  - FirebaseAuth (10.18.0):
+    - FirebaseAppCheckInterop (~> 10.17)
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
     - GoogleUtilities/Environment (~> 7.8)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseCore (10.15.0):
+  - FirebaseCore (10.18.0):
     - FirebaseCoreInternal (~> 10.0)
-    - GoogleUtilities/Environment (~> 7.8)
-    - GoogleUtilities/Logger (~> 7.8)
-  - FirebaseCoreInternal (10.16.0):
+    - GoogleUtilities/Environment (~> 7.12)
+    - GoogleUtilities/Logger (~> 7.12)
+  - FirebaseCoreInternal (10.18.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - fmt (6.2.1)
   - glog (0.3.5)
-  - GoogleUtilities/AppDelegateSwizzler (7.11.5):
+  - GoogleUtilities/AppDelegateSwizzler (7.12.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.11.5):
+  - GoogleUtilities/Environment (7.12.0):
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.11.5):
+  - GoogleUtilities/Logger (7.12.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/Network (7.11.5):
+  - GoogleUtilities/Network (7.12.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.11.5)"
-  - GoogleUtilities/Reachability (7.11.5):
+  - "GoogleUtilities/NSData+zlib (7.12.0)"
+  - GoogleUtilities/Reachability (7.12.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (3.1.1)
+  - GTMSessionFetcher/Core (3.2.0)
   - PromisesObjC (2.3.1)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -321,13 +321,6 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.9.0):
     - React-Core
-  - react-native-webassembly (0.3.3):
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Codegen
-    - React-Core
-    - ReactCommon/turbomodule/core
   - React-NativeModulesApple (0.72.0):
     - React-callinvoker
     - React-Core
@@ -434,11 +427,11 @@ PODS:
     - React-logger (= 0.72.0)
     - React-perflogger (= 0.72.0)
   - RecaptchaInterop (100.0.0)
-  - RNFBApp (18.5.0):
-    - Firebase/CoreOnly (= 10.15.0)
+  - RNFBApp (18.6.2):
+    - Firebase/CoreOnly (= 10.18.0)
     - React-Core
-  - RNFBAuth (18.5.0):
-    - Firebase/Auth (= 10.15.0)
+  - RNFBAuth (18.6.2):
+    - Firebase/Auth (= 10.18.0)
     - React-Core
     - RNFBApp
   - SocketRocket (0.6.0)
@@ -468,7 +461,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-encrypted-storage (from `../node_modules/react-native-encrypted-storage`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
-  - react-native-webassembly (from `../node_modules/react-native-webassembly`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -549,8 +541,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-encrypted-storage"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
-  react-native-webassembly:
-    :path: "../node_modules/react-native-webassembly"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -597,15 +587,15 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: bb17efca94c43508cbe54fb0a35e36df30da5213
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
-  Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
-  FirebaseAppCheckInterop: 82358cff9f33452dd44259e88eea5e562500b1cb
-  FirebaseAuth: a55ec5f7f8a5b1c2dd750235c1bb419bfb642445
-  FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
-  FirebaseCoreInternal: 26233f705cc4531236818a07ac84d20c333e505a
+  Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
+  FirebaseAppCheckInterop: 3cd914842ba46f4304050874cd284de82f154ffd
+  FirebaseAuth: 12314b438fa76048540c8fb86d6cfc9e08595176
+  FirebaseCore: 2322423314d92f946219c8791674d2f3345b598f
+  FirebaseCoreInternal: 8eb002e564b533bdcf1ba011f33f2b5c10e2ed4a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
-  GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
+  GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
+  GTMSessionFetcher: 41b9ef0b4c08a6db4b7eb51a21ae5183ec99a2c8
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 656ef0536dd60a9740961ade6a64ba0cb0572d2b
@@ -624,7 +614,6 @@ SPEC CHECKSUMS:
   React-logger: 454ffb01980778a43b0153ee98721d0275b56616
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
-  react-native-webassembly: bdd67f75a6145cbfdb3ab8de4ee0381f89e6b140
   React-NativeModulesApple: 45718ff6441fbed2bde7711f2577b6542a3723eb
   React-perflogger: 684a11499a0589cc42135d6d5cc04d0e4e0e261a
   React-RCTActionSheet: 00b0a4c382a13b834124fa3f541a7d8d1d56efb9
@@ -643,11 +632,11 @@ SPEC CHECKSUMS:
   React-utils: d2789c2e435e6e280b96bb43e53e910fe66ec5ff
   ReactCommon: 015efe717f75f44f076984fcde4ed6ff1e26f7b5
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNFBApp: 082df9f8ffba99f23f7aee3ecb64df703e7e1adb
-  RNFBAuth: b055663339aef8ce9d63cd5d03e2ea5360a3aca2
+  RNFBApp: 09fd96441b0f556a1ef50ee70fa72160ae71ecb9
+  RNFBAuth: acaa6d305555c99497bb10ab8199a506c4d2481c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 
 PODFILE CHECKSUM: b27ef60904182e3b1a0dff3b6ee8224a27a19a3b
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.3
