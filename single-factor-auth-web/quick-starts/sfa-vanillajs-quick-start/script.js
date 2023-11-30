@@ -39,7 +39,7 @@ let web3auth = null;
     tickerName: "Ethereum",
   };
 
-  console.log(window.SingleFactorAuth.Web3Auth);
+  uiConsole(window.SingleFactorAuth.Web3Auth);
   web3auth = new window.SingleFactorAuth.Web3Auth({
     clientId,
     web3AuthNetwork: "sapphire_mainnet", // Get your Network from Web3Auth Dashboard
@@ -65,30 +65,32 @@ let web3auth = null;
 
 loginButton.addEventListener("click", async function() {
   email = 'custom+jwt@firebase.login';
-  console.log(email);
   password = 'Testing@123';
-  console.log(password);
   try{
+    uiConsole("Signing in with email and password in firebase");
     response = await signInWithEmailAndPassword(auth, email , password);
-    console.log(response.user);
+    uiConsole(response.user);
     idToken = await response.user.getIdToken(true);
-    console.log(idToken);
+    uiConsole(idToken);
     await web3auth.connect({
       verifier: "w3a-firebase-demo",
       verifierId: response.user.uid,
       idToken: idToken,
     });
-    $(".btn-logged-out").hide();
-    $(".btn-logged-in").show();
+    if(web3auth.status === "connected"){
+      uiConsole("Connected to Web3Auth");
+      $(".btn-logged-out").hide();
+      $(".btn-logged-in").show();
+    }
   }
   catch(error){
-    console.log(error);
+    uiConsole(error);
   }
 });
 
 $("#get-user-info").click(async function (event) {
   try {
-    console.log(response);
+    uiConsole(response);
     const userInfo = await response.user.getIdTokenResult();
     uiConsole(userInfo);
   } catch (error) {
@@ -160,8 +162,8 @@ function uiConsole(...args) {
   const el = document.querySelector("#console>p");
   if (el) {
     el.innerHTML = JSON.stringify(args || {}, null, 2);
-    console.log(...args);
   }
+  console.log(...args);
 }
 
 
