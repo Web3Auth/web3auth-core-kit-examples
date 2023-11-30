@@ -10,9 +10,9 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@web3auth/base": "^7.0.1",
-    "@web3auth/ethereum-provider": "^7.0.2",
-    "@web3auth/single-factor-auth": "^7.0.1",
+    "@web3auth/base": "^7.2.0",
+    "@web3auth/ethereum-provider": "^7.2.0",
+    "@web3auth/single-factor-auth": "^7.2.2",
     "firebase": "^10.4.0",
     "empty-module": "^0.0.2",
     "react": "^18.2.0",

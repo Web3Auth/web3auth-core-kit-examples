@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
+// IMP START - Auth Provider Login
 const firebaseConfig = {
   apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
   authDomain: "web3auth-oauth-logins.firebaseapp.com",
@@ -12,8 +12,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const auth = getAuth(app);
+// IMP END - Auth Provider Login
 
 const loginButton = document.getElementById("login");
 
@@ -25,10 +25,12 @@ let web3auth = null;
   $('.btn-logged-in').hide();
   $('#sign-tx').hide();
 
+  // IMP START - SDK Initialization
+  // IMP START - Dashboard Registration
   const clientId =
-        "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get your clientId from https://dashboard.web3auth.io
+    "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get your clientId from https://dashboard.web3auth.io
+  // IMP END - Dashboard Registration
 
-      
   const chainConfig = {
     chainNamespace: "eip155",
     chainId: "0x1", // Please use 0x1 for Mainnet
@@ -50,40 +52,48 @@ let web3auth = null;
   });
 
   await web3auth.init(ethereumPrivateKeyProvider);
+  // IMP END - SDK Initialization
 
-  if (web3auth?.connected) {
+
+  if (web3auth.status === "connected") {
     $('.btn-logged-in').show();
     $('.btn-logged-out').hide();
-    if (web3auth.connected === "openlogin") {
-      $('#sign-tx').show();
-    }
   } else {
     $('.btn-logged-out').show();
     $('.btn-logged-in').hide();
   }
 })();
 
-loginButton.addEventListener("click", async function() {
+loginButton.addEventListener("click", async function () {
+  // IMP START - Verifier Creation
+  const verifier = "w3a-firebase-demo";
+  // IMP END - Verifier Creation
+  // IMP START - Auth Provider Login
   email = 'custom+jwt@firebase.login';
   password = 'Testing@123';
-  try{
+  try {
     uiConsole("Signing in with email and password in firebase");
-    response = await signInWithEmailAndPassword(auth, email , password);
+    response = await signInWithEmailAndPassword(auth, email, password);
     uiConsole(response.user);
     idToken = await response.user.getIdToken(true);
     uiConsole(idToken);
+    // IMP END - Auth Provider Login
+    // IMP START - Login
+
     await web3auth.connect({
-      verifier: "w3a-firebase-demo",
+      verifier,
       verifierId: response.user.uid,
       idToken: idToken,
     });
-    if(web3auth.status === "connected"){
+    // IMP END - Login
+
+    if (web3auth.status === "connected") {
       uiConsole("Connected to Web3Auth");
       $(".btn-logged-out").hide();
       $(".btn-logged-in").show();
     }
   }
-  catch(error){
+  catch (error) {
     uiConsole(error);
   }
 });
@@ -91,13 +101,16 @@ loginButton.addEventListener("click", async function() {
 $("#get-user-info").click(async function (event) {
   try {
     uiConsole(response);
-    const userInfo = await response.user.getIdTokenResult();
-    uiConsole(userInfo);
+    // IMP START - Get User Information
+    const user = await web3auth.getUserInfo();
+    // IMP END - Get User Information
+    uiConsole(user);
   } catch (error) {
     console.error(error.message);
   }
 });
 
+// IMP START - Blockchain Calls
 $("#get-accounts").click(async function (event) {
   try {
     const web3 = new Web3(web3auth.provider);
@@ -119,7 +132,7 @@ $("#get-balance").click(async function (event) {
 
     // Get user's balance in ether
     const balance = web3.utils.fromWei(
-    await web3.eth.getBalance(address), // Balance is in wei
+      await web3.eth.getBalance(address), // Balance is in wei
       "ether"
     );
     uiConsole(balance);
@@ -147,10 +160,13 @@ $("#sign-message").click(async function (event) {
     console.error(error.message);
   }
 });
+// IMP END - Blockchain Calls
 
 $("#logout").click(async function (event) {
   try {
+    // IMP START - Logout
     await web3auth.logout();
+    // IMP END - Logout
     $(".btn-logged-in").hide();
     $(".btn-logged-out").show();
   } catch (error) {

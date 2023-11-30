@@ -3,9 +3,11 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 "use client";
 
+// IMP START - Quick Start
 import { useEffect, useState } from "react";
+// IMP END - Quick Start
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
 
@@ -13,10 +15,15 @@ import Web3 from "web3";
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
+// IMP START - SDK Initialization
+// IMP START - Dashboard Registration
 const clientId =
   "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+// IMP END - Dashboard Registration
 
+// IMP START - Verifier Creation
 const verifier = "w3a-firebase-demo";
+// IMP END - Verifier Creation
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -36,7 +43,9 @@ const web3auth = new Web3Auth({
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
+// IMP END - SDK Initialization
 
+// IMP START - Auth Provider Login
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
@@ -46,11 +55,11 @@ const firebaseConfig = {
   messagingSenderId: "461819774167",
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
+// IMP END - Auth Provider Login
 
 function App() {
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState<Object>({});
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
@@ -58,10 +67,12 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
+        // IMP START - SDK Initialization
         await web3auth.init(privateKeyProvider);
+        // IMP END - SDK Initialization
         setProvider(web3auth.provider);
 
-        if (web3auth.sessionId) {
+        if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
           setLoggedIn(true);
         }
       } catch (error) {
@@ -72,6 +83,7 @@ function App() {
     init();
   }, []);
 
+  // IMP START - Auth Provider Login
   const signInWithGoogle = async (): Promise<UserCredential> => {
     try {
       const auth = getAuth(app);
@@ -95,24 +107,28 @@ function App() {
       return null;
     }
   };
+  // IMP END - Auth Provider Login
 
   const login = async () => {
     if (!web3auth.ready) {
       uiConsole("web3auth initialised yet");
       return;
     }
+    // IMP START - Auth Provider Login
     // login with firebase
     const loginRes = await signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
     const userInfo = parseToken(idToken);
-    setUserInfo(userInfo);
-    
+    // IMP END - Auth Provider Login
+
+    // IMP START - Login
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: userInfo.email,
+      verifierId: userInfo.sub,
       idToken,
     });
+    // IMP END - Login
 
     if (web3authProvider) {
       setLoggedIn(true);
@@ -121,16 +137,22 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    uiConsole(userInfo);
+    // IMP START - Get User Information
+    const user = await web3auth.getUserInfo();
+    // IMP END - Get User Information
+    uiConsole(user);
   };
 
   const logout = async () => {
+    // IMP START - Logout
     await web3auth.logout();
+    // IMP END - Logout
     setProvider(null);
     setLoggedIn(false);
     uiConsole("logged out");
   };
 
+  // IMP START - Blockchain Calls
   const getAccounts = async () => {
     if (!provider) {
       uiConsole("provider not initialized yet");
@@ -181,6 +203,7 @@ function App() {
     );
     uiConsole(signedMessage);
   };
+  // IMP END - Blockchain Calls
 
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");

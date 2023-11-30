@@ -128,7 +128,7 @@ export default {
           await web3auth.init(privateKeyProvider);
           // IMP END - SDK Initialization
           provider = web3auth.provider;
-          if (web3auth.sessionId) {
+          if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
             loggedIn.value = true;
           }
         } catch (error) {
