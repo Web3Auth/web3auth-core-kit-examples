@@ -5,7 +5,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.0",
     "@react-oauth/google": "^0.11.1",
-    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.4.0",
