@@ -3,17 +3,12 @@
   <div id="app">
     <h2>
       <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
-          Web3Auth Single Factor Auth
+        Web3Auth Single Factor Auth
       </a>
-       & Vue.js Quick Start
+      & Vue.js Quick Start
     </h2>
 
-    <button
-      v-if="!loggedIn"
-      class="card"
-      @click="login"
-      style="cursor: pointer"
-    >
+    <button v-if="!loggedIn" class="card" @click="login" style="cursor: pointer">
       Login
     </button>
 
@@ -51,11 +46,8 @@
     </div>
 
     <footer class="footer">
-      <a
-        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
+        target="_blank" rel="noopener noreferrer">
         Source code
       </a>
     </footer>
@@ -63,9 +55,11 @@
 </template>
 
 <script lang="ts">
+// IMP START - Quick Start
 import { ref, onMounted } from "vue";
+// IMP END - Quick Start
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Web3 from "web3";
 
@@ -82,11 +76,15 @@ export default {
   setup() {
     const loggedIn = ref<boolean>(false);
     let provider = <IProvider | null>(null);
-    let userInfo = <any>({});
 
+    // IMP START - SDK Initialization
+    // IMP START - Dashboard Registration
     const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+    // IMP END - Dashboard Registration
 
+    // IMP START - Verifier Creation
     const verifier = "w3a-firebase-demo";
+    // IMP END - Verifier Creation
 
     const chainConfig = {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -106,7 +104,9 @@ export default {
     const privateKeyProvider = new EthereumPrivateKeyProvider({
       config: { chainConfig },
     });
+    // IMP END - SDK Initialization
 
+    // IMP START - Auth Provider Login
     // Your web app's Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
@@ -116,27 +116,30 @@ export default {
       messagingSenderId: "461819774167",
       appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
     };
+    // IMP END - Auth Provider Login
 
     // Firebase Initialisation
     const app = initializeApp(firebaseConfig);
 
     onMounted(async () => {
-    const init = async () => {
-      try {
-        await web3auth.init(privateKeyProvider);
-        provider = web3auth.provider;
-
-        if (web3auth.sessionId) {
-          loggedIn.value = true;
+      const init = async () => {
+        try {
+          // IMP START - SDK Initialization
+          await web3auth.init(privateKeyProvider);
+          // IMP END - SDK Initialization
+          provider = web3auth.provider;
+          if (web3auth.sessionId) {
+            loggedIn.value = true;
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+      };
 
-    init();
+      init();
     });
 
+    // IMP START - Auth Provider Login
     const signInWithGoogle = async (): Promise<UserCredential> => {
       try {
         const auth = getAuth(app);
@@ -160,23 +163,28 @@ export default {
         return null;
       }
     };
+    // IMP END - Auth Provider Login
 
     const login = async () => {
       if (!web3auth.ready) {
         uiConsole("web3auth initialised yet");
         return;
       }
+      // IMP START - Auth Provider Login
       // login with firebase
       const loginRes = await signInWithGoogle();
       // get the id token from firebase
       const idToken = await loginRes.user.getIdToken(true);
-      userInfo = parseToken(idToken);
-      
+      const userInfo = parseToken(idToken);
+      // IMP END - Auth Provider Login
+
+      // IMP START - Login
       const web3authProvider = await web3auth.connect({
         verifier,
-        verifierId: userInfo.email,
+        verifierId: userInfo.sub,
         idToken,
       });
+      // IMP END - Login
 
       if (web3authProvider) {
         loggedIn.value = true;
@@ -185,16 +193,22 @@ export default {
     };
 
     const getUserInfo = async () => {
-      uiConsole(userInfo);
+      // IMP START - Get User Information
+      const user = await web3auth.getUserInfo();
+      // IMP END - Get User Information
+      uiConsole(user);
     };
 
     const logout = async () => {
+      // IMP START - Logout
       await web3auth.logout();
+      // IMP END - Logout
       provider = null;
       loggedIn.value = false;
       uiConsole("logged out");
     };
 
+    // IMP START - Blockchain Calls
     const getAccounts = async () => {
       if (!provider) {
         uiConsole("provider not initialized yet");
@@ -221,7 +235,7 @@ export default {
       const balance = web3.utils.fromWei(
         await web3.eth.getBalance(address), // Balance is in wei
         "ether"
-      ); 
+      );
       uiConsole(balance);
     };
 
@@ -245,6 +259,7 @@ export default {
       );
       uiConsole(signedMessage);
     };
+    // IMP END - Blockchain Calls
 
     function uiConsole(...args: any[]): void {
       const el = document.querySelector("#console>p");
@@ -276,20 +291,25 @@ export default {
   margin: auto;
   padding: 0 2rem;
 }
+
 h3 {
   margin: 40px 0 0;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: inline-block;
   margin: 0 10px;
 }
+
 a {
   color: #42b983;
 }
+
 .card {
   margin: 0.5rem;
   padding: 0.7rem;
@@ -315,7 +335,7 @@ a {
   flex-flow: row wrap;
 }
 
-.flex-container > div {
+.flex-container>div {
   width: 100px;
   margin: 10px;
   text-align: center;
