@@ -1,5 +1,8 @@
+// IMP START - Quick Start
 import { Component } from "@angular/core";
+// IMP END - Quick Start
 import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, generateFactorKey, COREKIT_STATUS, keyToMnemonic, mnemonicToKey } from "@web3auth/mpc-core-kit";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import Web3 from "web3";
 import { BN } from "bn.js";
 
@@ -7,8 +10,35 @@ import { BN } from "bn.js";
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
-const verifier = "w3a-firebase-demo";
+// IMP START - SDK Initialization
+// IMP START - Dashboard Registration
+const web3AuthClientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+// IMP END - Dashboard Registration
 
+// IMP START - Verifier Creation
+const verifier = "w3a-firebase-demo";
+// IMP END - Verifier Creation
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0x1", // Please use 0x1 for Mainnet
+  rpcTarget: "https://rpc.ankr.com/eth",
+  displayName: "Ethereum Mainnet",
+  blockExplorer: "https://etherscan.io/",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+};
+
+const coreKitInstance = new Web3AuthMPCCoreKit(
+  {
+    web3AuthClientId,
+    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+    chainConfig,
+  }
+);
+// IMP END - SDK Initialization
+
+// IMP START - Auth Provider Login
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
@@ -18,13 +48,7 @@ const firebaseConfig = {
   messagingSenderId: "461819774167",
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
-
-const coreKitInstance = new Web3AuthMPCCoreKit(
-  {
-    web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
-    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  }
-);
+// IMP END - Auth Provider Login
 
 @Component({
   selector: "app-root",
@@ -49,7 +73,9 @@ export class AppComponent {
   async ngOnInit() {
     const init = async () => {
       try {
+        // IMP START - SDK Initialization
         await coreKitInstance.init();
+        // IMP END - SDK Initialization
 
         this.coreKitStatus = coreKitInstance.status;
       } catch (error) {
@@ -60,6 +86,7 @@ export class AppComponent {
     init();
   }
 
+  // IMP START - Auth Provider Login
   signInWithGoogle = async (): Promise<UserCredential> => {
     try {
       const auth = getAuth(this.app);
@@ -72,16 +99,20 @@ export class AppComponent {
       throw err;
     }
   };
+  // IMP END - Auth Provider Login
 
   login = async () => {
     try {
       if (!coreKitInstance) {
         throw new Error('initiated to login');
       }
+      // IMP START - Auth Provider Login
       const loginRes = await this.signInWithGoogle();
       const idToken = await loginRes.user.getIdToken(true);
       const parsedToken = parseToken(idToken);
+      // IMP END - Auth Provider Login
 
+      // IMP START - Login
       const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
@@ -89,10 +120,13 @@ export class AppComponent {
       } as IdTokenLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      // IMP END - Login
 
+      // IMP START - Recover MFA Enabled Account
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        this.uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"); 
+        this.uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
       }
+      // IMP END - Recover MFA Enabled Account
 
       this.coreKitStatus = coreKitInstance.status;
     }
@@ -100,7 +134,8 @@ export class AppComponent {
       this.uiConsole(err);
     }
   };
-  
+
+  // IMP START - Recover MFA Enabled Account
   inputBackupFactorKey = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance not found");
@@ -117,8 +152,10 @@ export class AppComponent {
       this.uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
     }
   };
+  // IMP END - Recover MFA Enabled Account
 
-  enableMFA = async () => { 
+  // IMP START - Enable Multi Factor Authentication
+  enableMFA = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
@@ -127,6 +164,7 @@ export class AppComponent {
 
     this.uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   };
+  // IMP END - Enable Multi Factor Authentication
 
   keyDetails = async () => {
     if (!coreKitInstance) {
@@ -171,18 +209,24 @@ export class AppComponent {
       this.uiConsole(error);
       return null
     }
-  }; 
+  };
 
   getUserInfo = async () => {
-    this.uiConsole(coreKitInstance.getUserInfo());
+    // IMP START - Get User Information
+    const user = coreKitInstance.getUserInfo();
+    // IMP END - Get User Information
+    this.uiConsole(user);
   };
-  
+
   logout = async () => {
+    // IMP START - Logout
     await coreKitInstance.logout();
+    // IMP END - Logout
     this.coreKitStatus = coreKitInstance.status;
     this.uiConsole("logged out");
   };
 
+  // IMP START - Blockchain Calls
   getAccounts = async () => {
     if (!coreKitInstance) {
       this.uiConsole("provider not initialized yet");
@@ -233,6 +277,7 @@ export class AppComponent {
     );
     this.uiConsole(signedMessage);
   };
+  // IMP END - Blockchain Calls
 
   criticalResetAccount = async (): Promise<void> => {
     // This is a critical function that should only be used for testing purposes

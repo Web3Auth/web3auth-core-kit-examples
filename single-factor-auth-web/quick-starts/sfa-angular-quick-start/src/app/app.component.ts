@@ -61,7 +61,6 @@ export class AppComponent {
   title = "angular-app";
 
   provider: IProvider | null = null;
-  userInfo: any = null;
 
   isModalLoaded = false;
 
@@ -124,13 +123,13 @@ export class AppComponent {
     const loginRes = await this.signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
-    this.userInfo = this.parseToken(idToken);
+    const userInfo = this.parseToken(idToken);
     // IMP END - Auth Provider Login
 
     // IMP START - Login
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: this.userInfo?.sub,
+      verifierId: userInfo.sub,
       idToken,
     });
     // IMP END - Login

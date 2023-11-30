@@ -116,10 +116,11 @@ export default {
       messagingSenderId: "461819774167",
       appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
     };
-    // IMP END - Auth Provider Login
 
     // Firebase Initialisation
     const app = initializeApp(firebaseConfig);
+    // IMP END - Auth Provider Login
+
 
     onMounted(async () => {
       const init = async () => {
