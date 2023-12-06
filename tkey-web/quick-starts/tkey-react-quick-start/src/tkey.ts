@@ -3,6 +3,7 @@ import SFAServiceProvider from '@tkey/service-provider-sfa';
 import TorusStorageLayer from '@tkey/storage-layer-torus';
 import { ShareSerializationModule } from '@tkey/share-serialization';
 import { WebStorageModule } from '@tkey/web-storage';
+import { TORUS_SAPPHIRE_NETWORK } from '@toruslabs/constants';
 
 const clientId =
   "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
@@ -18,8 +19,7 @@ export const chainConfig = {
 
 const web3AuthOptions: any = {
   clientId, // Get your Client ID from Web3Auth Dashboard
-  chainConfig,
-  web3AuthNetwork: 'sapphire_mainnet',
+  web3AuthNetwork: TORUS_SAPPHIRE_NETWORK.SAPPHIRE_MAINNET,
 };
 
 // Configuration of Service Provider
