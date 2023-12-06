@@ -163,8 +163,8 @@ export const Web3AuthProvider = async ({ children }: IWeb3AuthProps) => {
         setEmail(`${string}@web3auth.com`);
       }
     }
-    init();
     getEmailFromLocal();
+    init();
   }, []);
 
   useEffect(() => {
@@ -191,7 +191,17 @@ export const Web3AuthProvider = async ({ children }: IWeb3AuthProps) => {
         uiConsole(error);
       }
     }
+    async function saveEmailLocally() {
+      try {
+        if (email !== "") {
+          await localStorage.setItem("emailForWeb3AuthPassKeysPlayground", email);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
     emailCheck();
+    saveEmailLocally();
   }, [email]);
 
   const triggerPassKeyLogin = async () => {

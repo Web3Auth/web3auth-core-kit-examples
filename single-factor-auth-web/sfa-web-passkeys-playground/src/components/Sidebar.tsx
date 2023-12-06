@@ -50,30 +50,6 @@ const Sidebar = () => {
       </div>
     );
   }
-  function userProfile() {
-    if (provider) {
-      try {
-        return (
-          <div className="sticky px-4 inset-x-0 bottom-0 border-t border-gray-100">
-            <div className="flex items-center justify-flex-start py-4 shrink-0 overflow-hidden">
-              <img className="object-cover w-10 h-10 rounded-full" src={user.profileImage} referrerPolicy="no-referrer" />
-
-              <div className="ml-1.5">
-                <p className="text-xs">
-                  <strong className="block font-medium">{user.name as string}</strong>
-                  <span>{user.email as string}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      } catch (e) {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
 
   return (
     <div className="flex flex-col justify-between h-screen bg-white border-r w-64 p-5 lg:flex hidden">
@@ -91,7 +67,6 @@ const Sidebar = () => {
           {connectedChain.chainId === "0x5" || connectedChain.chainId === "0x13881" ? linktoGo("Faucet Link", goToFaucet) : null}
         </nav>
       </div>
-      {userProfile()}
     </div>
   );
 };
