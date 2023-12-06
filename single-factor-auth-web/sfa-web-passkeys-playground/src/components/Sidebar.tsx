@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useWeb3Auth } from "../services/web3auth";
 
 const Sidebar = () => {
-  const { provider, user, connectedChain } = useWeb3Auth();
+  const { connectedChain } = useWeb3Auth();
 
   const navigate = useNavigate();
   function goToHome() {
