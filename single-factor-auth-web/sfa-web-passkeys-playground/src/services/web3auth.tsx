@@ -47,10 +47,10 @@ export const Web3AuthContext = createContext<IWeb3AuthContext>({
   provider: null,
   isLoading: false,
   user: null,
-  address: null,
-  balance: null,
-  chainId: null,
-  email: null,
+  address: "",
+  balance: "",
+  chainId: "",
+  email: "",
   isWebAuthnLoginEnabled: false,
   isWebAuthnRegistrationEnabled: false,
   connectedChain: chain.Ethereum,
@@ -67,7 +67,7 @@ export const Web3AuthContext = createContext<IWeb3AuthContext>({
   readContract: async () => "",
   writeContract: async () => "",
   verifyServerSide: async () => {},
-  switchChain: async () => null,
+  switchChain: async () => {},
   updateConnectedChain: () => {},
   updateEmail: () => {},
   triggerPassKeyRegistration: async () => {},
@@ -81,20 +81,16 @@ interface IWeb3AuthProps {
   children?: ReactNode;
 }
 
-export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
+export const Web3AuthProvider = async ({ children }: IWeb3AuthProps) => {
   const [web3Auth, setWeb3Auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IWalletProvider | null>(null);
-  const [address, setAddress] = useState<string | null>(null);
-  const [balance, setBalance] = useState<string | null>(null);
-  const [user, setUser] = useState<any | null>(null);
+  const [address, setAddress] = useState<string>("");
+  const [balance, setBalance] = useState<string>("");
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [chainId, setChainId] = useState<any>(null);
-  const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
-  let string = "";
-  for (let ii = 0; ii < 15; ii++) {
-    string += chars[Math.floor(Math.random() * chars.length)];
-  }
-  const [email, setEmail] = useState<string | null>(`${string}@web3auth.com`);
+
+  const [email, setEmail] = useState<string>("");
   const isWebAuthnSupported = browserSupportsWebAuthn();
   const [isWebAuthnLoginEnabled, setIsWebAuthnLoginEnabled] = useState(false);
   const [isWebAuthnRegistrationEnabled, setIsWebAuthnRegistrationEnabled] = useState(false);
@@ -108,6 +104,17 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     }
     console.log(...args);
   };
+
+  useEffect(() => {
+    async function saveEmailLocally() {
+      try {
+        await localStorage.setItem("emailForWeb3AuthPassKeysPlayground", email);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    saveEmailLocally();
+  }, [email]);
 
   const setWalletProvider = useCallback(async (web3authProvider: IProvider | null) => {
     const walletProvider = getWalletProvider(web3authProvider, uiConsole);
@@ -143,22 +150,38 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
         setIsLoading(false);
       }
     }
+    async function getEmailFromLocal() {
+      const localEmail = await localStorage.getItem("emailForWeb3AuthPassKeysPlayground");
+      if (localEmail) {
+        setEmail(localEmail);
+      } else {
+        const chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+        let string = "";
+        for (let ii = 0; ii < 15; ii++) {
+          string += chars[Math.floor(Math.random() * chars.length)];
+        }
+        setEmail(`${string}@web3auth.com`);
+      }
+    }
     init();
-  }, [setWalletProvider]);
+    getEmailFromLocal();
+  }, []);
 
   useEffect(() => {
     async function emailCheck() {
       try {
-        if (isWebAuthnSupported && email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+        if (isWebAuthnSupported && email!.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
           try {
             console.log("fetching webauthn status");
             const url = new URL(`${PASSKEYS_BACKEND_URL}/api/v2/webauthn`);
-            url.searchParams.append("email", email);
+            url.searchParams.append("email", email!);
             const response = await get<{ success: boolean; data: { webauthn_enabled: boolean; cred_id: string; public_key: string } }>(url.href);
             if (response.success) {
               setIsWebAuthnLoginEnabled(true);
+              setIsWebAuthnRegistrationEnabled(false);
             } else {
               setIsWebAuthnRegistrationEnabled(true);
+              setIsWebAuthnLoginEnabled(false);
             }
           } catch (error) {
             console.error(error);
@@ -219,8 +242,8 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       const idToken = await triggerPassKeyLogin();
       await web3Auth.connect({
         verifier,
-        idToken,
-        verifierId: email,
+        idToken: idToken!,
+        verifierId: email!,
       });
       if (web3Auth.status === "connected") {
         setWalletProvider(web3Auth.provider);
@@ -273,7 +296,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("web3auth not initialized yet");
       return "";
     }
-    const updatedBalance = await provider.getBalance();
+    const updatedBalance = await provider!.getBalance();
 
     setBalance(updatedBalance);
     uiConsole(updatedBalance);
@@ -285,7 +308,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("web3auth not initialized yet");
       return "";
     }
-    const signature = await provider.getSignature(message);
+    const signature = await provider!.getSignature(message);
     uiConsole(signature);
     return signature;
   };
@@ -295,7 +318,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("web3auth not initialized yet");
       return "";
     }
-    const receipt = await provider.sendTransaction(amount, destination);
+    const receipt = await provider!.sendTransaction(amount, destination);
     uiConsole(receipt);
     return receipt;
   };
@@ -305,7 +328,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("web3auth not initialized yet");
       return "";
     }
-    const privateKey = await provider.getPrivateKey();
+    const privateKey = await provider!.getPrivateKey();
     uiConsole("Private Key: ", privateKey);
     return privateKey;
   };
@@ -316,7 +339,8 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       return "";
     }
 
-    await provider.getChainId();
+    const CurrentChainId = await provider!.getChainId();
+    return CurrentChainId;
   };
 
   const deployContract = async (abi: any, bytecode: string): Promise<void> => {
@@ -324,13 +348,13 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("web3auth not initialized yet");
       return;
     }
-    await provider.deployContract(abi, bytecode);
+    await provider!.deployContract(abi, bytecode);
   };
 
   const readContract = async (contractAddress: string, contractABI: any): Promise<string> => {
     if (!provider) {
       uiConsole("provider not initialized yet");
-      return;
+      return "";
     }
     const message = await provider.readContract(contractAddress, contractABI);
     uiConsole(message);
@@ -339,7 +363,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
   const writeContract = async (contractAddress: string, contractABI: any, updatedNumber: string): Promise<string> => {
     if (!provider) {
       uiConsole("provider not initialized yet");
-      return;
+      return "";
     }
     const receipt = await provider.writeContract(contractAddress, contractABI, updatedNumber);
     uiConsole(receipt);
@@ -356,7 +380,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       uiConsole("provider not initialized yet");
       return;
     }
-    const token = await web3Auth.authenticateUser();
+    const token = await web3Auth!.authenticateUser();
 
     const jwks = jose.createRemoteJWKSet(new URL("https://api.openlogin.com/jwks"));
 
@@ -377,8 +401,8 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       return;
     }
 
-    await web3Auth.addChain(chain[network]);
-    await web3Auth.switchChain(chain[network]);
+    await web3Auth!.addChain(chain[network]);
+    await web3Auth!.switchChain(chain[network]);
     setChainId(await provider.getChainId());
     setAddress(await provider.getAddress());
     setBalance(await provider.getBalance());

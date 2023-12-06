@@ -45,7 +45,11 @@ const ConnectWeb3AuthButton = () => {
             style={{ backgroundColor: "#0364ff" }}
             onClick={async () => {
               setLoading(true);
-              await triggerPassKeyRegistration();
+              try {
+                await triggerPassKeyRegistration();
+              } catch (e) {
+                console.error(e);
+              }
               setLoading(false);
             }}
           >
@@ -58,7 +62,11 @@ const ConnectWeb3AuthButton = () => {
             style={{ backgroundColor: "#0364ff" }}
             onClick={async () => {
               setLoading(true);
-              await login();
+              try {
+                await login();
+              } catch (e) {
+                console.error(e);
+              }
               setLoading(false);
             }}
           >

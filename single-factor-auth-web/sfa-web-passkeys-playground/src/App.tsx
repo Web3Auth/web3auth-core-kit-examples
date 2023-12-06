@@ -8,7 +8,7 @@ import HomePage from "./pages/HomePage";
 import Transaction from "./pages/Transaction";
 import { Web3AuthProvider } from "./services/web3auth";
 
-function App() {
+function App(): React.JSX.Element {
   return (
     <div>
       <Web3AuthProvider>
