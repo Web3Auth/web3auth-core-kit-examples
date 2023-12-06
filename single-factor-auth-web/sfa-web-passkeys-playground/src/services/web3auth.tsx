@@ -81,7 +81,7 @@ interface IWeb3AuthProps {
   children?: ReactNode;
 }
 
-export const Web3AuthProvider = async ({ children }: IWeb3AuthProps) => {
+export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
   const [web3Auth, setWeb3Auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IWalletProvider | null>(null);
   const [address, setAddress] = useState<string>("");
