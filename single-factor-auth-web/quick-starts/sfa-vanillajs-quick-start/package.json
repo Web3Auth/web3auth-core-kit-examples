@@ -1,0 +1,16 @@
+{
+  "name": "sfa-firebase-vanillajs",
+  "version": "1.0.0",
+  "description": "To get started, you can use any web development IDE.  1. Create a New Project.  2. Create the following new files:    * `index.html`   * `main.css`   * `script.js` 3. Add general structure to `index.html` with a link to your CSS file: ```html <!DOCTYPE html> <html> <head>   <title>Login</title>   <link rel = \"stylesheet\" href = \"main.css\"> </head> <body> </body> </html> ```",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

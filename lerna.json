@@ -6,7 +6,7 @@
   "packages": [
     "mpc-core-kit/**/*",
     "node-sdk/**/*",
-    "single-factor-auth-web/*",
-    "tkey-web/*"
+    "single-factor-auth-web/**/*",
+    "tkey-web/**/*"
   ]
 }
