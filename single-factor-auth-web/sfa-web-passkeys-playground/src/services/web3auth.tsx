@@ -4,8 +4,7 @@ import { CustomChainConfig, IProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { Web3Auth } from "@web3auth/single-factor-auth";
 import * as jose from "jose";
-import * as React from "react";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 import { chain } from "../config/chainConfig";
 import { PASSKEYS_BACKEND_URL, verifier } from "../config/consts";
