@@ -3,11 +3,8 @@ import {bridgeEmit, resolveMap} from '.';
 import {TssLibAction, TssLibMessageType} from './common';
 import '@toruslabs/tss-client';
 
-console.log(global.js_send_msg);
-
 export async function batch_size(): Promise<number> {
   let ruid = generatePrivate().toString('hex');
-  console.log('batch_size', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {ruid, action: TssLibAction.BatchSize, payload: {}},
@@ -15,13 +12,11 @@ export async function batch_size(): Promise<number> {
   const result = await new Promise(resolve => {
     resolveMap.set(ruid + 'batch_size', resolve);
   });
-  console.log('batch_size', result);
   return result as number;
 }
 
 export async function random_generator(state: string): Promise<number> {
   let ruid = generatePrivate().toString('hex');
-  console.log('random_generator', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -33,12 +28,10 @@ export async function random_generator(state: string): Promise<number> {
   const result = await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.RandomGenerator, resolve);
   });
-  console.log('random_generator', result);
   return result as number;
 }
 export async function random_generator_free(rng: number): Promise<void> {
   let ruid = generatePrivate().toString('hex');
-  console.log('random_generator_free', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -47,10 +40,9 @@ export async function random_generator_free(rng: number): Promise<void> {
       payload: {rng},
     },
   });
-  const result = await new Promise(resolve => {
+  await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.RandomGeneratorFree, resolve);
   });
-  console.log('random_generator_free', result);
 }
 export async function threshold_signer(
   session: string,
@@ -60,7 +52,6 @@ export async function threshold_signer(
   share: string,
   pubkey: string,
 ): Promise<number> {
-  console.log('threshold_signer', session);
   //   console.log('pubkey', pubkey);
   //   console.log('publickey', Buffer.from(pubkey, 'base64').length);
   //   console.log('share', share);
@@ -76,12 +67,10 @@ export async function threshold_signer(
   const result = await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.ThresholdSigner, resolve);
   });
-  console.log('threshold_signer', result);
   return result as number;
 }
 export async function threshold_signer_free(signer: number): Promise<void> {
   let ruid = generatePrivate().toString('hex');
-  console.log('threshold_signer_free', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -90,16 +79,13 @@ export async function threshold_signer_free(signer: number): Promise<void> {
       payload: {signer},
     },
   });
-  const result = await new Promise(resolve => {
+  await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.ThresholdSignerFree, resolve);
   });
-  console.log('threshold_signer_free', result);
 }
 
 export async function setup(signer: number, rng: number): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('setup', ruid);
-  console.log('setup', signer, rng);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -109,10 +95,8 @@ export async function setup(signer: number, rng: number): Promise<any> {
     },
   });
   const result = await new Promise(resolve => {
-    console.log('setup resolve', ruid + TssLibAction.Setup);
     resolveMap.set(ruid + TssLibAction.Setup, resolve);
   });
-  console.log('setup DONE', ruid, result);
   return result;
 }
 
@@ -122,10 +106,7 @@ export async function precompute(
   rng: number,
 ): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('precompute !!!!!!!', ruid);
-  console.log('precompute', parties, signer, rng);
 
-  console.log('parties buffer conversion', Array.from(parties));
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -145,9 +126,8 @@ export async function local_sign(
   msg: string,
   hash_only: boolean,
   precompute: any,
-): any {
+): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('local_sign', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -161,9 +141,8 @@ export async function local_sign(
   });
 }
 
-export async function get_r_from_precompute(precompute: any): any {
+export async function get_r_from_precompute(precompute: any): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('get_r_from_precompute', ruid, precompute);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -185,8 +164,6 @@ export async function local_verify(
   pubkey: string,
 ): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('local_verify', ruid);
-  console.log('local_verify', {msg, hash_only, r, sig_frags, pubkey});
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -198,7 +175,6 @@ export async function local_verify(
   const result = await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.LocalVerify, resolve);
   });
-  console.log('local_verify', result);
   return result;
 }
 
@@ -210,7 +186,6 @@ export async function sign(
   rng: number,
 ): Promise<any> {
   let ruid = generatePrivate().toString('hex');
-  console.log('sign', ruid);
   bridgeEmit({
     type: TssLibMessageType.TssLibRequest,
     data: {
@@ -222,6 +197,5 @@ export async function sign(
   const result = await new Promise(resolve => {
     resolveMap.set(ruid + TssLibAction.Sign, resolve);
   });
-  console.log('sign', result);
   return result;
 }

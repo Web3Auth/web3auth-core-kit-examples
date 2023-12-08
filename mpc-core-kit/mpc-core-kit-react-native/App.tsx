@@ -32,7 +32,7 @@ import {
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
-import {Bridge, emitTest} from './Bridge';
+import {Bridge} from './Bridge';
 import {generatePrivate} from '@toruslabs/eccrypto';
 import {
   batch_size,
