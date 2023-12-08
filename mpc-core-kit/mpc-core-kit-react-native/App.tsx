@@ -24,22 +24,20 @@ import 'react-native-url-polyfill/auto';
 import {Input} from '@rneui/themed';
 import {
   COREKIT_STATUS,
-  IStorage,
-  MemoryStorage,
   TssShareType,
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
-import {Bridge} from './Bridge';
+import {Bridge} from './Bridge/Bridge';
 import {generatePrivate} from '@toruslabs/eccrypto';
-import {
-  batch_size,
-  random_generator,
-  random_generator_free,
-} from './Bridge/tsslibnode';
-import * as TssLibNode from './Bridge/tsslibnode';
+import {batch_size, random_generator, random_generator_free} from './Bridge';
+import * as TssLibNode from './Bridge';
+import {IAsyncStorage} from '@web3auth/mpc-core-kit';
+// import * as TssLib from '@toruslabs/tss-lib-rn-bridge/src/index';
+
+// console.log('Tsslib', TssLib);
 
 // const verifier = 'w3a-firebase-demo';
 const verifier = 'torus-test-health';
@@ -103,17 +101,13 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   },
 });
 
-class ReactStorage implements IStorage {
+class ReactStorage implements IAsyncStorage {
   async getItem(key: string): Promise<string | null> {
     return EncryptedStorage.getItem(key);
   }
 
   async setItem(key: string, value: string): Promise<void> {
     return EncryptedStorage.setItem(key, value);
-  }
-
-  async removeItem(key: string): Promise<void> {
-    return EncryptedStorage.removeItem(key);
   }
 }
 
@@ -141,7 +135,8 @@ export default function App() {
           web3AuthClientId: 'torus-key-test',
           web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
           uxMode: 'react-native',
-          storageKey: new MemoryStorage(),
+          // storageKey: new ReactStorage(),
+          asyncStorageKey: new ReactStorage(),
           tssLib: TssLibNode,
         });
         await coreKitInstancelocal.init();
