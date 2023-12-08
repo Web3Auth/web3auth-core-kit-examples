@@ -19,11 +19,12 @@ import {ethers, keccak256} from 'ethers';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 import {IProvider} from '@web3auth/base';
 import 'react-native-url-polyfill/auto';
-import * as TssLibNode from '@toruslabs/tss-lib-rn';
+// import * as TssLibNode from '@toruslabs/tss-lib-rn';
 
 import {Input} from '@rneui/themed';
 import {
   COREKIT_STATUS,
+  IStorage,
   MemoryStorage,
   TssShareType,
   WEB3AUTH_NETWORK,
@@ -31,6 +32,15 @@ import {
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
+import {Bridge, emitTest} from './Bridge';
+import {generatePrivate} from '@toruslabs/eccrypto';
+import {
+  batch_size,
+  random_generator,
+  random_generator_free,
+} from './Bridge/tsslibnode';
+import * as TssLibNode from './Bridge/tsslibnode';
+
 // const verifier = 'w3a-firebase-demo';
 const verifier = 'torus-test-health';
 
@@ -92,6 +102,20 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
     chainConfig,
   },
 });
+
+class ReactStorage implements IStorage {
+  async getItem(key: string): Promise<string | null> {
+    return EncryptedStorage.getItem(key);
+  }
+
+  async setItem(key: string, value: string): Promise<void> {
+    return EncryptedStorage.setItem(key, value);
+  }
+
+  async removeItem(key: string): Promise<void> {
+    return EncryptedStorage.removeItem(key);
+  }
+}
 
 export default function App() {
   const [tKeyInitialised, setTKeyInitialised] = useState(false);
@@ -191,6 +215,17 @@ export default function App() {
       });
 
       setCoreKitStatus(coreKitInstance.status);
+
+      console.log('publickey', (await coreKitInstance.getPublic()).length);
+      console.log('publickey', await coreKitInstance.getPublic());
+      console.log(
+        'publickey',
+        Buffer.from(await coreKitInstance.getPublic()).toString('base64'),
+      );
+      console.log(
+        'publickey',
+        (await coreKitInstance.getPublic()).toString('hex'),
+      );
 
       let msg = 'hello world';
       let msgHash = keccak256(Buffer.from(msg));
@@ -526,9 +561,21 @@ export default function App() {
       {loading && <ActivityIndicator />}
     </View>
   );
-
+  const sendMsg = async () => {
+    batch_size();
+    let state = generatePrivate().toString('base64');
+    let rng = await random_generator(state);
+    await random_generator_free(rng);
+  };
   return (
     <View style={styles.container}>
+      <Button
+        title="send WebView"
+        onPress={async () => {
+          sendMsg();
+        }}
+      />
+      <Bridge />
       {loggedIn ? loggedInView : unloggedInView}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>

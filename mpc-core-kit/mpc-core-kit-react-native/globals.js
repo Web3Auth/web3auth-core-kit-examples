@@ -1,5 +1,7 @@
-global.Buffer = require('buffer').Buffer;
+// global.Buffer = require('buffer').Buffer;
+import './shim.js';
 
+console.log(Buffer.from( 'Hello World!', "utf-8" ).toString('base64'))
 // Needed so that 'stream-http' chooses the right default protocol.
 global.location = {
   protocol: 'file:',
