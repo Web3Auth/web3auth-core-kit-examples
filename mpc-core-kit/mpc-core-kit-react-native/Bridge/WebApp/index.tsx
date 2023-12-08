@@ -1,11 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {
   webViewRender,
   emit,
   useNativeMessage,
 } from 'react-native-react-bridge/lib/web';
-// import './example.css';
-import {Button} from './button';
 import * as TssLib from '@toruslabs/tss-lib';
 import {
   TssLibAction,
@@ -13,9 +11,7 @@ import {
   TssLibMessageRequest,
   TssLibMessageType,
 } from '../common';
-import {generatePrivate} from '@toruslabs/eccrypto';
-// import tsswasm from '@toruslabs/tss-lib/wasm/client.wasm';
-// console.log(tsswasm);
+
 const style = {
   width: '100vw',
   height: '0vh',
@@ -46,9 +42,8 @@ if (globalThis.js_read_msg === undefined) {
     party: number,
     msg_type: string,
   ) {
-    // const ruid = generatePrivate().toString('hex');
     const ruid = session + party + msg_type;
-    debug({type: 'js_read_msg', msg: 'start', ruid});
+    // debug({type: 'js_read_msg', msg: 'start', ruid});
     bridgeEmit({
       type: TssLibMessageType.TssLibRequest,
       data: {
@@ -77,9 +72,8 @@ if (globalThis.js_send_msg === undefined) {
     msg_type: string,
     msg_data?: string,
   ) {
-    // const ruid = generatePrivate().toString('hex');
     const ruid = session + party + msg_type;
-    debug({type: 'js_send_msg', msg: 'start', ruid});
+    // debug({type: 'js_send_msg', msg: 'start', ruid});
     bridgeEmit({
       type: TssLibMessageType.TssLibRequest,
       data: {
@@ -91,7 +85,6 @@ if (globalThis.js_send_msg === undefined) {
     const result = await new Promise(resolve => {
       resolverMap.set(ruid + '-js_send_msg', resolve);
     });
-    console.log('js_send_msg DONE', result);
     return result;
   };
 }
@@ -140,18 +133,12 @@ async function handleTssLib(
   if (action === TssLibAction.Setup) {
     const {signer, rng} = payload;
     //result from setup not able to stringify
-    const result = await TssLib.setup(signer, rng);
+    await TssLib.setup(signer, rng);
     return {ruid, action, result: 'done'};
   }
   if (action === TssLibAction.Precompute) {
     const {parties, signer, rng} = payload;
-    debug({
-      type: 'precompute',
-      msg: 'start',
-      ruid,
-      parties: parties,
-      uintarray: Uint8Array.from(parties),
-    });
+    // conversion to Uint8Array needed as bridge transfer messed up Uint8Array
     const result = await TssLib.precompute(
       Uint8Array.from(parties),
       signer,
@@ -207,18 +194,7 @@ async function handleTssLibResponse(
 }
 
 const Root = () => {
-  const [data, setData] = useState('This is Web');
   useNativeMessage(async (message: {type: string; data: any}) => {
-    if (message.type === 'hello') {
-      setData(message.data);
-      emit({type: 'hi new', data: data});
-      emit({type: 'hello-send', data: data});
-      // await test();
-    }
-    if (message.type === 'hello-send') {
-      emit({type: 'hello-done', data: data});
-    }
-
     if (message.type === TssLibMessageType.TssLibRequest) {
       try {
         let result = await handleTssLib(message.data);
@@ -232,31 +208,26 @@ const Root = () => {
       }
     }
     if (message.type === TssLibMessageType.TssLibResponse) {
-      let result = await handleTssLibResponse(message.data);
-      console.log(result);
-      // debug({
-      //   msg: 'HANDLE Response',
-      //   data: message.data,
-      // });
+      try {
+        await handleTssLibResponse(message.data);
+      } catch (e) {
+        debug({type: 'handleTssLibResponse error', e});
+        error({
+          msg: `${message.type} error`,
+          payload: message.data,
+          error: e,
+        });
+      }
     }
   });
 
   bridgeEmit = emit;
 
   useEffect(() => {
-    emit({type: 'hi new', data: data});
+    emit({type: 'tsslibInit', data: 'initializing'});
   }, []);
 
-  return (
-    <div style={style}>
-      <textarea value={data} onChange={e => setData(e.target.value)} />
-      <div>
-        <Button onClick={() => emit({type: 'hi', data: data})}>
-          send to React Native
-        </Button>
-      </div>
-    </div>
-  );
+  return <div style={style} />;
 };
 
 export default webViewRender(<Root />);
