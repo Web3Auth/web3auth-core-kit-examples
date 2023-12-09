@@ -9,24 +9,24 @@ PODS:
     - React-Core (= 0.72.0)
     - React-jsi (= 0.72.0)
     - ReactCommon/turbomodule/core (= 0.72.0)
-  - Firebase/Auth (10.18.0):
+  - Firebase/Auth (10.19.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 10.18.0)
-  - Firebase/CoreOnly (10.18.0):
-    - FirebaseCore (= 10.18.0)
-  - FirebaseAppCheckInterop (10.18.0)
-  - FirebaseAuth (10.18.0):
+    - FirebaseAuth (~> 10.19.0)
+  - Firebase/CoreOnly (10.19.0):
+    - FirebaseCore (= 10.19.0)
+  - FirebaseAppCheckInterop (10.19.0)
+  - FirebaseAuth (10.19.0):
     - FirebaseAppCheckInterop (~> 10.17)
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
     - GoogleUtilities/Environment (~> 7.8)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseCore (10.18.0):
+  - FirebaseCore (10.19.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
-  - FirebaseCoreInternal (10.18.0):
+  - FirebaseCoreInternal (10.19.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - fmt (6.2.1)
   - glog (0.3.5)
@@ -352,7 +352,7 @@ PODS:
     - glog
   - react-native-encrypted-storage (4.0.3):
     - React-Core
-  - react-native-get-random-values (1.9.0):
+  - react-native-get-random-values (1.10.0):
     - React-Core
   - react-native-webview (13.6.3):
     - React-Core
@@ -467,11 +467,11 @@ PODS:
     - React-logger (= 0.72.0)
     - React-perflogger (= 0.72.0)
   - RecaptchaInterop (100.0.0)
-  - RNFBApp (18.6.2):
-    - Firebase/CoreOnly (= 10.18.0)
+  - RNFBApp (18.7.2):
+    - Firebase/CoreOnly (= 10.19.0)
     - React-Core
-  - RNFBAuth (18.6.2):
-    - Firebase/Auth (= 10.18.0)
+  - RNFBAuth (18.7.2):
+    - Firebase/Auth (= 10.19.0)
     - React-Core
     - RNFBApp
   - SocketRocket (0.6.0)
@@ -636,11 +636,11 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: bb17efca94c43508cbe54fb0a35e36df30da5213
   FBReactNativeSpec: 6e7e74b1ed7f0a1a469a82a67521b33285f5fef3
-  Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
-  FirebaseAppCheckInterop: 3cd914842ba46f4304050874cd284de82f154ffd
-  FirebaseAuth: 12314b438fa76048540c8fb86d6cfc9e08595176
-  FirebaseCore: 2322423314d92f946219c8791674d2f3345b598f
-  FirebaseCoreInternal: 8eb002e564b533bdcf1ba011f33f2b5c10e2ed4a
+  Firebase: 63ce8ece0d43743dc28eacac0c6867a2d7fd5a9d
+  FirebaseAppCheckInterop: 37884781f3e16a1ba47e7ec80a1e805f987788e3
+  FirebaseAuth: 2492acdcd1245d841fabdf58a050d6aa07dfce3f
+  FirebaseCore: dc5c7badf99d47613c52b2e3a57a64cd187f8554
+  FirebaseCoreInternal: b444828ea7cfd594fca83046b95db98a2be4f290
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
@@ -664,7 +664,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 8d754fc957255a29d93e52fc67a895045cdc8703
   React-logger: 454ffb01980778a43b0153ee98721d0275b56616
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
-  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
+  react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
   react-native-webview: 88293a0f23eca8465c0433c023ec632930e644d0
   React-NativeModulesApple: ce53a3585837c99a6212070950204a129a6bad5f
   React-perflogger: 684a11499a0589cc42135d6d5cc04d0e4e0e261a
@@ -684,8 +684,8 @@ SPEC CHECKSUMS:
   React-utils: d2789c2e435e6e280b96bb43e53e910fe66ec5ff
   ReactCommon: 805c6b62061176752af50c828957ce02920931ff
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNFBApp: 09fd96441b0f556a1ef50ee70fa72160ae71ecb9
-  RNFBAuth: acaa6d305555c99497bb10ab8199a506c4d2481c
+  RNFBApp: 1a09a90a680865646fcb6ad4c7af505f36b02473
+  RNFBAuth: 4a8ebbec4c355562a74836e4b76da13b8e64080a
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1d6727ed193122f6adaf435c3de1a768326ff83b
 

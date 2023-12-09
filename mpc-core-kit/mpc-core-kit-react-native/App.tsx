@@ -30,12 +30,18 @@ import {
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
-import {Bridge} from './Bridge/Bridge';
+// import {Bridge} from './Bridge/Bridge';
 import {generatePrivate} from '@toruslabs/eccrypto';
-import {batch_size, random_generator, random_generator_free} from './Bridge';
-import * as TssLibNode from './Bridge';
+import {
+  batch_size,
+  random_generator,
+  random_generator_free,
+  Bridge,
+} from './TssLibBridge';
+import * as TssLibNode from './TssLibBridge';
 import {IAsyncStorage} from '@web3auth/mpc-core-kit';
-// import * as TssLib from '@toruslabs/tss-lib-rn-bridge/src/index';
+// import * as TssLib from '@toruslabs/tss-lib-rn-bridge';
+// import {Bridge} from '@toruslabs/tss-lib-rn-bridge/dist/Bridge';
 
 // console.log('Tsslib', TssLib);
 
