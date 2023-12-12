@@ -9,7 +9,7 @@ export interface IWalletProvider {
   getSignature: (message: string) => Promise<string>;
   sendTransaction: (amount: string, destination: string) => Promise<string>;
   getPrivateKey: () => Promise<string>;
-  deployContract: (abi: any, bytecode: string) => Promise<void>;
+  deployContract: (abi: any, bytecode: string, initValue: string) => Promise<void>;
   readContract: (contractAddress: string, contractABI: any) => Promise<string>;
   writeContract: (contractAddress: string, contractABI: any, updatedNumber: string) => Promise<string>;
 }

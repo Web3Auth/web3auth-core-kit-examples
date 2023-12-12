@@ -5,6 +5,7 @@ import Console from "../components/Console";
 import Header from "../components/Header";
 import NotConnectedPage from "../components/NotConnectedPage";
 import Sidebar from "../components/Sidebar";
+import SourceCode from "../components/SourceCode";
 import { useWeb3Auth } from "../services/web3auth";
 
 function HomePage() {
@@ -24,6 +25,7 @@ function HomePage() {
               <div className="py-16 w-11/12 ">
                 <AccountDetails />
                 <Console />
+                <SourceCode />
               </div>
             </div>
           </>

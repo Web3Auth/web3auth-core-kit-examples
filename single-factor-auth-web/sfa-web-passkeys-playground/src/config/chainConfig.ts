@@ -3,15 +3,6 @@ import { CHAIN_NAMESPACES, CustomChainConfig } from "@web3auth/base";
 export const chain: {
   [key: string]: CustomChainConfig;
 } = {
-  Ethereum: {
-    chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: "0x1",
-    displayName: "Ethereum Mainnet",
-    rpcTarget: "https://rpc.ankr.com/eth",
-    blockExplorer: "https://etherscan.io",
-    ticker: "ETH",
-    tickerName: "Ethereum",
-  },
   "Goerli Testnet": {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: "0x5",
@@ -20,6 +11,15 @@ export const chain: {
     ticker: "ETH",
     rpcTarget: "https://rpc.ankr.com/eth_goerli",
     blockExplorer: "https://goerli.etherscan.io",
+  },
+  Ethereum: {
+    chainNamespace: CHAIN_NAMESPACES.EIP155,
+    chainId: "0x1",
+    displayName: "Ethereum Mainnet",
+    rpcTarget: "https://rpc.ankr.com/eth",
+    blockExplorer: "https://etherscan.io",
+    ticker: "ETH",
+    tickerName: "Ethereum",
   },
   Polygon: {
     chainNamespace: CHAIN_NAMESPACES.EIP155,

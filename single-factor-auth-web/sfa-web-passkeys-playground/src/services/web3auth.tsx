@@ -1,4 +1,5 @@
 import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
+import { getPublicCompressed } from "@toruslabs/eccrypto";
 import { get, post } from "@toruslabs/http-helpers";
 import { CustomChainConfig, IProvider } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -12,9 +13,12 @@ import { getWalletProvider, IWalletProvider } from "./walletProvider";
 
 export interface IWeb3AuthContext {
   web3Auth: Web3Auth | null;
+  connected: boolean;
   provider: IWalletProvider | null;
   isLoading: boolean;
   user: any;
+  web3AuthIdToken: string;
+  playgroundConsole: string;
   address: string;
   balance: string;
   chainId: string;
@@ -31,10 +35,10 @@ export interface IWeb3AuthContext {
   sendTransaction: (amount: string, destination: string) => Promise<string>;
   getPrivateKey: () => Promise<string>;
   getChainId: () => Promise<string>;
-  deployContract: (abi: any, bytecode: string) => Promise<any>;
+  deployContract: (abi: any, bytecode: string, initValue: string) => Promise<any>;
   readContract: (contractAddress: string, contractABI: any) => Promise<string>;
   writeContract: (contractAddress: string, contractABI: any, updatedNumber: string) => Promise<string>;
-  verifyServerSide: () => Promise<any>;
+  verifyServerSide: (idToken: string) => Promise<any>;
   switchChain: (network: string) => Promise<void>;
   updateConnectedChain: (network: string) => void;
   updateEmail: (email: string) => void;
@@ -43,16 +47,19 @@ export interface IWeb3AuthContext {
 
 export const Web3AuthContext = createContext<IWeb3AuthContext>({
   web3Auth: null,
+  connected: false,
   provider: null,
   isLoading: false,
   user: null,
+  web3AuthIdToken: "",
   address: "",
   balance: "",
   chainId: "",
   email: "",
+  playgroundConsole: "",
   isWebAuthnLoginEnabled: false,
   isWebAuthnRegistrationEnabled: false,
-  connectedChain: chain.Ethereum,
+  connectedChain: chain["Goerli Testnet"],
   login: async () => {},
   logout: async () => {},
   getUserInfo: async () => null,
@@ -84,23 +91,23 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
   const [web3Auth, setWeb3Auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IWalletProvider | null>(null);
   const [address, setAddress] = useState<string>("");
+  const [playgroundConsole, setPlaygroundConsole] = useState<string>("");
   const [balance, setBalance] = useState<string>("");
   const [user, setUser] = useState<any>(null);
+  const [web3AuthIdToken, setWeb3AuthIdToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [chainId, setChainId] = useState<any>(null);
+  const [connected, setConnected] = useState<boolean>(false);
 
   const [email, setEmail] = useState<string>("");
   const isWebAuthnSupported = browserSupportsWebAuthn();
   const [isWebAuthnLoginEnabled, setIsWebAuthnLoginEnabled] = useState(false);
   const [isWebAuthnRegistrationEnabled, setIsWebAuthnRegistrationEnabled] = useState(false);
 
-  const [connectedChain, setConnectedChain] = useState<CustomChainConfig>(chain.Ethereum);
+  const [connectedChain, setConnectedChain] = useState<CustomChainConfig>(chain["Goerli Testnet"]);
 
-  const uiConsole = (...args: unknown[]): void => {
-    const el = document.querySelector("#console");
-    if (el) {
-      el.innerHTML = JSON.stringify(args || {}, null, 2);
-    }
+  const uiConsole = (...args: unknown[]) => {
+    setPlaygroundConsole(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${playgroundConsole}`);
     console.log(...args);
   };
 
@@ -134,13 +141,15 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
         });
 
         const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
-          config: { chainConfig: chain.Ethereum },
+          config: { chainConfig: chain["Goerli Testnet"] },
         });
 
         await web3AuthInstance.init(ethereumPrivateKeyProvider);
         if (web3AuthInstance.status === "connected") {
           setWalletProvider(web3AuthInstance.provider);
+          setWeb3AuthIdToken((await web3AuthInstance.authenticateUser()).idToken);
           setUser(await web3AuthInstance.getUserInfo());
+          setConnected(true);
         }
         setWeb3Auth(web3AuthInstance);
       } catch (error) {
@@ -243,7 +252,6 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
   const login = async () => {
     if (!web3Auth) {
       uiConsole("web3auth not initialized yet");
-      uiConsole("web3auth not initialized yet");
       return;
     }
 
@@ -255,8 +263,10 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
         verifierId: email!,
       });
       if (web3Auth.status === "connected") {
+        setWeb3AuthIdToken((await web3Auth.authenticateUser()).idToken);
         setWalletProvider(web3Auth.provider);
         setUser(await web3Auth.getUserInfo());
+        setConnected(true);
       }
     } else {
       uiConsole("Please register first");
@@ -267,11 +277,11 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     uiConsole("Logging out");
     if (!web3Auth) {
       uiConsole("web3auth not initialized yet");
-      uiConsole("web3auth not initialized yet");
       return;
     }
     await web3Auth.logout();
     setProvider(null);
+    setConnected(false);
   };
 
   const getUserInfo = async () => {
@@ -352,12 +362,12 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     return CurrentChainId;
   };
 
-  const deployContract = async (abi: any, bytecode: string): Promise<void> => {
+  const deployContract = async (abi: any, bytecode: string, initValue: string): Promise<void> => {
     if (!web3Auth) {
       uiConsole("web3auth not initialized yet");
       return;
     }
-    await provider!.deployContract(abi, bytecode);
+    await provider!.deployContract(abi, bytecode, initValue);
   };
 
   const readContract = async (contractAddress: string, contractABI: any): Promise<string> => {
@@ -384,23 +394,47 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     }
   };
 
-  const verifyServerSide = async () => {
-    if (!provider) {
-      uiConsole("provider not initialized yet");
-      return;
+  const parseToken = (token: any) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace("-", "+").replace("_", "/");
+      return JSON.parse(window.atob(base64 || ""));
+    } catch (err) {
+      console.error(err);
+      return null;
     }
-    const token = await web3Auth!.authenticateUser();
+  };
 
-    const jwks = jose.createRemoteJWKSet(new URL("https://api.openlogin.com/jwks"));
+  const verifyServerSide = async (idTokenInFrontend: string) => {
+    try {
+      if (!provider) {
+        uiConsole("provider not initialized yet");
+        return;
+      }
+      const privKey: string = await web3Auth.provider?.request({
+        method: "eth_private_key",
+      });
+      const pubkey = getPublicCompressed(Buffer.from(privKey, "hex")).toString("hex");
 
-    const jwtDecoded = await jose.jwtVerify(token.idToken, jwks, {
-      algorithms: ["ES256"],
-    });
-
-    if ((jwtDecoded.payload as any).wallets[0].public_key === address) {
-      uiConsole("Validation Success!");
-    } else {
-      uiConsole("Failed");
+      const jwks = jose.createRemoteJWKSet(new URL("https://authjs.web3auth.io/jwks"));
+      const jwtDecoded = await jose.jwtVerify(idTokenInFrontend, jwks, {
+        algorithms: ["ES256"],
+      });
+      if ((jwtDecoded.payload as any).wallets[0].public_key === pubkey) {
+        uiConsole(
+          "Validation Success!",
+          "Public Key from Provider: ",
+          pubkey,
+          "Public Key from decoded JWT: ",
+          (jwtDecoded.payload as any).wallets[0].public_key,
+          "Parsed Id Token: ",
+          await parseToken(idTokenInFrontend)
+        );
+      } else {
+        uiConsole("Validation Failed", "Wallet from decoded JWT: ", (jwtDecoded.payload as any).wallets[0]);
+      }
+    } catch (e) {
+      uiConsole(e);
     }
   };
 
@@ -425,6 +459,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
 
   const contextProvider = {
     web3Auth,
+    connected,
     provider,
     user,
     isLoading,
@@ -432,7 +467,9 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     balance,
     chainId,
     connectedChain,
+    playgroundConsole,
     email,
+    web3AuthIdToken,
     isWebAuthnLoginEnabled,
     isWebAuthnRegistrationEnabled,
     login,

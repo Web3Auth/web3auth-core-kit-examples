@@ -27,7 +27,7 @@ const ConnectWeb3AuthButton = () => {
     return null;
   }
   return (
-    <div className="w-11/12 px-4 sm:px-6 lg:px-8  z-0">
+    <div className="px-4 sm:px-6 lg:px-8  z-0">
       <div className="md:p-8 p-4 mt-6 mb-0 space-y-4 rounded-lg bg-white overflow-hidden">
         <label className="text-lg text-gray-700 font-medium">Enter Your Email</label>
         <input

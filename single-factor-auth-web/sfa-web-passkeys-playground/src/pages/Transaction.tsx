@@ -5,6 +5,7 @@ import Form from "../components/Form";
 import Header from "../components/Header";
 import NotConnectedPage from "../components/NotConnectedPage";
 import Sidebar from "../components/Sidebar";
+import SourceCode from "../components/SourceCode";
 import Tabs from "../components/Tabs";
 import { useWeb3Auth } from "../services/web3auth";
 
@@ -102,6 +103,7 @@ function Transaction() {
               </Form>
             )}
             <Console />
+            <SourceCode />
           </div>
         ) : (
           <NotConnectedPage />

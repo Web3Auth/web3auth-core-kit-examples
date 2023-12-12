@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import UserProfile from "../components/UserProfile";
 import { useWeb3Auth } from "../services/web3auth";
 
 const Sidebar = () => {
@@ -13,12 +14,9 @@ const Sidebar = () => {
   function goToTransaction() {
     navigate("/transaction");
   }
-  // function goToContract() {
-  //   navigate("/contract");
-  // }
-  // function goToNft() {
-  //   navigate("/nft");
-  // }
+  function goToContract() {
+    navigate("/contract");
+  }
   // function goToServerSideVerification() {
   //   navigate("/server-side-verification");
   // }
@@ -58,8 +56,7 @@ const Sidebar = () => {
         <nav className="flex flex-col mt-6">
           {location.pathname === "/" ? activePage("Main Page") : linktoGo("Main Page", goToHome)}
           {location.pathname === "/transaction" ? activePage("Signing/ Transaction") : linktoGo("Signing/ Transaction", goToTransaction)}
-          {/* {location.pathname === "/contract" ? activePage("Smart Contract Interactions") : linktoGo("Smart Contract Interactions", goToContract)} */}
-          {/* {location.pathname === "/nft" ? activePage("NFT Interactions") : linktoGo("NFT Interactions", goToNft)} */}
+          {location.pathname === "/contract" ? activePage("Smart Contract Interactions") : linktoGo("Smart Contract Interactions", goToContract)}
           {/* {location.pathname === "/server-side-verification"
             ? activePage("Server Side Verification")
             : linktoGo("Server Side Verification", goToServerSideVerification)} */}
@@ -67,6 +64,7 @@ const Sidebar = () => {
           {connectedChain.chainId === "0x5" || connectedChain.chainId === "0x13881" ? linktoGo("Faucet Link", goToFaucet) : null}
         </nav>
       </div>
+      <UserProfile />
     </div>
   );
 };
