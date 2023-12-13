@@ -12,7 +12,6 @@ import React, {useEffect, useState} from 'react';
 import {tKey, chainConfig} from './tkey';
 import {ShareSerializationModule} from '@tkey/share-serialization';
 import {SfaServiceProvider} from '@tkey/service-provider-sfa';
-import {ReactNativeStorageModule} from '@tkey/react-native-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
 import {ethers, keccak256} from 'ethers';
@@ -27,25 +26,17 @@ import {
   TssShareType,
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
+  asyncGetFactor,
+  asyncStoreFactor,
   parseToken,
 } from '@web3auth/mpc-core-kit';
 import * as jwt from 'jsonwebtoken';
 // import {Bridge} from './Bridge/Bridge';
-import {generatePrivate} from '@toruslabs/eccrypto';
-import {
-  batch_size,
-  random_generator,
-  random_generator_free,
-  Bridge,
-} from './TssLibBridge';
-import * as TssLibNode from './TssLibBridge';
+import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {IAsyncStorage} from '@web3auth/mpc-core-kit';
-// import * as TssLib from '@toruslabs/tss-lib-rn-bridge';
-// import {Bridge} from '@toruslabs/tss-lib-rn-bridge/dist/Bridge';
+import {BN} from 'bn.js';
 
-// console.log('Tsslib', TssLib);
-
-// const verifier = 'w3a-firebase-demo';
 const verifier = 'torus-test-health';
 
 const privateKey1 =
@@ -118,7 +109,6 @@ class ReactStorage implements IAsyncStorage {
 }
 
 export default function App() {
-  const [tKeyInitialised, setTKeyInitialised] = useState(false);
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState({});
@@ -141,9 +131,8 @@ export default function App() {
           web3AuthClientId: 'torus-key-test',
           web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
           uxMode: 'react-native',
-          // storageKey: new ReactStorage(),
           asyncStorageKey: new ReactStorage(),
-          tssLib: TssLibNode,
+          tssLib: TssLibRN,
         });
         await coreKitInstancelocal.init();
         setCoreKitInstance(coreKitInstancelocal);
@@ -243,46 +232,42 @@ export default function App() {
       // if (coreKitInstance.provider) {
       //   setProvider(coreKitInstance.provider);
       // }
-      await tKey.initialize();
+      var {requiredFactors} = coreKitInstance.getKeyDetails();
 
-      setTKeyInitialised(true);
+      uiConsole('requiredFactors', requiredFactors);
 
-      var {requiredShares} = tKey.getKeyDetails();
-
-      uiConsole('requiredShares', requiredShares);
-
-      if (requiredShares > 0) {
+      if (requiredFactors > 0) {
         uiConsole(
           'Please enter your backup shares, requiredShares:',
-          requiredShares,
+          requiredFactors,
         );
-      } else {
-        await reconstructKey();
       }
+      // else {
+      // await reconstructKey();
+      // }
     } catch (e) {
       uiConsole(e);
       setLoading(false);
     }
   };
 
-  const reconstructKey = async () => {
-    try {
-      const reconstructedKey = await tKey.reconstructKey();
-      const privateKey = reconstructedKey?.privKey.toString('hex');
+  // const reconstructKey = async () => {
+  //   try {
+  //     const reconstructedKey = await tKey.reconstructKey();
+  //     const privateKey = reconstructedKey?.privKey.toString('hex');
 
-      await ethereumPrivateKeyProvider.setupProvider(privateKey);
-      setProvider(ethereumPrivateKeyProvider);
-      setLoggedIn(true);
-      setDeviceShare();
-    } catch (e) {
-      uiConsole(e);
-    }
-  };
+  //     await ethereumPrivateKeyProvider.setupProvider(privateKey);
+  //     setProvider(ethereumPrivateKeyProvider);
+  //     setLoggedIn(true);
+  //     setDeviceShare();
+  //   } catch (e) {
+  //     uiConsole(e);
+  //   }
+  // };
 
-  const inputRecoveryShare = async (share: string) => {
+  const inputRecoveryShare = async (factorKey: string) => {
     try {
-      await tKey.inputShare(share);
-      await reconstructKey();
+      await coreKitInstance?.inputFactorKey(new BN(factorKey, 'hex'));
       uiConsole('Recovery Share Input Successfully');
       return;
     } catch (error) {
@@ -295,39 +280,40 @@ export default function App() {
       uiConsole('tKey not initialized yet');
       return;
     }
-    const keyDetail = await tKey.getKeyDetails();
+    const keyDetail = await coreKitInstance.getKeyDetails();
     uiConsole(keyDetail);
   };
 
   const setDeviceShare = async () => {
+    if (!coreKitInstance) {
+      uiConsole('MPC core kit not initialized yet');
+      return;
+    }
     try {
-      const generateShareResult = await tKey.generateNewShare();
-      const share = await tKey.outputShareStore(
-        generateShareResult.newShareIndex,
+      const newFactor = await coreKitInstance?.createFactor({
+        shareType: TssShareType.DEVICE,
+      });
+      await asyncStoreFactor(
+        new BN(newFactor, 'hex'),
+        coreKitInstance,
+        new ReactStorage(),
       );
-      await (
-        tKey.modules.reactNativeStorage as ReactNativeStorageModule
-      ).storeDeviceShare(share);
-      uiConsole('Device Share Set', JSON.stringify(share));
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
   };
 
   const getDeviceShare = async () => {
+    if (!coreKitInstance) {
+      uiConsole('MPC core kit not initialized yet');
+      return;
+    }
     try {
-      const share = await (
-        tKey.modules.reactNativeStorage as ReactNativeStorageModule
-      ).getStoreFromReactNativeStorage();
-
-      if (share) {
-        uiConsole(
-          'Device Share Captured Successfully across',
-          JSON.stringify(share),
-        );
-        setRecoveryShare(share.share.share.toString('hex'));
-        return share;
+      const result = await asyncGetFactor(coreKitInstance, new ReactStorage());
+      if (result) {
+        return result;
       }
+
       uiConsole('Device Share Not found');
       return null;
     } catch (error) {
@@ -459,7 +445,7 @@ export default function App() {
     // This is a critical function that should only be used for testing purposes
     // Resetting your account means clearing all the metadata associated with it from the metadata server
     // The key details will be deleted from our server and you will not be able to recover your account
-    if (!tKeyInitialised) {
+    if (!coreKitInstance) {
       throw new Error('tKeyInitialised is initialised yet');
     }
     await tKey.storageLayer.setMetadata({
@@ -522,13 +508,13 @@ export default function App() {
           await getDeviceShare();
           setLoading(false);
         }}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
       />
       <Input
         value={recoveryShare}
         placeholder="Recovery Share"
         onChangeText={value => setRecoveryShare(value)}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
         inputContainerStyle={styles.inputField}
       />
       <Button
@@ -537,18 +523,18 @@ export default function App() {
           await inputRecoveryShare(recoveryShare);
           setLoading(false);
         }}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
       />
       <Button
         title="Reset Account"
         onPress={criticalResetAccount}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
       />
       <Input
         value={mnemonicShare}
         placeholder="Enter Mnemonic Share"
         onChangeText={value => setMnemonicShare(value)}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
         inputContainerStyle={styles.inputField}
       />
       <Button
@@ -557,25 +543,14 @@ export default function App() {
           await MnemonicToShareHex(mnemonicShare);
           setLoading(false);
         }}
-        disabled={!tKeyInitialised}
+        disabled={!coreKitInstance}
       />
       {loading && <ActivityIndicator />}
     </View>
   );
-  const sendMsg = async () => {
-    batch_size();
-    let state = generatePrivate().toString('base64');
-    let rng = await random_generator(state);
-    await random_generator_free(rng);
-  };
+
   return (
     <View style={styles.container}>
-      <Button
-        title="send WebView"
-        onPress={async () => {
-          sendMsg();
-        }}
-      />
       <Bridge />
       {loggedIn ? loggedInView : unloggedInView}
       <View style={styles.consoleArea}>
