@@ -47,6 +47,7 @@
     "@react-native/eslint-config": "^0.74.0",
     "@react-native/metro-config": "^0.73.2",
     "@tsconfig/react-native": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/metro-config": "^0.76.3",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",

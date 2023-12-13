@@ -11,14 +11,12 @@ import {
 import React, {useEffect, useState} from 'react';
 import {tKey, chainConfig} from './tkey';
 import {ShareSerializationModule} from '@tkey/share-serialization';
-import {SfaServiceProvider} from '@tkey/service-provider-sfa';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
-import {ethers, keccak256} from 'ethers';
+import {ethers} from 'ethers';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
-import {IProvider} from '@web3auth/base';
+import {SafeEventEmitterProvider} from '@web3auth/base';
 import 'react-native-url-polyfill/auto';
-// import * as TssLibNode from '@toruslabs/tss-lib-rn';
 
 import {Input} from '@rneui/themed';
 import {
@@ -28,21 +26,13 @@ import {
   Web3AuthMPCCoreKit,
   asyncGetFactor,
   asyncStoreFactor,
+  keyToMnemonic,
   parseToken,
 } from '@web3auth/mpc-core-kit';
-import * as jwt from 'jsonwebtoken';
-// import {Bridge} from './Bridge/Bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {IAsyncStorage} from '@web3auth/mpc-core-kit';
 import {BN} from 'bn.js';
-
-const verifier = 'torus-test-health';
-
-const privateKey1 =
-  'MEECAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEJzAlAgEBBCCD7oLrcKae+jVZPGx52Cb/lKhdKxpXjl9eGNa1MlY57A==';
-const jwtPrivateKey = `-----BEGIN PRIVATE KEY-----\n${privateKey1}\n-----END PRIVATE KEY-----`;
-const alg: jwt.Algorithm = 'ES256';
 
 const mockLogin2 = async (email: string) => {
   const req = new Request(
@@ -68,30 +58,6 @@ const mockLogin2 = async (email: string) => {
   return {idToken, parsedToken};
 };
 
-export const mockLogin = async (email: string) => {
-  const iat = Math.floor(Date.now() / 1000);
-  const payload = {
-    iss: 'torus-key-test',
-    aud: 'torus-key-test',
-    name: email,
-    email,
-    scope: 'email',
-    iat,
-    eat: iat + 120,
-  };
-
-  const algo = {
-    expiresIn: 120,
-    algorithm: alg,
-  };
-
-  const token = jwt.sign(payload, jwtPrivateKey, algo);
-  // const idToken = token;
-  // const parsedToken = parseToken(idToken);
-  // return {idToken, parsedToken, testing: 'testing'};
-  return {testing: 'testing', token};
-};
-
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: {
     chainConfig,
@@ -109,8 +75,9 @@ class ReactStorage implements IAsyncStorage {
 }
 
 export default function App() {
-  const [provider, setProvider] = useState<IProvider | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
+    null,
+  );
   const [userInfo, setUserInfo] = useState({});
   const [recoveryShare, setRecoveryShare] = useState<string>('');
   const [mnemonicShare, setMnemonicShare] = useState<string>('');
@@ -138,7 +105,7 @@ export default function App() {
         setMpcCoreKitInstance(mpcCoreKitInstancelocal);
 
         if (mpcCoreKitInstancelocal.provider) {
-          // setProvider(coreKitInstancelocal.provider);
+          setProvider(mpcCoreKitInstancelocal.provider);
         }
         if (mpcCoreKitInstancelocal.status === COREKIT_STATUS.REQUIRED_SHARE) {
           uiConsole(
@@ -156,40 +123,17 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // const parseToken = (token: any) => {
-  //   try {
-  //     const base64Url = token.split('.')[1];
-  //     const base64 = base64Url.replace('-', '+').replace('_', '/');
-  //     return JSON.parse(atob(base64 || ''));
-  //   } catch (err) {
-  //     uiConsole(err);
-  //     return null;
-  //   }
-  // };
-
   const login = async () => {
-    // uiConsole('Logging in');
-    // let me = new URL('https://www.google.com');
-    // uiConsole(me);
-    // if (me) {
-    //   return;
-    // }
     try {
       setConsoleUI('Logging in');
       setLoading(true);
-      const loginRes = await mockLogin2('emaileample2');
-      uiConsole('Login success', loginRes);
-      const idToken = await loginRes.idToken;
-      uiConsole('idToken', idToken);
-      const parsedToken = parseToken(idToken);
-      setUserInfo(parsedToken);
 
       if (!mpcCoreKitInstance) {
         uiConsole('coreKitInstance not initialized yet');
         return;
       }
 
-      let mlogin = await mockLogin2('testing0001');
+      let mlogin = await mockLogin2('shahbaz123');
       uiConsole('mlogin');
       await mpcCoreKitInstance.loginWithJWT({
         verifier: 'torus-test-health',
@@ -211,21 +155,6 @@ export default function App() {
         (await mpcCoreKitInstance.getPublic()).toString('hex'),
       );
 
-      let msg = 'hello world';
-      let msgHash = keccak256(Buffer.from(msg));
-      uiConsole('msgHash', msgHash);
-      let signature = await mpcCoreKitInstance.sign(
-        Buffer.from(msgHash.substring(2), 'hex'),
-      );
-      console.log(signature);
-
-      const factor = await mpcCoreKitInstance.createFactor({
-        shareType: TssShareType.RECOVERY,
-      });
-      console.log(factor);
-      // if (coreKitInstance.provider) {
-      //   setProvider(coreKitInstance.provider);
-      // }
       var {requiredFactors} = mpcCoreKitInstance.getKeyDetails();
 
       uiConsole('requiredFactors', requiredFactors);
@@ -235,29 +164,14 @@ export default function App() {
           'Please enter your backup shares, requiredShares:',
           requiredFactors,
         );
+      } else {
+        setProvider(mpcCoreKitInstance.provider);
       }
-      // else {
-      // await reconstructKey();
-      // }
     } catch (e) {
       uiConsole(e);
       setLoading(false);
     }
   };
-
-  // const reconstructKey = async () => {
-  //   try {
-  //     const reconstructedKey = await tKey.reconstructKey();
-  //     const privateKey = reconstructedKey?.privKey.toString('hex');
-
-  //     await ethereumPrivateKeyProvider.setupProvider(privateKey);
-  //     setProvider(ethereumPrivateKeyProvider);
-  //     setLoggedIn(true);
-  //     setDeviceShare();
-  //   } catch (e) {
-  //     uiConsole(e);
-  //   }
-  // };
 
   const inputRecoveryShare = async (factorKey: string) => {
     try {
@@ -278,6 +192,22 @@ export default function App() {
     uiConsole(keyDetail);
   };
 
+  const createRecoveryFactor = async () => {
+    if (!mpcCoreKitInstance) {
+      uiConsole('MPC core kit not initialized yet');
+      return;
+    }
+    try {
+      const newFactor = await mpcCoreKitInstance?.createFactor({
+        shareType: TssShareType.RECOVERY,
+      });
+      uiConsole('New Recovery Share Created');
+      uiConsole(newFactor);
+    } catch (error) {
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
+    }
+  };
+
   const setDeviceShare = async () => {
     if (!mpcCoreKitInstance) {
       uiConsole('MPC core kit not initialized yet');
@@ -292,6 +222,7 @@ export default function App() {
         mpcCoreKitInstance,
         new ReactStorage(),
       );
+      uiConsole('Device Share Set');
     } catch (error) {
       uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
@@ -308,6 +239,8 @@ export default function App() {
         new ReactStorage(),
       );
       if (result) {
+        uiConsole('Device Share Found');
+        uiConsole(result);
         return result;
       }
 
@@ -329,18 +262,18 @@ export default function App() {
   };
 
   const exportMnemonicShare = async () => {
+    if (!mpcCoreKitInstance) {
+      uiConsole('MPC core kit not initialized yet');
+      return;
+    }
     try {
-      const generateShareResult = await tKey.generateNewShare();
-      const share = await tKey.outputShareStore(
-        generateShareResult.newShareIndex,
-      ).share.share;
-      const mnemonic = await (
-        tKey.modules.shareSerialization as ShareSerializationModule
-      ).serialize(share, 'mnemonic');
-      uiConsole(mnemonic);
-      return mnemonic;
+      const newFactor = await mpcCoreKitInstance?.createFactor({
+        shareType: TssShareType.RECOVERY,
+      });
+      const mnemonic = keyToMnemonic(newFactor);
+      uiConsole('Mnemonic Share Generated', mnemonic);
     } catch (error) {
-      uiConsole(error);
+      uiConsole('Error', (error as any)?.message.toString(), 'error');
     }
   };
 
@@ -379,7 +312,7 @@ export default function App() {
     const signer = await ethersProvider.getSigner();
 
     // Get user's Ethereum public address
-    const address = signer.getAddress();
+    const address = await signer.getAddress();
     uiConsole(address);
   };
 
@@ -433,8 +366,9 @@ export default function App() {
 
   const logout = async () => {
     setProvider(null);
-    setLoggedIn(false);
     setUserInfo({});
+    setCoreKitStatus(COREKIT_STATUS.NOT_INITIALIZED);
+    await mpcCoreKitInstance?.logout();
     uiConsole('logged out');
   };
 
@@ -483,6 +417,9 @@ export default function App() {
       </TouchableOpacity>
       <TouchableOpacity onPress={setDeviceShare}>
         <Text>Set Device Share</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={createRecoveryFactor}>
+        <Text>Create Recovery Factor</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={deleteDeviceShare}>
         <Text>Delete Device Share</Text>
@@ -549,7 +486,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Bridge />
-      {loggedIn ? loggedInView : unloggedInView}
+      {coreKitStatus === COREKIT_STATUS.LOGGED_IN
+        ? loggedInView
+        : unloggedInView}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
