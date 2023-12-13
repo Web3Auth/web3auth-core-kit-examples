@@ -116,7 +116,7 @@ export default function App() {
   const [mnemonicShare, setMnemonicShare] = useState<string>('');
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [coreKitInstance, setCoreKitInstance] =
+  const [mpcCoreKitInstance, setMpcCoreKitInstance] =
     useState<Web3AuthMPCCoreKit | null>(null);
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
     COREKIT_STATUS.NOT_INITIALIZED,
@@ -127,26 +127,26 @@ export default function App() {
       // Initialization of Service Provider
       try {
         await (tKey.serviceProvider as any).init(ethereumPrivateKeyProvider);
-        const coreKitInstancelocal = new Web3AuthMPCCoreKit({
+        const mpcCoreKitInstancelocal = new Web3AuthMPCCoreKit({
           web3AuthClientId: 'torus-key-test',
           web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
           uxMode: 'react-native',
           asyncStorageKey: new ReactStorage(),
           tssLib: TssLibRN,
         });
-        await coreKitInstancelocal.init();
-        setCoreKitInstance(coreKitInstancelocal);
+        await mpcCoreKitInstancelocal.init();
+        setMpcCoreKitInstance(mpcCoreKitInstancelocal);
 
-        if (coreKitInstancelocal.provider) {
+        if (mpcCoreKitInstancelocal.provider) {
           // setProvider(coreKitInstancelocal.provider);
         }
-        if (coreKitInstancelocal.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        if (mpcCoreKitInstancelocal.status === COREKIT_STATUS.REQUIRED_SHARE) {
           uiConsole(
             'required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]',
           );
         }
 
-        setCoreKitStatus(coreKitInstancelocal.status);
+        setCoreKitStatus(mpcCoreKitInstancelocal.status);
         console.log(coreKitStatus);
       } catch (error) {
         console.error(error);
@@ -184,55 +184,49 @@ export default function App() {
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifierId = parsedToken.email;
-
-      await (tKey.serviceProvider as SfaServiceProvider).connect({
-        verifier,
-        verifierId,
-        idToken,
-      });
-      if (!coreKitInstance) {
+      if (!mpcCoreKitInstance) {
         uiConsole('coreKitInstance not initialized yet');
         return;
       }
 
       let mlogin = await mockLogin2('testing0001');
       uiConsole('mlogin');
-      await coreKitInstance.loginWithJWT({
+      await mpcCoreKitInstance.loginWithJWT({
         verifier: 'torus-test-health',
         verifierId: mlogin.parsedToken.email,
         idToken: mlogin.idToken,
       });
 
-      setCoreKitStatus(coreKitInstance.status);
+      mpcCoreKitInstance.getKeyDetails();
+      setCoreKitStatus(mpcCoreKitInstance.status);
 
-      console.log('publickey', (await coreKitInstance.getPublic()).length);
-      console.log('publickey', await coreKitInstance.getPublic());
+      console.log('publickey', (await mpcCoreKitInstance.getPublic()).length);
+      console.log('publickey', await mpcCoreKitInstance.getPublic());
       console.log(
         'publickey',
-        Buffer.from(await coreKitInstance.getPublic()).toString('base64'),
+        Buffer.from(await mpcCoreKitInstance.getPublic()).toString('base64'),
       );
       console.log(
         'publickey',
-        (await coreKitInstance.getPublic()).toString('hex'),
+        (await mpcCoreKitInstance.getPublic()).toString('hex'),
       );
 
       let msg = 'hello world';
       let msgHash = keccak256(Buffer.from(msg));
       uiConsole('msgHash', msgHash);
-      let signature = await coreKitInstance.sign(
+      let signature = await mpcCoreKitInstance.sign(
         Buffer.from(msgHash.substring(2), 'hex'),
       );
       console.log(signature);
 
-      const factor = await coreKitInstance.createFactor({
+      const factor = await mpcCoreKitInstance.createFactor({
         shareType: TssShareType.RECOVERY,
       });
       console.log(factor);
       // if (coreKitInstance.provider) {
       //   setProvider(coreKitInstance.provider);
       // }
-      var {requiredFactors} = coreKitInstance.getKeyDetails();
+      var {requiredFactors} = mpcCoreKitInstance.getKeyDetails();
 
       uiConsole('requiredFactors', requiredFactors);
 
@@ -267,7 +261,7 @@ export default function App() {
 
   const inputRecoveryShare = async (factorKey: string) => {
     try {
-      await coreKitInstance?.inputFactorKey(new BN(factorKey, 'hex'));
+      await mpcCoreKitInstance?.inputFactorKey(new BN(factorKey, 'hex'));
       uiConsole('Recovery Share Input Successfully');
       return;
     } catch (error) {
@@ -280,22 +274,22 @@ export default function App() {
       uiConsole('tKey not initialized yet');
       return;
     }
-    const keyDetail = await coreKitInstance.getKeyDetails();
+    const keyDetail = await mpcCoreKitInstance?.getKeyDetails();
     uiConsole(keyDetail);
   };
 
   const setDeviceShare = async () => {
-    if (!coreKitInstance) {
+    if (!mpcCoreKitInstance) {
       uiConsole('MPC core kit not initialized yet');
       return;
     }
     try {
-      const newFactor = await coreKitInstance?.createFactor({
+      const newFactor = await mpcCoreKitInstance?.createFactor({
         shareType: TssShareType.DEVICE,
       });
       await asyncStoreFactor(
         new BN(newFactor, 'hex'),
-        coreKitInstance,
+        mpcCoreKitInstance,
         new ReactStorage(),
       );
     } catch (error) {
@@ -304,12 +298,15 @@ export default function App() {
   };
 
   const getDeviceShare = async () => {
-    if (!coreKitInstance) {
+    if (!mpcCoreKitInstance) {
       uiConsole('MPC core kit not initialized yet');
       return;
     }
     try {
-      const result = await asyncGetFactor(coreKitInstance, new ReactStorage());
+      const result = await asyncGetFactor(
+        mpcCoreKitInstance,
+        new ReactStorage(),
+      );
       if (result) {
         return result;
       }
@@ -445,7 +442,7 @@ export default function App() {
     // This is a critical function that should only be used for testing purposes
     // Resetting your account means clearing all the metadata associated with it from the metadata server
     // The key details will be deleted from our server and you will not be able to recover your account
-    if (!coreKitInstance) {
+    if (!mpcCoreKitInstance) {
       throw new Error('tKeyInitialised is initialised yet');
     }
     await tKey.storageLayer.setMetadata({
@@ -508,13 +505,13 @@ export default function App() {
           await getDeviceShare();
           setLoading(false);
         }}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
       />
       <Input
         value={recoveryShare}
         placeholder="Recovery Share"
         onChangeText={value => setRecoveryShare(value)}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
         inputContainerStyle={styles.inputField}
       />
       <Button
@@ -523,18 +520,18 @@ export default function App() {
           await inputRecoveryShare(recoveryShare);
           setLoading(false);
         }}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
       />
       <Button
         title="Reset Account"
         onPress={criticalResetAccount}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
       />
       <Input
         value={mnemonicShare}
         placeholder="Enter Mnemonic Share"
         onChangeText={value => setMnemonicShare(value)}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
         inputContainerStyle={styles.inputField}
       />
       <Button
@@ -543,7 +540,7 @@ export default function App() {
           await MnemonicToShareHex(mnemonicShare);
           setLoading(false);
         }}
-        disabled={!coreKitInstance}
+        disabled={!mpcCoreKitInstance}
       />
       {loading && <ActivityIndicator />}
     </View>
