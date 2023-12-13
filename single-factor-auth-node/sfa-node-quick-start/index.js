@@ -26,7 +26,7 @@ var sub = Math.random().toString(36).substring(7);
 var token = jwt.sign(
   {
     sub: sub,
-    name: 'Mohammad Yashovardhan Mishra Jang',
+    name: 'Mohammad Yashovardhan Mishra',
     email: 'devrel@web3auth.io',
     aud: 'urn:api-web3auth-io',
     iss: 'https://web3auth.io',
@@ -47,5 +47,6 @@ const connect = async () => {
   console.log("ETH PrivateKey: ", eth_private_key);
   const eth_address = await provider.request({ method: "eth_accounts" });
   console.log("ETH Address: ", eth_address[0]);
+  process.exit(0);
 };
 connect();
