@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import '@ethersproject/shims';
+// IMP START - Quick Start
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   ScrollView,
@@ -9,20 +9,29 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
+// IMP END - Quick Start
+import '@ethersproject/shims';
+// IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';
+// IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {decode as atob} from 'base-64';
-import {IProvider} from '@web3auth/base';
+import { decode as atob } from 'base-64';
+import { IProvider } from '@web3auth/base';
 
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
-import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
-import {ethers} from 'ethers';
+import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { ethers } from 'ethers';
 
+// IMP START - Dashboard Registration
 const clientId =
   'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
+// IMP END - Dashboard Registration
 
+// IMP START - Verifier Creation
 const verifier = 'w3a-firebase-demo';
+// IMP END - Verifier Creation
 
+// IMP START - Auth Provider Login
 async function signInWithEmailPassword() {
   try {
     const res = await auth().signInWithEmailAndPassword(
@@ -34,7 +43,9 @@ async function signInWithEmailPassword() {
     console.error(error);
   }
 }
+// IMP END - Auth Provider Login
 
+// IMP START - SDK Initialization
 const chainConfig = {
   chainId: '0x1', // Please use 0x1 for Mainnet
   rpcTarget: 'https://rpc.ankr.com/eth',
@@ -50,8 +61,9 @@ const web3auth = new Web3Auth(EncryptedStorage, {
 });
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
-  config: {chainConfig},
+  config: { chainConfig },
 });
+// IMP END - SDK Initialization
 
 export default function App() {
   const [provider, setProvider] = useState<IProvider | null>(null);
@@ -61,10 +73,12 @@ export default function App() {
   const [consoleUI, setConsoleUI] = useState<string>('');
 
   useEffect(() => {
-    async function init() {
+    const init = async () => {
       try {
+        // IMP START - SDK Initialization
         await web3auth.init(privateKeyProvider);
         setProvider(web3auth.provider);
+        // IMP END - SDK Initialization
 
         if (web3auth.connected) {
           setLoggedIn(true);
@@ -91,19 +105,25 @@ export default function App() {
     try {
       setConsoleUI('Logging in');
       setLoading(true);
+      // IMP START - Auth Provider Login
       const loginRes = await signInWithEmailPassword();
+      // IMP END - Auth Provider Login
       uiConsole('Login success', loginRes);
+      // IMP START - Login
       const idToken = await loginRes!.user.getIdToken(true);
+      // IMP END - Login
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken);
       setUserInfo(parsedToken);
 
+      // IMP START - Login
       const verifierId = parsedToken.sub;
       await web3auth!.connect({
         verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
         verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
         idToken,
       });
+      // IMP END - Login
       setProvider(web3auth.provider);
 
       setLoading(false);
@@ -117,6 +137,7 @@ export default function App() {
     }
   };
 
+  // IMP START - Blockchain Calls
   const getAccounts = async () => {
     setConsoleUI('Getting account');
     // For ethers v5
@@ -170,8 +191,12 @@ export default function App() {
     const signedMessage = await signer.signMessage(originalMessage);
     uiConsole(signedMessage);
   };
+  // IMP END - Blockchain Calls
+
   const logout = async () => {
+    // IMP START - Logout
     web3auth.logout();
+    // IMP END - Logout
     setProvider(null);
     setLoggedIn(false);
     setUserInfo('');

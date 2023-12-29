@@ -9,6 +9,7 @@ module.exports = (async () => {
 
   return {
     resolver: {
+      // IMP START - Bundler Issues
       extraNodeModules: {
         assert: require.resolve("empty-module"), // assert can be polyfilled here if needed
         http: require.resolve("empty-module"), // stream-http can be polyfilled here if needed
@@ -21,6 +22,7 @@ module.exports = (async () => {
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("readable-stream"),
       },
+      // IMP END - Bundler Issues
 
       assetExts: assetExts.filter((ext) => ext !== "svg"),
 

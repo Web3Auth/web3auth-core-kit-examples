@@ -1,11 +1,13 @@
 {
   "author": "MSA",
+  "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
-    "@web3auth/ethereum-provider": "^7.0.4",
+    "@web3auth/ethereum-provider": "^7.2.1",
     "@web3auth/node-sdk": "^3.2.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2"
   },
+  "//IMP END": "IMP END - Web3Auth Installation",
   "description": "Web3Auth's Node SDK Demo App",
   "keywords": [],
   "license": "ISC",
