@@ -216,6 +216,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.1"
+  single_factor_auth_flutter:
+    dependency: "direct main"
+    description:
+      name: single_factor_auth_flutter
+      sha256: ced6369e41858e4779043079044f455ab332176fc6e65ff070db1c809395f82a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

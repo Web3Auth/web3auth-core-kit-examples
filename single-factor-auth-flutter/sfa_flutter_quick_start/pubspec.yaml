@@ -38,6 +38,7 @@ dependencies:
   firebase_auth: ^4.15.3
   firebase_core: ^2.24.2
   provider: ^6.1.1
+  single_factor_auth_flutter: ^1.0.0
 
 dev_dependencies:
   flutter_test:

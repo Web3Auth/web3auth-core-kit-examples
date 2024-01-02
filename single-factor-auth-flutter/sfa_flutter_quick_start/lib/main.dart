@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,7 +46,35 @@ class AuthenticationWrapper extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
-          return user == null ? LoginPage() : const HomePage();
+          if (user == null) {
+            return LoginPage();
+          } else {
+            return FutureBuilder<bool>(
+              // Check if the private key is available
+              future: authService.isPrivateKeyAvailable(),
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    );
+                  case ConnectionState.done:
+                    if (snapshot.hasError || snapshot.data == false) {
+                      // Private key not available, show login page or error message
+                      return LoginPage();
+                    } else {
+                      // Private key is available, show the Home page
+                      return const HomePage();
+                    }
+                  default:
+                    return const Text('Something went wrong.');
+                }
+              },
+            );
+          }
         }
         return const CircularProgressIndicator();
       },
@@ -88,15 +118,15 @@ class LoginPage extends StatelessWidget {
                 final String password = passwordController.text.trim();
 
                 if (email.isNotEmpty && password.isNotEmpty) {
-                  // Sign in or sign up logic
-                  // Use the AuthService class to handle authentication
                   final authService =
                       Provider.of<AuthService>(context, listen: false);
-
-                  // Example of sign in with email and password
-                  // Uncomment the line below if you want to use sign-up instead
-                  // await authService.signUpWithEmailAndPassword(email, password);
-                  await authService.signInWithEmailAndPassword(email, password);
+                  try {
+                    final UserCredential user = await authService
+                        .signInWithEmailAndPassword(email, password);
+                    print('User: $user');
+                  } catch (e) {
+                    print('Error signing in: $e');
+                  }
                 }
               },
               child: const Text('Sign In'),
@@ -111,6 +141,17 @@ class LoginPage extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Future<String> getUserDisplayName(User? user) async {
+    if (user != null) {
+      if (user.displayName != null && user.displayName!.isNotEmpty) {
+        return user.displayName!;
+      } else if (user.email != null && user.email!.isNotEmpty) {
+        return user.email!;
+      }
+    }
+    return 'User';
+  }
+
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
@@ -124,7 +165,82 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Welcome, ${user?.displayName ?? user?.email ?? 'User'}!'),
+            FutureBuilder<String>(
+              future: getUserDisplayName(user),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    );
+                  case ConnectionState.done:
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    return Text(
+                      'Welcome, ${snapshot.data}!',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    );
+                  default:
+                    return const Text('Something went wrong.');
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            FutureBuilder<String?>(
+              future: authService.getPrivateKey(),
+              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                    return const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    );
+                  case ConnectionState.done:
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    // Parse the JSON response
+                    final Map<String, dynamic>? privateKeyData =
+                        json.decode(snapshot.data!);
+                    // final String privateKey =
+                    //     privateKeyData?['privateKey']?.toString() ?? 'N/A';
+                    final String publicAddress =
+                        privateKeyData?['publicAddress']?.toString() ?? 'N/A';
+
+                    return Column(
+                      children: [
+                        // Text(
+                        //   'Private Key: \n$privateKey',
+                        //   textAlign: TextAlign.center,
+                        //   style: const TextStyle(
+                        //     fontSize: 18,
+                        //     fontWeight: FontWeight.bold,
+                        //     color: Colors.black,
+                        //   ),
+                        // ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Public Address: \n$publicAddress',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    );
+                  default:
+                    return const Text('Something went wrong.');
+                }
+              },
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
