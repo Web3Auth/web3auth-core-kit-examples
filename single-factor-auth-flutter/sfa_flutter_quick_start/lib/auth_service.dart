@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:single_factor_auth_flutter/input.dart';
+// IMP START - Quick Start
 import 'package:single_factor_auth_flutter/single_factor_auth_flutter.dart';
+// IMP END - Quick Start
 import 'package:flutter/widgets.dart';
 
 class AuthService extends ChangeNotifier {
@@ -26,7 +28,9 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<void> init() async {
+    // IMP START - Initialize Web3Auth SFA
     await SFA.init(Web3AuthNetwork(network: TorusNetwork.cyan));
+    // IMP END - Initialize Web3Auth SFA
   }
 
   Future<void> initialize() async {
@@ -42,10 +46,14 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String> getKey(String token) {
+    // IMP START - Get Key
     return SFA.getKey(LoginParams(
+        // IMP START - Verifier Creation
         verifier: 'web3auth-firebase-examples',
+        // IMP END - Verifier Creation
         verifierId: 'sfa.flutter@w3a.link',
         idToken: token));
+    // IMP END - Get Key
   }
 
   // Sign in with email and password

@@ -24,7 +24,9 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.sfa_flutter_quick_start"
+    // IMP START - Requirements Android
     compileSdkVersion 33
+    // IMP END - Requirements Android
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -45,8 +47,10 @@ android {
         applicationId "com.example.sfa_flutter_quick_start"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        // IMP START - Requirements Android
         minSdkVersion 33
         targetSdkVersion 33
+        // IMP END - Requirements Android
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
