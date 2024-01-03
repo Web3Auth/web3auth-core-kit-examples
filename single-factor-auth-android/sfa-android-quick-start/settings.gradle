@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // IMP START - Requirements
         maven { url "https://jitpack.io" }
     }
 }

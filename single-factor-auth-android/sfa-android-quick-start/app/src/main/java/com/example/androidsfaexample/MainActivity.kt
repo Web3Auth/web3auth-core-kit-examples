@@ -13,7 +13,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+// IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
+// IMP END - Quick Start
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusKey
@@ -34,9 +36,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        // IMP START - Initialize Web3Auth SFA
         singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
+        // IMP END - Initialize Web3Auth SFA
 
 
         // Setup UI and event handlers
@@ -80,15 +83,18 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "Issuer = $issuer")
                             val sub = jwt.getClaim("sub").asString() //get sub claims
                             Log.d(TAG, "sub = $sub")
-
+                            // IMP START - Verifier Creation
                             loginParams =
                                 LoginParams("web3auth-firebase-examples", "$sub", "$idToken")
+                            // IMP END - Verifier Creation
                             try {
+                                // IMP START - Get Key
                                 torusKey = singleFactorAuth.getKey(
                                     loginParams,
                                     this.applicationContext,
                                     86400
                                 ).get()
+                                // IMP END - Get Key
                             } catch (e: ExecutionException) {
                                 e.printStackTrace()
                             } catch (e: InterruptedException) {
