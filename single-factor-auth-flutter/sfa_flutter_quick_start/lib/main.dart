@@ -47,7 +47,7 @@ class AuthenticationWrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if (user == null) {
-            return LoginPage();
+            return const LoginPage();
           } else {
             return FutureBuilder<bool>(
               // Check if the private key is available
@@ -64,7 +64,7 @@ class AuthenticationWrapper extends StatelessWidget {
                   case ConnectionState.done:
                     if (snapshot.hasError || snapshot.data == false) {
                       // Private key not available, show login page or error message
-                      return LoginPage();
+                      return const LoginPage();
                     } else {
                       // Private key is available, show the Home page
                       return const HomePage();
@@ -83,10 +83,7 @@ class AuthenticationWrapper extends StatelessWidget {
 }
 
 class LoginPage extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,42 +93,27 @@ class LoginPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                  labelText: 'Email', hintText: 'sfa.flutter@w3a.link'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: passwordController,
-              decoration:
-                  const InputDecoration(labelText: 'Password: Testing@123'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final String email = emailController.text.trim();
-                final String password = passwordController.text.trim();
-
-                if (email.isNotEmpty && password.isNotEmpty) {
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
                   final authService =
                       Provider.of<AuthService>(context, listen: false);
                   try {
-                    final UserCredential user = await authService
-                        .signInWithEmailAndPassword(email, password);
+                    final UserCredential user =
+                        await authService.signInWithEmailAndPassword(
+                            'sfa.flutter@w3a.link', 'Testing@123');
                     print('User: $user');
                   } catch (e) {
                     print('Error signing in: $e');
                   }
-                }
-              },
-              child: const Text('Sign In'),
-            ),
-          ],
+                },
+                child: const Text('Sign In'),
+              ),
+            ],
+          ),
         ),
       ),
     );
