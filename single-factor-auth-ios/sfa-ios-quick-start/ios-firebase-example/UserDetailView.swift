@@ -1,5 +1,4 @@
 import SwiftUI
-import Web3Auth
 import web3
 
 struct UserDetailView: View {
@@ -13,6 +12,18 @@ struct UserDetailView: View {
                     Text("\(user)")
                 } header: {
                     Text("Private key")
+                }
+                Section {
+                    Button {
+                        Task.detached {
+                            await MainActor.run(body: {
+                                loggedIn.toggle()
+                            })
+                        }
+                    } label: {
+                        Label("Logout", systemImage: "arrow.left.square.fill")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .listStyle(.automatic)

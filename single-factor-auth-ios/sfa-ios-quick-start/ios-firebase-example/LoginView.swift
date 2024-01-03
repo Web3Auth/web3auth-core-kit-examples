@@ -9,7 +9,8 @@ struct LoginView: View {
                     vm.loginViaFirebaseEP()
                 },
                 label: {
-                    Text("Sign via Firebase (SFA)")
+                    Label("LogIn", systemImage: "arrow.right.square.fill")
+                        .foregroundColor(.green)
                 }
             )
 
