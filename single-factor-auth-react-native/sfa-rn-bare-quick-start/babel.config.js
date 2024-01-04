@@ -3,9 +3,7 @@ module.exports = {
   overrides: [
     {
       test: './node_modules/ethers',
-      plugins: [
-        ["@babel/plugin-transform-private-methods", { "loose": true }]
-      ]
-    }
-  ]
+      plugins: [['@babel/plugin-transform-private-methods', {loose: true}]],
+    },
+  ],
 };

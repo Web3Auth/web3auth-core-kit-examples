@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
-    "@web3auth/ethereum-provider": "^7.0.4",
-    "@web3auth/single-factor-auth-react-native": "^2.0.0",
+    "@web3auth/ethereum-provider": "^7.2.1",
+    "@web3auth/single-factor-auth-react-native": "^2.1.0",
     "base-64": "^1.0.0",
     "bn.js": "^5.2.1",
     "buffer": "^6.0.3",

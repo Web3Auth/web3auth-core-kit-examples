@@ -1,5 +1,5 @@
 // IMP START - Quick Start
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   ScrollView,
@@ -15,12 +15,12 @@ import '@ethersproject/shims';
 import auth from '@react-native-firebase/auth';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { decode as atob } from 'base-64';
-import { IProvider } from '@web3auth/base';
+import {decode as atob} from 'base-64';
+import {IProvider} from '@web3auth/base';
 
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
-import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
-import { ethers } from 'ethers';
+import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
+import {ethers} from 'ethers';
 
 // IMP START - Dashboard Registration
 const clientId =
@@ -61,7 +61,7 @@ const web3auth = new Web3Auth(EncryptedStorage, {
 });
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
-  config: { chainConfig },
+  config: {chainConfig},
 });
 // IMP END - SDK Initialization
 
@@ -86,8 +86,9 @@ export default function App() {
       } catch (error) {
         uiConsole(error, 'mounted caught');
       }
-    }
+    };
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const parseToken = (token: any) => {
