@@ -6,12 +6,16 @@ plugins {
 
 android {
     namespace 'com.example.androidsfaexample'
+    // IMP START - Requirements
     compileSdk 33
+    // IMP END - Requirements
 
     defaultConfig {
         applicationId "com.example.androidsfaexample"
+        // IMP START - Requirements
         minSdk 24
         targetSdk 33
+        // IMP END - Requirements
         versionCode 1
         versionName "1.0"
 
@@ -34,7 +38,9 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.web3auth:single-factor-auth-android:0.0.2'
+    // IMP START - Installation
+    implementation 'com.github.web3auth:single-factor-auth-android:0.0.6'
+    // IMP END - Installation
     implementation 'org.torusresearch:fetch-node-details-java:3.1.0'
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
     implementation 'com.google.firebase:firebase-auth-ktx'

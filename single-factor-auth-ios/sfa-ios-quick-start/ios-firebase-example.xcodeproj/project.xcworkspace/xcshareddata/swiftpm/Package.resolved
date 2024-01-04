@@ -109,15 +109,6 @@
       }
     },
     {
-      "identity" : "jwtdecode.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/auth0/JWTDecode.swift",
-      "state" : {
-        "revision" : "58af7278797871e460d79496621b3e5366b865b2",
-        "version" : "3.1.0"
-      }
-    },
-    {
       "identity" : "keychain-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/evgenyneu/keychain-swift.git",
@@ -176,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "51edda21fa12b4b0771fc917a00809605d0e0f1d",
-        "version" : "2.0.2"
+        "revision" : "c5eb96594103b3753330959c57791346d6c9b7d3",
+        "version" : "2.0.3"
       }
     },
     {
@@ -205,15 +196,6 @@
       "state" : {
         "revision" : "0474eb5e883bc4800b3909833207a1d35e72b808",
         "version" : "0.9.3"
-      }
-    },
-    {
-      "identity" : "web3auth-swift-sdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/web3auth/web3auth-swift-sdk",
-      "state" : {
-        "branch" : "master",
-        "revision" : "715ede508b53556e159c982a3f36bde9d672b4db"
       }
     }
   ],

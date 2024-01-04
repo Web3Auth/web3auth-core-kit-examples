@@ -1,4 +1,4 @@
-# Web3Auth Android SFA Example using Firebase for JWT
+# Web3Auth Android SFA QuickStart using Firebase for JWT
 
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-android)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
@@ -12,7 +12,7 @@ This example demonstrates how to use Web3Auth's Single Factor Authentication in 
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth/android-sfa-firebase-example w3a-sfa-android
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-android/sfa-android-quick-start w3a-sfa-android
 ```
 
 Install & Run:
