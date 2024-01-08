@@ -1,4 +1,3 @@
-// IMP START - Quick Start
 import React, {useEffect, useState} from 'react';
 import {
   Button,
@@ -9,7 +8,6 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-// IMP END - Quick Start
 import '@ethersproject/shims';
 // IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';
@@ -18,8 +16,10 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {decode as atob} from 'base-64';
 import {IProvider} from '@web3auth/base';
 
+// IMP START - Quick Start
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
+// IMP END - Quick Start
 import {ethers} from 'ethers';
 
 // IMP START - Dashboard Registration

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+// IMP START - Auth Provider Login
 import 'package:firebase_auth/firebase_auth.dart';
+// IMP END - Auth Provider Login
 import 'package:single_factor_auth_flutter/input.dart';
 // IMP START - Quick Start
 import 'package:single_factor_auth_flutter/single_factor_auth_flutter.dart';
@@ -8,7 +10,9 @@ import 'package:single_factor_auth_flutter/single_factor_auth_flutter.dart';
 import 'package:flutter/widgets.dart';
 
 class AuthService extends ChangeNotifier {
+  // IMP START - Auth Provider Login
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  // IMP END - Auth Provider Login
   final SFA = SingleFactAuthFlutter();
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -74,15 +78,22 @@ class AuthService extends ChangeNotifier {
     await _auth.signOut();
   }
 
-  // Get the current user
+ // IMP START - Auth Provider Login
+ // Get the current user
   User? getCurrentUser() {
     return _auth.currentUser;
   }
+  // IMP END - Auth Provider Login
+
 
   Future<bool> isPrivateKeyAvailable() async {
+    // IMP START - Auth Provider Login
     final User? user = _auth.currentUser;
+    // IMP END - Auth Provider Login
     if (user != null) {
+      // IMP START - Auth Provider Login
       final String? idToken = await user.getIdToken(true);
+      // IMP END - Auth Provider Login
       final String privateKey = await getKey(idToken!);
       print(privateKey);
       return privateKey.isNotEmpty;

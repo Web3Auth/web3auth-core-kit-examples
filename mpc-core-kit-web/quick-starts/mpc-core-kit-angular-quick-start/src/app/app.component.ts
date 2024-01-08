@@ -1,8 +1,8 @@
-// IMP START - Quick Start
 import { Component } from "@angular/core";
-// IMP END - Quick Start
+// IMP START - Quick Start
 import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, generateFactorKey, COREKIT_STATUS, keyToMnemonic, mnemonicToKey } from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
+// IMP END - Quick Start
 import Web3 from "web3";
 import { BN } from "bn.js";
 

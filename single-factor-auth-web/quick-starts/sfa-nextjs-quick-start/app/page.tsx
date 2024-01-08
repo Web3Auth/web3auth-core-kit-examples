@@ -3,12 +3,12 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 "use client";
 
-// IMP START - Quick Start
 import { useEffect, useState } from "react";
-// IMP END - Quick Start
+// IMP START - Quick Start
 import { Web3Auth } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+// IMP END - Quick Start
 import Web3 from "web3";
 
 // Firebase libraries for custom authentication

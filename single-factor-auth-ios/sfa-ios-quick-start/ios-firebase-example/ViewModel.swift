@@ -2,8 +2,10 @@ import Foundation
 // IMP START - Quick Start
 import SingleFactorAuth
 // IMP END - Quick Start
+// IMP START - Auth Provider Login
 import FirebaseCore
 import FirebaseAuth
+// IMP END - Auth Provider Login
 
 class ViewModel: ObservableObject {
     // IMP START - Installation
@@ -32,8 +34,10 @@ class ViewModel: ObservableObject {
     func loginViaFirebaseEP() {
         Task{
             do {
+                // IMP START - Auth Provider Login
                 let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
                 let id_token = try await res.user.getIDToken()
+                // IMP END - Auth Provider Login
                 print(id_token)
                 // IMP START - Verifier Creation
                 let verifierName = "web3auth-firebase-examples"

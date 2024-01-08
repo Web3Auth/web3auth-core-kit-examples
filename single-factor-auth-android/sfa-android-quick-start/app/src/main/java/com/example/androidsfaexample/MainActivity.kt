@@ -9,17 +9,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
+// IMP START - Auth Provider Login
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+// IMP END - Auth Provider Login
 import com.google.gson.Gson
 // IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
-// IMP END - Quick Start
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusKey
 import org.torusresearch.fetchnodedetails.types.TorusNetwork
+// IMP END - Quick Start
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -28,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var singleFactorAuthArgs: SingleFactorAuthArgs
     private lateinit var loginParams: LoginParams
     private var torusKey: TorusKey? = null
+    // IMP START - Auth Provider Login
     private lateinit var auth: FirebaseAuth
+    // IMP END - Auth Provider Login
     private var publicAddress: String = ""
     private val gson = Gson()
 
@@ -66,6 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun signIn(){
         // Initialize Firebase Auth
+        // IMP START - Auth Provider Login
         auth = Firebase.auth
         auth.signInWithEmailAndPassword("android@firebase.com", "Android@Web3Auth")
             .addOnCompleteListener(this) { task ->
@@ -75,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     user!!.getIdToken(true).addOnSuccessListener { result ->
                         val idToken = result.token
+                        // IMP END - Auth Provider Login
                         //Do whatever
                         Log.d(TAG, "GetTokenResult result = $idToken")
                         if (idToken != null) {
