@@ -1,26 +1,33 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-shadow */
 
 "use client";
 
-import { useEffect, useState } from "react";
-// IMP START - Quick Start
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, generateFactorKey, COREKIT_STATUS, keyToMnemonic, mnemonicToKey } from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-// IMP END - Quick Start
-import Web3 from 'web3';
+// IMP START - Quick Start
+import {
+  COREKIT_STATUS,
+  generateFactorKey,
+  getWebBrowserFactor,
+  IdTokenLoginParams,
+  keyToMnemonic,
+  mnemonicToKey,
+  parseToken,
+  TssShareType,
+  WEB3AUTH_NETWORK,
+  Web3AuthMPCCoreKit,
+} from "@web3auth/mpc-core-kit";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { BN } from "bn.js";
-
-
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+import { useEffect, useState } from "react";
+// IMP END - Quick Start
+import Web3 from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
-const web3AuthClientId =
-  "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
@@ -37,13 +44,11 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit(
-  {
-    web3AuthClientId,
-    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-    chainConfig,
-  }
-);
+const coreKitInstance = new Web3AuthMPCCoreKit({
+  web3AuthClientId,
+  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+  chainConfig,
+});
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -95,7 +100,7 @@ function App() {
   const login = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
       // IMP START - Auth Provider Login
       const loginRes = await signInWithGoogle();
@@ -115,13 +120,14 @@ function App() {
 
       // IMP START - Recover MFA Enabled Account
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+        uiConsole(
+          "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+        );
       }
       // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
-    }
-    catch (err) {
+    } catch (err) {
       uiConsole(err);
     }
   };
@@ -133,13 +139,15 @@ function App() {
     if (!backupFactorKey) {
       throw new Error("backupFactorKey not found");
     }
-    const factorKey = new BN(backupFactorKey, "hex")
+    const factorKey = new BN(backupFactorKey, "hex");
     await coreKitInstance.inputFactorKey(factorKey);
 
     setCoreKitStatus(coreKitInstance.status);
 
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-      uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+      uiConsole(
+        "required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+      );
     }
   };
   // IMP END - Recover MFA Enabled Account
@@ -158,7 +166,7 @@ function App() {
 
   const keyDetails = async () => {
     if (!coreKitInstance) {
-      throw new Error('coreKitInstance not found');
+      throw new Error("coreKitInstance not found");
     }
     uiConsole(coreKitInstance.getKeyDetails());
   };
@@ -181,7 +189,7 @@ function App() {
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
-      factorKey: factorKey.private
+      factorKey: factorKey.private,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
@@ -275,7 +283,8 @@ function App() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    //@ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
@@ -283,10 +292,9 @@ function App() {
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
-    uiConsole('reset');
+    uiConsole("reset");
     logout();
-  }
-
+  };
 
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");
@@ -305,12 +313,12 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={keyDetails} className='card'>
+          <button onClick={keyDetails} className="card">
             Key Details
           </button>
         </div>
         <div>
-          <button onClick={enableMFA} className='card'>
+          <button onClick={enableMFA} className="card">
             Enable MFA
           </button>
         </div>
@@ -340,7 +348,7 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={exportMnemonicFactor} className='card'>
+          <button onClick={exportMnemonicFactor} className="card">
             Generate Backup (Mnemonic)
           </button>
         </div>
@@ -353,8 +361,7 @@ function App() {
       <button onClick={login} className="card">
         Login
       </button>
-      <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"} >
-
+      <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
         <button onClick={() => getDeviceFactor()} className="card">
           Get Device Factor
         </button>
