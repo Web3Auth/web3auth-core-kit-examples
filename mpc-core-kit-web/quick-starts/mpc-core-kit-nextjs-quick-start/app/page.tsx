@@ -44,11 +44,15 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
-  web3AuthClientId,
-  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  chainConfig,
-});
+let coreKitInstance: any;
+if (typeof window !== "undefined") {
+  coreKitInstance = new Web3AuthMPCCoreKit({
+    web3AuthClientId,
+    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+    chainConfig,
+  });
+}
+
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login

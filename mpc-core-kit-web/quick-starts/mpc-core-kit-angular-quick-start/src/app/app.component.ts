@@ -1,14 +1,24 @@
 import { Component } from "@angular/core";
-// IMP START - Quick Start
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, generateFactorKey, COREKIT_STATUS, keyToMnemonic, mnemonicToKey } from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-// IMP END - Quick Start
-import Web3 from "web3";
+// IMP START - Quick Start
+import {
+  COREKIT_STATUS,
+  generateFactorKey,
+  getWebBrowserFactor,
+  IdTokenLoginParams,
+  keyToMnemonic,
+  mnemonicToKey,
+  parseToken,
+  TssShareType,
+  WEB3AUTH_NETWORK,
+  Web3AuthMPCCoreKit,
+} from "@web3auth/mpc-core-kit";
 import { BN } from "bn.js";
-
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+// IMP END - Quick Start
+import Web3 from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -29,13 +39,11 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit(
-  {
-    web3AuthClientId,
-    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-    chainConfig,
-  }
-);
+const coreKitInstance = new Web3AuthMPCCoreKit({
+  web3AuthClientId,
+  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+  chainConfig,
+});
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -57,13 +65,17 @@ const firebaseConfig = {
 })
 export class AppComponent {
   title = "Web3Auth tKey Angular Quick Start";
+
   coreKitStatus: COREKIT_STATUS = COREKIT_STATUS.NOT_INITIALIZED;
-  backupFactorKey: string = "";
-  mnemonicFactor: string = "";
+
+  backupFactorKey = "";
+
+  mnemonicFactor = "";
 
   getBackupFactorKeyInputEvent(event: any) {
     this.backupFactorKey = event.target.value;
   }
+
   getMnemonicFactorInputEvent(event: any) {
     this.mnemonicFactor = event.target.value;
   }
@@ -104,7 +116,7 @@ export class AppComponent {
   login = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
       // IMP START - Auth Provider Login
       const loginRes = await this.signInWithGoogle();
@@ -124,13 +136,14 @@ export class AppComponent {
 
       // IMP START - Recover MFA Enabled Account
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        this.uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+        this.uiConsole(
+          "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+        );
       }
       // IMP END - Recover MFA Enabled Account
 
       this.coreKitStatus = coreKitInstance.status;
-    }
-    catch (err) {
+    } catch (err) {
       this.uiConsole(err);
     }
   };
@@ -143,13 +156,15 @@ export class AppComponent {
     if (!this.backupFactorKey) {
       throw new Error("backupFactorKey not found");
     }
-    const factorKey = new BN(this.backupFactorKey, "hex")
+    const factorKey = new BN(this.backupFactorKey, "hex");
     await coreKitInstance.inputFactorKey(factorKey);
 
     this.coreKitStatus = coreKitInstance.status;
 
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-      this.uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+      this.uiConsole(
+        "required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+      );
     }
   };
   // IMP END - Recover MFA Enabled Account
@@ -168,7 +183,7 @@ export class AppComponent {
 
   keyDetails = async () => {
     if (!coreKitInstance) {
-      throw new Error('coreKitInstance not found');
+      throw new Error("coreKitInstance not found");
     }
     this.uiConsole(coreKitInstance.getKeyDetails());
   };
@@ -191,7 +206,7 @@ export class AppComponent {
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
-      factorKey: factorKey.private
+      factorKey: factorKey.private,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     this.uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
@@ -207,7 +222,7 @@ export class AppComponent {
       return factorKey;
     } catch (error) {
       this.uiConsole(error);
-      return null
+      return null;
     }
   };
 
@@ -286,7 +301,7 @@ export class AppComponent {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    //@ts-ignore
+    // @ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
@@ -294,10 +309,9 @@ export class AppComponent {
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
-    this.uiConsole('reset');
+    this.uiConsole("reset");
     this.logout();
-  }
-
+  };
 
   uiConsole(...args: any[]) {
     const el = document.querySelector("#console-ui>p");
