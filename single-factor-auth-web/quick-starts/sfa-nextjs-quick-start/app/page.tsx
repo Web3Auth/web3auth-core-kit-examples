@@ -2,15 +2,17 @@
 
 "use client";
 
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { useEffect, useState } from "react";
 // IMP START - Quick Start
 import { Web3Auth } from "@web3auth/single-factor-auth";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+// IMP END - Quick Start
+// IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
-import { useEffect, useState } from "react";
-// IMP END - Quick Start
+// IMP END - Auth Provider Login
 import Web3 from "web3";
 
 // IMP START - SDK Initialization
