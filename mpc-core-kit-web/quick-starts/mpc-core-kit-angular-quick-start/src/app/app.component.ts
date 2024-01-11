@@ -1,5 +1,4 @@
 import { Component } from "@angular/core";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
 // IMP START - Quick Start
 import {
   COREKIT_STATUS,
@@ -13,12 +12,15 @@ import {
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
+// IMP END - Quick Start
+import Web3 from "web3";
 import { BN } from "bn.js";
+// IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
-// IMP END - Quick Start
-import Web3 from "web3";
+// IMP END - Auth Provider Login
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
