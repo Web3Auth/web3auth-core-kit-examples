@@ -14,7 +14,7 @@
 		"browserify-zlib": "^0.2.0",
 		"copy-webpack-plugin": "^11.0.0",
 		"html-webpack-plugin": "^5.5.0",
-		"jsrsasign": "^10.6.1",
+		"jsrsasign": "^11.0.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-scripts": "5.0.1",
