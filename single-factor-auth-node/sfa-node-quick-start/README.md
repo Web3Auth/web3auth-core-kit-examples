@@ -12,7 +12,7 @@ This example demonstrates how to use Web3Auth in Node.js environment.
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/node-sdk/node-backend-example w3a-nodejs-example
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-node/sfa-node-quick-start w3a-nodejs-example
 ```
 
 Install & Run:
