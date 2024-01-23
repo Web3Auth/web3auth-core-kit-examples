@@ -39,7 +39,7 @@ var sub = Math.random().toString(36).substring(7);
 var token = jwt.sign(
   {
     sub: sub,
-    name: 'Mohammad Yashovardhan Mishra',
+    name: 'Agrawal Alam Mishra Rawski Bherwani',
     email: 'devrel@web3auth.io',
     aud: 'urn:api-web3auth-io',
     iss: 'https://web3auth.io',
