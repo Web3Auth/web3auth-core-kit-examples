@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { tKey, chainConfig } from './tkey';
+import { tKey } from './tkey';
 import { ShareSerializationModule } from '@tkey/share-serialization';
 import { SfaServiceProvider } from '@tkey/service-provider-sfa';
 import { WebStorageModule } from '@tkey/web-storage';
@@ -25,6 +25,15 @@ const firebaseConfig = {
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
 
+const chainConfig = {
+  chainId: '0x1',
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  displayName: 'mainnet',
+  blockExplorer: 'https://etherscan.io/',
+  ticker: 'ETH',
+  tickerName: 'Ethereum',
+};
+
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: {
     chainConfig,
@@ -41,21 +50,6 @@ function App() {
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
-
-  useEffect(() => {
-    const init = async () => {
-      // Initialization of Service Provider
-      try {
-        await (tKey.serviceProvider as SfaServiceProvider).init(
-          ethereumPrivateKeyProvider,
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    init();
-  }, []);
 
   const signInWithGoogle = async (): Promise<UserCredential> => {
     try {
