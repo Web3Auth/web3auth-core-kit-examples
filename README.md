@@ -100,7 +100,6 @@ results in a standard cryptographic key provider specific to the user and applic
 | :---- | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------- |
 | `SFA` | `React Native` Firebase Example | [Single Factor Auth React Native Quick Start](/single-factor-auth-react-native/sfa-rn-bare-quick-start/) |
 | `SFA` | `React Native` Auth0 Example    | [Single Factor Auth React Native Auth0 Example](/single-factor-auth-react-native/sfa-rn-expo-auth0-example/)            |
-| `SFA` | `React Native` Aggregate Example | [Single Factor Auth React Native Aggregate Example](/single-factor-auth-react-native/sfa-rn-bare-agg-example/) |
 
 ## Questions
 
