@@ -6,6 +6,7 @@ import type { provider } from "web3-core";
 import "./App.css";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { BN } from "bn.js";
+import { BTCValidator, BitcoinComponent } from "./BitcoinComponent";
 
 const uiConsole = (...args: any[]): void => {
   const el = document.querySelector("#console>p");
@@ -37,7 +38,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit(
 function App() {
   const [backupFactorKey, setBackupFactorKey] = useState<string | undefined>(undefined);
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null);
-  const [web3, setWeb3] = useState<any>(undefined)
+  const [web3, setWeb3] = useState<Web3| undefined>(undefined)
   const [exportTssShareType, setExportTssShareType] = useState<TssShareType>(TssShareType.DEVICE);
   const [factorPubToDelete, setFactorPubToDelete] = useState<string>("");
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
@@ -473,6 +474,8 @@ function App() {
           Send Transaction
         </button>
       </div>
+
+      <BitcoinComponent coreKitInstance={coreKitInstance} />
     </>
   );
 
