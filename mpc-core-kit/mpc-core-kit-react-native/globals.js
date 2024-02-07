@@ -25,4 +25,15 @@ Object.assign(global, {
   TextDecoder: TextEncodingPolyfill.TextDecoder,
   // WebAssembly: WebAssembly,
   // BigInt: BigInt,
+  window: {
+    addEventListener: () => {
+      console.log('addEventListener is called');
+    },
+    removeEventListener: () => {
+      console.log('removeEventListener is called');
+    }
+  },
 });
+
+
+// console.log('window', global)
