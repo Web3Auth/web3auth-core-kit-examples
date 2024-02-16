@@ -359,12 +359,12 @@ export default function App() {
     const signer = await ethersProvider.getSigner();
     const originalMessage = 'YOUR_MESSAGE';
 
-    const tx = {
-      to: signer.getAddress(),
-      value: ethers.parseEther('0.1'),
-    };
-    provider.sendAsync;
-    await signer.estimateGas(tx);
+    // const tx = {
+    //   to: signer.getAddress(),
+    //   value: ethers.parseEther('0.1'),
+    // };
+    // provider.sendAsync;
+    // await signer.estimateGas(tx);
     // Sign the message
     const signedMessage = await signer.signMessage(originalMessage);
     uiConsole(signedMessage);
