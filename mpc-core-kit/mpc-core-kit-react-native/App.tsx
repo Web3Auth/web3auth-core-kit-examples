@@ -8,17 +8,17 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {tKey, chainConfig} from './tkey';
-import {ShareSerializationModule} from '@tkey/share-serialization';
+import React, { useEffect, useState } from 'react';
+import { tKey, chainConfig } from './tkey';
+import { ShareSerializationModule } from '@tkey/share-serialization';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
-import {ethers} from 'ethers';
-import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
-import {SafeEventEmitterProvider} from '@web3auth/base';
+import { ethers } from 'ethers';
+import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { SafeEventEmitterProvider } from '@web3auth/base';
 import 'react-native-url-polyfill/auto';
 
-import {Input} from '@rneui/themed';
+import { Input } from '@rneui/themed';
 import {
   COREKIT_STATUS,
   TssShareType,
@@ -29,10 +29,10 @@ import {
   keyToMnemonic,
   parseToken,
 } from '@web3auth/mpc-core-kit';
-import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import { Bridge } from '@toruslabs/react-native-tss-lib-bridge';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
-import {IAsyncStorage} from '@web3auth/mpc-core-kit';
-import {BN} from 'bn.js';
+import { IAsyncStorage } from '@web3auth/mpc-core-kit';
+import { BN } from 'bn.js';
 
 const mockLogin2 = async (email: string) => {
   const req = new Request(
@@ -45,17 +45,17 @@ const mockLogin2 = async (email: string) => {
       body: JSON.stringify({
         verifier: 'torus-key-test',
         scope: 'email',
-        extraPayload: {email},
+        extraPayload: { email },
         alg: 'ES256',
       }),
     },
   );
 
   const resp = await fetch(req);
-  const bodyJson = (await resp.json()) as {token: string};
+  const bodyJson = (await resp.json()) as { token: string };
   const idToken = bodyJson.token;
   const parsedToken = parseToken(idToken);
-  return {idToken, parsedToken};
+  return { idToken, parsedToken };
 };
 
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
@@ -96,7 +96,7 @@ export default function App() {
         await (tKey.serviceProvider as any).init(ethereumPrivateKeyProvider);
         const mpcCoreKitInstancelocal = new Web3AuthMPCCoreKit({
           web3AuthClientId: 'torus-key-test',
-          web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
+          web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
           uxMode: 'react-native',
           asyncStorageKey: new ReactStorage(),
           tssLib: TssLibRN,
@@ -155,7 +155,7 @@ export default function App() {
         (await mpcCoreKitInstance.getPublic()).toString('hex'),
       );
 
-      var {requiredFactors} = mpcCoreKitInstance.getKeyDetails();
+      var { requiredFactors } = mpcCoreKitInstance.getKeyDetails();
 
       uiConsole('requiredFactors', requiredFactors);
 
@@ -381,7 +381,7 @@ export default function App() {
     }
     await tKey.storageLayer.setMetadata({
       privKey: tKey.serviceProvider.postboxKey,
-      input: {message: 'KEY_NOT_FOUND'},
+      input: { message: 'KEY_NOT_FOUND' },
     });
     uiConsole('reset');
     logout();
