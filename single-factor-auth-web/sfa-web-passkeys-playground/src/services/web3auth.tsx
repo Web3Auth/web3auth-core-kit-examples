@@ -111,17 +111,6 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     console.log(...args);
   };
 
-  useEffect(() => {
-    async function saveEmailLocally() {
-      try {
-        await localStorage.setItem("emailForWeb3AuthPassKeysPlayground", email);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    saveEmailLocally();
-  }, [email]);
-
   const setWalletProvider = useCallback(async (web3authProvider: IProvider | null) => {
     const walletProvider = getWalletProvider(web3authProvider, uiConsole);
     setProvider(walletProvider);
@@ -159,7 +148,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       }
     }
     async function getEmailFromLocal() {
-      const localEmail = await localStorage.getItem("emailForWeb3AuthPassKeysPlayground");
+      const localEmail = localStorage.getItem("emailForWeb3AuthPassKeysPlayground");
       if (localEmail) {
         setEmail(localEmail);
       } else {
@@ -201,8 +190,9 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     }
     async function saveEmailLocally() {
       try {
-        if (email !== "") {
-          await localStorage.setItem("emailForWeb3AuthPassKeysPlayground", email);
+        const localStorageEmail = localStorage.getItem("emailForWeb3AuthPassKeysExample");
+        if (email !== "" && email !== localStorageEmail) {
+          localStorage.setItem("emailForWeb3AuthPassKeysPlayground", email);
         }
       } catch (error) {
         console.error(error);

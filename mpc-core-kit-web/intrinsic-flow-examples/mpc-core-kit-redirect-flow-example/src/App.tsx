@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey, mnemonicToKey } from "@web3auth/mpc-core-kit";
 import Web3 from "web3";
 import type { provider } from "web3-core";
@@ -21,7 +21,16 @@ const coreKitInstance = new Web3AuthMPCCoreKit(
   {
     web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
     web3AuthNetwork: selectedNetwork,
-    uxMode: 'redirect'
+    uxMode: 'redirect',
+    chainConfig: {
+      chainNamespace: "eip155",
+      chainId: "0xaa36a7",
+      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+      displayName: "Sepolia Testnet",
+      blockExplorer: "https://sepolia.etherscan.io",
+      ticker: "ETH",
+      tickerName: "Ethereum",
+    },
   }
 );
 
@@ -37,7 +46,7 @@ function App() {
   const [question, setQuestion] = useState<string | undefined>(undefined);
   const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
 
-  const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
+  const securityQuestion: TssSecurityQuestion = useMemo(() => new TssSecurityQuestion(), []);
 
   useEffect(() => {
     const init = async () => {
@@ -62,7 +71,7 @@ function App() {
       }
     };
     init();
-  }, []);
+  }, [securityQuestion]);
 
   useEffect(() => {
     if (provider) {
@@ -284,8 +293,8 @@ function App() {
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
 
-    const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
-    const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
+    const destination = "0xeaA8Af602b2eDE45922818AE5f9f7FdE50cFa1A8";
+    const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
 
     // Submit transaction to the blockchain and wait for it to be mined
     uiConsole("Sending transaction...");
