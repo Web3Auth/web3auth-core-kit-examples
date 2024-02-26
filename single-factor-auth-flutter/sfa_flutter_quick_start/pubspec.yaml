@@ -5,7 +5,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=2.18.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -19,7 +19,9 @@ dependencies:
   firebase_core: ^2.24.2
   provider: ^6.1.1
   # // IMP START - Installation
-  single_factor_auth_flutter: ^1.0.0
+  single_factor_auth_flutter: 
+    git: https://github.com/Web3Auth/single-factor-auth-flutter
+  get_it: ^7.6.7
   # // IMP END - Installation
 
 dev_dependencies:

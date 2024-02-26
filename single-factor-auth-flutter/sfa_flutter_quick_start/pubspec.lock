@@ -136,6 +136,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  get_it:
+    dependency: "direct main"
+    description:
+      name: get_it
+      sha256: e6017ce7fdeaf218dc51a100344d8cb70134b80e28b760f8bb23c242437bafd7
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.6.7"
   http_parser:
     dependency: transitive
     description:
@@ -219,11 +227,12 @@ packages:
   single_factor_auth_flutter:
     dependency: "direct main"
     description:
-      name: single_factor_auth_flutter
-      sha256: ced6369e41858e4779043079044f455ab332176fc6e65ff070db1c809395f82a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "4e11711612fbc16f946d436fbe38bf1a8a6f134b"
+      url: "https://github.com/Web3Auth/single-factor-auth-flutter"
+    source: git
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -302,5 +311,5 @@ packages:
     source: hosted
     version: "0.3.0"
 sdks:
-  dart: ">=3.2.3 <4.0.0"
+  dart: ">=3.2.0-194.0.dev <4.0.0"
   flutter: ">=3.3.0"

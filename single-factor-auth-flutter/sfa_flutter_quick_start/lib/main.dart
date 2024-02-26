@@ -1,21 +1,18 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sfa_flutter_quick_start/core/firebase.dart';
+import 'package:sfa_flutter_quick_start/core/service_locator.dart';
+import 'package:sfa_flutter_quick_start/home_page.dart';
+import 'package:sfa_flutter_quick_start/login_page.dart';
 import 'firebase_options.dart';
-import 'auth_service.dart';
-import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(
-    ChangeNotifierProvider<AuthService>(
-      create: (context) => AuthService(),
-      child: const MyApp(),
-    ),
-  );
+  await ServiceLocator.init();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -28,214 +25,43 @@ class MyApp extends StatelessWidget {
       title: 'SFA Flutter Quick Start',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade400),
-        useMaterial3: true,
       ),
       home: const AuthenticationWrapper(),
     );
   }
 }
 
-class AuthenticationWrapper extends StatelessWidget {
+class AuthenticationWrapper extends StatefulWidget {
   const AuthenticationWrapper({super.key});
 
   @override
+  State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
+}
+
+class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
+  late FirebaseHelper firebaseHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    firebaseHelper = ServiceLocator.getIt<FirebaseHelper>();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
     return StreamBuilder(
-      stream: authService.authStateChanges,
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
           if (user == null) {
             return const LoginPage();
           } else {
-            return FutureBuilder<bool>(
-              // Check if the private key is available
-              future: authService.isPrivateKeyAvailable(),
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    );
-                  case ConnectionState.done:
-                    if (snapshot.hasError || snapshot.data == false) {
-                      // Private key not available, show login page or error message
-                      return const LoginPage();
-                    } else {
-                      // Private key is available, show the Home page
-                      return const HomePage();
-                    }
-                  default:
-                    return const Text('Something went wrong.');
-                }
-              },
-            );
+            return const HomePage();
           }
         }
         return const CircularProgressIndicator();
       },
-    );
-  }
-}
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  final authService =
-                      Provider.of<AuthService>(context, listen: false);
-                  try {
-                    final UserCredential user =
-                        await authService.signInWithEmailAndPassword(
-                            'sfa.flutter@w3a.link', 'Testing@123');
-                    print('User: $user');
-                  } catch (e) {
-                    print('Error signing in: $e');
-                  }
-                },
-                child: const Text('Sign In'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  Future<String> getUserDisplayName(User? user) async {
-    if (user != null) {
-      if (user.displayName != null && user.displayName!.isNotEmpty) {
-        return user.displayName!;
-      } else if (user.email != null && user.email!.isNotEmpty) {
-        return user.email!;
-      }
-    }
-    return 'User';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-    final User? user = authService.getCurrentUser();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder<String>(
-              future: getUserDisplayName(user),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    );
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    return Text(
-                      'Welcome, ${snapshot.data}!',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    );
-                  default:
-                    return const Text('Something went wrong.');
-                }
-              },
-            ),
-            const SizedBox(height: 16),
-            FutureBuilder<String?>(
-              future: authService.getPrivateKey(),
-              builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                    );
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    // Parse the JSON response
-                    final Map<String, dynamic>? privateKeyData =
-                        json.decode(snapshot.data!);
-                    // final String privateKey =
-                    //     privateKeyData?['privateKey']?.toString() ?? 'N/A';
-                    final String publicAddress =
-                        privateKeyData?['publicAddress']?.toString() ?? 'N/A';
-
-                    return Column(
-                      children: [
-                        // Text(
-                        //   'Private Key: \n$privateKey',
-                        //   textAlign: TextAlign.center,
-                        //   style: const TextStyle(
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.bold,
-                        //     color: Colors.black,
-                        //   ),
-                        // ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Public Address: \n$publicAddress',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    );
-                  default:
-                    return const Text('Something went wrong.');
-                }
-              },
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Use the AuthService class to handle sign out
-                final authService =
-                    Provider.of<AuthService>(context, listen: false);
-                authService.signOut();
-              },
-              child: const Text('Sign Out'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
