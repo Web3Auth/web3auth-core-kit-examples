@@ -10,7 +10,7 @@
     "@web3auth/base": "^7.2.1",
     "@web3auth/ethereum-provider": "^7.2.1",
     "@web3auth/single-factor-auth": "^7.2.2",
-    "@web3auth/solana-provider": "^7.2.1",
+    "@web3auth/solana-provider": "^8.0.1",
     "ethers": "^6.9.0",
     "hamburger-react": "^2.5.0",
     "jose": "^5.1.3",
