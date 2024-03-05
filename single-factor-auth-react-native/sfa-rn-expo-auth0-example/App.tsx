@@ -71,7 +71,17 @@ const Home = () => {
   const signInWithAuth0 = async () => {
     try {
       //@ts-ignore
-      await authorize({ scope: "openid profile email" }, { customScheme: "auth0.com.web3authsfaauth0" }, { responseType: "token id_token" });
+      await authorize(
+        { 
+          scope: "openid profile email", 
+          // connection: "google-oauth2" 
+        }, 
+        { 
+          customScheme: "auth0.com.web3authsfaauth0" 
+        }, 
+        { 
+          responseType: "token id_token" 
+        });
       const credentials = await getCredentials();
 
       return credentials.idToken;
