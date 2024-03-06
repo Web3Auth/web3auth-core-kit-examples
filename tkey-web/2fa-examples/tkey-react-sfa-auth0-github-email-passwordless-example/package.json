@@ -1,0 +1,86 @@
+{
+  "name": "tkey-react-sfa-auth0-github-email-passwordless-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@auth0/auth0-react": "^2.2.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@tkey/default": "^11.0.2",
+    "@tkey/security-questions": "^11.0.2",
+    "@tkey/service-provider-sfa": "^11.0.0",
+    "@tkey/service-provider-torus": "^11.0.2",
+    "@tkey/web-storage": "^11.0.2",
+    "@toruslabs/constants": "^13.0.1",
+    "@toruslabs/customauth": "^17.0.0",
+    "@types/bn.js": "^5.1.1",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^17.0.45",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@web3auth/ethereum-provider": "^7.0.2",
+    "bn.js": "^5.2.1",
+    "eccrypto": "^1.1.6",
+    "elliptic": "^6.5.4",
+    "ethers": "^5.7.0",
+    "firebase": "^9.16.0",
+    "hi-base32": "^0.5.1",
+    "jsonwebtoken": "^8.5.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "sweetalert": "^2.1.2",
+    "typescript": "^4.9.3",
+    "web-vitals": "^2.1.4",
+    "web3": "^1.8.1",
+    "workbox-background-sync": "^6.5.4",
+    "workbox-broadcast-update": "^6.5.4",
+    "workbox-cacheable-response": "^6.5.4",
+    "workbox-core": "^6.5.4",
+    "workbox-expiration": "^6.5.4",
+    "workbox-google-analytics": "^6.5.4",
+    "workbox-navigation-preload": "^6.5.4",
+    "workbox-precaching": "^6.5.4",
+    "workbox-range-requests": "^6.5.4",
+    "workbox-routing": "^6.5.4",
+    "workbox-strategies": "^6.5.4",
+    "workbox-streams": "^6.5.4"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "serve": "serve -s build",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/authenticator": "^1.1.2",
+    "@types/eccrypto": "^1.1.4",
+    "@types/elliptic": "^6.4.15",
+    "@types/jsonwebtoken": "^9.0.3",
+    "buffer": "^6.0.3",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1"
+  }
+}
