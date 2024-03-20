@@ -1,4 +1,4 @@
-# Web3Auth MPC React Aggregate Verifier Popup Example
+# Web3Auth MPC Core Kit React Popup Example
 
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/mpc-core-kit)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's tKey MPC Beta in a React environ
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example w3a-mpc-aggregate-verifier-example
+npx degit Web3Auth/web3auth-core-kit-examples/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-popup-flow-example w3a-mpc-popup-example
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-mpc-aggregate-verifier-example
+cd w3a-mpc-popup-example
 npm install
 npm run start
 # or
-cd w3a-mpc-aggregate-verifier-example
+cd w3a-mpc-popup-example
 yarn
 yarn start
 ```

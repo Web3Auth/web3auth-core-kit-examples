@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey, mnemonicToKey } from "@web3auth/mpc-core-kit";
+import { useEffect, useState } from "react";
+import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams, TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion, generateFactorKey } from "@web3auth/mpc-core-kit";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 
@@ -21,16 +21,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit(
   {
     web3AuthClientId: 'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ',
     web3AuthNetwork: selectedNetwork,
-    uxMode: 'redirect',
-    chainConfig: {
-      chainNamespace: "eip155",
-      chainId: "0xaa36a7",
-      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-      displayName: "Sepolia Testnet",
-      blockExplorer: "https://sepolia.etherscan.io",
-      ticker: "ETH",
-      tickerName: "Ethereum",
-    },
+    uxMode: 'popup'
   }
 );
 
@@ -46,7 +37,7 @@ function App() {
   const [question, setQuestion] = useState<string | undefined>(undefined);
   const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
 
-  const securityQuestion: TssSecurityQuestion = useMemo(() => new TssSecurityQuestion(), []);
+  const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
 
   useEffect(() => {
     const init = async () => {
@@ -56,22 +47,11 @@ function App() {
         setProvider(coreKitInstance.provider);
       }
 
-      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]");
-      }
-
       setCoreKitStatus(coreKitInstance.status);
 
-      try {
-        let result = securityQuestion.getQuestion(coreKitInstance!);
-        setQuestion(result);
-      } catch (e) {
-        setQuestion(undefined);
-        uiConsole(e);
-      }
     };
     init();
-  }, [securityQuestion]);
+  }, []);
 
   useEffect(() => {
     if (provider) {
@@ -79,7 +59,6 @@ function App() {
       setWeb3(web3);
     }
   }, [provider])
-
   
   const keyDetails = async () => {
     if (!coreKitInstance) {
@@ -104,12 +83,11 @@ function App() {
 
   const login = async () => {
     try {
-      // Triggering Login using Service Provider ==> opens the popup
       if (!coreKitInstance) {
         throw new Error('initiated to login');
       }
       const verifierConfig = {
-        subVerifierDetails: {
+        subVerifierDetails: { 
           typeOfLogin: 'google',
           verifier: 'w3a-google-demo',
           clientId:
@@ -118,12 +96,30 @@ function App() {
       } as SubVerifierDetailsParams;
 
       await coreKitInstance.loginWithOauth(verifierConfig);
+      
+
+      try {
+        let result = securityQuestion.getQuestion(coreKitInstance!);
+        setQuestion(result);
+      } catch (e) {
+        setQuestion(undefined);
+        uiConsole(e);
+      }
+
+      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        uiConsole("required more shares, please enter your backup/ device factor key, or reset account unrecoverable once reset, please use it with caution]");
+      }
+
+      if (coreKitInstance.provider) {
+        setProvider(coreKitInstance.provider);
+      }
+
       setCoreKitStatus(coreKitInstance.status);
 
     } catch (error: unknown) {
-      console.error(error);
+      uiConsole(error);
     }
-  };
+  }
 
   const getDeviceShare = async () => {
     const factorKey = await getWebBrowserFactor(coreKitInstance!);
@@ -187,12 +183,7 @@ function App() {
       shareType: exportTssShareType,
       factorKey: factorKey.private
     });
-    let mnemonic = keyToMnemonic(factorKey.private.toString('hex'));
-    let key = mnemonicToKey(mnemonic);
-
     uiConsole("Export factor key: ", factorKey);
-    console.log("menmonic : ", mnemonic);
-    console.log("key: ", key);  
   }
 
   const deleteFactor = async (): Promise<void> => {
@@ -293,8 +284,8 @@ function App() {
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
 
-    const destination = "0xeaA8Af602b2eDE45922818AE5f9f7FdE50cFa1A8";
-    const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
+    const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
+    const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
 
     // Submit transaction to the blockchain and wait for it to be mined
     uiConsole("Sending transaction...");
@@ -343,7 +334,7 @@ function App() {
       throw new Error("coreKitInstance is not set");
     }
     const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = await keyToMnemonic(factorKey);
+    const factorKeyMnemonic = keyToMnemonic(factorKey);
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   }
@@ -481,7 +472,7 @@ function App() {
       <button onClick={() => login()} className="card">
         Login
       </button>
-      <div className={coreKitStatus=== COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv" } >
+      <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv" } >
 
         <button onClick={() => getDeviceShare()} className="card">
           Get Device Share
@@ -516,7 +507,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit 
         </a> {" "}
-        Redirect Flow Example
+        Popup Flow Example
       </h1>
 
       <div className="grid">{provider ? loggedInView : unloggedInView}</div>
@@ -525,7 +516,7 @@ function App() {
       </div>
 
       <footer className="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/intrinsic-flow-examples/mpc-core-kit-redirect-flow-example" target="_blank" rel="noopener noreferrer">
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-popup-flow-example" target="_blank" rel="noopener noreferrer">
           Source code
         </a>
       </footer>
