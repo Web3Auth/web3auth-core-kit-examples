@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 // IMP START - Quick Start
 import {
   COREKIT_STATUS,
@@ -12,19 +13,18 @@ import {
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
-// IMP END - Quick Start
-import Web3 from "web3";
 import { BN } from "bn.js";
 // IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+// IMP END - Quick Start
+import Web3 from "web3";
 // IMP END - Auth Provider Login
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
-const web3AuthClientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
@@ -33,12 +33,12 @@ const verifier = "w3a-firebase-demo";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7",
+  displayName: "Ethereum Sepolia",
+  tickerName: "Ethereum Sepolia",
   ticker: "ETH",
-  tickerName: "Ethereum",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  blockExplorer: "https://sepolia.etherscan.io",
 };
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
@@ -73,6 +73,8 @@ export class AppComponent {
   backupFactorKey = "";
 
   mnemonicFactor = "";
+
+  currentWalletIndex = 0;
 
   getBackupFactorKeyInputEvent(event: any) {
     this.backupFactorKey = event.target.value;
@@ -178,6 +180,7 @@ export class AppComponent {
     }
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
+    this.setTSSWalletIndex(this.currentWalletIndex);
 
     this.uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   };
@@ -294,6 +297,33 @@ export class AppComponent {
     );
     this.uiConsole(signedMessage);
   };
+
+  sendTransaction = async () => {
+    try {
+      if (!coreKitInstance) {
+        this.uiConsole("provider not initialized yet");
+        return;
+      }
+      const web3 = new Web3(coreKitInstance.provider as any);
+
+      const fromAddress = (await web3.eth.getAccounts())[0];
+
+      const destination = "0x7DF1fEf832b57E46dE2E1541951289C04B2781Aa";
+      const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
+
+      // Submit transaction to the blockchain and wait for it to be mined
+      this.uiConsole("Sending transaction...");
+      const receipt = await web3.eth.sendTransaction({
+        from: fromAddress,
+        to: destination,
+        value: amount,
+      });
+      this.uiConsole(receipt);
+    } catch (error) {
+      this.uiConsole(error);
+    }
+  };
+
   // IMP END - Blockchain Calls
 
   criticalResetAccount = async (): Promise<void> => {
@@ -303,7 +333,6 @@ export class AppComponent {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    // @ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
@@ -315,10 +344,18 @@ export class AppComponent {
     this.logout();
   };
 
+  setTSSWalletIndex = async (index = 0) => {
+    await coreKitInstance.setTssWalletIndex(index);
+    this.currentWalletIndex = index;
+    // log new account details
+    await this.getAccounts();
+  };
+
   uiConsole(...args: any[]) {
     const el = document.querySelector("#console-ui>p");
     if (el) {
       el.innerHTML = JSON.stringify(args || {}, null, 2);
     }
+    console.log(args);
   }
 }

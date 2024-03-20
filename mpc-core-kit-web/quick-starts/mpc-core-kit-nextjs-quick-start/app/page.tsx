@@ -36,12 +36,12 @@ const verifier = "w3a-firebase-demo";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7",
+  displayName: "Ethereum Sepolia",
+  tickerName: "Ethereum Sepolia",
   ticker: "ETH",
-  tickerName: "Ethereum",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  blockExplorer: "https://sepolia.etherscan.io",
 };
 
 let coreKitInstance: any;
@@ -71,6 +71,7 @@ function App() {
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
   const [backupFactorKey, setBackupFactorKey] = useState<string>("");
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
+  const [currentWalletIndex, setCurrentWalletIndex] = useState<number>(0);
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
@@ -163,6 +164,7 @@ function App() {
     }
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
+    setTSSWalletIndex(currentWalletIndex);
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   };
@@ -258,6 +260,32 @@ function App() {
     uiConsole(balance);
   };
 
+  const sendTransaction = async () => {
+    try {
+      if (!coreKitInstance) {
+        uiConsole("provider not initialized yet");
+        return;
+      }
+      const web3 = new Web3(coreKitInstance.provider as any);
+
+      const fromAddress = (await web3.eth.getAccounts())[0];
+
+      const destination = "0x7DF1fEf832b57E46dE2E1541951289C04B2781Aa";
+      const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
+
+      // Submit transaction to the blockchain and wait for it to be mined
+      uiConsole("Sending transaction...");
+      const receipt = await web3.eth.sendTransaction({
+        from: fromAddress,
+        to: destination,
+        value: amount,
+      });
+      uiConsole(receipt);
+    } catch (error) {
+      uiConsole(error);
+    }
+  };
+
   const signMessage = async () => {
     if (!coreKitInstance) {
       uiConsole("provider not initialized yet");
@@ -300,6 +328,13 @@ function App() {
     logout();
   };
 
+  const setTSSWalletIndex = async (index = 0) => {
+    await coreKitInstance.setTssWalletIndex(index);
+    setCurrentWalletIndex(index);
+    // log new account details
+    await getAccounts();
+  };
+
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");
     if (el) {
@@ -332,6 +367,17 @@ function App() {
           </button>
         </div>
         <div>
+          <button onClick={() => setTSSWalletIndex(1)} className="card">
+            Switch to wallet index: 1
+          </button>
+          <button onClick={() => setTSSWalletIndex(2)} className="card">
+            Switch to wallet index: 2
+          </button>
+          <button onClick={() => setTSSWalletIndex(0)} className="card">
+            Switch to wallet index: 0/default
+          </button>
+        </div>
+        <div>
           <button onClick={getBalance} className="card">
             Get Balance
           </button>
@@ -339,6 +385,9 @@ function App() {
         <div>
           <button onClick={signMessage} className="card">
             Sign Message
+          </button>
+          <button onClick={sendTransaction} className="card">
+            Send Transaction
           </button>
         </div>
         <div>
@@ -392,7 +441,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit
         </a>{" "}
-        React Quick Start
+        NextJS Quick Start
       </h1>
 
       <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
@@ -402,7 +451,7 @@ function App() {
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-react-quick-start"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-nextjs-quick-start"
           target="_blank"
           rel="noopener noreferrer"
         >

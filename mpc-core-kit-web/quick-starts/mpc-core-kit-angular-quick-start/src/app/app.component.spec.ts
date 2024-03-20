@@ -1,31 +1,30 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import { TestBed } from "@angular/core/testing";
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
+import { AppComponent } from "./app.component";
+
+describe("AppComponent", function () {
+  beforeEach(async function () {
     await TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+      declarations: [AppComponent],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
+  it("should create the app", function () {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'angular-web3auth-modal'`, () => {
+  it(`should have as title 'angular-web3auth-modal'`, function () {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-web3auth-modal');
+    expect(app.title).toEqual("angular-web3auth-modal");
   });
 
-  it('should render title', () => {
+  it("should render title", function () {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('angular-web3auth-modal app is running!');
+    expect(compiled.querySelector(".content span")?.textContent).toContain("angular-web3auth-modal app is running!");
   });
 });

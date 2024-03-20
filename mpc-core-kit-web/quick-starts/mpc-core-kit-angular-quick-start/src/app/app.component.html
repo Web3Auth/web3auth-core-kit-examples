@@ -20,11 +20,23 @@
       <button class="card card-small" (click)="getAccounts()">
         Get Accounts
       </button>
+      <button class="card card-small" (click)="setTSSWalletIndex(1)">
+        Switch to wallet index: 1
+      </button>
+      <button class="card card-small" (click)="setTSSWalletIndex(2)">
+        Switch to wallet index: 2
+      </button>
+      <button class="card card-small" (click)="setTSSWalletIndex(0)">
+        Switch to wallet index: 0/default
+      </button>
       <button class="card card-small" (click)="getBalance()">
         Get Balance
       </button>
       <button class="card card-small" (click)="signMessage()">
         Sign Message
+      </button>
+      <button class="card card-small" (click)="sendTransaction()">
+        Send Transaction
       </button>
       <button class="card card-small" (click)="logout()">Log Out</button>
       <button (click)="criticalResetAccount()" class="card card-small">
