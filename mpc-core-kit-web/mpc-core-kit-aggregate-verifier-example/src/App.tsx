@@ -118,7 +118,6 @@ function App() {
     uiConsole(pubsHex);
   };
 
-  // Generate a unique storage key based on the user's email and login method
   const generateStorageKey = (email: string, loginMethod: string) => {
     return `walletIndex_${loginMethod}_${email}`;
   };
@@ -339,6 +338,13 @@ function App() {
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+      const storageKey = generateStorageKey(email, typeOfLogin);
+      localStorage.setItem(storageKey, '0');
+    }
     await coreKitInstance.tKey.storageLayer.setMetadata({
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
@@ -352,19 +358,23 @@ function App() {
       uiConsole("web3 not initialized yet");
       return;
     }
-    const fromAddress = (await web3.eth.getAccounts())[0];
+    try {
+      const fromAddress = (await web3.eth.getAccounts())[0];
 
-    const destination = "0x7DF1fEf832b57E46dE2E1541951289C04B2781Aa";
-    const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
+      const destination = "0x7DF1fEf832b57E46dE2E1541951289C04B2781Aa";
+      const amount = web3.utils.toWei("0.001"); 
 
-    // Submit transaction to the blockchain and wait for it to be mined
-    uiConsole("Sending transaction...");
-    const receipt = await web3.eth.sendTransaction({
-      from: fromAddress,
-      to: destination,
-      value: amount,
-    });
-    uiConsole(receipt);
+      // Submit transaction to the blockchain and wait for it to be mined
+      uiConsole("Sending transaction...");
+      const receipt = await web3.eth.sendTransaction({
+        from: fromAddress,
+        to: destination,
+        value: amount,
+      });
+      uiConsole(receipt);
+    } catch (error) {
+      uiConsole(error);
+    }
   };
 
   const createSecurityQuestion = async (question: string, answer: string) => {
