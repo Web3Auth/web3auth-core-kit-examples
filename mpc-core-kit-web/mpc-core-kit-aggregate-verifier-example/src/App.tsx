@@ -11,6 +11,7 @@ import {
   TssSecurityQuestion,
   generateFactorKey,
 } from "@web3auth/mpc-core-kit";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import Web3 from "web3";
 import type { provider } from "web3-core";
 
@@ -26,12 +27,23 @@ const uiConsole = (...args: any[]): void => {
   console.log(...args);
 };
 
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0xaa36a7",
+  displayName: "Ethereum Sepolia",
+  tickerName: "Ethereum Sepolia",
+  ticker: "ETH",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  blockExplorer: "https://sepolia.etherscan.io",
+};
+
 const selectedNetwork = WEB3AUTH_NETWORK.MAINNET;
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
   web3AuthNetwork: selectedNetwork,
   uxMode: "popup",
+  chainConfig,
 });
 
 function App() {
@@ -45,6 +57,7 @@ function App() {
   const [newAnswer, setNewAnswer] = useState<string | undefined>(undefined);
   const [question, setQuestion] = useState<string | undefined>(undefined);
   const [newQuestion, setNewQuestion] = useState<string | undefined>(undefined);
+  const [currentWalletIndex, setCurrentWalletIndex] = useState<number>(0);
 
   const securityQuestion: TssSecurityQuestion = new TssSecurityQuestion();
 
@@ -60,6 +73,22 @@ function App() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if(coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      const userInfo = coreKitInstance?.getUserInfo();
+      if (userInfo) {
+        const email = userInfo.email;
+        const loginMethod = userInfo.typeOfLogin;
+        const storageKey = generateStorageKey(email, loginMethod);
+        const storedIndex = localStorage.getItem(storageKey);
+        if (storedIndex) {
+          setCurrentWalletIndex(parseInt(storedIndex));
+          setTSSWalletIndex(parseInt(storedIndex));
+        }
+      }
+    }
+  }, [coreKitInstance]);
 
   useEffect(() => {
     if (provider) {
@@ -87,6 +116,11 @@ function App() {
       return Point.fromTkeyPoint(pub).toBufferSEC1(true).toString("hex");
     });
     uiConsole(pubsHex);
+  };
+
+  // Generate a unique storage key based on the user's email and login method
+  const generateStorageKey = (email: string, loginMethod: string) => {
+    return `walletIndex_${loginMethod}_${email}`;
   };
 
   const login = async () => {
@@ -126,6 +160,12 @@ function App() {
       }
 
       setCoreKitStatus(coreKitInstance.status);
+
+      const userInfo = coreKitInstance.getUserInfo();
+      if (userInfo) {
+        const { email, typeOfLogin } = userInfo;
+        updateWalletIndexFromStorage(email, typeOfLogin);
+      }
     } catch (error: unknown) {
       uiConsole(error);
     }
@@ -135,6 +175,19 @@ function App() {
     const factorKey = await getWebBrowserFactor(coreKitInstance!);
     setBackupFactorKey(factorKey);
     uiConsole("Device share: ", factorKey);
+  };
+
+  const updateWalletIndexFromStorage = (email: string, loginMethod: string) => {
+    const storageKey = generateStorageKey(email, loginMethod);
+    const storedIndex = localStorage.getItem(storageKey);
+    if (storedIndex) {
+      const index = parseInt(storedIndex);
+      setTSSWalletIndex(index);
+      setCurrentWalletIndex(index);
+    }
+    else{
+      setTSSWalletIndex(currentWalletIndex);
+    }
   };
 
   const inputBackupFactorKey = async () => {
@@ -205,6 +258,11 @@ function App() {
     const pubBuffer = Buffer.from(factorPubToDelete, "hex");
     const pub = Point.fromBufferSEC1(pubBuffer);
     await coreKitInstance.deleteFactor(pub.toTkeyPoint());
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+    }
     uiConsole("factor deleted");
   };
 
@@ -296,8 +354,8 @@ function App() {
     }
     const fromAddress = (await web3.eth.getAccounts())[0];
 
-    const destination = "0x2E464670992574A613f10F7682D5057fB507Cc21";
-    const amount = web3.utils.toWei("0.0001"); // Convert 1 ether to wei
+    const destination = "0x7DF1fEf832b57E46dE2E1541951289C04B2781Aa";
+    const amount = web3.utils.toWei("0.001"); // Convert 1 ether to wei
 
     // Submit transaction to the blockchain and wait for it to be mined
     uiConsole("Sending transaction...");
@@ -319,6 +377,11 @@ function App() {
     if (result) {
       setQuestion(question);
     }
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+    }
   };
 
   const changeSecurityQuestion = async (newQuestion: string, newAnswer: string, answer: string) => {
@@ -330,6 +393,11 @@ function App() {
     if (result) {
       setQuestion(question);
     }
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+    }
   };
 
   const deleteSecurityQuestion = async () => {
@@ -338,6 +406,11 @@ function App() {
     }
     await securityQuestion.deleteSecurityQuestion(coreKitInstance);
     setQuestion(undefined);
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+    }
   };
 
   const enableMFA = async () => {
@@ -346,8 +419,28 @@ function App() {
     }
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
+    const userInfo = coreKitInstance.getUserInfo();
+    if (userInfo) {
+      const { email, typeOfLogin } = userInfo;
+      updateWalletIndexFromStorage(email, typeOfLogin);
+    }
 
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
+  };
+
+  const setTSSWalletIndex = async (index = 0) => {
+    await coreKitInstance.setTssWalletIndex(index);
+    const userInfo = coreKitInstance?.getUserInfo();
+    if (userInfo) {
+      const email = userInfo.email;
+      const loginMethod = userInfo.typeOfLogin;
+      const storageKey = generateStorageKey(email, loginMethod);
+      localStorage.setItem(storageKey, index.toString());
+    }
+    // Update state and ensure UI is in sync
+    setCurrentWalletIndex(index);
+    // Log new account details
+    await getAccounts();
   };
 
   const loggedInView = (
@@ -381,6 +474,18 @@ function App() {
 
         <button onClick={logout} className="card">
           Log Out
+        </button>
+      </div>
+      <h2 className="subtitle">Multi Account</h2>
+      <div className="flex-container">
+        <button onClick={() => setTSSWalletIndex(1)} className="card">
+          Switch to wallet index: 1
+        </button>
+        <button onClick={() => setTSSWalletIndex(2)} className="card">
+          Switch to wallet index: 2
+        </button>
+        <button onClick={() => setTSSWalletIndex(0)} className="card">
+          Switch to wallet index: 0/default
         </button>
       </div>
       <h2 className="subtitle">Recovery/ Key Manipulation</h2>
