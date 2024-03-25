@@ -13,12 +13,14 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="10.dp">
 
             <TextView
                 android:id="@+id/resultView"
                 android:layout_width="match_parent"
-                android:layout_height="198dp" />
+                android:layout_height="198dp"
+                android:layout_margin="10dp" />
 
             <ProgressBar
                 android:id="@+id/loadingIndicator"
@@ -46,31 +48,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textview_first"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="tkey Example"
-                    android:textAlignment="center" />
-
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:background="?android:attr/listDivider" />
-
-
-                <View
-                    android:id="@+id/divider2"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="?android:attr/listDivider" />
 
                 <Button
                     android:id="@+id/googleLogin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Login with Google" />
+                    android:text="Login with JWT" />
 
                 <Button
                     android:id="@+id/createThresholdKey"
@@ -109,13 +92,13 @@
                     android:text="Delete Recent Generated Share" />
 
                 <View
-                    android:id="@+id/divider4"
+                    android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:background="?android:attr/listDivider" />
 
                 <TextView
-                    android:id="@+id/textview_first2"
+                    android:id="@+id/security_question_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Security Question"
@@ -140,13 +123,13 @@
                     android:text="Show Password" />
 
                 <View
-                    android:id="@+id/divider5"
+                    android:id="@+id/divider2"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:background="?android:attr/listDivider" />
 
                 <TextView
-                    android:id="@+id/textview_first3"
+                    android:id="@+id/seed_phrase_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Seed Phrase"
@@ -177,13 +160,13 @@
                     android:text="Delete Seed Phrase" />
 
                 <View
-                    android:id="@+id/divider6"
+                    android:id="@+id/divider3"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:background="?android:attr/listDivider" />
 
                 <TextView
-                    android:id="@+id/textview_first4"
+                    android:id="@+id/share_serialization_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Share Serialization"
@@ -196,13 +179,13 @@
                     android:text="Export Share" />
 
                 <View
-                    android:id="@+id/divider7"
+                    android:id="@+id/divider4"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:background="?android:attr/listDivider" />
 
                 <TextView
-                    android:id="@+id/textview_first5"
+                    android:id="@+id/private_key_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Private Key"
@@ -227,7 +210,7 @@
                     android:text="Get Accounts" />
 
                 <View
-                    android:id="@+id/divider8"
+                    android:id="@+id/divider5"
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
                     android:background="?android:attr/listDivider" />

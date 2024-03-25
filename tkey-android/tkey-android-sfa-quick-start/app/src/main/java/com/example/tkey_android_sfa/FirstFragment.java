@@ -758,74 +758,80 @@ public class FirstFragment extends Fragment {
 
     private void userHasNotLoggedInWithGoogle() {
         requireActivity().runOnUiThread(() -> {
+            binding.googleLogin.setVisibility(View.VISIBLE);
             binding.googleLogin.setEnabled(true);
-            binding.createThresholdKey.setEnabled(false);
-            binding.reconstructThresholdKey.setEnabled(false);
-            binding.generateNewShare.setEnabled(false);
-            binding.deleteShare.setEnabled(false);
-            binding.deleteSeedPhrase.setEnabled(false);
-            binding.resetAccount.setEnabled(false);
-            binding.getKeyDetails.setEnabled(false);
-            binding.addPassword.setEnabled(false);
-            binding.changePassword.setEnabled(false);
-            binding.showPassword.setEnabled(false);
-            binding.setSeedPhrase.setEnabled(false);
-            binding.deleteSeedPhrase.setEnabled(false);
-            binding.exportShare.setEnabled(false);
-            binding.getPrivateKey.setEnabled(false);
-            binding.setPrivateKey.setEnabled(false);
-            binding.changeSeedPhrase.setEnabled(false);
-            binding.getSeedPhrase.setEnabled(false);
-            binding.getAccounts.setEnabled(false);
+
+            binding.createThresholdKey.setVisibility(View.GONE);
+            binding.reconstructThresholdKey.setVisibility(View.GONE);
+            binding.generateNewShare.setVisibility(View.GONE);
+            binding.deleteShare.setVisibility(View.GONE);
+            binding.deleteSeedPhrase.setVisibility(View.GONE);
+            binding.resetAccount.setVisibility(View.GONE);
+            binding.getKeyDetails.setVisibility(View.GONE);
+            binding.addPassword.setVisibility(View.GONE);
+            binding.changePassword.setVisibility(View.GONE);
+            binding.showPassword.setVisibility(View.GONE);
+            binding.setSeedPhrase.setVisibility(View.GONE);
+            binding.deleteSeedPhrase.setVisibility(View.GONE);
+            binding.exportShare.setVisibility(View.GONE);
+            binding.getPrivateKey.setVisibility(View.GONE);
+            binding.setPrivateKey.setVisibility(View.GONE);
+            binding.changeSeedPhrase.setVisibility(View.GONE);
+            binding.getSeedPhrase.setVisibility(View.GONE);
+            binding.getAccounts.setVisibility(View.GONE);
+            binding.divider.setVisibility(View.GONE);
+            binding.divider2.setVisibility(View.GONE);
+            binding.divider3.setVisibility(View.GONE);
+            binding.divider4.setVisibility(View.GONE);
+            binding.divider5.setVisibility(View.GONE);
+            binding.securityQuestionText.setVisibility(View.GONE);
+            binding.seedPhraseText.setVisibility(View.GONE);
+            binding.shareSerializationText.setVisibility(View.GONE);
+            binding.privateKeyText.setVisibility(View.GONE);
         });
     }
 
     private void userHasLoggedInWithGoogle() {
         requireActivity().runOnUiThread(() -> {
-            binding.googleLogin.setEnabled(false);
-            binding.createThresholdKey.setEnabled(true);
-            binding.reconstructThresholdKey.setEnabled(false);
-            binding.generateNewShare.setEnabled(false);
-            binding.deleteShare.setEnabled(false);
-            binding.deleteSeedPhrase.setEnabled(false);
-            binding.resetAccount.setEnabled(true);
-            binding.getKeyDetails.setEnabled(false);
-            binding.addPassword.setEnabled(false);
-            binding.changePassword.setEnabled(false);
-            binding.showPassword.setEnabled(false);
-            binding.setSeedPhrase.setEnabled(false);
-            binding.deleteSeedPhrase.setEnabled(false);
-            binding.exportShare.setEnabled(false);
-            binding.getPrivateKey.setEnabled(false);
-            binding.setPrivateKey.setEnabled(false);
-            binding.changeSeedPhrase.setEnabled(false);
-            binding.getSeedPhrase.setEnabled(false);
-            binding.getAccounts.setEnabled(false);
+            binding.googleLogin.setVisibility(View.GONE);
+            binding.createThresholdKey.setVisibility(View.VISIBLE);
+            binding.resetAccount.setVisibility(View.VISIBLE);
         });
     }
 
     private void userHasCreatedTkey() {
         MainActivity activity = (MainActivity) requireActivity();
         requireActivity().runOnUiThread(() -> {
-            binding.googleLogin.setEnabled(false);
-            binding.createThresholdKey.setEnabled(false);
-            binding.reconstructThresholdKey.setEnabled(true);
-            binding.generateNewShare.setEnabled(true);
+            binding.createThresholdKey.setVisibility(View.GONE);
+            binding.reconstructThresholdKey.setVisibility(View.VISIBLE);
+            binding.generateNewShare.setVisibility(View.VISIBLE);
+            binding.deleteShare.setVisibility(View.VISIBLE);
             binding.deleteShare.setEnabled(activity.sharedpreferences.getString(SHARE_INDEX_GENERATED_ALIAS, null) != null);
-            binding.deleteSeedPhrase.setEnabled(true);
-            binding.resetAccount.setEnabled(true);
-            binding.getKeyDetails.setEnabled(true);
+            binding.deleteSeedPhrase.setVisibility(View.VISIBLE);
+            binding.resetAccount.setVisibility(View.VISIBLE);
+            binding.getKeyDetails.setVisibility(View.VISIBLE);
+            binding.addPassword.setVisibility(View.VISIBLE);
             binding.addPassword.setEnabled(!activity.sharedpreferences.getString(ADD_PASSWORD_SET_ALIAS, "").equals("SET"));
-            binding.changePassword.setEnabled(true);
-            binding.showPassword.setEnabled(true);
+            binding.changePassword.setVisibility(View.VISIBLE);
+            binding.showPassword.setVisibility(View.VISIBLE);
+            binding.setSeedPhrase.setVisibility(View.VISIBLE);
             binding.setSeedPhrase.setEnabled(!activity.sharedpreferences.getString(SEED_PHRASE_SET_ALIAS, "").equals("SET"));
-            binding.deleteSeedPhrase.setEnabled(true);
-            binding.exportShare.setEnabled(true);
-            binding.getPrivateKey.setEnabled(true);
-            binding.setPrivateKey.setEnabled(true);
-            binding.changeSeedPhrase.setEnabled(true);
-            binding.getSeedPhrase.setEnabled(true);
-            binding.getAccounts.setEnabled(true);
+            binding.deleteSeedPhrase.setVisibility(View.VISIBLE);
+            binding.exportShare.setVisibility(View.VISIBLE);
+            binding.getPrivateKey.setVisibility(View.VISIBLE);
+            binding.setPrivateKey.setVisibility(View.VISIBLE);
+            binding.changeSeedPhrase.setVisibility(View.VISIBLE);
+            binding.getSeedPhrase.setVisibility(View.VISIBLE);
+            binding.getAccounts.setVisibility(View.VISIBLE);
+            binding.divider.setVisibility(View.VISIBLE);
+            binding.divider2.setVisibility(View.VISIBLE);
+            binding.divider3.setVisibility(View.VISIBLE);
+            binding.divider4.setVisibility(View.VISIBLE);
+            binding.divider5.setVisibility(View.VISIBLE);
+            binding.securityQuestionText.setVisibility(View.VISIBLE);
+            binding.seedPhraseText.setVisibility(View.VISIBLE);
+            binding.shareSerializationText.setVisibility(View.VISIBLE);
+            binding.privateKeyText.setVisibility(View.VISIBLE);
         });
     }
 
