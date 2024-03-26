@@ -20,25 +20,5 @@
             "changeProcessCWD": true
         },
     ],
-    "cSpell.words": [],
-    "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#3399ff",
-        "activityBar.background": "#3399ff",
-        "activityBar.foreground": "#15202b",
-        "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#bf0060",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "commandCenter.border": "#e7e7e799",
-        "sash.hoverBorder": "#3399ff",
-        "statusBar.background": "#3399ff",
-        "statusBar.foreground": "#15202b",
-        "statusBarItem.hoverBackground": "#007fff",
-        "statusBarItem.remoteBackground": "#3399ff",
-        "statusBarItem.remoteForeground": "#15202b",
-        "titleBar.activeBackground": "#0066cc",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveBackground": "#0066cc99",
-        "titleBar.inactiveForeground": "#e7e7e799"
-    },
-    "peacock.color": "#007fff"
+    "cSpell.words": []
 }
