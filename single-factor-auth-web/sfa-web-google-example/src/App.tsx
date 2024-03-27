@@ -74,7 +74,7 @@ function App() {
       }
       setIsLoggingIn(true);
       const idToken = response.credential;
-      console.log(idToken);
+      // console.log(idToken);
       setIdToken(idToken!);
       const { email } = parseToken(idToken);
       await web3authSfa.connect({
@@ -99,7 +99,6 @@ function App() {
     }
     const getUserInfo = await web3authSfa.getUserInfo();
     uiConsole(getUserInfo);
-    console.log(getUserInfo);
   };
 
   const logout = async () => {
