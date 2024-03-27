@@ -74,6 +74,7 @@ function App() {
       }
       setIsLoggingIn(true);
       const idToken = response.credential;
+      console.log(idToken);
       setIdToken(idToken!);
       const { email } = parseToken(idToken);
       await web3authSfa.connect({
@@ -257,7 +258,7 @@ function App() {
     </>
   );
 
-  const logoutView = <GoogleLogin onSuccess={onSuccess} />;
+  const logoutView = <GoogleLogin onSuccess={onSuccess} useOneTap />;
 
   return (
     <div className="container">
