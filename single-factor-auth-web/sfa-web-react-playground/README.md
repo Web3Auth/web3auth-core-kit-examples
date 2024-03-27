@@ -18,11 +18,11 @@ npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-web-rea
 Install & Run:
 
 ```bash
-cd w3a-example
+cd sfa-web-playground
 npm install
 npm run start
 # or
-cd w3a-example
+cd sfa-web-playground
 yarn
 yarn start
 ```
