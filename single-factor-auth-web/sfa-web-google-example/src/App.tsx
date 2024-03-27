@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
-import { Web3Auth } from "@web3auth/single-factor-auth";
+import { Web3Auth, PrivateKeyProvider } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
@@ -46,7 +46,7 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        web3authSfa.init(ethereumPrivateKeyProvider);
+        web3authSfa.init(ethereumPrivateKeyProvider as PrivateKeyProvider);
       } catch (error) {
         console.error(error);
       }
