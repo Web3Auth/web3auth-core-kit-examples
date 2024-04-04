@@ -445,6 +445,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -473,6 +474,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -620,7 +622,7 @@
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 2.0.3;
+				version = 4.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

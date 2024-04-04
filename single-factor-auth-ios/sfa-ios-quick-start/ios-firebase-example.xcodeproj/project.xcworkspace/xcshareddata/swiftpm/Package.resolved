@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "anycodable",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Flight-School/AnyCodable",
+      "state" : {
+        "revision" : "862808b2070cd908cb04f9aafe7de83d35f81b05",
+        "version" : "0.6.7"
+      }
+    },
+    {
       "identity" : "bigint",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/attaswift/BigInt",
@@ -32,8 +41,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
-        "revision" : "19b3c3ceed117c5cc883517c4e658548315ba70b",
-        "version" : "1.6.0"
+        "revision" : "7892a123f7e8d0fe62f9f03728b17bbd4f94df5c",
+        "version" : "1.8.1"
+      }
+    },
+    {
+      "identity" : "curvelib.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tkey/curvelib.swift",
+      "state" : {
+        "revision" : "7dad3bf1793de263f83406c08c18c9316abf082f",
+        "version" : "0.1.2"
       }
     },
     {
@@ -41,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "94a0ee598abfcc2104ceeda80eecf4b55242ba62",
-        "version" : "4.0.1"
+        "revision" : "d591af500f32ce3c88d04af9bb74d746585acfea",
+        "version" : "5.1.0"
       }
     },
     {
@@ -52,15 +70,6 @@
       "state" : {
         "revision" : "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
         "version" : "9.6.0"
-      }
-    },
-    {
-      "identity" : "generic-json-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/zoul/generic-json-swift",
-      "state" : {
-        "revision" : "0a06575f4038b504e78ac330913d920f1630f510",
-        "version" : "2.0.2"
       }
     },
     {
@@ -145,21 +154,12 @@
       }
     },
     {
-      "identity" : "secp256k1.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Boilertalk/secp256k1.swift",
-      "state" : {
-        "revision" : "cd187c632fb812fd93711a9f7e644adb7e5f97f0",
-        "version" : "0.1.7"
-      }
-    },
-    {
       "identity" : "session-manager-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "c35ff97dededda353279111d0ee8468eac46213a",
-        "version" : "2.0.0"
+        "revision" : "290e36cd0646f7fb3be737b65bdfc9f5428dfd5c",
+        "version" : "3.1.0"
       }
     },
     {
@@ -167,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "c5eb96594103b3753330959c57791346d6c9b7d3",
-        "version" : "2.0.3"
+        "revision" : "f2f56e8b7002a84ac4f4d2028570c51343a3e49f",
+        "version" : "4.0.0"
       }
     },
     {
@@ -185,17 +185,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "93823201f248ce15dab59c027790da4b73375aed",
-        "version" : "5.0.0"
-      }
-    },
-    {
-      "identity" : "web3.swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/argentlabs/web3.swift",
-      "state" : {
-        "revision" : "0474eb5e883bc4800b3909833207a1d35e72b808",
-        "version" : "0.9.3"
+        "revision" : "04c62fd5f73f21bd01b7c07e08f6135db26c5940",
+        "version" : "8.0.0"
       }
     }
   ],
