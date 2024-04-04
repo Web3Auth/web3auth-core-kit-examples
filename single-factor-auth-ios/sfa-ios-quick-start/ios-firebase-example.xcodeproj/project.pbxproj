@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0D005DFA29CCB28100F7F4F7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0D005DF929CCB28100F7F4F7 /* FirebaseAuth */; };
+		2746D0532BBE7D0200E2E76D /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2746D0522BBE7D0200E2E76D /* SingleFactorAuth */; };
 		27B35B442A3F5A3C0004BB99 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */; };
-		27CEC30D2B45C8DC0032E0D1 /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */; };
 		4D9FEEE5294BAC380035414D /* ios_firebase_exampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */; };
 		4D9FEEE7294BAC380035414D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE6294BAC380035414D /* ContentView.swift */; };
 		4D9FEEE9294BAC3A0035414D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE8294BAC3A0035414D /* Assets.xcassets */; };
@@ -61,8 +61,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27CEC30D2B45C8DC0032E0D1 /* SingleFactorAuth in Frameworks */,
 				0D005DFA29CCB28100F7F4F7 /* FirebaseAuth in Frameworks */,
+				2746D0532BBE7D0200E2E76D /* SingleFactorAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +161,7 @@
 			name = "ios-firebase-example";
 			packageProductDependencies = (
 				0D005DF929CCB28100F7F4F7 /* FirebaseAuth */,
-				27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */,
+				2746D0522BBE7D0200E2E76D /* SingleFactorAuth */,
 			);
 			productName = "ios-firebase-example";
 			productReference = 4D9FEEE1294BAC380035414D /* ios-firebase-example.app */;
@@ -237,7 +237,7 @@
 			mainGroup = 4D9FEED8294BAC380035414D;
 			packageReferences = (
 				0D005DF829CCB28100F7F4F7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */,
+				2746D0512BBE7D0200E2E76D /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */,
 			);
 			productRefGroup = 4D9FEEE2294BAC380035414D /* Products */;
 			projectDirPath = "";
@@ -615,12 +615,12 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */ = {
+		2746D0512BBE7D0200E2E76D /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
-				kind = exactVersion;
-				version = 2.0.3;
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -631,9 +631,9 @@
 			package = 0D005DF829CCB28100F7F4F7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */ = {
+		2746D0522BBE7D0200E2E76D /* SingleFactorAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */;
+			package = 2746D0512BBE7D0200E2E76D /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */;
 			productName = SingleFactorAuth;
 		};
 /* End XCSwiftPackageProductDependency section */

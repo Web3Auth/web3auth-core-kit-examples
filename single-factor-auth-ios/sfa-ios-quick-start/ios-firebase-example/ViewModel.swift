@@ -9,7 +9,7 @@ import FirebaseAuth
 
 class ViewModel: ObservableObject {
     // IMP START - Installation
-    var singleFactorAuth: SingleFactorAuth?
+    var singleFactorAuth: SingleFactorAuth!
     // IMP END - Installation
     @Published var loggedIn: Bool = false
     @Published var user: String = ""
@@ -23,7 +23,7 @@ class ViewModel: ObservableObject {
             navigationTitle = "Loading"
         })
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs: .init(network: .CYAN))
+        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs: .init(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", network: .SAPPHIRE_MAINNET))
         // IMP END - Initialize Web3Auth SFA
         await MainActor.run(body: {
             isLoading = false
@@ -40,10 +40,10 @@ class ViewModel: ObservableObject {
                 // IMP END - Auth Provider Login
                 print(id_token)
                 // IMP START - Verifier Creation
-                let verifierName = "web3auth-firebase-examples"
+                let verifierName = "w3a-firebase-demo"
                 // IMP END - Verifier Creation
                 // IMP START - Get Key
-                let result = try await SingleFactorAuth(singleFactorAuthArgs: .init(network: .CYAN)).getKey(loginParams: .init(verifier: verifierName, verifierId: "ios@firebase.com", idToken: id_token))
+                let result = try await singleFactorAuth.getKey(loginParams: .init(verifier: verifierName, verifierId: res.user.uid, idToken: id_token))
                 // IMP END - Get Key
                 print(result)
                 await MainActor.run(body: {
@@ -62,7 +62,7 @@ class ViewModel: ObservableObject {
 }
 
 extension ViewModel {
-    func showResult(result: TorusKey) {
+    func showResult(result: TorusSFAKey) {
         print("""
         Signed in successfully!
             Private key: \(result.getPrivateKey())

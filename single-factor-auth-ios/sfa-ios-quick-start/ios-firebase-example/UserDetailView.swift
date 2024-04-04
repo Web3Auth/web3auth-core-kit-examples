@@ -1,5 +1,4 @@
 import SwiftUI
-import web3
 
 struct UserDetailView: View {
     @State var user: String?
