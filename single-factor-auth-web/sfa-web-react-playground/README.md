@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth with EVM in React.
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/web-no-modal-sdk/react-no-modal-playground w3a-example
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-web-react-playground sfa-web-playground
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-example
+cd sfa-web-playground
 npm install
 npm run start
 # or
-cd w3a-example
+cd sfa-web-playground
 yarn
 yarn start
 ```
