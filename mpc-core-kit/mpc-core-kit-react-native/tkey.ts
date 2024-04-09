@@ -4,6 +4,7 @@ import TorusStorageLayer from '@tkey/storage-layer-torus';
 import {ShareSerializationModule} from '@tkey/share-serialization';
 import {ReactNativeStorageModule} from '@tkey/react-native-storage';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {CHAIN_NAMESPACES} from '@web3auth/ethereum-provider';
 
 const clientId =
   'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
@@ -15,6 +16,8 @@ export const chainConfig = {
   blockExplorer: 'https://etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
+  blockExplorerUrl: 'https://etherscan.io/tx/',
+  chainNameSpace: 'eip155',
 };
 
 const web3AuthOptions: any = {

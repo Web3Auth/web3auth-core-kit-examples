@@ -14,7 +14,7 @@ import {ShareSerializationModule} from '@tkey/share-serialization';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import '@ethersproject/shims';
 import {ethers} from 'ethers';
-import {EthereumPrivateKeyProvider} from '@web3auth-mpc/ethereum-provider';
+import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 import {SafeEventEmitterProvider} from '@web3auth/base';
 import 'react-native-url-polyfill/auto';
 
@@ -33,6 +33,7 @@ import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {IAsyncStorage} from '@web3auth/mpc-core-kit';
 import {BN} from 'bn.js';
+import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 
 const mockLogin2 = async (email: string) => {
   const req = new Request(
@@ -60,7 +61,10 @@ const mockLogin2 = async (email: string) => {
 
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: {
-    chainConfig,
+    chainConfig: {
+      ...chainConfig,
+      chainNamespace: chainConfig.chainNameSpace as ChainNamespaceType,
+    },
   },
 });
 
@@ -100,12 +104,17 @@ export default function App() {
           uxMode: 'react-native',
           asyncStorageKey: new ReactStorage(),
           tssLib: TssLibRN,
+          setupProviderOnInit: false,
         });
         await mpcCoreKitInstancelocal.init();
         setMpcCoreKitInstance(mpcCoreKitInstancelocal);
 
-        if (mpcCoreKitInstancelocal.provider) {
-          setProvider(mpcCoreKitInstancelocal.provider);
+        if (mpcCoreKitInstancelocal.status === COREKIT_STATUS.LOGGED_IN) {
+          let localProvider = new EthereumSigningProvider({
+            config: {chainConfig},
+          });
+          localProvider.setupProvider(mpcCoreKitInstancelocal);
+          setProvider(localProvider);
         }
         if (mpcCoreKitInstancelocal.status === COREKIT_STATUS.REQUIRED_SHARE) {
           uiConsole(
@@ -165,7 +174,13 @@ export default function App() {
           requiredFactors,
         );
       } else {
-        setProvider(mpcCoreKitInstance.provider);
+        if (mpcCoreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+          let localProvider = new EthereumSigningProvider({
+            config: {chainConfig},
+          });
+          localProvider.setupProvider(mpcCoreKitInstance);
+          setProvider(localProvider);
+        }
       }
     } catch (e) {
       uiConsole(e);
