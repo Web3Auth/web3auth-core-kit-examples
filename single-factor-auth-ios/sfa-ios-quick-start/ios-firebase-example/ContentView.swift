@@ -10,7 +10,7 @@ struct ContentView: View {
                     ProgressView()
                 } else {
                     if vm.loggedIn {
-                        UserDetailView(user: vm.user, loggedIn: $vm.loggedIn)
+                        UserDetailView(user: vm.user, loggedIn: $vm.loggedIn, viewModel: vm)
                     } else {
                         LoginView(vm: vm)
                     }

@@ -3,8 +3,9 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:single_factor_auth_flutter/input.dart';
 import 'package:single_factor_auth_flutter/output.dart';
+// IMP START - Quick Start
 import 'package:single_factor_auth_flutter/single_factor_auth_flutter.dart';
-
+// IMP END - Quick Start
 class Web3AuthSFA {
   final SingleFactAuthFlutter singleFactAuthFlutter;
 
