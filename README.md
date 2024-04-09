@@ -65,10 +65,9 @@ results in a standard cryptographic key provider specific to the user and applic
 
 #### Mobile: Single Factor Auth iOS SDK
 
-| SDK   | Lang Framework | Directory                                                                                    |
-| :---- | :------------- | :------------------------------------------------------------------------------------------- |
-| `SFA` | `iOS`          | [Single Factor Auth iOS QuickStart](/single-factor-auth-ios/sfa-ios-quick-start/)            |
-| `SFA` | `iOS`          | [Single Factor Auth iOS Firebase Example](/single-factor-auth-ios/ios-sfa-firebase-example/) |
+| SDK   | Lang Framework | Directory                                                                         |
+| :---- | :------------- | :-------------------------------------------------------------------------------- |
+| `SFA` | `iOS`          | [Single Factor Auth iOS QuickStart](/single-factor-auth-ios/sfa-ios-quick-start/) |
 
 #### Mobile: Single Factor Auth React Native SDK
 
