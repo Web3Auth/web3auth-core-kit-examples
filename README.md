@@ -20,49 +20,69 @@ results in a standard cryptographic key provider specific to the user and applic
 
 ### Web: MPC Core Kit
 
-| SDK                                          | Lang Framework | Directory                                                                                  |
-| :------------------------------------------- | :------------- | :----------------------------------------------------------------------------------------- |
-| `@web3auth/mpc-core-kit` | `Angular` | [MPC CoreKit Web - Angular QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-angular-quick-start/) |
-| `@web3auth/mpc-core-kit` | `Next.js` | [MPC CoreKit Web - Next.js QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-nextjs-quick-start/) |
-| `@web3auth/mpc-core-kit` | `React` | [MPC CoreKit Web - React QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-react-quick-start/) |
-| `@web3auth/mpc-core-kit` | `Vue.js` | [MPC CoreKit Web - Vue QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start/) |
-| `@web3auth/mpc-core-kit`              | `React`        | [MPC CoreKit Web - PopUp Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-popup-flow-example/)               |
-| `@web3auth/mpc-core-kit`        | `React`        | [MPC CoreKit Web - Redirect Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-redirect-flow-example/)         |
-| `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Aggregate Example](/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example/) |
+| SDK                      | Lang Framework | Directory                                                                                                          |
+| :----------------------- | :------------- | :----------------------------------------------------------------------------------------------------------------- |
+| `@web3auth/mpc-core-kit` | `Angular`      | [MPC CoreKit Web - Angular QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-angular-quick-start/)           |
+| `@web3auth/mpc-core-kit` | `Next.js`      | [MPC CoreKit Web - Next.js QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-nextjs-quick-start/)            |
+| `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - React QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-react-quick-start/)               |
+| `@web3auth/mpc-core-kit` | `Vue.js`       | [MPC CoreKit Web - Vue QuickStart](/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start/)                   |
+| `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - PopUp Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-popup-flow-example/)       |
+| `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Redirect Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-redirect-flow-example/) |
+| `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Aggregate Example](/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example/)                  |
 
-### Single Factor Auth SDKs
+### Single Factor Auth (SFA) SDKs
 
 #### Web: Single Factor Auth Web SDK
 
-| SDK   | Lang Framework | Directory                                                                                   |
-| :---- | :------------- | :------------------------------------------------------------------------------------------ |
-| `SFA` | `REACT`        | [SFA Web Google](/single-factor-auth-web/sfa-web-google-example/) |
-| `SFA` | `REACT`        | [SFA Web Aggregate](/single-factor-auth-web/sfa-web-aggregate-verifier-example/) |
+| SDK                            | Lang Framework | Directory                                                                                        |
+| :----------------------------- | :------------- | :----------------------------------------------------------------------------------------------- |
+| QuickStart                     |                |                                                                                                  |
+| `@web3auth/single-factor-auth` | `Angular`      | [SFA Quick Start - Angular](/single-factor-auth-web/quick-starts/sfa-angular-quick-start/)       |
+| `@web3auth/single-factor-auth` | `Next.js`      | [SFA Quick Start - Next.js](/single-factor-auth-web/quick-starts/sfa-nextjs-quick-start/)        |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Quick Start - React](/single-factor-auth-web/quick-starts/sfa-react-quick-start/)           |
+| `@web3auth/single-factor-auth` | `React - Vite` | [SFA Quick Start - React Vite](/single-factor-auth-web/quick-starts/sfa-react-vite-quick-start/) |
+| `@web3auth/single-factor-auth` | `JavaScript`   | [SFA Quick Start - Vanilla JS](/single-factor-auth-web/quick-starts/sfa-vanillajs-quick-start/)  |
+| `@web3auth/single-factor-auth` | `Vue.js`       | [SFA Quick Start - Vue](/single-factor-auth-web/quick-starts/sfa-vue-quick-start/)               |
+| Playgrounds                    |                |                                                                                                  |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Playground - React](/single-factor-auth-web/sfa-web-react-playground/)                      |
+| Other examples                 |                |                                                                                                  |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Aggregate Verifier - React](/single-factor-auth-web/sfa-web-aggregate-verifier-example/)    |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Auth0 example - React](/single-factor-auth-web/sfa-web-auth0-example/)                      |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Custom JWT - React](/single-factor-auth-web/sfa-web-custom-jwt-example/)                    |
+| `@web3auth/single-factor-auth` | `React`        | [SFA Google idToken - React](/single-factor-auth-web/sfa-web-google-example/)                    |
 
-#### Web Backend: Node SDK
+#### Web Backend: Single Factor Auth Node SDK
 
-| SDK    | Lang Framework | Directory                                  |
-| :----- | :------------- | :----------------------------------------- |
-| `Node` | `JS`           | [Node JS Backend Example](/single-factor-auth-node/sfa-node-quick-start/) |
+| SDK                  | Lang Framework | Directory                                                          |
+| :------------------- | :------------- | :----------------------------------------------------------------- |
+| `@web3auth/node-sdk` | `JavaScript`   | [SFA Node Example](/single-factor-auth-node/sfa-node-quick-start/) |
 
 #### Mobile: Single Factor Auth Android SDK
 
-| SDK   | Lang Framework | Directory                                                                                       |
-| :---- | :------------- | :---------------------------------------------------------------------------------------------- |
+| SDK   | Lang Framework | Directory                                                                                  |
+| :---- | :------------- | :----------------------------------------------------------------------------------------- |
 | `SFA` | `Android`      | [Single Factor Auth Android Example](/single-factor-auth-android/sfa-android-quick-start/) |
 
 #### Mobile: Single Factor Auth iOS SDK
 
-| SDK   | Lang Framework | Directory                                                                           |
-| :---- | :------------- | :---------------------------------------------------------------------------------- |
-| `SFA` | `iOS`          | [Single Factor Auth iOS Example](/single-factor-auth-ios/sfa-ios-quick-start/) |
+| SDK   | Lang Framework | Directory                                                                                    |
+| :---- | :------------- | :------------------------------------------------------------------------------------------- |
+| `SFA` | `iOS`          | [Single Factor Auth iOS QuickStart](/single-factor-auth-ios/sfa-ios-quick-start/)            |
+| `SFA` | `iOS`          | [Single Factor Auth iOS Firebase Example](/single-factor-auth-ios/ios-sfa-firebase-example/) |
 
 #### Mobile: Single Factor Auth React Native SDK
 
-| SDK   | Lang Framework                  | Directory                                                                                                               |
-| :---- | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------- |
+| SDK   | Lang Framework                  | Directory                                                                                                     |
+| :---- | :------------------------------ | :------------------------------------------------------------------------------------------------------------ |
 | `SFA` | `React Native` Firebase Example | [Single Factor Auth React Native Firebase Example](/single-factor-auth-react-native/sfa-rn-bare-quick-start/) |
-| `SFA` | `React Native` Auth0 Example    | [Single Factor Auth React Native Auth0 Example](/single-factor-auth-react-native/sfa-rn-expo-auth0-example/)            |
+| `SFA` | `React Native` Auth0 Example    | [Single Factor Auth React Native Auth0 Example](/single-factor-auth-react-native/sfa-rn-expo-auth0-example/)  |
+
+#### Mobile: Single Factor Auth Flutter SDK
+
+| SDK   | Lang Framework | Directory                                                                                     |
+| :---- | :------------- | :-------------------------------------------------------------------------------------------- |
+| `SFA` | `Flutter`      | [Single Factor Auth Flutter QuickStart](/single-factor-auth-flutter/sfa_flutter_quick_start/) |
+| `SFA` | `Flutter`      | [Single Factor Auth Flutter Solana Example](/single-factor-auth-flutter/sfa_flutter_solana/)  |
 
 ## Questions
 
