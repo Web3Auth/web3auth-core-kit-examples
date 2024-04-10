@@ -14,7 +14,7 @@
     "core-js": "^3.26.1",
     "firebase": "^10.4.0",
     "vue": "^3.3.4",
-    "web3": "^1.8.1"
+    "web3": "^4.7.0"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
