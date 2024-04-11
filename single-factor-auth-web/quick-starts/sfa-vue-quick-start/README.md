@@ -1,30 +1,30 @@
-# Web3Auth (`@web3auth/modal`) x EVM x Vue.js
+# Web3Auth (`@web3auth/single-factor-auth`) QuickStart - Vue.js
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/pnp/web/modal)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-web)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
 [Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
 
-This example demonstrates how to use Web3Auth with EVM in Vue.js
+This example demonstrates how to use Web3Auth Single Factor Auth Web SDK in Vue.js
 
 ## How to Use
 
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/web-modal-sdk/evm/vue-evm-modal-example w3a-modal-evm-vue
+npx degit Web3Auth/web3auth-pnp-examples/single-factor-auth-web/quick-starts/sfa-vue-quick-start w3a-sfa-vue-quick-start
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-modal-evm-vue
+cd w3a-sfa-vue-quick-start
 npm install
-npm run serve
+npm run start
 # or
-cd w3a-modal-evm-vue
+cd w3a-sfa-vue-quick-start
 yarn
-yarn serve
+yarn start
 ```
 
 ## Important Links

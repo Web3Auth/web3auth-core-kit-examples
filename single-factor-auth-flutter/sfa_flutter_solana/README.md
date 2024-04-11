@@ -1,16 +1,34 @@
-# sfa_flutter_solana
+# Web3Auth SFA Flutter Solana Example
 
-A new Flutter project.
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-flutter)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
-## Getting Started
+[Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
 
-This project is a starting point for a Flutter application.
+This example demonstrates how to use Web3Auth's Single Factor Authentication in Flutter.
 
-A few resources to get you started if this is your first Flutter project:
+## How to Use
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Download Manually
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-flutter/sfa_flutter_solana w3a-sfa-flutter-solana
+```
+
+Install & Run:
+
+```bash
+cd w3a-sfa-flutter-solana
+# Open in Android Studio or VS Code
+# Run the app on your device or emulator
+flutter run
+```
+
+## Important Links
+
+- [Website](https://web3auth.io)
+- [Docs](https://web3auth.io/docs)
+- [Guides](https://web3auth.io/docs/content-hub?type=guides)
+- [SDK / API References](https://web3auth.io/docs/sdk)
+- [Pricing](https://web3auth.io/pricing.html)
+- [Community Portal](https://community.web3auth.io)

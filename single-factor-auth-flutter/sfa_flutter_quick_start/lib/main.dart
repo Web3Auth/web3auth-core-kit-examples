@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:sfa_flutter_quick_start/core/firebase.dart';
 import 'package:sfa_flutter_quick_start/core/service_locator.dart';
+import 'package:sfa_flutter_quick_start/core/web3auth_sfa.dart';
 import 'package:sfa_flutter_quick_start/home_page.dart';
 import 'package:sfa_flutter_quick_start/login_page.dart';
 import 'firebase_options.dart';
@@ -11,6 +12,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ServiceLocator.init();
+  final Web3AuthSFA web3authSFA = ServiceLocator.getIt<Web3AuthSFA>();
+  web3authSFA.init();
 
   runApp(const MyApp());
 }
