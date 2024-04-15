@@ -81,7 +81,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [auth0Domain: "https://web3auth.au.auth0.com", auth0Scheme: "${applicationId}.auth0"]
+        manifestPlaceholders = [auth0Domain: "https://web3auth.au.auth0.com", auth0Scheme: "${applicationId}"]
     }
     signingConfigs {
         debug {

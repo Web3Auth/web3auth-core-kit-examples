@@ -71,7 +71,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
 });
 // IMP END - SDK Initialization
 
-export default function App() {
+function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
@@ -95,7 +95,7 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const {authorize, clearSession, getCredentials} = useAuth0();
+  const {authorize, getCredentials} = useAuth0();
 
   const signInWithAuth0 = async () => {
     try {
@@ -103,18 +103,20 @@ export default function App() {
       await authorize(
         {
           scope: 'openid profile email',
-          // connection: "google-oauth2"
+          connection: 'google-oauth2',
         },
-        {
-          customScheme: 'auth0.com.web3authsfaauth0',
-        },
-        {
-          responseType: 'token id_token',
-        },
+        // {
+        //   customScheme: 'com.mpccorekitrnauth0',
+        // },
+        // {
+        //   responseType: 'token id_token',
+        // },
+        // com.mpccorekitrnauth0.auth0://web3auth.au.auth0.com/android/com.mpccorekitrnauth0/callback
+        // auth0.com.mpccorekitrnauth0://web3auth.au.auth0.com/android/com.mpccorekitrnauth0/callback
       );
       const credentials = await getCredentials();
 
-      return credentials.idToken;
+      return credentials?.idToken;
     } catch (error) {
       console.error(error);
     }
@@ -134,7 +136,7 @@ export default function App() {
 
       // IMP START - Login
       uiConsole('idToken', idToken);
-      const parsedToken = parseToken(idToken);
+      const parsedToken = parseToken(idToken!);
 
       const idTokenLoginParams = {
         verifier,
@@ -422,6 +424,16 @@ export default function App() {
         </ScrollView>
       </View>
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <Auth0Provider
+      domain={'https://web3auth.au.auth0.com'}
+      clientId={'hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O'}>
+      <Home />
+    </Auth0Provider>
   );
 }
 
