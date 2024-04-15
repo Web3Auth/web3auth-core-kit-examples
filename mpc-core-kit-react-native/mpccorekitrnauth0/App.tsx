@@ -70,6 +70,8 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   },
   tssLib: TssLibRN,
   // setupProviderOnInit: false,
+  // This is the recommended approach
+  manualSync: true,
 });
 // IMP END - SDK Initialization
 
@@ -203,6 +205,14 @@ function Home() {
       throw new Error('coreKitInstance not found');
     }
     uiConsole(coreKitInstance.getKeyDetails());
+  };
+
+  const commitChanges = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance not found');
+    }
+    uiConsole('commitChanges');
+    await coreKitInstance.commitChanges();
   };
 
   const getDeviceFactor = async () => {
@@ -365,6 +375,11 @@ function Home() {
     logout();
   };
 
+  // TODO
+  // CreateFactor
+  // DeleteFactor
+  // Send Transaction
+
   const uiConsole = (...args: any) => {
     setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
     console.log(...args);
@@ -374,12 +389,14 @@ function Home() {
     <View style={styles.buttonArea}>
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
-      <Button title="Enable MFA" onPress={enableMFA} />
       <Button title="Get Accounts" onPress={getAccounts} />
       <Button title="Get Balance" onPress={getBalance} />
       <Button title="Sign Message" onPress={signMessage} />
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+      <Button title="Commit Changes" onPress={commitChanges} />
+      <Text>CommitChanges after performing the following actions:</Text>
+      <Button title="Enable MFA" onPress={enableMFA} />
       <Button
         title="Generate Backup (Mnemonic)"
         onPress={exportMnemonicFactor}
