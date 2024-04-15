@@ -403,7 +403,6 @@ function Home() {
   };
 
   // TODO
-  // CreateFactor
   // DeleteFactor
 
   const uiConsole = (...args: any) => {
@@ -425,7 +424,7 @@ function Home() {
       <Text>CommitChanges after performing the following actions:</Text>
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button
-        title="Generate Backup (Mnemonic)"
+        title="Generate Backup (Mnemonic) - CreateFactor"
         onPress={exportMnemonicFactor}
       />
     </View>
