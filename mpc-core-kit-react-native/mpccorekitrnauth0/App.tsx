@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import '@ethersproject/shims';
 // IMP START - Auth Provider Login
-import {useAuth0, Auth0Provider, clearSession} from 'react-native-auth0';
+import {useAuth0, Auth0Provider} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
@@ -97,7 +97,7 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const {authorize, getCredentials} = useAuth0();
+  const {authorize, clearSession, getCredentials} = useAuth0();
 
   const signInWithAuth0 = async () => {
     try {
@@ -141,7 +141,7 @@ function Home() {
 
       const idTokenLoginParams = {
         verifier,
-        verifierId: parsedToken.sub,
+        verifierId: parsedToken.email,
         idToken,
       } as IdTokenLoginParams;
 
@@ -257,6 +257,7 @@ function Home() {
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
     // Log out from Auth0
+
     try {
       await clearSession();
       uiConsole('logged out from auth0');
