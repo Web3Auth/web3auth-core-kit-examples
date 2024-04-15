@@ -14,6 +14,7 @@ import '@ethersproject/shims';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
+import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
 
 // IMP START - Quick Start
 import {
@@ -57,6 +58,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
+  uxMode: 'react-native',
   asyncStorageKey: {
     getItem: async (key: string) => {
       return EncryptedStorage.getItem(key);
@@ -65,6 +67,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
       return EncryptedStorage.setItem(key, value);
     },
   },
+  tssLib: tssLib,
 });
 // IMP END - SDK Initialization
 
