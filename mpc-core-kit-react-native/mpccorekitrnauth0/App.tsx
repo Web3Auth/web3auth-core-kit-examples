@@ -47,10 +47,10 @@ const verifier = 'w3a-auth0-demo';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: '0x1', // Please use 0x1 for Mainnet
-  rpcTarget: 'https://rpc.ankr.com/eth',
-  displayName: 'Ethereum Mainnet',
-  blockExplorer: 'https://etherscan.io/',
+  chainId: '0xaa36a7', // Please use 0x1 for Mainnet
+  rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
+  displayName: 'Ethereum Sepolia Testnet',
+  blockExplorer: 'https://sepolia.etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
 };
@@ -356,6 +356,33 @@ function Home() {
   };
   // IMP END - Blockchain Calls
 
+  const sendTransaction = async () => {
+    if (!coreKitInstance) {
+      uiConsole('provider not initialized yet');
+      return;
+    }
+    setConsoleUI('Sending transaction');
+
+    const ethersProvider = new ethers.BrowserProvider(
+      coreKitInstance.provider as any,
+    );
+
+    const signer = await ethersProvider.getSigner();
+
+    const destination = '0xeaA8Af602b2eDE45922818AE5f9f7FdE50cFa1A8';
+    const amount = ethers.parseEther('0.005'); // Convert 1 ether to wei
+
+    // Submit transaction to the blockchain
+    const tx = await signer.sendTransaction({
+      to: destination,
+      value: amount,
+    });
+
+    // Wait for the transaction to be mined
+    const receipt = await tx.wait();
+    uiConsole(receipt);
+  };
+
   const criticalResetAccount = async (): Promise<void> => {
     // This is a critical function that should only be used for testing purposes
     // Resetting your account means clearing all the metadata associated with it from the metadata server
@@ -378,7 +405,6 @@ function Home() {
   // TODO
   // CreateFactor
   // DeleteFactor
-  // Send Transaction
 
   const uiConsole = (...args: any) => {
     setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
@@ -392,6 +418,7 @@ function Home() {
       <Button title="Get Accounts" onPress={getAccounts} />
       <Button title="Get Balance" onPress={getBalance} />
       <Button title="Sign Message" onPress={signMessage} />
+      <Button title="Send Transaction" onPress={sendTransaction} />
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
       <Button title="Commit Changes" onPress={commitChanges} />
