@@ -112,7 +112,6 @@ function Home() {
         //   responseType: 'token id_token',
         // },
         // com.mpccorekitrnauth0.auth0://web3auth.au.auth0.com/android/com.mpccorekitrnauth0/callback
-        // auth0.com.mpccorekitrnauth0://web3auth.au.auth0.com/android/com.mpccorekitrnauth0/callback
       );
       const credentials = await getCredentials();
 
