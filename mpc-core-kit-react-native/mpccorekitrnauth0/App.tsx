@@ -105,7 +105,7 @@ function Home() {
       await authorize(
         {
           scope: 'openid profile email',
-          connection: 'google-oauth2',
+          // connection: 'google-oauth2',
         },
         // {
         //   customScheme: 'com.mpccorekitrnauth0',
