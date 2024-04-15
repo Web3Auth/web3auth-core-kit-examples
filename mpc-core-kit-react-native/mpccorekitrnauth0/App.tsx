@@ -14,7 +14,8 @@ import '@ethersproject/shims';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
+import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
+import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 
 // IMP START - Quick Start
 import {
@@ -67,7 +68,8 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
       return EncryptedStorage.setItem(key, value);
     },
   },
-  tssLib: tssLib,
+  tssLib: TssLibRN,
+  // setupProviderOnInit: false,
 });
 // IMP END - SDK Initialization
 
@@ -428,11 +430,14 @@ function Home() {
 
 export default function App() {
   return (
-    <Auth0Provider
-      domain={'https://web3auth.au.auth0.com'}
-      clientId={'hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O'}>
-      <Home />
-    </Auth0Provider>
+    <>
+      <Auth0Provider
+        domain={'https://web3auth.au.auth0.com'}
+        clientId={'hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O'}>
+        <Home />
+      </Auth0Provider>
+      <Bridge />
+    </>
   );
 }
 
