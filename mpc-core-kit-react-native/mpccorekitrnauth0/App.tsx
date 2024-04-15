@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import '@ethersproject/shims';
 // IMP START - Auth Provider Login
-import {useAuth0, Auth0Provider} from 'react-native-auth0';
+import {useAuth0, Auth0Provider, clearSession} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
@@ -256,7 +256,14 @@ function Home() {
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
-    uiConsole('logged out');
+    // Log out from Auth0
+    try {
+      await clearSession();
+      uiConsole('logged out from auth0');
+    } catch (e) {
+      console.log(e);
+    }
+    uiConsole('logged out from web3auth');
   };
 
   // IMP START - Blockchain Calls
