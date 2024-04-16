@@ -159,6 +159,10 @@ function Home() {
       // IMP END - Recover MFA Enabled Account
       setLoading(false);
 
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await commitChanges();
+      }
+
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
@@ -197,6 +201,10 @@ function Home() {
       'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
       factorKeyMnemonic,
     );
+
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await commitChanges();
+    }
   };
   // IMP END - Enable Multi Factor Authentication
 
@@ -211,7 +219,7 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance not found');
     }
-    uiConsole('commitChanges');
+    // uiConsole('commitChanges');
     await coreKitInstance.commitChanges();
   };
 
@@ -239,6 +247,9 @@ function Home() {
       factorKey.private.toString('hex'),
     );
     uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await commitChanges();
+    }
   };
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
@@ -399,6 +410,9 @@ function Home() {
       input: {message: 'KEY_NOT_FOUND'},
     });
     uiConsole('reset');
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await commitChanges();
+    }
     logout();
   };
 
@@ -420,8 +434,8 @@ function Home() {
       <Button title="Send Transaction" onPress={sendTransaction} />
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
-      <Button title="Commit Changes" onPress={commitChanges} />
-      <Text>CommitChanges after performing the following actions:</Text>
+      {/* <Button title="Commit Changes" onPress={commitChanges} /> */}
+      {/* <Text>CommitChanges after performing the following actions:</Text> */}
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button
         title="Generate Backup (Mnemonic) - CreateFactor"
