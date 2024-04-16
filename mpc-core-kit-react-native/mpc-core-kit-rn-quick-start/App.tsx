@@ -13,7 +13,6 @@ import '@ethersproject/shims';
 // IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';
 // IMP END - Auth Provider Login
-// import EncryptedStorage from 'react-native-encrypted-storage';
 
 // IMP START - Quick Start
 import {
@@ -29,6 +28,9 @@ import {
   mnemonicToKey,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
+import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
@@ -57,6 +59,16 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
+  uxMode: 'react-native',
+  asyncStorageKey: {
+    getItem: async (key: string) => {
+      return EncryptedStorage.getItem(key);
+    },
+    setItem: async (key: string, value: string) => {
+      return EncryptedStorage.setItem(key, value);
+    },
+  },
+  tssLib: TssLibRN,
 });
 // IMP END - SDK Initialization
 
@@ -400,6 +412,7 @@ export default function App() {
           <Text>{consoleUI}</Text>
         </ScrollView>
       </View>
+      <Bridge />
     </View>
   );
 }
