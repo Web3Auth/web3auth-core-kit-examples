@@ -16,7 +16,7 @@ import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
-
+import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // IMP START - Quick Start
 import {
   Web3AuthMPCCoreKit,
@@ -50,6 +50,7 @@ const chainConfig = {
   chainId: '0xaa36a7', // Please use 0x1 for Mainnet
   rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
   displayName: 'Ethereum Sepolia Testnet',
+  blockExplorerUrl: 'https://sepolia.etherscan.io/',
   blockExplorer: 'https://sepolia.etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
@@ -69,7 +70,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
     },
   },
   tssLib: TssLibRN,
-  // setupProviderOnInit: false,
+  setupProviderOnInit: false,
   // This is the recommended approach
   manualSync: true,
 });
@@ -352,8 +353,10 @@ function Home() {
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+    evmProvider.setupProvider(coreKitInstance)
     const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
+      evmProvider
     );
 
     // For ethers v5
@@ -405,10 +408,11 @@ function Home() {
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, 'hex'),
-      input: {message: 'KEY_NOT_FOUND'},
-    });
+    await coreKitInstance.tKey.CRITICAL_deleteTkey();
+    // await coreKitInstance.tKey.storageLayer.setMetadata({
+    //   privKey: new BN(coreKitInstance.state.oAuthKey!, 'hex'),
+    //   input: {message: 'KEY_NOT_FOUND'},
+    // });
     uiConsole('reset');
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await commitChanges();
