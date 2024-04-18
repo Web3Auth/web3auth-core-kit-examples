@@ -69,6 +69,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
     },
   },
   tssLib: TssLibRN,
+  manualSync: true,
 });
 // IMP END - SDK Initialization
 
@@ -143,8 +144,10 @@ export default function App() {
         );
       }
       // IMP END - Recover MFA Enabled Account
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        coreKitInstance.commitChanges();
+      }
       setLoading(false);
-
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
@@ -168,6 +171,9 @@ export default function App() {
         'required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]',
       );
     }
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
   };
   // IMP END - Recover MFA Enabled Account
 
@@ -178,6 +184,9 @@ export default function App() {
     }
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
 
     uiConsole(
       'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
@@ -216,6 +225,9 @@ export default function App() {
     const factorKeyMnemonic = await keyToMnemonic(
       factorKey.private.toString('hex'),
     );
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
     uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
   };
 
