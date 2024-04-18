@@ -12,7 +12,7 @@ This example demonstrates how to use Web3Auth Single Factor Auth Web SDK in Auth
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/single-factor-auth-web/sfa-web-auth0-example w3a-sfa-web-auth0-example
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-web/sfa-web-auth0-example w3a-sfa-web-auth0-example
 ```
 
 Install & Run:
