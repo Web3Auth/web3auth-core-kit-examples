@@ -1,0 +1,466 @@
+import React, {useEffect, useState} from 'react';
+import {
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  ActivityIndicator,
+  TextInput,
+} from 'react-native';
+import '@ethersproject/shims';
+// IMP START - Auth Provider Login
+import auth from '@react-native-firebase/auth';
+// IMP END - Auth Provider Login
+
+// IMP START - Quick Start
+import {
+  Web3AuthMPCCoreKit,
+  WEB3AUTH_NETWORK,
+  IdTokenLoginParams,
+  TssShareType,
+  parseToken,
+  getWebBrowserFactor,
+  generateFactorKey,
+  COREKIT_STATUS,
+  keyToMnemonic,
+  mnemonicToKey,
+} from '@web3auth/mpc-core-kit';
+import {CHAIN_NAMESPACES} from '@web3auth/base';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
+import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+// IMP END - Quick Start
+import {BN} from 'bn.js';
+import {ethers} from 'ethers';
+
+// IMP START - SDK Initialization
+// IMP START - Dashboard Registration
+const web3AuthClientId =
+  'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
+// IMP END - Dashboard Registration
+
+// IMP START - Verifier Creation
+const verifier = 'w3a-firebase-demo';
+// IMP END - Verifier Creation
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: '0x1', // Please use 0x1 for Mainnet
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  displayName: 'Ethereum Mainnet',
+  blockExplorer: 'https://etherscan.io/',
+  ticker: 'ETH',
+  tickerName: 'Ethereum',
+};
+
+const coreKitInstance = new Web3AuthMPCCoreKit({
+  web3AuthClientId,
+  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+  chainConfig,
+  uxMode: 'react-native',
+  asyncStorageKey: {
+    getItem: async (key: string) => {
+      return EncryptedStorage.getItem(key);
+    },
+    setItem: async (key: string, value: string) => {
+      return EncryptedStorage.setItem(key, value);
+    },
+  },
+  tssLib: TssLibRN,
+  manualSync: true,
+});
+// IMP END - SDK Initialization
+
+// IMP START - Auth Provider Login
+async function signInWithEmailPassword() {
+  try {
+    const res = await auth().signInWithEmailAndPassword(
+      'custom+jwt@firebase.login',
+      'Testing@123',
+    );
+    return res;
+  } catch (error) {
+    console.error(error);
+  }
+}
+// IMP END - Auth Provider Login
+
+export default function App() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [consoleUI, setConsoleUI] = useState<string>('');
+  const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
+    COREKIT_STATUS.NOT_INITIALIZED,
+  );
+  const [backupFactorKey, setBackupFactorKey] = useState<string>('');
+  const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // IMP START - SDK Initialization
+        await coreKitInstance.init();
+        // IMP END - SDK Initialization
+      } catch (error) {
+        uiConsole(error, 'mounted caught');
+      }
+      setCoreKitStatus(coreKitInstance.status);
+    };
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const login = async () => {
+    try {
+      if (!coreKitInstance) {
+        throw new Error('initiated to login');
+      }
+      setConsoleUI('Logging in');
+      setLoading(true);
+      // IMP START - Auth Provider Login
+      const loginRes = await signInWithEmailPassword();
+      // IMP END - Auth Provider Login
+      uiConsole('Login success', loginRes);
+
+      // IMP START - Login
+      const idToken = await loginRes!.user.getIdToken(true);
+      uiConsole('idToken', idToken);
+      const parsedToken = parseToken(idToken);
+
+      const idTokenLoginParams = {
+        verifier,
+        verifierId: parsedToken.sub,
+        idToken,
+      } as IdTokenLoginParams;
+
+      await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      // IMP END - Login
+
+      // IMP START - Recover MFA Enabled Account
+      if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+        uiConsole(
+          'required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]',
+        );
+      }
+      // IMP END - Recover MFA Enabled Account
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        coreKitInstance.commitChanges();
+      }
+      setLoading(false);
+      setCoreKitStatus(coreKitInstance.status);
+    } catch (err) {
+      uiConsole(err);
+    }
+  };
+  // IMP START - Recover MFA Enabled Account
+  const inputBackupFactorKey = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance not found');
+    }
+    if (!backupFactorKey) {
+      throw new Error('backupFactorKey not found');
+    }
+    const factorKey = new BN(backupFactorKey, 'hex');
+    await coreKitInstance.inputFactorKey(factorKey);
+
+    setCoreKitStatus(coreKitInstance.status);
+
+    if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
+      uiConsole(
+        'required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]',
+      );
+    }
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
+  };
+  // IMP END - Recover MFA Enabled Account
+
+  // IMP START - Enable Multi Factor Authentication
+  const enableMFA = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance is not set');
+    }
+    const factorKey = await coreKitInstance.enableMFA({});
+    const factorKeyMnemonic = keyToMnemonic(factorKey);
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
+
+    uiConsole(
+      'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
+      factorKeyMnemonic,
+    );
+  };
+  // IMP END - Enable Multi Factor Authentication
+
+  const keyDetails = async () => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance not found');
+    }
+    uiConsole(coreKitInstance.getKeyDetails());
+  };
+
+  const getDeviceFactor = async () => {
+    try {
+      const factorKey = await getWebBrowserFactor(coreKitInstance!);
+      setBackupFactorKey(factorKey!);
+      uiConsole('Device share: ', factorKey);
+    } catch (e) {
+      uiConsole(e);
+    }
+  };
+
+  const exportMnemonicFactor = async (): Promise<void> => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance is not set');
+    }
+    uiConsole('export share type: ', TssShareType.RECOVERY);
+    const factorKey = generateFactorKey();
+    await coreKitInstance.createFactor({
+      shareType: TssShareType.RECOVERY,
+      factorKey: factorKey.private,
+    });
+    const factorKeyMnemonic = await keyToMnemonic(
+      factorKey.private.toString('hex'),
+    );
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      coreKitInstance.commitChanges();
+    }
+    uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+  };
+
+  const MnemonicToFactorKeyHex = async (mnemonic: string) => {
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance is not set');
+    }
+    try {
+      const factorKey = await mnemonicToKey(mnemonic);
+      setBackupFactorKey(factorKey);
+      return factorKey;
+    } catch (error) {
+      uiConsole(error);
+    }
+  };
+
+  const getUserInfo = async () => {
+    // IMP START - Get User Information
+    const user = coreKitInstance.getUserInfo();
+    // IMP END - Get User Information
+    uiConsole(user);
+  };
+
+  const logout = async () => {
+    // IMP START - Logout
+    await coreKitInstance.logout();
+    // IMP END - Logout
+    setCoreKitStatus(coreKitInstance.status);
+    uiConsole('logged out');
+  };
+
+  // IMP START - Blockchain Calls
+  const getAccounts = async () => {
+    if (!coreKitInstance) {
+      uiConsole('provider not initialized yet');
+      return;
+    }
+    setConsoleUI('Getting account');
+
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(
+      coreKitInstance.provider as any,
+    );
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
+    uiConsole(address);
+  };
+
+  const getBalance = async () => {
+    if (!coreKitInstance) {
+      uiConsole('provider not initialized yet');
+      return;
+    }
+    setConsoleUI('Fetching balance');
+
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(
+      coreKitInstance.provider as any,
+    );
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+
+    // Get user's Ethereum public address
+    const address = signer.getAddress();
+
+    // Get user's balance in ether
+    // For ethers v5
+    // const balance = ethers.utils.formatEther(
+    // await ethersProvider.getBalance(address) // Balance is in wei
+    // );
+    const balance = ethers.formatEther(
+      await ethersProvider.getBalance(address), // Balance is in wei
+    );
+
+    uiConsole(balance);
+  };
+
+  const signMessage = async () => {
+    if (!coreKitInstance) {
+      uiConsole('provider not initialized yet');
+      return;
+    }
+    setConsoleUI('Signing message');
+
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const ethersProvider = new ethers.BrowserProvider(
+      coreKitInstance.provider as any,
+    );
+
+    // For ethers v5
+    // const signer = ethersProvider.getSigner();
+    const signer = await ethersProvider.getSigner();
+    const originalMessage = 'YOUR_MESSAGE';
+
+    // Sign the message
+    const signedMessage = await signer.signMessage(originalMessage);
+    uiConsole(signedMessage);
+  };
+  // IMP END - Blockchain Calls
+
+  const criticalResetAccount = async (): Promise<void> => {
+    // This is a critical function that should only be used for testing purposes
+    // Resetting your account means clearing all the metadata associated with it from the metadata server
+    // The key details will be deleted from our server and you will not be able to recover your account
+    if (!coreKitInstance) {
+      throw new Error('coreKitInstance is not set');
+    }
+    //@ts-ignore
+    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
+    //   throw new Error("reset account is not recommended on mainnet");
+    // }
+    await coreKitInstance.tKey.storageLayer.setMetadata({
+      privKey: new BN(coreKitInstance.metadataKey!, 'hex'),
+      input: {message: 'KEY_NOT_FOUND'},
+    });
+    uiConsole('reset');
+    logout();
+  };
+
+  const uiConsole = (...args: any) => {
+    setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
+    console.log(...args);
+  };
+
+  const loggedInView = (
+    <View style={styles.buttonArea}>
+      <Button title="Get User Info" onPress={getUserInfo} />
+      <Button title="Key Details" onPress={keyDetails} />
+      <Button title="Enable MFA" onPress={enableMFA} />
+      <Button title="Get Accounts" onPress={getAccounts} />
+      <Button title="Get Balance" onPress={getBalance} />
+      <Button title="Sign Message" onPress={signMessage} />
+      <Button title="Log Out" onPress={logout} />
+      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+      <Button
+        title="Generate Backup (Mnemonic)"
+        onPress={exportMnemonicFactor}
+      />
+    </View>
+  );
+
+  const unloggedInView = (
+    <View style={styles.buttonArea}>
+      <Button title="Login with Web3Auth" onPress={login} />
+      <View
+        style={
+          coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE
+            ? styles.disabled
+            : null
+        }>
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Get Device Factor"
+          onPress={() => getDeviceFactor()}
+        />
+        <Text>Backup/ Device Factor:</Text>
+        <TextInput onChangeText={setBackupFactorKey} value={backupFactorKey} />
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Input Backup Factor Key"
+          onPress={() => inputBackupFactorKey()}
+        />
+        <Text>Recover Using Mnemonic Factor Key:</Text>
+        <TextInput onChangeText={setMnemonicFactor} value={mnemonicFactor} />
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Get Recovery Factor Key using Mnemonic"
+          onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
+        />
+      </View>
+      {loading && <ActivityIndicator />}
+      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      {coreKitStatus === COREKIT_STATUS.LOGGED_IN
+        ? loggedInView
+        : unloggedInView}
+      <View style={styles.consoleArea}>
+        <Text style={styles.consoleText}>Console:</Text>
+        <ScrollView style={styles.consoleUI}>
+          <Text>{consoleUI}</Text>
+        </ScrollView>
+      </View>
+      <Bridge />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  consoleArea: {
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  consoleUI: {
+    flex: 1,
+    backgroundColor: '#CCCCCC',
+    color: '#ffffff',
+    padding: 10,
+    width: Dimensions.get('window').width - 60,
+  },
+  consoleText: {
+    padding: 10,
+  },
+  buttonArea: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingBottom: 30,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
