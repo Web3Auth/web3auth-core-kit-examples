@@ -16,6 +16,7 @@ import {useAuth0, Auth0Provider} from 'react-native-auth0';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 
 // IMP START - Quick Start
 import {
@@ -25,6 +26,7 @@ import {
   TssShareType,
   parseToken,
   getWebBrowserFactor,
+  storeWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
@@ -50,6 +52,7 @@ const chainConfig = {
   chainId: '0xaa36a7', // Please use 0x1 for Mainnet
   rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
   displayName: 'Ethereum Sepolia Testnet',
+  blockExplorerUrl: 'https://sepolia.etherscan.io/',
   blockExplorer: 'https://sepolia.etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
@@ -59,6 +62,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
+  setupProviderOnInit: false,
   uxMode: 'react-native',
   asyncStorageKey: {
     getItem: async (key: string) => {
@@ -90,8 +94,8 @@ function Home() {
         // IMP START - SDK Initialization
         await coreKitInstance.init();
         // IMP END - SDK Initialization
-      } catch (error) {
-        uiConsole(error, 'mounted caught');
+      } catch (error: any) {
+        uiConsole(error.message, 'mounted caught');
       }
       setCoreKitStatus(coreKitInstance.status);
     };
@@ -160,7 +164,7 @@ function Home() {
       setLoading(false);
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        await commitChanges();
+        await coreKitInstance.commitChanges();
       }
 
       setCoreKitStatus(coreKitInstance.status);
@@ -176,11 +180,12 @@ function Home() {
     if (!backupFactorKey) {
       throw new Error('backupFactorKey not found');
     }
+    setLoading(true);
     const factorKey = new BN(backupFactorKey, 'hex');
     await coreKitInstance.inputFactorKey(factorKey);
 
     setCoreKitStatus(coreKitInstance.status);
-
+    setLoading(false);
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
       uiConsole(
         'required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]',
@@ -194,16 +199,24 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
-    const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic(factorKey);
+    setLoading(true);
+    try {
+      setConsoleUI('Enabling MFA, please wait');
 
-    uiConsole(
-      'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
-      factorKeyMnemonic,
-    );
+      const factorKey = await coreKitInstance.enableMFA({});
+      const factorKeyMnemonic = keyToMnemonic(factorKey);
+
+      uiConsole(
+        'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
+        factorKeyMnemonic,
+      );
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+    setLoading(false);
 
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await commitChanges();
+      await coreKitInstance.commitChanges();
     }
   };
   // IMP END - Enable Multi Factor Authentication
@@ -215,28 +228,31 @@ function Home() {
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
-  const commitChanges = async () => {
-    if (!coreKitInstance) {
-      throw new Error('coreKitInstance not found');
-    }
-    // uiConsole('commitChanges');
-    await coreKitInstance.commitChanges();
-  };
+  // const getDeviceFactor = async () => {
+  //   try {
+  //     const factorKey = await getWebBrowserFactor(coreKitInstance!);
+  //     setBackupFactorKey(factorKey!);
+  //     uiConsole('Device factor: ', factorKey);
+  //   } catch (error: any) {
+  //   uiConsole(error.message);
+  // }
+  // };
 
-  const getDeviceFactor = async () => {
-    try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance!);
-      setBackupFactorKey(factorKey!);
-      uiConsole('Device share: ', factorKey);
-    } catch (e) {
-      uiConsole(e);
-    }
-  };
+  // const storeDeviceFactor = async () => {
+  //   try {
+  //     const factorKey = await generateFactorKey();
+  //     await storeWebBrowserFactor(factorKey.private, coreKitInstance!);
+  //     uiConsole('Stored factor: ', factorKey);
+  //   } catch (error: any) {
+  //   uiConsole(error.message);
+  // }
+  // };
 
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
+    setLoading(true);
     uiConsole('export share type: ', TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
@@ -246,9 +262,11 @@ function Home() {
     const factorKeyMnemonic = await keyToMnemonic(
       factorKey.private.toString('hex'),
     );
+    setLoading(false);
+
     uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await commitChanges();
+      await coreKitInstance.commitChanges();
     }
   };
 
@@ -260,8 +278,8 @@ function Home() {
       const factorKey = await mnemonicToKey(mnemonic);
       setBackupFactorKey(factorKey);
       return factorKey;
-    } catch (error) {
-      uiConsole(error);
+    } catch (error: any) {
+      uiConsole(error.message);
     }
   };
 
@@ -273,17 +291,18 @@ function Home() {
   };
 
   const logout = async () => {
+    setLoading(true);
     // IMP START - Logout
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
     // Log out from Auth0
-
+    setLoading(false);
     try {
       await clearSession();
       uiConsole('logged out from auth0');
-    } catch (e) {
-      console.log(e);
+    } catch (error: any) {
+      uiConsole(error.message);
     }
     uiConsole('logged out from web3auth');
   };
@@ -294,13 +313,14 @@ function Home() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Getting account');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+    evmProvider.setupProvider(coreKitInstance);
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -308,6 +328,7 @@ function Home() {
 
     // Get user's Ethereum public address
     const address = signer.getAddress();
+    setLoading(false);
     uiConsole(address);
   };
 
@@ -316,13 +337,14 @@ function Home() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Fetching balance');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+    evmProvider.setupProvider(coreKitInstance);
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -339,6 +361,7 @@ function Home() {
     const balance = ethers.formatEther(
       await ethersProvider.getBalance(address), // Balance is in wei
     );
+    setLoading(false);
 
     uiConsole(balance);
   };
@@ -348,13 +371,14 @@ function Home() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Signing message');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+    evmProvider.setupProvider(coreKitInstance);
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -363,6 +387,7 @@ function Home() {
 
     // Sign the message
     const signedMessage = await signer.signMessage(originalMessage);
+    setLoading(false);
     uiConsole(signedMessage);
   };
   // IMP END - Blockchain Calls
@@ -372,11 +397,14 @@ function Home() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Sending transaction');
 
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    // For ethers v5
+    // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
+    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+    evmProvider.setupProvider(coreKitInstance);
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     const signer = await ethersProvider.getSigner();
 
@@ -391,6 +419,7 @@ function Home() {
 
     // Wait for the transaction to be mined
     const receipt = await tx.wait();
+    setLoading(false);
     uiConsole(receipt);
   };
 
@@ -401,6 +430,7 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
+    setLoading(true);
     //@ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
@@ -411,8 +441,9 @@ function Home() {
     });
     uiConsole('reset');
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await commitChanges();
+      await coreKitInstance.commitChanges();
     }
+    setLoading(false);
     logout();
   };
 
@@ -426,6 +457,8 @@ function Home() {
 
   const loggedInView = (
     <View style={styles.buttonArea}>
+      <Text style={styles.heading}>MPC Core Kit RN Auth0 Example</Text>
+
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
       <Button title="Get Accounts" onPress={getAccounts} />
@@ -433,7 +466,6 @@ function Home() {
       <Button title="Sign Message" onPress={signMessage} />
       <Button title="Send Transaction" onPress={sendTransaction} />
       <Button title="Log Out" onPress={logout} />
-      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
       {/* <Button title="Commit Changes" onPress={commitChanges} /> */}
       {/* <Text>CommitChanges after performing the following actions:</Text> */}
       <Button title="Enable MFA" onPress={enableMFA} />
@@ -441,39 +473,48 @@ function Home() {
         title="Generate Backup (Mnemonic) - CreateFactor"
         onPress={exportMnemonicFactor}
       />
+      {/* <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
+      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
 
   const unloggedInView = (
     <View style={styles.buttonArea}>
+      <Text style={styles.heading}>MPC Core Kit RN Auth0 Example</Text>
+
       <Button title="Login with Web3Auth" onPress={login} />
+
       <View
         style={
           coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE
-            ? styles.disabled
-            : null
+            ? styles.disabledSection
+            : styles.section
         }>
-        <Button
+        <Text style={styles.heading}>Account Recovery</Text>
+        {/* <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Device Factor"
           onPress={() => getDeviceFactor()}
-        />
-        <Text>Backup/ Device Factor:</Text>
-        <TextInput onChangeText={setBackupFactorKey} value={backupFactorKey} />
-        <Button
-          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Input Backup Factor Key"
-          onPress={() => inputBackupFactorKey()}
-        />
+        /> */}
         <Text>Recover Using Mnemonic Factor Key:</Text>
-        <TextInput onChangeText={setMnemonicFactor} value={mnemonicFactor} />
+        <TextInput
+          style={styles.input}
+          onChangeText={setMnemonicFactor}
+          value={mnemonicFactor}
+        />
         <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Recovery Factor Key using Mnemonic"
           onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
         />
+        <Text>Backup/ Device Factor: {backupFactorKey}</Text>
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Input Backup Factor Key"
+          onPress={() => inputBackupFactorKey()}
+        />
       </View>
-      {loading && <ActivityIndicator />}
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
@@ -483,6 +524,7 @@ function Home() {
       {coreKitStatus === COREKIT_STATUS.LOGGED_IN
         ? loggedInView
         : unloggedInView}
+      {loading && <ActivityIndicator />}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
@@ -514,6 +556,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 50,
     paddingBottom: 30,
+    gap: 10,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   consoleArea: {
     margin: 20,
@@ -531,13 +579,32 @@ const styles = StyleSheet.create({
   consoleText: {
     padding: 10,
   },
+  input: {
+    padding: 10,
+    width: Dimensions.get('window').width - 60,
+    borderColor: 'gray',
+    borderWidth: 1,
+  },
   buttonArea: {
     flex: 2,
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingBottom: 30,
+    margin: 20,
+    gap: 40,
   },
-  disabled: {
+  disabledSection: {
     opacity: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEEEEE',
+    padding: 20,
+    borderRadius: 10,
+  },
+  section: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEEEEE',
+    padding: 20,
+    borderRadius: 10,
   },
 });

@@ -184,14 +184,15 @@ export default function App() {
     }
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      coreKitInstance.commitChanges();
-    }
 
     uiConsole(
       'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
       factorKeyMnemonic,
     );
+
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
   };
   // IMP END - Enable Multi Factor Authentication
 
@@ -393,21 +394,26 @@ export default function App() {
           title="Get Device Factor"
           onPress={() => getDeviceFactor()}
         />
-        <Text>Backup/ Device Factor:</Text>
-        <TextInput onChangeText={setBackupFactorKey} value={backupFactorKey} />
-        <Button
-          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Input Backup Factor Key"
-          onPress={() => inputBackupFactorKey()}
-        />
+
         <Text>Recover Using Mnemonic Factor Key:</Text>
-        <TextInput onChangeText={setMnemonicFactor} value={mnemonicFactor} />
+        <TextInput
+          style={styles.input}
+          onChangeText={setMnemonicFactor}
+          value={mnemonicFactor}
+        />
         <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Recovery Factor Key using Mnemonic"
           onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
         />
+        <Text>Backup/ Device Factor: {backupFactorKey}</Text>
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Input Backup Factor Key"
+          onPress={() => inputBackupFactorKey()}
+        />
       </View>
+
       {loading && <ActivityIndicator />}
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
@@ -454,11 +460,19 @@ const styles = StyleSheet.create({
   consoleText: {
     padding: 10,
   },
+  input: {
+    padding: 10,
+    width: Dimensions.get('window').width - 60,
+    borderColor: 'gray',
+    borderWidth: 1,
+  },
   buttonArea: {
     flex: 2,
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingBottom: 30,
+    margin: 20,
+    gap: 10,
   },
   disabled: {
     opacity: 0.5,

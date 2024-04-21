@@ -13,9 +13,9 @@
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
     "@toruslabs/react-native-tss-lib-bridge": "^0.1.0",
-    "@web3auth/ethereum-provider": "^7.2.1",
+    "@web3auth/ethereum-mpc-provider": "^8.3.0",
     "@web3auth/mpc-core-kit": "^2.3.0",
-    "ethers": "^6.8.0",
+    "ethers": "^6.12.0",
     "metro-react-native-babel-transformer": "^0.77.0",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
@@ -23,7 +23,7 @@
     "react-native-auth0": "^3.1.0",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-webview": "^13.8.4",
+    "react-native-webview": "^13.8.6",
     "react-native-react-bridge": "^0.11.2"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
@@ -35,8 +35,8 @@
     "@react-native/eslint-config": "0.73.2",
     "@react-native/metro-config": "0.73.5",
     "@react-native/typescript-config": "0.73.1",
-    "@types/react": "^18.2.6",
-    "@types/react-test-renderer": "^18.0.0",
+    "@types/react": "^18.2.79",
+    "@types/react-test-renderer": "^18.0.7",
     "assert": "^2.1.0",
     "babel-jest": "^29.6.3",
     "base-64": "^1.0.0",
@@ -53,16 +53,13 @@
     "path-browserify": "^1.0.1",
     "prettier": "2.8.8",
     "process": "^0.11.10",
-    "react-native-get-random-values": "^1.9.0",
+    "react-native-get-random-values": "^1.11.0",
     "react-test-renderer": "18.2.0",
-    "readable-stream": "^4.4.2",
+    "readable-stream": "^4.5.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "text-encoding": "^0.7.0",
     "typescript": "5.0.4",
     "url": "^0.11.3"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }

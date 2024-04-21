@@ -957,7 +957,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
-  - react-native-webview (13.8.4):
+  - react-native-webview (13.8.6):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1382,7 +1382,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
-  react-native-webview: 9395e82c917d81407deb9b1fe53158dd6c8880ff
+  react-native-webview: d6607cbbe7bad689cc08d6d5e35cbf9938093223
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: cd26e56d56350e123da0c1e3e4c76cb58a05e1ee
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
@@ -1409,4 +1409,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1a3458f40f2b81d631519b0c779e211db1e54541
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.12.1
