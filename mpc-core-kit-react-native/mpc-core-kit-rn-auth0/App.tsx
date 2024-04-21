@@ -25,8 +25,8 @@ import {
   IdTokenLoginParams,
   TssShareType,
   parseToken,
-  getWebBrowserFactor,
-  storeWebBrowserFactor,
+  // getWebBrowserFactor,
+  // storeWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
@@ -73,10 +73,12 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
     },
   },
   tssLib: TssLibRN,
-  // setupProviderOnInit: false,
-  // This is the recommended approach
-  manualSync: true,
+  manualSync: true, // This is the recommended approach
 });
+
+// Setup provider for EVM Chain
+const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+evmProvider.setupProvider(coreKitInstance);
 // IMP END - SDK Initialization
 
 function Home() {
@@ -318,8 +320,6 @@ function Home() {
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-    evmProvider.setupProvider(coreKitInstance);
     const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
@@ -342,8 +342,6 @@ function Home() {
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-    evmProvider.setupProvider(coreKitInstance);
     const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
@@ -376,8 +374,6 @@ function Home() {
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-    evmProvider.setupProvider(coreKitInstance);
     const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
@@ -402,8 +398,6 @@ function Home() {
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-    evmProvider.setupProvider(coreKitInstance);
     const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     const signer = await ethersProvider.getSigner();

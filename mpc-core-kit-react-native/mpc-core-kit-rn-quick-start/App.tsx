@@ -21,7 +21,8 @@ import {
   IdTokenLoginParams,
   TssShareType,
   parseToken,
-  getWebBrowserFactor,
+  // getWebBrowserFactor,
+  // storeWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
@@ -31,6 +32,7 @@ import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
@@ -47,10 +49,11 @@ const verifier = 'w3a-firebase-demo';
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: '0x1', // Please use 0x1 for Mainnet
-  rpcTarget: 'https://rpc.ankr.com/eth',
-  displayName: 'Ethereum Mainnet',
-  blockExplorer: 'https://etherscan.io/',
+  chainId: '0xaa36a7', // Please use 0x1 for Mainnet
+  rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
+  displayName: 'Ethereum Sepolia Testnet',
+  blockExplorerUrl: 'https://sepolia.etherscan.io/',
+  blockExplorer: 'https://sepolia.etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
 };
@@ -59,6 +62,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
+  setupProviderOnInit: false,
   uxMode: 'react-native',
   asyncStorageKey: {
     getItem: async (key: string) => {
@@ -69,17 +73,18 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
     },
   },
   tssLib: TssLibRN,
-  manualSync: true,
+  manualSync: true, // This is the recommended approach
 });
+
+// Setup provider for EVM Chain
+const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+evmProvider.setupProvider(coreKitInstance);
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
-async function signInWithEmailPassword() {
+async function firebaseSignIn() {
   try {
-    const res = await auth().signInWithEmailAndPassword(
-      'custom+jwt@firebase.login',
-      'Testing@123',
-    );
+    const res = await auth().signInAnonymously();
     return res;
   } catch (error) {
     console.error(error);
@@ -119,7 +124,7 @@ export default function App() {
       setConsoleUI('Logging in');
       setLoading(true);
       // IMP START - Auth Provider Login
-      const loginRes = await signInWithEmailPassword();
+      const loginRes = await firebaseSignIn();
       // IMP END - Auth Provider Login
       uiConsole('Login success', loginRes);
 
@@ -161,18 +166,16 @@ export default function App() {
     if (!backupFactorKey) {
       throw new Error('backupFactorKey not found');
     }
+    setLoading(true);
     const factorKey = new BN(backupFactorKey, 'hex');
     await coreKitInstance.inputFactorKey(factorKey);
 
     setCoreKitStatus(coreKitInstance.status);
-
+    setLoading(false);
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
       uiConsole(
         'required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]',
       );
-    }
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      coreKitInstance.commitChanges();
     }
   };
   // IMP END - Recover MFA Enabled Account
@@ -182,13 +185,21 @@ export default function App() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
-    const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic(factorKey);
+    setLoading(true);
+    try {
+      setConsoleUI('Enabling MFA, please wait');
 
-    uiConsole(
-      'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
-      factorKeyMnemonic,
-    );
+      const factorKey = await coreKitInstance.enableMFA({});
+      const factorKeyMnemonic = keyToMnemonic(factorKey);
+
+      uiConsole(
+        'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
+        factorKeyMnemonic,
+      );
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+    setLoading(false);
 
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
@@ -203,20 +214,31 @@ export default function App() {
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
-  const getDeviceFactor = async () => {
-    try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance!);
-      setBackupFactorKey(factorKey!);
-      uiConsole('Device share: ', factorKey);
-    } catch (e) {
-      uiConsole(e);
-    }
-  };
+  // const getDeviceFactor = async () => {
+  //   try {
+  //     const factorKey = await getWebBrowserFactor(coreKitInstance!);
+  //     setBackupFactorKey(factorKey!);
+  //     uiConsole('Device factor: ', factorKey);
+  //   } catch (error: any) {
+  //   uiConsole(error.message);
+  // }
+  // };
+
+  // const storeDeviceFactor = async () => {
+  //   try {
+  //     const factorKey = await generateFactorKey();
+  //     await storeWebBrowserFactor(factorKey.private, coreKitInstance!);
+  //     uiConsole('Stored factor: ', factorKey);
+  //   } catch (error: any) {
+  //   uiConsole(error.message);
+  // }
+  // };
 
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
+    setLoading(true);
     uiConsole('export share type: ', TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
@@ -226,10 +248,12 @@ export default function App() {
     const factorKeyMnemonic = await keyToMnemonic(
       factorKey.private.toString('hex'),
     );
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      coreKitInstance.commitChanges();
-    }
+    setLoading(false);
+
     uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
   };
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
@@ -240,8 +264,8 @@ export default function App() {
       const factorKey = await mnemonicToKey(mnemonic);
       setBackupFactorKey(factorKey);
       return factorKey;
-    } catch (error) {
-      uiConsole(error);
+    } catch (error: any) {
+      uiConsole(error.message);
     }
   };
 
@@ -253,11 +277,20 @@ export default function App() {
   };
 
   const logout = async () => {
+    setLoading(true);
     // IMP START - Logout
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
-    uiConsole('logged out');
+    // Log out from Auth0
+    setLoading(false);
+    try {
+      await clearSession();
+      uiConsole('logged out from auth0');
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+    uiConsole('logged out from web3auth');
   };
 
   // IMP START - Blockchain Calls
@@ -266,13 +299,12 @@ export default function App() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Getting account');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -280,6 +312,7 @@ export default function App() {
 
     // Get user's Ethereum public address
     const address = signer.getAddress();
+    setLoading(false);
     uiConsole(address);
   };
 
@@ -288,13 +321,12 @@ export default function App() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Fetching balance');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -311,6 +343,7 @@ export default function App() {
     const balance = ethers.formatEther(
       await ethersProvider.getBalance(address), // Balance is in wei
     );
+    setLoading(false);
 
     uiConsole(balance);
   };
@@ -320,13 +353,12 @@ export default function App() {
       uiConsole('provider not initialized yet');
       return;
     }
+    setLoading(true);
     setConsoleUI('Signing message');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
-    const ethersProvider = new ethers.BrowserProvider(
-      coreKitInstance.provider as any,
-    );
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
     // For ethers v5
     // const signer = ethersProvider.getSigner();
@@ -335,6 +367,7 @@ export default function App() {
 
     // Sign the message
     const signedMessage = await signer.signMessage(originalMessage);
+    setLoading(false);
     uiConsole(signedMessage);
   };
   // IMP END - Blockchain Calls
@@ -346,6 +379,7 @@ export default function App() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
+    setLoading(true);
     //@ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
@@ -355,6 +389,10 @@ export default function App() {
       input: {message: 'KEY_NOT_FOUND'},
     });
     uiConsole('reset');
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
+    setLoading(false);
     logout();
   };
 
@@ -367,16 +405,20 @@ export default function App() {
     <View style={styles.buttonArea}>
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
-      <Button title="Enable MFA" onPress={enableMFA} />
       <Button title="Get Accounts" onPress={getAccounts} />
       <Button title="Get Balance" onPress={getBalance} />
       <Button title="Sign Message" onPress={signMessage} />
       <Button title="Log Out" onPress={logout} />
-      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+      {/* <Button title="Commit Changes" onPress={commitChanges} /> */}
+      {/* <Text>CommitChanges after performing the following actions:</Text> */}
+      <Button title="Enable MFA" onPress={enableMFA} />
       <Button
-        title="Generate Backup (Mnemonic)"
+        title="Generate Backup (Mnemonic) - CreateFactor"
         onPress={exportMnemonicFactor}
       />
+      {/* <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
+      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
 
@@ -386,15 +428,15 @@ export default function App() {
       <View
         style={
           coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE
-            ? styles.disabled
-            : null
+            ? styles.disabledSection
+            : styles.section
         }>
-        <Button
+        <Text style={styles.heading}>Account Recovery</Text>
+        {/* <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Device Factor"
           onPress={() => getDeviceFactor()}
-        />
-
+        /> */}
         <Text>Recover Using Mnemonic Factor Key:</Text>
         <TextInput
           style={styles.input}
@@ -413,17 +455,17 @@ export default function App() {
           onPress={() => inputBackupFactorKey()}
         />
       </View>
-
-      {loading && <ActivityIndicator />}
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
 
   return (
     <View style={styles.container}>
+      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
       {coreKitStatus === COREKIT_STATUS.LOGGED_IN
         ? loggedInView
         : unloggedInView}
+      {loading && <ActivityIndicator />}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
@@ -443,6 +485,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 50,
     paddingBottom: 30,
+    gap: 10,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subHeading: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
   consoleArea: {
     margin: 20,
@@ -470,11 +523,22 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingBottom: 30,
     margin: 20,
-    gap: 10,
+    gap: 40,
   },
-  disabled: {
+  disabledSection: {
     opacity: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEEEEE',
+    padding: 20,
+    borderRadius: 10,
+  },
+  section: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEEEEE',
+    padding: 20,
+    borderRadius: 10,
   },
 });
