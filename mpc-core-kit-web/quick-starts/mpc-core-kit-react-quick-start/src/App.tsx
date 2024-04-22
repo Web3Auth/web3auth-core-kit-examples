@@ -12,6 +12,7 @@ import {
   keyToMnemonic,
   mnemonicToKey,
 } from "@web3auth/mpc-core-kit";
+import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 // IMP END - Quick Start
 import Web3 from "web3";
@@ -46,7 +47,12 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
+  manualSync: true, // This is the recommended approach
 });
+
+// Setup provider for EVM Chain
+const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
+evmProvider.setupProvider(coreKitInstance);
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -124,6 +130,10 @@ function App() {
       }
       // IMP END - Recover MFA Enabled Account
 
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges();
+      }
+
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
@@ -158,6 +168,10 @@ function App() {
     const factorKey = await coreKitInstance.enableMFA({});
     const factorKeyMnemonic = keyToMnemonic(factorKey);
 
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
+
     uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   };
   // IMP END - Enable Multi Factor Authentication
@@ -190,6 +204,9 @@ function App() {
       factorKey: factorKey.private,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
     uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
   };
 
@@ -227,7 +244,7 @@ function App() {
       uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    const web3 = new Web3(evmProvider as any);
 
     // Get user's Ethereum public address
     const address = await web3.eth.getAccounts();
@@ -239,7 +256,7 @@ function App() {
       uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    const web3 = new Web3(evmProvider as any);
 
     // Get user's Ethereum public address
     const address = (await web3.eth.getAccounts())[0];
@@ -257,7 +274,8 @@ function App() {
       uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    uiConsole("Signing Message...");
+    const web3 = new Web3(evmProvider as any);
 
     // Get user's Ethereum public address
     const fromAddress = (await web3.eth.getAccounts())[0];
@@ -289,6 +307,9 @@ function App() {
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
     uiConsole("reset");
     logout();
   };
