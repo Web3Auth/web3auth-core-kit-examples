@@ -31,6 +31,11 @@ import {
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  getWebBrowserFactor,
+  storeWebBrowserFactor,
+  BrowserStorage,
+  asyncGetFactor,
+  asyncStoreFactor,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 // IMP END - Quick Start
@@ -58,20 +63,22 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
+const asyncStorage = {
+  getItem: async (key: string) => {
+    return EncryptedStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    return EncryptedStorage.setItem(key, value);
+  },
+};
+
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
   setupProviderOnInit: false,
   uxMode: 'react-native',
-  asyncStorageKey: {
-    getItem: async (key: string) => {
-      return EncryptedStorage.getItem(key);
-    },
-    setItem: async (key: string, value: string) => {
-      return EncryptedStorage.setItem(key, value);
-    },
-  },
+  asyncStorageKey: asyncStorage,
   tssLib: TssLibRN,
   manualSync: true, // This is the recommended approach
 });
@@ -230,25 +237,25 @@ function Home() {
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
-  // const getDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await getWebBrowserFactor(coreKitInstance!);
-  //     setBackupFactorKey(factorKey!);
-  //     uiConsole('Device factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const getDeviceFactor = async () => {
+    try {
+      const factorKey = await asyncGetFactor(coreKitInstance!, asyncStorage);
+      setBackupFactorKey(factorKey!);
+      uiConsole('Device factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
-  // const storeDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await generateFactorKey();
-  //     await storeWebBrowserFactor(factorKey.private, coreKitInstance!);
-  //     uiConsole('Stored factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const storeDeviceFactor = async () => {
+    try {
+      const factorKey = await generateFactorKey();
+      await asyncStoreFactor(factorKey.private, coreKitInstance!, asyncStorage);
+      uiConsole('Stored factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
@@ -467,8 +474,8 @@ function Home() {
         title="Generate Backup (Mnemonic) - CreateFactor"
         onPress={exportMnemonicFactor}
       />
-      {/* <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
-      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
+      <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
