@@ -13,7 +13,7 @@
     "@web3auth/mpc-core-kit": "^2.3.0",
     "@web3auth/single-factor-auth": "^7.4.0",
     "bn.js": "^5.2.1",
-    "firebase": "^10.4.0",
+    "firebase": "^10.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
