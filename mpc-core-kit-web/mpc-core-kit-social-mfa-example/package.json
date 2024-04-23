@@ -1,0 +1,67 @@
+{
+  "name": "mpc-core-kit-react-quick-start",
+  "version": "0.1.0",
+  "private": true,
+  "//IMP START": "IMP START - Web3Auth Installation",
+  "dependencies": {
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "@web3auth/base": "^8.3.0",
+    "@web3auth/base-provider": "^8.3.0",
+    "@web3auth/ethereum-mpc-provider": "^8.3.0",
+    "@web3auth/mpc-core-kit": "^2.3.0",
+    "@web3auth/single-factor-auth": "^7.4.0",
+    "bn.js": "^5.2.1",
+    "firebase": "^10.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.4",
+    "web-vitals": "^3.1.0",
+    "web3": "^4.8.0"
+  },
+  "//IMP END": "IMP END - Web3Auth Installation",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "eslint-config-react-app": "^7.0.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "source-map-loader": "^4.0.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.1"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject",
+    "lint": "react-scripts lint"
+  }
+}

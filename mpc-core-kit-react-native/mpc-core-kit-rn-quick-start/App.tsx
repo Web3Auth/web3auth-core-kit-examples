@@ -53,7 +53,6 @@ const chainConfig = {
   rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
   displayName: 'Ethereum Sepolia Testnet',
   blockExplorerUrl: 'https://sepolia.etherscan.io/',
-  blockExplorer: 'https://sepolia.etherscan.io/',
   ticker: 'ETH',
   tickerName: 'Ethereum',
 };
@@ -61,7 +60,6 @@ const chainConfig = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  chainConfig,
   setupProviderOnInit: false,
   uxMode: 'react-native',
   asyncStorageKey: {
@@ -431,7 +429,6 @@ export default function App() {
             ? styles.disabledSection
             : styles.section
         }>
-        <Text style={styles.heading}>Account Recovery</Text>
         {/* <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Device Factor"
