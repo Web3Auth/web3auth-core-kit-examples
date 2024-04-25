@@ -14,13 +14,17 @@ import {
 } from "@web3auth/mpc-core-kit";
 import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
 import { CHAIN_NAMESPACES } from "@web3auth/base";
+// Optional, only for social second factor recovery
+import Web3Auth from "@web3auth/single-factor-auth";
+import { CommonPrivateKeyProvider } from '@web3auth/base-provider';
+
 // IMP END - Quick Start
 import Web3 from "web3";
 import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
 
@@ -160,19 +164,65 @@ function App() {
   };
   // IMP END - Recover MFA Enabled Account
 
+  // IMP START - Export Social Account Factor
+  const getSocialMFAFactorKey = async (): Promise <string> => {
+    try {
+    // Initialise the Web3Auth SFA SDK
+    // You can do this on the constructor as well for faster experience 
+    const web3authSfa = new Web3Auth({
+      clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+      usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+    });
+    const privateKeyProvider = new CommonPrivateKeyProvider(({config: {chainConfig}}));
+    await web3authSfa.init(privateKeyProvider);
+
+    // Login using Firebase Email Password
+    const auth = getAuth(app);
+    const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
+      'Testing@123');
+    console.log(res);
+    const idToken = await res.user.getIdToken(true);
+    const userInfo = parseToken(idToken);
+
+    // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+    const web3authProvider = await web3authSfa.connect({
+      verifier,
+      verifierId: userInfo.sub,
+      idToken,
+    });
+
+    // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+    const factorKey = await web3authProvider!.request({
+      method: "private_key",
+    });
+    uiConsole("Social Factor Key: ", factorKey);
+    setBackupFactorKey(factorKey as string);
+    return factorKey as string;
+  } catch (err) {
+    uiConsole(err);
+    return "";
+  }
+  }
+  // IMP END - Export Social Account Factor  
+
   // IMP START - Enable Multi Factor Authentication
   const enableMFA = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic(factorKey);
-
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await coreKitInstance.commitChanges();
+    try {
+      const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
+      await coreKitInstance.enableMFA({ factorKey });
+  
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges();
+      }
+  
+      uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app");
+    } catch (e) {
+      uiConsole(e);
     }
-
-    uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
   };
   // IMP END - Enable Multi Factor Authentication
 
@@ -383,19 +433,22 @@ function App() {
         <button onClick={() => getDeviceFactor()} className="card">
           Get Device Factor
         </button>
-        <label>Backup/ Device Factor:</label>
-        <input value={backupFactorKey} onChange={(e) => setBackupFactorKey(e.target.value)}></input>
+        <label>Recover Using Mnemonic Factor Key:</label>
+        <input value={mnemonicFactor} onChange={(e) => setMnemonicFactor(e.target.value)}></input>
+        <button onClick={() => MnemonicToFactorKeyHex(mnemonicFactor)} className="card">
+          Get Recovery Factor Key using Mnemonic
+        </button>
+        <button onClick={() => getSocialMFAFactorKey()} className="card">
+          Get Social MFA Factor
+        </button>
+        <label>Backup/ Device Factor: {backupFactorKey}</label>
         <button onClick={() => inputBackupFactorKey()} className="card">
           Input Backup Factor Key
         </button>
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-        <label>Recover Using Mnemonic Factor Key:</label>
-        <input value={mnemonicFactor} onChange={(e) => setMnemonicFactor(e.target.value)}></input>
-        <button onClick={() => MnemonicToFactorKeyHex(mnemonicFactor)} className="card">
-          Get Recovery Factor Key using Mnemonic
-        </button>
+        
       </div>
     </>
   );

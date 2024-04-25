@@ -2,83 +2,52 @@
 <template>
   <div id="app">
     <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
-        Web3Auth MPC Core Kit
-      </a>
+      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer"> Web3Auth MPC Core Kit </a>
       Vue.js Quick Start
     </h2>
 
     <div v-if="coreKitStatus !== COREKIT_STATUS.LOGGED_IN">
-      <button @click="login" class="card">
-        Login
-      </button>
+      <button @click="login" class="card">Login</button>
       <div v-if="coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE">
-
-        <button @click="getDeviceFactor" class="card">
-          Get Device Factor
-        </button>
+        <button @click="getDeviceFactor" class="card">Get Device Factor</button>
         <label>Backup/ Device Factor:</label>
         <input v-model="backupFactorKey" />
-        <button @click="inputBackupFactorKey" class="card">
-          Input Backup Factor Key
-        </button>
-        <button @click="criticalResetAccount" class="card">
-          [CRITICAL] Reset Account
-        </button>
+        <button @click="inputBackupFactorKey" class="card">Input Backup Factor Key</button>
+        <button @click="criticalResetAccount" class="card">[CRITICAL] Reset Account</button>
         <label>Recover Using Mnemonic Factor Key:</label>
         <input v-model="mnemonicFactor" />
-        <button @click="MnemonicToFactorKeyHex" class="card">
-          Get Recovery Factor Key using Mnemonic
-        </button>
+        <button @click="MnemonicToFactorKeyHex" class="card">Get Recovery Factor Key using Mnemonic</button>
       </div>
     </div>
 
     <div v-if="coreKitStatus === COREKIT_STATUS.LOGGED_IN">
       <div class="flex-container">
         <div>
-          <button class="card" @click="getUserInfo" style="cursor: pointer">
-            Get User Info
-          </button>
+          <button class="card" @click="getUserInfo" style="cursor: pointer">Get User Info</button>
         </div>
         <div>
-          <button class="card" @click="keyDetails" style="cursor: pointer">
-            Key Details
-          </button>
+          <button class="card" @click="keyDetails" style="cursor: pointer">Key Details</button>
         </div>
         <div>
-          <button class="card" @click="enableMFA" style="cursor: pointer">
-            Enable MFA
-          </button>
+          <button class="card" @click="enableMFA" style="cursor: pointer">Enable MFA</button>
         </div>
         <div>
-          <button class="card" @click="getAccounts" style="cursor: pointer">
-            Get Accounts
-          </button>
+          <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
         </div>
         <div>
-          <button class="card" @click="getBalance" style="cursor: pointer">
-            Get Balance
-          </button>
+          <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
         </div>
         <div>
-          <button class="card" @click="signMessage" style="cursor: pointer">
-            Sign Message
-          </button>
+          <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
         </div>
         <div>
-          <button class="card" @click="logout" style="cursor: pointer">
-            Logout
-          </button>
+          <button class="card" @click="logout" style="cursor: pointer">Logout</button>
         </div>
         <div>
-          <button class="card" @click="criticalResetAccount" style="cursor: pointer">
-            [CRITICAL] Reset Account
-          </button>
+          <button class="card" @click="criticalResetAccount" style="cursor: pointer">[CRITICAL] Reset Account</button>
         </div>
         <div>
-          <button class="card" @click="exportMnemonicFactor" style="cursor: pointer">
-            Generate Backup (Mnemonic)
-          </button>
+          <button class="card" @click="exportMnemonicFactor" style="cursor: pointer">Generate Backup (Mnemonic)</button>
         </div>
       </div>
     </div>
@@ -87,8 +56,11 @@
     </div>
 
     <footer class="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
-        target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Source code
       </a>
     </footer>
@@ -98,10 +70,21 @@
 <script lang="ts">
 import { ref, onMounted } from "vue";
 // IMP START - Quick Start
-import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, IdTokenLoginParams, TssShareType, parseToken, getWebBrowserFactor, generateFactorKey, COREKIT_STATUS, keyToMnemonic, mnemonicToKey } from "@web3auth/mpc-core-kit";
+import {
+  Web3AuthMPCCoreKit,
+  WEB3AUTH_NETWORK,
+  IdTokenLoginParams,
+  TssShareType,
+  parseToken,
+  getWebBrowserFactor,
+  generateFactorKey,
+  COREKIT_STATUS,
+  keyToMnemonic,
+  mnemonicToKey,
+} from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 // IMP END - Quick Start
-import Web3 from 'web3';
+import Web3 from "web3";
 import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
@@ -138,13 +121,11 @@ export default {
       tickerName: "Ethereum",
     };
 
-    const coreKitInstance = new Web3AuthMPCCoreKit(
-      {
-        web3AuthClientId,
-        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-        chainConfig,
-      }
-    );
+    const coreKitInstance = new Web3AuthMPCCoreKit({
+      web3AuthClientId,
+      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+      chainConfig,
+    });
     // IMP END - SDK Initialization
 
     // IMP START - Auth Provider Login
@@ -161,7 +142,6 @@ export default {
     // Firebase Initialisation
     const app = initializeApp(firebaseConfig);
     // IMP END - Auth Provider Login
-
 
     onMounted(async () => {
       const init = async () => {
@@ -197,7 +177,7 @@ export default {
     const login = async () => {
       try {
         if (!coreKitInstance) {
-          throw new Error('initiated to login');
+          throw new Error("initiated to login");
         }
         // IMP START - Auth Provider Login
         const loginRes = await signInWithGoogle();
@@ -217,13 +197,14 @@ export default {
 
         // IMP START - Recover MFA Enabled Account
         if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-          uiConsole("required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+          uiConsole(
+            "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+          );
         }
         // IMP END - Recover MFA Enabled Account
 
         coreKitStatus.value = coreKitInstance.status;
-      }
-      catch (err) {
+      } catch (err) {
         uiConsole(err);
       }
     };
@@ -233,16 +214,18 @@ export default {
       if (!coreKitInstance) {
         throw new Error("coreKitInstance not found");
       }
-      if (!backupFactorKey) {
+      if (!backupFactorKey.value) {
         throw new Error("backupFactorKey not found");
       }
-      const factorKey = new BN(backupFactorKey.value, "hex")
+      const factorKey = new BN(backupFactorKey.value, "hex");
       await coreKitInstance.inputFactorKey(factorKey);
 
       coreKitStatus.value = coreKitInstance.status;
 
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
-        uiConsole("required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]");
+        uiConsole(
+          "required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
+        );
       }
     };
     // IMP END - Recover MFA Enabled Account
@@ -260,7 +243,7 @@ export default {
 
     const keyDetails = async () => {
       if (!coreKitInstance) {
-        throw new Error('coreKitInstance not found');
+        throw new Error("coreKitInstance not found");
       }
       uiConsole(coreKitInstance.getKeyDetails());
     };
@@ -284,7 +267,7 @@ export default {
       const factorKey = generateFactorKey();
       await coreKitInstance.createFactor({
         shareType: TssShareType.RECOVERY,
-        factorKey: factorKey.private
+        factorKey: factorKey.private,
       });
       const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
       uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
@@ -317,7 +300,6 @@ export default {
       coreKitStatus.value = coreKitInstance.status;
       uiConsole("logged out");
     };
-
 
     // IMP START - Blockchain Calls
     const getAccounts = async () => {
@@ -387,9 +369,9 @@ export default {
         privKey: new BN(coreKitInstance.metadataKey!, "hex"),
         input: { message: "KEY_NOT_FOUND" },
       });
-      uiConsole('reset');
+      uiConsole("reset");
       logout();
-    }
+    };
 
     function uiConsole(...args: any[]): void {
       const el = document.querySelector("#console>p");
@@ -416,7 +398,7 @@ export default {
       criticalResetAccount,
       keyDetails,
       enableMFA,
-      exportMnemonicFactor
+      exportMnemonicFactor,
     };
   },
 };
@@ -473,7 +455,7 @@ a {
   flex-flow: row wrap;
 }
 
-.flex-container>div {
+.flex-container > div {
   width: 100px;
   margin: 10px;
   text-align: center;

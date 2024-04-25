@@ -168,6 +168,7 @@ function App() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
+    // Get Social MFA Factor Key
     const factorKey = new BN (await getSocialMFAFactorKey(), "hex");
     await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare, additionalMetadata: {"Social Factor Type": "Firebase Email Password Login"} });
 
@@ -196,6 +197,7 @@ function App() {
     }
   };
 
+  // IMP START - Export Mnemonic Factor
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
@@ -212,6 +214,49 @@ function App() {
     }
     uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
   };
+  // IMP END - Export Mnemonic Factor
+
+  // IMP START - Export Social Account Factor
+  const getSocialMFAFactorKey = async (): Promise <string> => {
+    try {
+    // Initialise the Web3Auth SFA SDK
+    // You can do this on the constructor as well for faster experience 
+    const web3authSfa = new Web3Auth({
+      clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+      usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+    });
+    const privateKeyProvider = new CommonPrivateKeyProvider(({config: {chainConfig}}));
+    await web3authSfa.init(privateKeyProvider);
+
+    // Login using Firebase Email Password
+    const auth = getAuth(app);
+    const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
+      'Testing@123');
+    console.log(res);
+    const idToken = await res.user.getIdToken(true);
+    const userInfo = parseToken(idToken);
+
+    // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+    const web3authProvider = await web3authSfa.connect({
+      verifier,
+      verifierId: userInfo.sub,
+      idToken,
+    });
+
+    // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+    const factorKey = await web3authProvider!.request({
+      method: "private_key",
+    });
+    uiConsole("Social Factor Key: ", factorKey);
+    setBackupFactorKey(factorKey as string);
+    return factorKey as string;
+  } catch (err) {
+    uiConsole(err);
+    return "";
+  }
+  }
+  // IMP END - Export Social Account Factor
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
     if (!coreKitInstance) {
@@ -316,41 +361,6 @@ function App() {
     uiConsole("reset");
     logout();
   };
-
-  const getSocialMFAFactorKey = async (): Promise <string> => {
-    try {
-    const web3authSfa = new Web3Auth({
-      clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
-      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-      usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-    });
-    const privateKeyProvider = new CommonPrivateKeyProvider(({config: {chainConfig}}));
-    await web3authSfa.init(privateKeyProvider);
-
-    const auth = getAuth(app);
-    const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
-      'Testing@123');
-    console.log(res);
-
-    const idToken = await res.user.getIdToken(true);
-    const userInfo = parseToken(idToken);
-    const web3authProvider = await web3authSfa.connect({
-      verifier,
-      verifierId: userInfo.sub,
-      idToken,
-    });
-
-    const factorKey = await web3authProvider!.request({
-      method: "private_key",
-    });
-    uiConsole("Social Factor Key: ", factorKey);
-    setBackupFactorKey(factorKey as string);
-    return factorKey as string;
-  } catch (err) {
-    uiConsole(err);
-    return "";
-  }
-  }
 
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");
