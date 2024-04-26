@@ -1,28 +1,28 @@
-# Web3Auth (`@web3auth/modal`) x EVM x Angular
+# Web3Auth (`@web3auth/single-factor-auth`) QuickStart - Angular
 
-[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/pnp/web/modal)
+[![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/sfa-web)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
 
 [Join our Community Portal](https://community.web3auth.io/) to get support and stay up to date with the latest news and updates.
 
-This example demonstrates how to use Web3Auth with EVM in Angular.
+This example demonstrates how to use Web3Auth Single Factor Auth Web SDK in Angular.
 
 ## How to Use
 
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-pnp-examples/web-modal-sdk/evm/angular-evm-modal-example w3a-modal-evm-angular
+npx degit Web3Auth/web3auth-pnp-examples/single-factor-auth-web/quick-starts/sfa-angular-quick-start w3a-sfa-angular-quick-start
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-modal-evm-angular
+cd w3a-sfa-angular-quick-start
 npm install
 npm run start
 # or
-cd w3a-modal-evm-angular
+cd w3a-sfa-angular-quick-start
 yarn
 yarn start
 ```

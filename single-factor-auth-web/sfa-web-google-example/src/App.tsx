@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { Web3Auth, PrivateKeyProvider } from "@web3auth/single-factor-auth";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
 
@@ -15,23 +15,23 @@ import "./App.css";
 
 const verifier = "w3a-sfa-web-google";
 
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
-  chainId: "0x1",
-  displayName: "Ethereum Mainnet",
+  chainId: "0xaa36a7",
+  displayName: "Ethereum Sepolia Testnet",
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   tickerName: "Ethereum",
   ticker: "ETH",
   decimals: 18,
-  rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://etherscan.io",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  blockExplorer: "https://sepolia.etherscan.io",
 };
 
 // Initialising Web3Auth Single Factor Auth SDK
 const web3authSfa = new Web3Auth({
   clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET, // ["sapphire_mainnet", "sapphire_devnet", "mainnet", "cyan", "aqua", and "testnet"]
   usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
 });
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
@@ -39,7 +39,6 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
 });
 
 function App() {
-  const [usesSfaSDK, setUsesSfaSDK] = useState(false);
   const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,7 +46,7 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        web3authSfa.init(ethereumPrivateKeyProvider);
+        web3authSfa.init(ethereumPrivateKeyProvider as PrivateKeyProvider);
       } catch (error) {
         console.error(error);
       }
@@ -75,15 +74,14 @@ function App() {
       }
       setIsLoggingIn(true);
       const idToken = response.credential;
+      // console.log(idToken);
       setIdToken(idToken!);
       const { email } = parseToken(idToken);
-      console.log(email);
       await web3authSfa.connect({
         verifier,
         verifierId: email,
         idToken: idToken!,
       });
-      setUsesSfaSDK(true);
       setIsLoggingIn(false);
       setIsLoggedIn(true);
     } catch (err) {
@@ -95,24 +93,23 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    if (usesSfaSDK) {
-      uiConsole(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
-        parseToken(idToken)
-      );
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
+    const getUserInfo = await web3authSfa.getUserInfo();
+    uiConsole(getUserInfo);
   };
 
   const logout = async () => {
-    if (usesSfaSDK) {
-      console.log(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
-      );
-      googleLogout();
-      setIsLoggedIn(false);
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
+    googleLogout();
+    web3authSfa.logout();
+    setIsLoggedIn(false);
+    return;
   };
 
   const getAccounts = async () => {
@@ -167,17 +164,17 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x5",
-        displayName: "Goerli",
+        chainId: "0x13881",
+        displayName: "Polygon MATIC Testnet",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Goerli",
-        ticker: "ETH",
+        tickerName: "MATIC",
+        ticker: "MATIC",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        blockExplorer: "https://goerli.etherscan.io",
+        rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
+        blockExplorer: "https://mumbai.polygonscan.com/",
       };
       await web3authSfa.addChain(newChain);
-      uiConsole("Chain added successfully");
+      uiConsole("Polygon Testnet Chain added successfully");
     } catch (err) {
       uiConsole(err);
     }
@@ -185,8 +182,8 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x5" });
-      uiConsole("Chain switched successfully");
+      await web3authSfa.switchChain({ chainId: "0x13881" });
+      uiConsole("Chain switched to Polygon Testnet successfully");
     } catch (err) {
       uiConsole(err);
     }
@@ -209,7 +206,7 @@ function App() {
         </div>
         <div>
           <button onClick={() => uiConsole(idToken)} className="card">
-            Get OAuth ID Token
+            Get OAuth IDToken
           </button>
         </div>
         <div>
@@ -260,7 +257,7 @@ function App() {
     </>
   );
 
-  const logoutView = <GoogleLogin onSuccess={onSuccess} />;
+  const logoutView = <GoogleLogin onSuccess={onSuccess} useOneTap />;
 
   return (
     <div className="container">
@@ -275,7 +272,7 @@ function App() {
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-react-google-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-web-google-example"
           target="_blank"
           rel="noopener noreferrer"
         >

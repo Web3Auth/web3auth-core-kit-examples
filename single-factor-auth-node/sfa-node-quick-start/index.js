@@ -22,8 +22,8 @@ const web3auth = new Web3Auth({
 const ethereumProvider = new EthereumPrivateKeyProvider({
   config: {
     chainConfig: {
-      chainId: "0x1",
-      rpcTarget: "https://rpc.ankr.com/eth"
+      chainId: "0x13882",
+      rpcTarget: "https://rpc-amoy.polygon.technology/"
     }
   }
 });

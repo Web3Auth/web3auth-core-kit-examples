@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		0D005DFA29CCB28100F7F4F7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0D005DF929CCB28100F7F4F7 /* FirebaseAuth */; };
 		27B35B442A3F5A3C0004BB99 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */; };
-		27CEC30D2B45C8DC0032E0D1 /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */; };
+		28A9039F2BC3CD6F002C0DB5 /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9039E2BC3CD6F002C0DB5 /* EthereumClient.swift */; };
+		28A903AF2BC3DDFC002C0DB5 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 28A903AE2BC3DDFC002C0DB5 /* web3.swift */; };
+		28A903B52BC3EEE4002C0DB5 /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 28A903B42BC3EEE4002C0DB5 /* SingleFactorAuth */; };
 		4D9FEEE5294BAC380035414D /* ios_firebase_exampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */; };
 		4D9FEEE7294BAC380035414D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE6294BAC380035414D /* ContentView.swift */; };
 		4D9FEEE9294BAC3A0035414D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D9FEEE8294BAC3A0035414D /* Assets.xcassets */; };
@@ -41,6 +43,7 @@
 
 /* Begin PBXFileReference section */
 		27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		28A9039E2BC3CD6F002C0DB5 /* EthereumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClient.swift; sourceTree = "<group>"; };
 		4D9FEEE1294BAC380035414D /* ios-firebase-example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-firebase-example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ios_firebase_exampleApp.swift; sourceTree = "<group>"; };
 		4D9FEEE6294BAC380035414D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -61,7 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27CEC30D2B45C8DC0032E0D1 /* SingleFactorAuth in Frameworks */,
+				28A903B52BC3EEE4002C0DB5 /* SingleFactorAuth in Frameworks */,
+				28A903AF2BC3DDFC002C0DB5 /* web3.swift in Frameworks */,
 				0D005DFA29CCB28100F7F4F7 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,6 +87,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		28A9039D2BC3CD55002C0DB5 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				28A9039E2BC3CD6F002C0DB5 /* EthereumClient.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		4D9FEED8294BAC380035414D = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +118,7 @@
 		4D9FEEE3294BAC380035414D /* ios-firebase-example */ = {
 			isa = PBXGroup;
 			children = (
+				28A9039D2BC3CD55002C0DB5 /* Helpers */,
 				4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */,
 				4D9FEEE6294BAC380035414D /* ContentView.swift */,
 				4D9FEEE8294BAC3A0035414D /* Assets.xcassets */,
@@ -161,7 +174,8 @@
 			name = "ios-firebase-example";
 			packageProductDependencies = (
 				0D005DF929CCB28100F7F4F7 /* FirebaseAuth */,
-				27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */,
+				28A903AE2BC3DDFC002C0DB5 /* web3.swift */,
+				28A903B42BC3EEE4002C0DB5 /* SingleFactorAuth */,
 			);
 			productName = "ios-firebase-example";
 			productReference = 4D9FEEE1294BAC380035414D /* ios-firebase-example.app */;
@@ -237,7 +251,8 @@
 			mainGroup = 4D9FEED8294BAC380035414D;
 			packageReferences = (
 				0D005DF829CCB28100F7F4F7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */,
+				28A903AD2BC3DDFC002C0DB5 /* XCRemoteSwiftPackageReference "web3" */,
+				28A903B32BC3EEE4002C0DB5 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */,
 			);
 			productRefGroup = 4D9FEEE2294BAC380035414D /* Products */;
 			projectDirPath = "";
@@ -287,6 +302,7 @@
 				4D9FEF12294BACB10035414D /* ViewModel.swift in Sources */,
 				4D9FEF16294BACD80035414D /* LoginView.swift in Sources */,
 				4D9FEEE5294BAC380035414D /* ios_firebase_exampleApp.swift in Sources */,
+				28A9039F2BC3CD6F002C0DB5 /* EthereumClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +461,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -473,6 +490,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -615,12 +633,20 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */ = {
+		28A903AD2BC3DDFC002C0DB5 /* XCRemoteSwiftPackageReference "web3" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argentlabs/web3.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.1;
+			};
+		};
+		28A903B32BC3EEE4002C0DB5 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
 				kind = exactVersion;
-				version = 2.0.3;
+				version = 4.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -631,9 +657,14 @@
 			package = 0D005DF829CCB28100F7F4F7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
 		};
-		27CEC30C2B45C8DC0032E0D1 /* SingleFactorAuth */ = {
+		28A903AE2BC3DDFC002C0DB5 /* web3.swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 27CEC30B2B45C8DC0032E0D1 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */;
+			package = 28A903AD2BC3DDFC002C0DB5 /* XCRemoteSwiftPackageReference "web3" */;
+			productName = web3.swift;
+		};
+		28A903B42BC3EEE4002C0DB5 /* SingleFactorAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28A903B32BC3EEE4002C0DB5 /* XCRemoteSwiftPackageReference "single-factor-auth-swift" */;
 			productName = SingleFactorAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
