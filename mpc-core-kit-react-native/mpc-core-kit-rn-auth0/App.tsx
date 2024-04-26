@@ -14,7 +14,7 @@ import '@ethersproject/shims';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
+import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 
@@ -25,12 +25,12 @@ import {
   IdTokenLoginParams,
   TssShareType,
   parseToken,
-  // getWebBrowserFactor,
-  // storeWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  asyncGetFactor,
+  asyncStoreFactor,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 // IMP END - Quick Start
@@ -58,21 +58,24 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
+// setup async storage for react native
+const asyncStorageKey = {
+  getItem: async (key: string) => {
+    return EncryptedStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    return EncryptedStorage.setItem(key, value);
+  },
+};
+
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   chainConfig,
-  setupProviderOnInit: false,
+  setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  asyncStorageKey: {
-    getItem: async (key: string) => {
-      return EncryptedStorage.getItem(key);
-    },
-    setItem: async (key: string, value: string) => {
-      return EncryptedStorage.setItem(key, value);
-    },
-  },
-  tssLib: TssLibRN,
+  asyncStorageKey, // adding the async storage for device share and session id
+  tssLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
 });
 
@@ -230,25 +233,29 @@ function Home() {
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
-  // const getDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await getWebBrowserFactor(coreKitInstance!);
-  //     setBackupFactorKey(factorKey!);
-  //     uiConsole('Device factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const getDeviceFactor = async () => {
+    try {
+      const factorKey = await asyncGetFactor(coreKitInstance!, asyncStorageKey);
+      setBackupFactorKey(factorKey!);
+      uiConsole('Device factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
-  // const storeDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await generateFactorKey();
-  //     await storeWebBrowserFactor(factorKey.private, coreKitInstance!);
-  //     uiConsole('Stored factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const storeDeviceFactor = async () => {
+    try {
+      const factorKey = await generateFactorKey();
+      await asyncStoreFactor(
+        factorKey.private,
+        coreKitInstance!,
+        asyncStorageKey,
+      );
+      uiConsole('Stored factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
@@ -441,9 +448,6 @@ function Home() {
     logout();
   };
 
-  // TODO
-  // DeleteFactor
-
   const uiConsole = (...args: any) => {
     setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
     console.log(...args);
@@ -460,15 +464,13 @@ function Home() {
       <Button title="Sign Message" onPress={signMessage} />
       <Button title="Send Transaction" onPress={sendTransaction} />
       <Button title="Log Out" onPress={logout} />
-      {/* <Button title="Commit Changes" onPress={commitChanges} /> */}
-      {/* <Text>CommitChanges after performing the following actions:</Text> */}
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button
         title="Generate Backup (Mnemonic) - CreateFactor"
         onPress={exportMnemonicFactor}
       />
-      {/* <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
-      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
+      <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
@@ -486,11 +488,11 @@ function Home() {
             : styles.section
         }>
         <Text style={styles.heading}>Account Recovery</Text>
-        {/* <Button
+        <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Device Factor"
           onPress={() => getDeviceFactor()}
-        /> */}
+        />
         <Text>Recover Using Mnemonic Factor Key:</Text>
         <TextInput
           style={styles.input}

@@ -21,18 +21,21 @@ import {
   IdTokenLoginParams,
   TssShareType,
   parseToken,
-  // getWebBrowserFactor,
-  // storeWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  asyncGetFactor,
+  asyncStoreFactor,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import * as TssLibRN from '@toruslabs/react-native-tss-lib-bridge';
+import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
+// Use for social factor (optional)
+import Web3Auth from '@web3auth/single-factor-auth-react-native';
+import {CommonPrivateKeyProvider} from '@web3auth/base-provider';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
@@ -57,20 +60,23 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
+// setup async storage for react native
+const asyncStorageKey = {
+  getItem: async (key: string) => {
+    return EncryptedStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    return EncryptedStorage.setItem(key, value);
+  },
+};
+
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false,
+  setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  asyncStorageKey: {
-    getItem: async (key: string) => {
-      return EncryptedStorage.getItem(key);
-    },
-    setItem: async (key: string, value: string) => {
-      return EncryptedStorage.setItem(key, value);
-    },
-  },
-  tssLib: TssLibRN,
+  asyncStorageKey, // adding the async storage for device share and session id
+  tssLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
 });
 
@@ -78,17 +84,6 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
 const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
 evmProvider.setupProvider(coreKitInstance);
 // IMP END - SDK Initialization
-
-// IMP START - Auth Provider Login
-async function firebaseSignIn() {
-  try {
-    const res = await auth().signInAnonymously();
-    return res;
-  } catch (error) {
-    console.error(error);
-  }
-}
-// IMP END - Auth Provider Login
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -98,6 +93,8 @@ export default function App() {
   );
   const [backupFactorKey, setBackupFactorKey] = useState<string>('');
   const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   useEffect(() => {
     const init = async () => {
@@ -114,17 +111,42 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // IMP START - Auth Provider Login
+  const firebaseSignIn = async () => {
+    try {
+      const res = await auth().signInWithEmailAndPassword(email, password);
+      return res;
+    } catch (e: any) {
+      try {
+        uiConsole(e.message);
+        const res = await auth().createUserWithEmailAndPassword(
+          email,
+          password,
+        );
+        return res;
+      } catch (error: any) {
+        uiConsole(error.message);
+        return 'Error in login';
+      }
+    }
+  };
+  // IMP END - Auth Provider Login
+
   const login = async () => {
     try {
       if (!coreKitInstance) {
         throw new Error('initiated to login');
       }
-      setConsoleUI('Logging in');
+      uiConsole('Logging in');
       setLoading(true);
       // IMP START - Auth Provider Login
       const loginRes = await firebaseSignIn();
       // IMP END - Auth Provider Login
       uiConsole('Login success', loginRes);
+
+      if (loginRes === 'Error in login') {
+        throw new Error('Error in login');
+      }
 
       // IMP START - Login
       const idToken = await loginRes!.user.getIdToken(true);
@@ -153,6 +175,7 @@ export default function App() {
       setLoading(false);
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
+      setLoading(false);
       uiConsole(err);
     }
   };
@@ -185,14 +208,13 @@ export default function App() {
     }
     setLoading(true);
     try {
-      setConsoleUI('Enabling MFA, please wait');
+      uiConsole('Enabling MFA, please wait');
 
-      const factorKey = await coreKitInstance.enableMFA({});
-      const factorKeyMnemonic = keyToMnemonic(factorKey);
+      const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
+      await coreKitInstance.enableMFA({factorKey});
 
       uiConsole(
-        'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
-        factorKeyMnemonic,
+        'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
       );
     } catch (error: any) {
       uiConsole(error.message);
@@ -212,25 +234,74 @@ export default function App() {
     uiConsole(coreKitInstance.getKeyDetails());
   };
 
-  // const getDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await getWebBrowserFactor(coreKitInstance!);
-  //     setBackupFactorKey(factorKey!);
-  //     uiConsole('Device factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const getDeviceFactor = async () => {
+    try {
+      const factorKey = await asyncGetFactor(coreKitInstance!, asyncStorageKey);
+      setBackupFactorKey(factorKey!);
+      uiConsole('Device factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
-  // const storeDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await generateFactorKey();
-  //     await storeWebBrowserFactor(factorKey.private, coreKitInstance!);
-  //     uiConsole('Stored factor: ', factorKey);
-  //   } catch (error: any) {
-  //   uiConsole(error.message);
-  // }
-  // };
+  const storeDeviceFactor = async () => {
+    try {
+      const factorKey = await generateFactorKey();
+      await asyncStoreFactor(
+        factorKey.private,
+        coreKitInstance!,
+        asyncStorageKey,
+      );
+      uiConsole('Stored factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
+
+  // IMP START - Export Social Account Factor
+  const getSocialMFAFactorKey = async (): Promise<string> => {
+    try {
+      // Initialise the Web3Auth SFA SDK
+      // You can do this on the constructor as well for faster experience
+      const web3authSfa = new Web3Auth(EncryptedStorage, {
+        clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+      });
+      const privateKeyProvider = new CommonPrivateKeyProvider({
+        config: {chainConfig},
+      });
+      await web3authSfa.init(privateKeyProvider);
+
+      // Login using Firebase Email Password
+      const res = await auth().signInWithEmailAndPassword(
+        'custom+jwt@firebase.login',
+        'Testing@123',
+      );
+      console.log(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
+
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      const web3authProvider = await web3authSfa.connect({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
+
+      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+      const factorKey = await web3authProvider!.request({
+        method: 'private_key',
+      });
+      uiConsole('Social Factor Key: ', factorKey);
+      setBackupFactorKey(factorKey as string);
+      return factorKey as string;
+    } catch (err) {
+      uiConsole(err);
+      return '';
+    }
+  };
+  // IMP END - Export Social Account Factor
 
   const exportMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
@@ -283,7 +354,6 @@ export default function App() {
     // Log out from Auth0
     setLoading(false);
     try {
-      await clearSession();
       uiConsole('logged out from auth0');
     } catch (error: any) {
       uiConsole(error.message);
@@ -298,7 +368,7 @@ export default function App() {
       return;
     }
     setLoading(true);
-    setConsoleUI('Getting account');
+    uiConsole('Getting account');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
@@ -320,7 +390,7 @@ export default function App() {
       return;
     }
     setLoading(true);
-    setConsoleUI('Fetching balance');
+    uiConsole('Fetching balance');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
@@ -352,7 +422,7 @@ export default function App() {
       return;
     }
     setLoading(true);
-    setConsoleUI('Signing message');
+    uiConsole('Signing message');
 
     // For ethers v5
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
@@ -395,45 +465,50 @@ export default function App() {
   };
 
   const uiConsole = (...args: any) => {
-    setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
+    setConsoleUI('[LOG]' + JSON.stringify(args) + '\n' + consoleUI);
     console.log(...args);
   };
 
-  const loggedInView = (
+  const loginScreen = (
     <View style={styles.buttonArea}>
-      <Button title="Get User Info" onPress={getUserInfo} />
-      <Button title="Key Details" onPress={keyDetails} />
-      <Button title="Get Accounts" onPress={getAccounts} />
-      <Button title="Get Balance" onPress={getBalance} />
-      <Button title="Sign Message" onPress={signMessage} />
-      <Button title="Log Out" onPress={logout} />
-      {/* <Button title="Commit Changes" onPress={commitChanges} /> */}
-      {/* <Text>CommitChanges after performing the following actions:</Text> */}
-      <Button title="Enable MFA" onPress={enableMFA} />
-      <Button
-        title="Generate Backup (Mnemonic) - CreateFactor"
-        onPress={exportMnemonicFactor}
-      />
-      {/* <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
-      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
-      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+      <View style={styles.section}>
+        <Text>Enter your Email</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={styles.section}>
+        <Text>Enter your Password</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry={true}
+          autoCapitalize="none"
+        />
+      </View>
+      <Button title="Register/Login with Web3Auth" onPress={login} />
     </View>
   );
-
-  const unloggedInView = (
-    <View style={styles.buttonArea}>
-      <Button title="Login with Web3Auth" onPress={login} />
-      <View
-        style={
-          coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE
-            ? styles.disabledSection
-            : styles.section
-        }>
-        {/* <Button
+  const recoveryScreen = (
+    <View>
+      <View style={styles.section}>
+        <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           title="Get Device Factor"
           onPress={() => getDeviceFactor()}
-        /> */}
+        />
+        <Button
+          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+          title="Get Social Backup Factor"
+          onPress={() => getSocialMFAFactorKey()}
+        />
+      </View>
+      <View style={styles.section}>
         <Text>Recover Using Mnemonic Factor Key:</Text>
         <TextInput
           style={styles.input}
@@ -445,6 +520,8 @@ export default function App() {
           title="Get Recovery Factor Key using Mnemonic"
           onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
         />
+      </View>
+      <View style={styles.section}>
         <Text>Backup/ Device Factor: {backupFactorKey}</Text>
         <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
@@ -456,15 +533,43 @@ export default function App() {
     </View>
   );
 
+  const loggedInView = (
+    <View style={styles.buttonArea}>
+      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+      <Button title="Get User Info" onPress={getUserInfo} />
+      <Button title="Key Details" onPress={keyDetails} />
+      <Button title="Get Accounts" onPress={getAccounts} />
+      <Button title="Get Balance" onPress={getBalance} />
+      <Button title="Sign Message" onPress={signMessage} />
+
+      <Button title="Enable MFA" onPress={enableMFA} />
+      <Button
+        title="Generate Backup (Mnemonic) - CreateFactor"
+        onPress={exportMnemonicFactor}
+      />
+      <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
+      <Button title="Log Out" onPress={logout} />
+      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+    </View>
+  );
+
+  const unloggedInView = (
+    <View style={styles.buttonArea}>
+      {coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE
+        ? loginScreen
+        : recoveryScreen}
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
       {coreKitStatus === COREKIT_STATUS.LOGGED_IN
         ? loggedInView
         : unloggedInView}
-      {loading && <ActivityIndicator />}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
+        {loading && <ActivityIndicator />}
         <ScrollView style={styles.consoleUI}>
           <Text>{consoleUI}</Text>
         </ScrollView>
@@ -515,6 +620,8 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 60,
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 10,
+    margin: 5,
   },
   buttonArea: {
     flex: 2,
@@ -535,7 +642,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#EEEEEE',
-    padding: 20,
+    padding: 10,
+    margin: 5,
     borderRadius: 10,
   },
 });
