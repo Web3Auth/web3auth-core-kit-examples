@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		307B28B794178A3D6FC163DA /* Pods_mpccorekitrnquickstart_mpccorekitrnquickstartTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CA2F7970D1B8B0320338EB6 /* Pods_mpccorekitrnquickstart_mpccorekitrnquickstartTests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		86661F3B2BDF5B8400A190F1 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 86661F3A2BDF5B8400A190F1 /* main.jsbundle */; };
 		86BB5ED32BC85618007E5DF9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 86BB5ED22BC85618007E5DF9 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,7 @@
 		5B7EB9410499542E8C5724F5 /* Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.debug.xcconfig"; path = "Target Support Files/Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests/Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7CA2F7970D1B8B0320338EB6 /* Pods_mpccorekitrnquickstart_mpccorekitrnquickstartTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mpccorekitrnquickstart_mpccorekitrnquickstartTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mpccorekitrnquickstart/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		86661F3A2BDF5B8400A190F1 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		86BB5ED22BC85618007E5DF9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.release.xcconfig"; path = "Target Support Files/Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests/Pods-mpccorekitrnquickstart-mpccorekitrnquickstartTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -88,6 +90,7 @@
 		13B07FAE1A68108700A75B9A /* mpccorekitrnquickstart */ = {
 			isa = PBXGroup;
 			children = (
+				86661F3A2BDF5B8400A190F1 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -248,6 +251,7 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				86BB5ED32BC85618007E5DF9 /* GoogleService-Info.plist in Resources */,
+				86661F3B2BDF5B8400A190F1 /* main.jsbundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +488,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = mpccorekitrnquickstart/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -511,6 +516,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				INFOPLIST_FILE = mpccorekitrnquickstart/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
