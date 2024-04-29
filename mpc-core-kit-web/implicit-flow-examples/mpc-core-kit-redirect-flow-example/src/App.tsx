@@ -33,10 +33,6 @@ import "./App.css";
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
 
-// IMP START - Verifier Creation
-const verifier = "w3a-firebase-demo";
-// IMP END - Verifier Creation
-
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0x1", // Please use 0x1 for Mainnet
@@ -170,7 +166,7 @@ function App() {
 
     // Use the Web3Auth SFA SDK to generate an account using the Social Factor
     const web3authProvider = await web3authSfa.connect({
-      verifier,
+      verifier: "w3a-firebase-demo",
       verifierId: userInfo.sub,
       idToken,
     });
