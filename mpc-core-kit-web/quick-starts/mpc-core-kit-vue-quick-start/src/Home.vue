@@ -10,12 +10,14 @@
       <button @click="login" class="card">Login</button>
       <div v-if="coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE">
         <button @click="getDeviceFactor" class="card">Get Device Factor</button>
-        <label>Backup/ Device Factor:</label>
-        <input v-model="backupFactorKey" />
-        <button @click="inputBackupFactorKey" class="card">Input Backup Factor Key</button>
-        <button @click="criticalResetAccount" class="card">[CRITICAL] Reset Account</button>
         <label>Recover Using Mnemonic Factor Key:</label>
         <input v-model="mnemonicFactor" />
+        <button @click="getSocialMFAFactorKey" class="card">Get Social Recovery Factor</button>
+        <label>Backup/ Device Factor: </label>
+        <span v-html="backupFactorKey"></span>
+        <button @click="inputBackupFactorKey" class="card">Input Backup Factor Key</button>
+        <button @click="criticalResetAccount" class="card">[CRITICAL] Reset Account</button>
+
         <button @click="MnemonicToFactorKeyHex" class="card">Get Recovery Factor Key using Mnemonic</button>
       </div>
     </div>
@@ -83,13 +85,17 @@ import {
   mnemonicToKey,
 } from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
+// Optional, only for social second factor recovery
+import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth";
+import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 // IMP END - Quick Start
 import Web3 from "web3";
 import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -124,8 +130,13 @@ export default {
     const coreKitInstance = new Web3AuthMPCCoreKit({
       web3AuthClientId,
       web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-      chainConfig,
+      setupProviderOnInit: false, // needed to skip the provider setup
+      manualSync: true,
     });
+
+    // Setup provider for EVM Chain
+    const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+    evmProvider.setupProvider(coreKitInstance);
     // IMP END - SDK Initialization
 
     // IMP START - Auth Provider Login
@@ -193,6 +204,9 @@ export default {
         } as IdTokenLoginParams;
 
         await coreKitInstance.loginWithJWT(idTokenLoginParams);
+        if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+          await coreKitInstance.commitChanges(); // Needed for new accounts
+        }
         // IMP END - Login
 
         // IMP START - Recover MFA Enabled Account
@@ -230,16 +244,68 @@ export default {
     };
     // IMP END - Recover MFA Enabled Account
 
+    // IMP START - Export Social Account Factor
+    const getSocialMFAFactorKey = async (): Promise<string> => {
+      try {
+        // Initialise the Web3Auth SFA SDK
+        // You can do this on the constructor as well for faster experience
+        const web3authSfa = new Web3AuthSingleFactorAuth({
+          clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+          web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        });
+        const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+        await web3authSfa.init(privateKeyProvider);
+
+        // Login using Firebase Email Password
+        const auth = getAuth(app);
+        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+        console.log(res);
+        const idToken = await res.user.getIdToken(true);
+        const userInfo = parseToken(idToken);
+
+        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+        const web3authProvider = await web3authSfa.connect({
+          verifier,
+          verifierId: userInfo.sub,
+          idToken,
+        });
+
+        // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+        const factorKey = await web3authProvider!.request({
+          method: "private_key",
+        });
+        uiConsole("Social Factor Key: ", factorKey);
+        backupFactorKey.value = factorKey! as string;
+        return factorKey as string;
+      } catch (err) {
+        uiConsole(err);
+        return "";
+      }
+    };
+    // IMP END - Export Social Account Factor
+
     // IMP START - Enable Multi Factor Authentication
     const enableMFA = async () => {
       if (!coreKitInstance) {
         throw new Error("coreKitInstance is not set");
       }
-      const factorKey = await coreKitInstance.enableMFA({});
-      const factorKeyMnemonic = keyToMnemonic(factorKey);
+      try {
+        const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
+        await coreKitInstance.enableMFA({ factorKey });
 
-      uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
+        if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+          await coreKitInstance.commitChanges();
+        }
+
+        uiConsole(
+          "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
+        );
+      } catch (e) {
+        uiConsole(e);
+      }
     };
+    // IMP END - Enable Multi Factor Authentication
 
     const keyDetails = async () => {
       if (!coreKitInstance) {
@@ -247,7 +313,6 @@ export default {
       }
       uiConsole(coreKitInstance.getKeyDetails());
     };
-    // IMP END - Enable Multi Factor Authentication
 
     const getDeviceFactor = async () => {
       try {
@@ -270,6 +335,11 @@ export default {
         factorKey: factorKey.private,
       });
       const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
+
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges();
+      }
+
       uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
     };
 
@@ -307,7 +377,7 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(coreKitInstance.provider as any);
+      const web3 = new Web3(evmProvider);
 
       // Get user's Ethereum public address
       const address = await web3.eth.getAccounts();
@@ -319,7 +389,7 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(coreKitInstance.provider as any);
+      const web3 = new Web3(evmProvider);
 
       // Get user's Ethereum public address
       const address = (await web3.eth.getAccounts())[0];
@@ -337,7 +407,7 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(coreKitInstance.provider as any);
+      const web3 = new Web3(evmProvider);
 
       // Get user's Ethereum public address
       const fromAddress = (await web3.eth.getAccounts())[0];
@@ -361,7 +431,6 @@ export default {
       if (!coreKitInstance) {
         throw new Error("coreKitInstance is not set");
       }
-      //@ts-ignore
       // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
       //   throw new Error("reset account is not recommended on mainnet");
       // }
@@ -369,6 +438,9 @@ export default {
         privKey: new BN(coreKitInstance.metadataKey!, "hex"),
         input: { message: "KEY_NOT_FOUND" },
       });
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges();
+      }
       uiConsole("reset");
       logout();
     };
@@ -399,6 +471,7 @@ export default {
       keyDetails,
       enableMFA,
       exportMnemonicFactor,
+      getSocialMFAFactorKey,
     };
   },
 };

@@ -157,6 +157,9 @@ function Home() {
       } as IdTokenLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges(); // Needed for new accounts
+      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -167,10 +170,6 @@ function Home() {
       }
       // IMP END - Recover MFA Enabled Account
       setLoading(false);
-
-      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        await coreKitInstance.commitChanges();
-      }
 
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {

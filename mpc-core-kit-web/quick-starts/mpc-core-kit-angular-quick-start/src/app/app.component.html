@@ -41,19 +41,22 @@
           <button (click)="getDeviceFactor()" class="card card-small">
             Get Device Factor
           </button>
-          <label>Backup/ Device Factor:</label>
-          <input name="backupFactorKeyInputField" [(ngModel)]="backupFactorKey" (ngModelChange)="getBackupFactorKeyInputEvent($event)" />
+          <label>Recover Using Mnemonic Factor Key:</label>
+          <input name="MnemonicFactorInputField" [(ngModel)]="mnemonicFactor" (ngModelChange)="getMnemonicFactorInputEvent($event)" />
+          <button (click)="MnemonicToFactorKeyHex(mnemonicFactor)" class="card card-small">
+            Get Recovery Factor Key using Mnemonic
+          </button>
+          <button (click)="getSocialMFAFactorKey()" class="card card-small">
+            Get Social Recovery Factor
+          </button>
+          <label>Backup/ Device Factor: {{backupFactorKey}}</label>
           <button (click)="inputBackupFactorKey()" class="card card-small">
             Input Backup Factor Key
           </button>
           <button (click)="criticalResetAccount()" class="card card-small">
             [CRITICAL] Reset Account
           </button>
-          <label>Recover Using Mnemonic Factor Key:</label>
-            <input name="MnemonicFactorInputField" [(ngModel)]="mnemonicFactor" (ngModelChange)="getMnemonicFactorInputEvent($event)" />
-            <button (click)="MnemonicToFactorKeyHex(mnemonicFactor)" class="card card-small">
-              Get Recovery Factor Key using Mnemonic
-            </button>
+          
           </div>
       </div>
     </ng-template>

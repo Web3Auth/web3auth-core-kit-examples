@@ -160,6 +160,9 @@ export default function App() {
       } as IdTokenLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges(); // Needed for new accounts
+      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -169,9 +172,6 @@ export default function App() {
         );
       }
       // IMP END - Recover MFA Enabled Account
-      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        coreKitInstance.commitChanges();
-      }
       setLoading(false);
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {

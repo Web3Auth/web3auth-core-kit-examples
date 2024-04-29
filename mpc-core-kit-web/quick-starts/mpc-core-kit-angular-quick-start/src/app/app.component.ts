@@ -1,5 +1,8 @@
 import { Component } from "@angular/core";
 // IMP START - Quick Start
+import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CommonPrivateKeyProvider } from "@web3auth/base-provider"; // Optional, only for social second factor recovery
+import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import {
   COREKIT_STATUS,
   generateFactorKey,
@@ -12,19 +15,19 @@ import {
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth"; // Optional, only for social second factor recovery
 // IMP END - Quick Start
-import Web3 from "web3";
 import { BN } from "bn.js";
 // IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 // IMP END - Auth Provider Login
+import Web3 from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
-const web3AuthClientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
@@ -44,8 +47,13 @@ const chainConfig = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  chainConfig,
+  setupProviderOnInit: false, // needed to skip the provider setup
+  manualSync: true, // This is the recommended approach
 });
+
+// Setup provider for EVM Chain
+const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+evmProvider.setupProvider(coreKitInstance);
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -70,6 +78,8 @@ export class AppComponent {
 
   coreKitStatus: COREKIT_STATUS = COREKIT_STATUS.NOT_INITIALIZED;
 
+  app = initializeApp(firebaseConfig);
+
   backupFactorKey = "";
 
   mnemonicFactor = "";
@@ -81,8 +91,6 @@ export class AppComponent {
   getMnemonicFactorInputEvent(event: any) {
     this.mnemonicFactor = event.target.value;
   }
-
-  app = initializeApp(firebaseConfig);
 
   async ngOnInit() {
     const init = async () => {
@@ -134,6 +142,9 @@ export class AppComponent {
       } as IdTokenLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges(); // Needed for new accounts
+      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -171,15 +182,66 @@ export class AppComponent {
   };
   // IMP END - Recover MFA Enabled Account
 
+  // IMP START - Export Social Account Factor
+  getSocialMFAFactorKey = async (): Promise<string> => {
+    try {
+      // Initialise the Web3Auth SFA SDK
+      // You can do this on the constructor as well for faster experience
+      const web3authSfa = new Web3AuthSingleFactorAuth({
+        clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+      });
+      const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+      await web3authSfa.init(privateKeyProvider);
+
+      // Login using Firebase Email Password
+      const auth = getAuth(this.app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      console.log(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
+
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      const web3authProvider = await web3authSfa.connect({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
+
+      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+      const factorKey = await web3authProvider?.request({
+        method: "private_key",
+      });
+      this.uiConsole("Social Factor Key: ", factorKey);
+      this.backupFactorKey = factorKey as string;
+      return factorKey as string;
+    } catch (err) {
+      this.uiConsole(err);
+      return "";
+    }
+  };
+  // IMP END - Export Social Account Factor
+
   // IMP START - Enable Multi Factor Authentication
   enableMFA = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    const factorKey = await coreKitInstance.enableMFA({});
-    const factorKeyMnemonic = keyToMnemonic(factorKey);
+    try {
+      const factorKey = new BN(await this.getSocialMFAFactorKey(), "hex");
+      await coreKitInstance.enableMFA({ factorKey });
 
-    this.uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges();
+      }
+
+      this.uiConsole(
+        "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
+      );
+    } catch (e) {
+      this.uiConsole(e);
+    }
   };
   // IMP END - Enable Multi Factor Authentication
 
@@ -193,7 +255,7 @@ export class AppComponent {
   getDeviceFactor = async () => {
     try {
       const factorKey = await getWebBrowserFactor(coreKitInstance!);
-      this.backupFactorKey = factorKey!;
+      this.backupFactorKey = factorKey as string;
       this.uiConsole("Device share: ", factorKey);
     } catch (e) {
       this.uiConsole(e);
@@ -211,6 +273,9 @@ export class AppComponent {
       factorKey: factorKey.private,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges(); // Needed for new accounts
+    }
     this.uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
   };
 
@@ -235,21 +300,13 @@ export class AppComponent {
     this.uiConsole(user);
   };
 
-  logout = async () => {
-    // IMP START - Logout
-    await coreKitInstance.logout();
-    // IMP END - Logout
-    this.coreKitStatus = coreKitInstance.status;
-    this.uiConsole("logged out");
-  };
-
   // IMP START - Blockchain Calls
   getAccounts = async () => {
     if (!coreKitInstance) {
       this.uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const address = await web3.eth.getAccounts();
@@ -261,7 +318,7 @@ export class AppComponent {
       this.uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const address = (await web3.eth.getAccounts())[0];
@@ -279,7 +336,7 @@ export class AppComponent {
       this.uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(coreKitInstance.provider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const fromAddress = (await web3.eth.getAccounts())[0];
@@ -303,7 +360,6 @@ export class AppComponent {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    // @ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
@@ -311,8 +367,19 @@ export class AppComponent {
       privKey: new BN(coreKitInstance.metadataKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
+    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      await coreKitInstance.commitChanges();
+    }
     this.uiConsole("reset");
     this.logout();
+  };
+
+  logout = async () => {
+    // IMP START - Logout
+    await coreKitInstance.logout();
+    // IMP END - Logout
+    this.coreKitStatus = coreKitInstance.status;
+    this.uiConsole("logged out");
   };
 
   uiConsole(...args: any[]) {

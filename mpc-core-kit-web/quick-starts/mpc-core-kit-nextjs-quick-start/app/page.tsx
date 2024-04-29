@@ -50,7 +50,7 @@ const chainConfig = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  chainConfig,
+  setupProviderOnInit: false, // needed to skip the provider setup
   manualSync: true, // This is the recommended approach
 });
 
@@ -124,6 +124,9 @@ function App() {
       } as IdTokenLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges(); // Needed for new accounts
+      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -133,10 +136,6 @@ function App() {
         );
       }
       // IMP END - Recover MFA Enabled Account
-
-      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        await coreKitInstance.commitChanges();
-      }
 
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
@@ -295,7 +294,7 @@ function App() {
       uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(evmProvider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const address = await web3.eth.getAccounts();
@@ -307,7 +306,7 @@ function App() {
       uiConsole("provider not initialized yet");
       return;
     }
-    const web3 = new Web3(evmProvider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const address = (await web3.eth.getAccounts())[0];
@@ -326,7 +325,7 @@ function App() {
       return;
     }
     uiConsole("Signing Message...");
-    const web3 = new Web3(evmProvider as any);
+    const web3 = new Web3(evmProvider);
 
     // Get user's Ethereum public address
     const fromAddress = (await web3.eth.getAccounts())[0];
