@@ -1,4 +1,4 @@
-# Web3Auth MPC CoreKit Web [`@web3auth/mpc-core-kit`](https://web3auth.io/docs/sdk/core-kit/mpc-core-kit) React Redirect Example
+# Web3Auth MPC CoreKit Web [`@web3auth/mpc-core-kit`](https://web3auth.io/docs/sdk/core-kit/mpc-core-kit) QuickStart - React
 
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-SDK-blue)](https://web3auth.io/docs/sdk/core-kit/mpc-core-kit)
 [![Web3Auth](https://img.shields.io/badge/Web3Auth-Community-cyan)](https://community.web3auth.io)
@@ -12,17 +12,17 @@ This example demonstrates how to use Web3Auth's MPC CoreKit Web SDK in a React e
 ### Download Manually
 
 ```bash
-npx degit Web3Auth/web3auth-core-kit-examples/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-redirect-flow-example w3a-mpc-core-kit-redirect-flow-example
+npx degit Web3Auth/web3auth-core-kit-examples/mpc-core-kit-web/quick-starts/mpc-core-kit-react-quick-start w3a-mpc-core-kit-react-quick-start
 ```
 
 Install & Run:
 
 ```bash
-cd w3a-mpc-core-kit-redirect-flow-example
+cd w3a-mpc-core-kit-react-quick-start
 npm install
 npm run start
 # or
-cd w3a-mpc-core-kit-redirect-flow-example
+cd w3a-mpc-core-kit-react-quick-start
 yarn
 yarn start
 ```
