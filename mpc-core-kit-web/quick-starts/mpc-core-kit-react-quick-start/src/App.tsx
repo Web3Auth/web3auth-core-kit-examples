@@ -15,7 +15,7 @@ import {
 import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 // Optional, only for social second factor recovery
-import Web3Auth from "@web3auth/single-factor-auth";
+import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth";
 import { CommonPrivateKeyProvider } from '@web3auth/base-provider';
 
 // IMP END - Quick Start
@@ -169,7 +169,7 @@ function App() {
     try {
     // Initialise the Web3Auth SFA SDK
     // You can do this on the constructor as well for faster experience 
-    const web3authSfa = new Web3Auth({
+    const web3authSfa = new Web3AuthSingleFactorAuth({
       clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
       web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
       usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
