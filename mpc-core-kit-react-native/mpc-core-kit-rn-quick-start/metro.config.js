@@ -12,6 +12,7 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
   //   return {
 const config =  {
     resolver: {
+      // IMP START - Bundler Issues
       extraNodeModules: {
         assert: require.resolve('empty-module'), // assert can be polyfilled here if needed
         http: require.resolve('empty-module'), // stream-http can be polyfilled here if needed
@@ -24,6 +25,7 @@ const config =  {
         stream: require.resolve('stream-browserify'),
         buffer: require.resolve('buffer'),
       },
+      // IMP END - Bundler Issues
 
       // assetExts: assetExts.filter(ext => ext !== 'svg'),
 
