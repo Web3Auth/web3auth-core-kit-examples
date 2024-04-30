@@ -107,10 +107,11 @@ class MainViewModel: ObservableObject {
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
             Task {
                 do {
-                    let signature = try mpcCoreKit.sign(
-                        message: "Welcome to Web3Auth"
+                    let signature = try mpcCoreKit.signMessage(
+                        message: "YOUR_MESSAGE".data(using: .ascii)!
                     )
-                    onSigned(signature.toHexString(), nil)
+                    print(signature)
+                    onSigned(signature, nil)
                 } catch let error  {
                     onSigned(nil, error.localizedDescription)
                 }

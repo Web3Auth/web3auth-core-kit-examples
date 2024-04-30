@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/mpc-core-kit-swift",
       "state" : {
-        "branch" : "fixes",
-        "revision" : "d13acaaf1761e0f8f89a7e03d01e9f06ed18bd35"
+        "branch" : "main",
+        "revision" : "42ff29e0177c0fb3eb4cc6cdbb905623dc012b13"
       }
     },
     {
