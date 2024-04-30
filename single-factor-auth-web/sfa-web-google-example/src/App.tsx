@@ -164,17 +164,17 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x13881",
-        displayName: "Polygon MATIC Testnet",
+        chainId: "0x13882",
+        displayName: "Polygon Amoy Testnet",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
         tickerName: "MATIC",
         ticker: "MATIC",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
-        blockExplorer: "https://mumbai.polygonscan.com/",
+        rpcTarget: "https://rpc.ankr.com/polygon_amoy",
+        blockExplorer: "https://amoy.polygonscan.com/",
       };
       await web3authSfa.addChain(newChain);
-      uiConsole("Polygon Testnet Chain added successfully");
+      uiConsole("Polygon Amoy Testnet added successfully");
     } catch (err) {
       uiConsole(err);
     }
@@ -182,8 +182,8 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x13881" });
-      uiConsole("Chain switched to Polygon Testnet successfully");
+      await web3authSfa.switchChain({ chainId: "0x13882" });
+      uiConsole("Chain switched to Polygon Amoy Testnet successfully");
     } catch (err) {
       uiConsole(err);
     }
@@ -215,11 +215,6 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={getAccounts} className="card">
-            Get Accounts
-          </button>
-        </div>
-        <div>
           <button onClick={addChain} className="card">
             Add Chain
           </button>
@@ -227,6 +222,11 @@ function App() {
         <div>
           <button onClick={switchChain} className="card">
             Switch Chain
+          </button>
+        </div>
+        <div>
+          <button onClick={getAccounts} className="card">
+            Get Accounts
           </button>
         </div>
         <div>
