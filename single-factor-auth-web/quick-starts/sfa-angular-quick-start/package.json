@@ -20,7 +20,7 @@
     "@angular/platform-browser": "~14.2.7",
     "@angular/platform-browser-dynamic": "~14.2.7",
     "@angular/router": "~14.2.7",
-    "@web3auth/base": "^7.2.1",
+    "@web3auth/base": "^8.4.0",
     "@web3auth/ethereum-provider": "^7.2.1",
     "@web3auth/single-factor-auth": "^7.2.2",
     "firebase": "^10.4.0",

@@ -7,7 +7,7 @@
     "@tailwindcss/forms": "^0.5.7",
     "@toruslabs/config": "^2.0.2",
     "@toruslabs/eccrypto": "^4.0.0",
-    "@web3auth/base": "^7.2.1",
+    "@web3auth/base": "^8.4.0",
     "@web3auth/ethereum-provider": "^7.2.1",
     "@web3auth/single-factor-auth": "^7.2.2",
     "@web3auth/solana-provider": "^7.2.1",
