@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "CBD537A8-E1AF-40D6-9AC7-67549FED774D"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CB3A5130-C50A-4E03-B751-3F16E1F8C68F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/mpcCoreKitSwift.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "345"
+            endingLineNumber = "345"
+            landmarkName = "inputFactor(factorKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "906497FA-55A3-405C-98D5-DA0F052C7BCB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/tkey-mpc-swift/Sources/ThresholdKey/ThresholdKey.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
+            landmarkName = "reconstruct()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9D978690-9E60-4205-A714-2F551797DEAE"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "tssSign(message:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9D978690-9E60-4205-A714-2F551797DEAE - d2b41bd7860b4872"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
+                  moduleName = "mpc-core-kit-ios-auth0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "236">
+               </Location>
+               <Location
+                  uuid = "9D978690-9E60-4205-A714-2F551797DEAE - 677d0da03b8f8f70"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
+                  moduleName = "mpc-core-kit-ios-auth0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "416">
+               </Location>
+               <Location
+                  uuid = "9D978690-9E60-4205-A714-2F551797DEAE - 5dc18488e2c22df7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
+                  moduleName = "mpc-core-kit-ios-auth0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "68">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "856A0169-DD56-4FD8-A8DD-6E8772A856D0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/web3-swift-mpc-provider/Sources/EthereumProvider/EthereumProvider.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "signMessage(message:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CE410119-4B82-4E8C-A692-E89051E4B60C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/web3-swift-mpc-provider/Sources/EthereumProvider/EthereumProvider.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
+            landmarkName = "signMessage(message:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "90D63EAB-C885-42E3-9520-11B92FC50890"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "tssSign(message:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "90D63EAB-C885-42E3-9520-11B92FC50890 - d2b41bd7860b4bfe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
+                  moduleName = "mpc-core-kit-ios-auth0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "148">
+               </Location>
+               <Location
+                  uuid = "90D63EAB-C885-42E3-9520-11B92FC50890 - 677d0da03b8f8cfc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
+                  moduleName = "mpc-core-kit-ios-auth0"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "692">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B0BC2F77-538D-488E-A56C-623A1F787422"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/mpcCoreKitSwift.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
+            landmarkName = "login(userData:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A7C6C901-5B82-480F-95E3-9482EEA68609"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/mpcCoreKitSwift.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "261"
+            endingLineNumber = "261"
+            landmarkName = "existingUser()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9FF1D32F-3476-4B08-887E-85107358B6AD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "addNewFactor(newFactorKey:tssShareIndex:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

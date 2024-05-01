@@ -1,0 +1,744 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		281ED7072BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7062BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift */; };
+		281ED7092BE0DFB9002E990C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7082BE0DFB9002E990C /* ContentView.swift */; };
+		281ED70B2BE0DFBB002E990C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 281ED70A2BE0DFBB002E990C /* Assets.xcassets */; };
+		281ED70E2BE0DFBB002E990C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 281ED70D2BE0DFBB002E990C /* Preview Assets.xcassets */; };
+		281ED7182BE0DFBB002E990C /* mpc_core_kit_ios_auth0Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7172BE0DFBB002E990C /* mpc_core_kit_ios_auth0Tests.swift */; };
+		281ED7222BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7212BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift */; };
+		281ED7242BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7232BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift */; };
+		281ED7342BE0E00A002E990C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7332BE0E00A002E990C /* MainViewModel.swift */; };
+		281ED7372BE0E106002E990C /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7362BE0E106002E990C /* mpc-core-kit-swift */; };
+		281ED73A2BE0E227002E990C /* MPCEthereumProvider in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7392BE0E227002E990C /* MPCEthereumProvider */; };
+		281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73C2BE0E5AF002E990C /* Auth0 */; };
+		281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73F2BE0E5DD002E990C /* web3.swift */; };
+		281ED7422BE0E77B002E990C /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7412BE0E77B002E990C /* EthereumClient.swift */; };
+		281ED7442BE0E795002E990C /* UserStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7432BE0E795002E990C /* UserStorage.swift */; };
+		281ED7482BE0EAE1002E990C /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7472BE0EAE1002E990C /* JWTDecode */; };
+		281ED74A2BE0EC3B002E990C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7492BE0EC3B002E990C /* LoginView.swift */; };
+		281ED74C2BE0EC77002E990C /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74B2BE0EC77002E990C /* RecoveryView.swift */; };
+		281ED74E2BE0EC8F002E990C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74D2BE0EC8F002E990C /* HomeView.swift */; };
+		282411192BE0F5590097006B /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282411182BE0F5590097006B /* LoadingView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		281ED7142BE0DFBB002E990C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 281ED6FB2BE0DFB9002E990C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 281ED7022BE0DFB9002E990C;
+			remoteInfo = "mpc-core-kit-ios-auth0";
+		};
+		281ED71E2BE0DFBB002E990C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 281ED6FB2BE0DFB9002E990C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 281ED7022BE0DFB9002E990C;
+			remoteInfo = "mpc-core-kit-ios-auth0";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		281ED7032BE0DFB9002E990C /* mpc-core-kit-ios-auth0.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mpc-core-kit-ios-auth0.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		281ED7062BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mpc_core_kit_ios_auth0App.swift; sourceTree = "<group>"; };
+		281ED7082BE0DFB9002E990C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		281ED70A2BE0DFBB002E990C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		281ED70D2BE0DFBB002E990C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		281ED7132BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mpc-core-kit-ios-auth0Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		281ED7172BE0DFBB002E990C /* mpc_core_kit_ios_auth0Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mpc_core_kit_ios_auth0Tests.swift; sourceTree = "<group>"; };
+		281ED71D2BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mpc-core-kit-ios-auth0UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		281ED7212BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mpc_core_kit_ios_auth0UITests.swift; sourceTree = "<group>"; };
+		281ED7232BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mpc_core_kit_ios_auth0UITestsLaunchTests.swift; sourceTree = "<group>"; };
+		281ED7332BE0E00A002E990C /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		281ED7412BE0E77B002E990C /* EthereumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClient.swift; sourceTree = "<group>"; };
+		281ED7432BE0E795002E990C /* UserStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStorage.swift; sourceTree = "<group>"; };
+		281ED7452BE0E929002E990C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		281ED7492BE0EC3B002E990C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		281ED74B2BE0EC77002E990C /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
+		281ED74D2BE0EC8F002E990C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		282411182BE0F5590097006B /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		281ED7002BE0DFB9002E990C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */,
+				281ED7372BE0E106002E990C /* mpc-core-kit-swift in Frameworks */,
+				281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */,
+				281ED7482BE0EAE1002E990C /* JWTDecode in Frameworks */,
+				281ED73A2BE0E227002E990C /* MPCEthereumProvider in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED7102BE0DFBB002E990C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED71A2BE0DFBB002E990C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		281ED6FA2BE0DFB9002E990C = {
+			isa = PBXGroup;
+			children = (
+				281ED7052BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */,
+				281ED7162BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests */,
+				281ED7202BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests */,
+				281ED7042BE0DFB9002E990C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		281ED7042BE0DFB9002E990C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7032BE0DFB9002E990C /* mpc-core-kit-ios-auth0.app */,
+				281ED7132BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests.xctest */,
+				281ED71D2BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		281ED7052BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7452BE0E929002E990C /* Info.plist */,
+				281ED7322BE0DFEA002E990C /* Views */,
+				281ED7312BE0DFE4002E990C /* Helpers */,
+				281ED7302BE0DFDF002E990C /* Models */,
+				281ED7062BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift */,
+				281ED70A2BE0DFBB002E990C /* Assets.xcassets */,
+				281ED70C2BE0DFBB002E990C /* Preview Content */,
+			);
+			path = "mpc-core-kit-ios-auth0";
+			sourceTree = "<group>";
+		};
+		281ED70C2BE0DFBB002E990C /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				281ED70D2BE0DFBB002E990C /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		281ED7162BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7172BE0DFBB002E990C /* mpc_core_kit_ios_auth0Tests.swift */,
+			);
+			path = "mpc-core-kit-ios-auth0Tests";
+			sourceTree = "<group>";
+		};
+		281ED7202BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7212BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift */,
+				281ED7232BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift */,
+			);
+			path = "mpc-core-kit-ios-auth0UITests";
+			sourceTree = "<group>";
+		};
+		281ED7302BE0DFDF002E990C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7332BE0E00A002E990C /* MainViewModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		281ED7312BE0DFE4002E990C /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7412BE0E77B002E990C /* EthereumClient.swift */,
+				281ED7432BE0E795002E990C /* UserStorage.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		281ED7322BE0DFEA002E990C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				281ED7082BE0DFB9002E990C /* ContentView.swift */,
+				281ED7492BE0EC3B002E990C /* LoginView.swift */,
+				281ED74B2BE0EC77002E990C /* RecoveryView.swift */,
+				281ED74D2BE0EC8F002E990C /* HomeView.swift */,
+				282411182BE0F5590097006B /* LoadingView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		281ED7022BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 281ED7272BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0" */;
+			buildPhases = (
+				281ED6FF2BE0DFB9002E990C /* Sources */,
+				281ED7002BE0DFB9002E990C /* Frameworks */,
+				281ED7012BE0DFB9002E990C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "mpc-core-kit-ios-auth0";
+			packageProductDependencies = (
+				281ED7362BE0E106002E990C /* mpc-core-kit-swift */,
+				281ED7392BE0E227002E990C /* MPCEthereumProvider */,
+				281ED73C2BE0E5AF002E990C /* Auth0 */,
+				281ED73F2BE0E5DD002E990C /* web3.swift */,
+				281ED7472BE0EAE1002E990C /* JWTDecode */,
+			);
+			productName = "mpc-core-kit-ios-auth0";
+			productReference = 281ED7032BE0DFB9002E990C /* mpc-core-kit-ios-auth0.app */;
+			productType = "com.apple.product-type.application";
+		};
+		281ED7122BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 281ED72A2BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0Tests" */;
+			buildPhases = (
+				281ED70F2BE0DFBB002E990C /* Sources */,
+				281ED7102BE0DFBB002E990C /* Frameworks */,
+				281ED7112BE0DFBB002E990C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				281ED7152BE0DFBB002E990C /* PBXTargetDependency */,
+			);
+			name = "mpc-core-kit-ios-auth0Tests";
+			productName = "mpc-core-kit-ios-auth0Tests";
+			productReference = 281ED7132BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		281ED71C2BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 281ED72D2BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0UITests" */;
+			buildPhases = (
+				281ED7192BE0DFBB002E990C /* Sources */,
+				281ED71A2BE0DFBB002E990C /* Frameworks */,
+				281ED71B2BE0DFBB002E990C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				281ED71F2BE0DFBB002E990C /* PBXTargetDependency */,
+			);
+			name = "mpc-core-kit-ios-auth0UITests";
+			productName = "mpc-core-kit-ios-auth0UITests";
+			productReference = 281ED71D2BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		281ED6FB2BE0DFB9002E990C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					281ED7022BE0DFB9002E990C = {
+						CreatedOnToolsVersion = 15.0.1;
+					};
+					281ED7122BE0DFBB002E990C = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 281ED7022BE0DFB9002E990C;
+					};
+					281ED71C2BE0DFBB002E990C = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 281ED7022BE0DFB9002E990C;
+					};
+				};
+			};
+			buildConfigurationList = 281ED6FE2BE0DFB9002E990C /* Build configuration list for PBXProject "mpc-core-kit-ios-auth0" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 281ED6FA2BE0DFB9002E990C;
+			packageReferences = (
+				281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
+				281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */,
+				281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */,
+				281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */,
+				281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */,
+			);
+			productRefGroup = 281ED7042BE0DFB9002E990C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				281ED7022BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */,
+				281ED7122BE0DFBB002E990C /* mpc-core-kit-ios-auth0Tests */,
+				281ED71C2BE0DFBB002E990C /* mpc-core-kit-ios-auth0UITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		281ED7012BE0DFB9002E990C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				281ED70E2BE0DFBB002E990C /* Preview Assets.xcassets in Resources */,
+				281ED70B2BE0DFBB002E990C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED7112BE0DFBB002E990C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED71B2BE0DFBB002E990C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		281ED6FF2BE0DFB9002E990C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				281ED74A2BE0EC3B002E990C /* LoginView.swift in Sources */,
+				281ED7092BE0DFB9002E990C /* ContentView.swift in Sources */,
+				281ED74C2BE0EC77002E990C /* RecoveryView.swift in Sources */,
+				281ED7422BE0E77B002E990C /* EthereumClient.swift in Sources */,
+				281ED7072BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift in Sources */,
+				281ED74E2BE0EC8F002E990C /* HomeView.swift in Sources */,
+				281ED7342BE0E00A002E990C /* MainViewModel.swift in Sources */,
+				281ED7442BE0E795002E990C /* UserStorage.swift in Sources */,
+				282411192BE0F5590097006B /* LoadingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED70F2BE0DFBB002E990C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				281ED7182BE0DFBB002E990C /* mpc_core_kit_ios_auth0Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		281ED7192BE0DFBB002E990C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				281ED7242BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift in Sources */,
+				281ED7222BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		281ED7152BE0DFBB002E990C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 281ED7022BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */;
+			targetProxy = 281ED7142BE0DFBB002E990C /* PBXContainerItemProxy */;
+		};
+		281ED71F2BE0DFBB002E990C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 281ED7022BE0DFB9002E990C /* mpc-core-kit-ios-auth0 */;
+			targetProxy = 281ED71E2BE0DFBB002E990C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		281ED7252BE0DFBB002E990C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		281ED7262BE0DFBB002E990C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		281ED7282BE0DFBB002E990C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"mpc-core-kit-ios-auth0/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "mpc-core-kit-ios-auth0/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		281ED7292BE0DFBB002E990C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"mpc-core-kit-ios-auth0/Preview Content\"";
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "mpc-core-kit-ios-auth0/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		281ED72B2BE0DFBB002E990C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpc-core-kit-ios-auth0.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/mpc-core-kit-ios-auth0";
+			};
+			name = Debug;
+		};
+		281ED72C2BE0DFBB002E990C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpc-core-kit-ios-auth0.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/mpc-core-kit-ios-auth0";
+			};
+			name = Release;
+		};
+		281ED72E2BE0DFBB002E990C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "mpc-core-kit-ios-auth0";
+			};
+			name = Debug;
+		};
+		281ED72F2BE0DFBB002E990C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HYCGKU63WD;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.w3a.mpc-core-kit-ios-auth0UITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "mpc-core-kit-ios-auth0";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		281ED6FE2BE0DFB9002E990C /* Build configuration list for PBXProject "mpc-core-kit-ios-auth0" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				281ED7252BE0DFBB002E990C /* Debug */,
+				281ED7262BE0DFBB002E990C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		281ED7272BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				281ED7282BE0DFBB002E990C /* Debug */,
+				281ED7292BE0DFBB002E990C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		281ED72A2BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				281ED72B2BE0DFBB002E990C /* Debug */,
+				281ED72C2BE0DFBB002E990C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		281ED72D2BE0DFBB002E990C /* Build configuration list for PBXNativeTarget "mpc-core-kit-ios-auth0UITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				281ED72E2BE0DFBB002E990C /* Debug */,
+				281ED72F2BE0DFBB002E990C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/web3-swift-mpc-provider";
+			requirement = {
+				branch = "address-fix";
+				kind = branch;
+			};
+		};
+		281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/Auth0.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.0;
+			};
+		};
+		281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argentlabs/web3.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.1;
+			};
+		};
+		281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/JWTDecode.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		281ED7362BE0E106002E990C /* mpc-core-kit-swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
+			productName = "mpc-core-kit-swift";
+		};
+		281ED7392BE0E227002E990C /* MPCEthereumProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */;
+			productName = MPCEthereumProvider;
+		};
+		281ED73C2BE0E5AF002E990C /* Auth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */;
+			productName = Auth0;
+		};
+		281ED73F2BE0E5DD002E990C /* web3.swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */;
+			productName = web3.swift;
+		};
+		281ED7472BE0EAE1002E990C /* JWTDecode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */;
+			productName = JWTDecode;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 281ED6FB2BE0DFB9002E990C /* Project object */;
+}
