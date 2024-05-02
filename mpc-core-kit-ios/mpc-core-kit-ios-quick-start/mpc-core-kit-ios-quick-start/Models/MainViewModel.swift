@@ -36,7 +36,7 @@ class MainViewModel: ObservableObject {
     func loginWithJWT() {
         Task {
             do {
-               let result = try await mpcCoreKit.loginWithJwt(
+                let result = try await mpcCoreKit.loginWithJwt(
                     verifier: "w3a-firebase-demo",
                     verifierId: "",
                     idToken: "String"
@@ -96,7 +96,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 try await mpcCoreKit.deleteFactor(deleteFactorPub: factorPub)
-                refreshFactorPubs()
+                try await refreshFactorPubs()
                 
             } catch let error {
                 print(error.localizedDescription)
@@ -105,64 +105,63 @@ class MainViewModel: ObservableObject {
     }
     
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
-            Task {
-                do {
-                    let signature = try mpcCoreKit.sign(
-                        message: "Welcome to Web3Auth"
-                    )
-                    onSigned(signature.toHexString(), nil)
-                } catch let error  {
-                    onSigned(nil, error.localizedDescription)
-                }
+        Task {
+            do {
+                print(mpcCoreKit.debugDescription)
+                let signature = try mpcCoreKit.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
+                onSigned(signature, nil)
+            } catch let error  {
+                onSigned(nil, error.localizedDescription)
             }
         }
+    }
     
     func sendTransaction(onSend: @escaping (String?, String?) -> ()) {
-            Task {
-                do {
-                   
-                    let address = EthereumAddress(
-                        stringLiteral: self.publicAddress
-                    )
-                    let transaction = EthereumTransaction.init(
-                        to: address,
-                        data: Data.init(hex: "0x")
-                    )
-                    
-                    let gasLimit = try await self.ethereumClient.getGasLimit(
-                        transaction: transaction
-                    )
-                    let gasPrice = try await self.ethereumClient.getGasPrice()
-                    let nonce = try await self.ethereumClient.getNonce(address: address)
-                    
-                    let finalTransaction = EthereumTransaction(
-                        from: address,
-                        to: address,
-                        value: TorusWeb3Utils.toWei(ether: 0.001),
-                        data: transaction.data,
-                        nonce: nonce,
-                        gasPrice: gasPrice,
-                        gasLimit: gasLimit,
-                        chainId: Int(self.ethereumClient.getChainId())
-                    )
-                    
-                    let signedTransaction = try mpcCoreKit.sign(
-                        transaction: finalTransaction
-                    )
-                    
-                    let hash = try await ethereumClient.broadcastSignedTransaction(
-                        transaction: signedTransaction
-                    )
-                    
-                    onSend(hash, nil)
-                    
-                    
-                } catch let error {
-                    print(error.localizedDescription)
-                    onSend(nil, error.localizedDescription)
-                }
+        Task {
+            do {
+                
+                let address = EthereumAddress(
+                    stringLiteral: self.publicAddress
+                )
+                let transaction = EthereumTransaction.init(
+                    to: address,
+                    data: Data.init(hex: "0x")
+                )
+                
+                let gasLimit = try await self.ethereumClient.getGasLimit(
+                    transaction: transaction
+                )
+                let gasPrice = try await self.ethereumClient.getGasPrice()
+                let nonce = try await self.ethereumClient.getNonce(address: address)
+                
+                let finalTransaction = EthereumTransaction(
+                    from: address,
+                    to: address,
+                    value: TorusWeb3Utils.toWei(ether: 0.001),
+                    data: transaction.data,
+                    nonce: nonce,
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
+                    chainId: Int(self.ethereumClient.getChainId())
+                )
+                
+                let signedTransaction = try mpcCoreKit.sign(
+                    transaction: finalTransaction
+                )
+                
+                let hash = try await ethereumClient.broadcastSignedTransaction(
+                    transaction: signedTransaction
+                )
+                
+                onSend(hash, nil)
+                
+                
+            } catch let error {
+                print(error.localizedDescription)
+                onSend(nil, error.localizedDescription)
             }
         }
+    }
     
     func createNewTssFactor() {
         Task {
@@ -183,7 +182,7 @@ class MainViewModel: ObservableObject {
                 print(seedPhrase)
                 
                 UIPasteboard.general.string = seedPhrase
-                refreshFactorPubs()
+                try await refreshFactorPubs()
             }
         }
     }
@@ -202,11 +201,11 @@ class MainViewModel: ObservableObject {
                     factorKey: factorKey
                 )
                 
+                try await login()
+                
                 DispatchQueue.main.async {
                     self.isRecoveryRequired.toggle()
                 }
-                
-                try await login()
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -217,7 +216,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 _ = try await mpcCoreKit.enableMFA()
-                refreshFactorPubs()
+                try await refreshFactorPubs()
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -226,7 +225,7 @@ class MainViewModel: ObservableObject {
     
     private func login() async throws {
         let pubKey = try await mpcCoreKit.getTssPubKey()
-
+        
         let fullAddress = try KeyPoint(
             address: pubKey.hexString
         ).getPublicKey(format: .FullAddress)
@@ -237,21 +236,15 @@ class MainViewModel: ObservableObject {
         )
         
         publicAddress = address.asString()
-        refreshFactorPubs()
+        try await refreshFactorPubs()
         toggleIsLoggedIn()
     }
     
     
-    private func refreshFactorPubs() {
-        Task {
-            do {
-                let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
-                DispatchQueue.main.async {
-                    self.factorPubs = localFactorPubs
-                }
-            } catch let error {
-                print(error.localizedDescription)
-            }
+    private func refreshFactorPubs() async throws {
+        let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
+        DispatchQueue.main.async {
+            self.factorPubs = localFactorPubs
         }
     }
     

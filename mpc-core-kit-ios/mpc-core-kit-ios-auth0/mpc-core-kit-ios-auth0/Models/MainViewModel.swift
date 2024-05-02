@@ -55,8 +55,8 @@ class MainViewModel: ObservableObject {
                 guard let email = jwt.body["email"] as? String else {
                     throw "Email not found in JWT"
                 }
-               
-               let result = try await mpcCoreKit.loginWithJwt(
+                
+                let result = try await mpcCoreKit.loginWithJwt(
                     verifier: "w3a-auth0-demo",
                     verifierId: email,
                     idToken: auth0Creds.idToken
@@ -113,7 +113,7 @@ class MainViewModel: ObservableObject {
             do {
                 showLoader("Deleting Factor")
                 try await mpcCoreKit.deleteFactor(deleteFactorPub: factorPub)
-                refreshFactorPubs()
+                await refreshFactorPubs()
                 hideLoader()
             } catch let error {
                 hideLoader()
@@ -124,70 +124,70 @@ class MainViewModel: ObservableObject {
     }
     
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
-            Task {
-                do {
-                    showLoader("Signing Message")
-                    let signature = try mpcCoreKit.signMessage(
-                        message: "Welcome to Web3Auth".data(using: .ascii)!
-                    )
-                    hideLoader()
-                    onSigned(signature, nil)
-                } catch let error  {
-                    hideLoader()
-                    onSigned(nil, error.localizedDescription)
-                    showAlert(message: error.localizedDescription)
-                }
+        Task {
+            do {
+                showLoader("Signing Message")
+                let signature = try mpcCoreKit.signMessage(
+                    message: "Welcome to Web3Auth".data(using: .ascii)!
+                )
+                hideLoader()
+                onSigned(signature, nil)
+            } catch let error  {
+                hideLoader()
+                onSigned(nil, error.localizedDescription)
+                showAlert(message: error.localizedDescription)
             }
         }
+    }
     
     func sendTransaction(onSend: @escaping (String?, String?) -> ()) {
-            Task {
-                do {
-                   showLoader("Sending Transaction")
-                    let address = EthereumAddress(
-                        stringLiteral: self.publicAddress
-                    )
-                    let transaction = EthereumTransaction.init(
-                        to: address,
-                        data: Data.init(hex: "0x")
-                    )
-                    
-                    let gasLimit = try await self.ethereumClient.getGasLimit(
-                        transaction: transaction
-                    )
-                    let gasPrice = try await self.ethereumClient.getGasPrice()
-                    let nonce = try await self.ethereumClient.getNonce(address: address)
-                    
-                    let finalTransaction = EthereumTransaction(
-                        from: address,
-                        to: address,
-                        value: TorusWeb3Utils.toWei(ether: 0.001),
-                        data: transaction.data,
-                        nonce: nonce,
-                        gasPrice: gasPrice,
-                        gasLimit: gasLimit,
-                        chainId: Int(self.ethereumClient.getChainId())
-                    )
-                    
-                    let signedTransaction = try mpcCoreKit.sign(
-                        transaction: finalTransaction
-                    )
-                    
-                    let hash = try await ethereumClient.broadcastSignedTransaction(
-                        transaction: signedTransaction
-                    )
-                    hideLoader()
-                    onSend(hash, nil)
-                    
-                    
-                } catch let error {
-                    hideLoader()
-                    print(error.localizedDescription)
-                    onSend(nil, error.localizedDescription)
-                    showAlert(message: error.localizedDescription)
-                }
+        Task {
+            do {
+                showLoader("Sending Transaction")
+                let address = EthereumAddress(
+                    stringLiteral: self.publicAddress
+                )
+                let transaction = EthereumTransaction.init(
+                    to: address,
+                    data: Data.init(hex: "0x")
+                )
+                
+                let gasLimit = try await self.ethereumClient.getGasLimit(
+                    transaction: transaction
+                )
+                let gasPrice = try await self.ethereumClient.getGasPrice()
+                let nonce = try await self.ethereumClient.getNonce(address: address)
+                
+                let finalTransaction = EthereumTransaction(
+                    from: address,
+                    to: address,
+                    value: TorusWeb3Utils.toWei(ether: 0.001),
+                    data: transaction.data,
+                    nonce: nonce,
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
+                    chainId: Int(self.ethereumClient.getChainId())
+                )
+                
+                let signedTransaction = try mpcCoreKit.sign(
+                    transaction: finalTransaction
+                )
+                
+                let hash = try await ethereumClient.broadcastSignedTransaction(
+                    transaction: signedTransaction
+                )
+                hideLoader()
+                onSend(hash, nil)
+                
+                
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                onSend(nil, error.localizedDescription)
+                showAlert(message: error.localizedDescription)
             }
         }
+    }
     
     func createNewTssFactor() {
         Task {
@@ -211,7 +211,7 @@ class MainViewModel: ObservableObject {
                 UIPasteboard.general.string = seedPhrase
                 showAlert(message: "New factor created, and seed phrase is copied to clipboard. \(seedPhrase)")
                 hideLoader()
-                refreshFactorPubs()
+                await refreshFactorPubs()
             } catch let error {
                 hideLoader()
                 showAlert(message: error.localizedDescription)
@@ -267,7 +267,7 @@ class MainViewModel: ObservableObject {
                 UIPasteboard.general.string = seedPhrase
                 showAlert(message: "MFA is enabled, and seedphrase is copied to clipboard. \(seedPhrase)")
                 hideLoader()
-                refreshFactorPubs()
+                await refreshFactorPubs()
             } catch let error {
                 hideLoader()
                 print(error.localizedDescription)
@@ -278,7 +278,7 @@ class MainViewModel: ObservableObject {
     
     private func login() async throws {
         let pubKey = try await mpcCoreKit.getTssPubKey()
-
+        
         let fullAddress = try KeyPoint(
             address: pubKey.hexString
         ).getPublicKey(format: .FullAddress)
@@ -289,7 +289,7 @@ class MainViewModel: ObservableObject {
         )
         
         publicAddress = address.asString()
-        refreshFactorPubs()
+        await refreshFactorPubs()
         toggleIsLoggedIn()
     }
     
@@ -301,17 +301,15 @@ class MainViewModel: ObservableObject {
     }
     
     
-    private func refreshFactorPubs() {
-        Task {
-            do {
-                let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
-                DispatchQueue.main.async {
-                    self.factorPubs = localFactorPubs
-                }
-            } catch let error {
-                showAlert(message: error.localizedDescription)
-                print(error.localizedDescription)
+    private func refreshFactorPubs() async {
+        do {
+            let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
+            DispatchQueue.main.async {
+                self.factorPubs = localFactorPubs
             }
+        } catch let error {
+            showAlert(message: error.localizedDescription)
+            print(error.localizedDescription)
         }
     }
     

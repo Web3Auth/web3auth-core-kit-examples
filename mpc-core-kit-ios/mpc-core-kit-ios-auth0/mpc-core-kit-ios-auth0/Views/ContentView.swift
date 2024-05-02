@@ -18,7 +18,6 @@ struct ContentView: View {
                 } else {
                     HomeView(viewModel: viewModel)
                 }
-                
             } else if viewModel.isRecoveryRequired {
                 RecoveryView(viewModel: viewModel)
             } else {
