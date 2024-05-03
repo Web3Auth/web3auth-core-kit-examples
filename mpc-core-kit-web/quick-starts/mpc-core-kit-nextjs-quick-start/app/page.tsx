@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
 "use client";
+/* eslint-disable @typescript-eslint/no-use-before-define */
 
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
@@ -26,7 +25,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
 // IMP END - Quick Start
-import Web3 from "web3";
+import { Web3 } from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -47,16 +46,21 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
-  web3AuthClientId,
-  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false, // needed to skip the provider setup
-  manualSync: true, // This is the recommended approach
-});
+let coreKitInstance: Web3AuthMPCCoreKit;
+let evmProvider: EthereumSigningProvider;
 
-// Setup provider for EVM Chain
-const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-evmProvider.setupProvider(coreKitInstance);
+if (typeof window !== "undefined") {
+  coreKitInstance = new Web3AuthMPCCoreKit({
+    web3AuthClientId,
+    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+    setupProviderOnInit: false, // needed to skip the provider setup
+    manualSync: true, // This is the recommended approach
+  });
+
+  // Setup provider for EVM Chain
+  evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+  evmProvider.setupProvider(coreKitInstance);
+}
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -191,7 +195,7 @@ function App() {
       });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await web3authProvider!.request({
+      const factorKey = await web3authProvider?.request({
         method: "private_key",
       });
       uiConsole("Social Factor Key: ", factorKey);
@@ -235,8 +239,8 @@ function App() {
 
   const getDeviceFactor = async () => {
     try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance!);
-      setBackupFactorKey(factorKey!);
+      const factorKey = await getWebBrowserFactor(coreKitInstance);
+      setBackupFactorKey(factorKey as string);
       uiConsole("Device share: ", factorKey);
     } catch (e) {
       uiConsole(e);
@@ -349,12 +353,11 @@ function App() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    // @ts-ignore
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+      privKey: new BN(coreKitInstance.metadataKey as string, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -364,7 +367,8 @@ function App() {
     logout();
   };
 
-  function uiConsole(...args: any[]): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function uiConsole(...args: any): void {
     const el = document.querySelector("#console>p");
     if (el) {
       el.innerHTML = JSON.stringify(args || {}, null, 2);
