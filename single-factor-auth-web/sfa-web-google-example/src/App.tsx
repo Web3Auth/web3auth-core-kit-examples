@@ -8,6 +8,7 @@ import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/goog
 
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
+// import RPC from "./evm.viem";
 import RPC from "./evm.ethers";
 
 import Loading from "./Loading";
@@ -164,14 +165,14 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x13882",
-        displayName: "Polygon Amoy Testnet",
+        chainId: "0xaa36a7",
+        displayName: "Sepolia Testnet ETH",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "MATIC",
-        ticker: "MATIC",
+        tickerName: "Sepolia Testnet ETH",
+        ticker: "ETH",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/polygon_amoy",
-        blockExplorer: "https://amoy.polygonscan.com/",
+        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+        blockExplorer: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Polygon Amoy Testnet added successfully");
@@ -182,7 +183,7 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x13882" });
+      await web3authSfa.switchChain({ chainId: "0xaa36a7" });
       uiConsole("Chain switched to Polygon Amoy Testnet successfully");
     } catch (err) {
       uiConsole(err);

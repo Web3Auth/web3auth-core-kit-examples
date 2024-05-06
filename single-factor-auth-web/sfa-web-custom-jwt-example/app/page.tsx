@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 // RPC libraries for blockchain calls
 import RPC from "./evm.web3";
 // import RPC from "./evm.ethers";
+// import RPC from "./evm.viem";
 import Loading from "./Loading";
 
 const verifier = "w3a-jwt-for-sfa-web";
@@ -186,14 +187,14 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x5",
-        displayName: "Goerli",
+        chainId: "0xaa36a7",
+        displayName: "Sepolia Testnet ETH",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Goerli",
+        tickerName: "Sepolia Testnet ETH",
         ticker: "ETH",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        blockExplorer: "https://goerli.etherscan.io",
+        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+        blockExplorer: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
@@ -204,7 +205,7 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x5" });
+      await web3authSfa.switchChain({ chainId: "0xaa36a7" });
       uiConsole("Chain switched successfully");
     } catch (err) {
       uiConsole(err);
