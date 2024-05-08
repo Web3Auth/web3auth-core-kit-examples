@@ -66,13 +66,14 @@ class MainViewModel: ObservableObject {
                     self.isRecoveryRequired = result.requiredFactors > 0
                 }
                 
-                try await login()
+                if(!self.isRecoveryRequired) {
+                    try await login()
+                   
+                }
+                
                 hideLoader()
             } catch let error {
                 hideLoader()
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
-                }
                 print(error.localizedDescription)
             }
         }

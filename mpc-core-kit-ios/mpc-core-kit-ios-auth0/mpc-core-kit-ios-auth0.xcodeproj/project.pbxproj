@@ -674,7 +674,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
 			requirement = {
-				branch = main;
+				branch = "fix/get-tss-pub";
 				kind = branch;
 			};
 		};
