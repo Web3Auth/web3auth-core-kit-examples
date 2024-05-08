@@ -216,6 +216,13 @@ function Content() {
     return receipt;
   };
 
+  const enableMFA = async () => {
+    if (!web3auth) {
+      throw new Error("Web3Auth CoreKit not initialized");
+    }
+    await web3auth.enableMFA({});
+  };
+
   return (
     <div>
       <div style={{ position: "fixed", top: "12px", right: "12px" }}>
@@ -260,6 +267,17 @@ function Content() {
               </button>
               <button type="button" style={{ padding: "6px 12px", margin: "6px 6px", cursor: "pointer" }} onClick={() => signTransaction()}>
                 Send Transaction
+              </button>
+              {/* TODO */}
+              {/* Add Enable MFA */}
+              <button
+                type="button"
+                style={{ padding: "6px 12px", margin: "6px 6px", cursor: "pointer" }}
+                onClick={() => {
+                  enableMFA();
+                }}
+              >
+                Enable MFA
               </button>
             </p>
             <div id="console" style={{ whiteSpace: "pre-line" }}>
