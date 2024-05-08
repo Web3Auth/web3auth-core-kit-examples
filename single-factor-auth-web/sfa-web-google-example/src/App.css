@@ -1,5 +1,5 @@
 .container {
-  width: 60%;
+  width: 50%;
   margin: auto;
   padding: 0;
 }
@@ -86,7 +86,7 @@
 }
 
 .flex-container > div {
-  width: 100px;
+  width: 140px;
   margin: 10px;
   text-align: center;
   line-height: 75px;
