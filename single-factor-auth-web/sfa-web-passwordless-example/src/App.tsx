@@ -26,7 +26,7 @@ const chainConfig = {
   chainId: "0x1",
   rpcTarget: "https://rpc.ankr.com/eth",
   displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io",
+  blockExplorerUrl: "https://etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
 };
@@ -135,7 +135,7 @@ function App() {
         ticker: "ETH",
         decimals: 18,
         rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-        blockExplorer: "https://sepolia.etherscan.io",
+        blockExplorerUrl: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");

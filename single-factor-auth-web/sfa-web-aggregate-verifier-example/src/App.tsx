@@ -29,7 +29,7 @@ const chainConfig = {
   ticker: "ETH",
   decimals: 18,
   rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://etherscan.io",
+  blockExplorerUrl: "https://etherscan.io",
 };
 
 // Initialising Web3Auth Single Factor Auth SDK
@@ -230,7 +230,7 @@ function App() {
         ticker: "ETH",
         decimals: 18,
         rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-        blockExplorer: "https://sepolia.etherscan.io",
+        blockExplorerUrl: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
