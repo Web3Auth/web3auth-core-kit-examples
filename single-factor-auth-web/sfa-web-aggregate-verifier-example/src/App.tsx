@@ -7,8 +7,9 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
 
 // RPC libraries for blockchain calls
-// import RPC from "./evm.web3";
-import RPC from "./evm.ethers";
+import RPC from "./evm.web3";
+// import RPC from "./evm.ethers";
+// import RPC from "./evm.viem";
 
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -28,7 +29,7 @@ const chainConfig = {
   ticker: "ETH",
   decimals: 18,
   rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://etherscan.io",
+  blockExplorerUrl: "https://etherscan.io",
 };
 
 // Initialising Web3Auth Single Factor Auth SDK
@@ -222,14 +223,14 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x5",
-        displayName: "Goerli",
+        chainId: "0xaa36a7",
+        displayName: "Sepolia Testnet ETH",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Goerli",
+        tickerName: "Sepolia Testnet ETH",
         ticker: "ETH",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        blockExplorer: "https://goerli.etherscan.io",
+        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+        blockExplorerUrl: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
@@ -240,7 +241,7 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x5" });
+      await web3authSfa.switchChain({ chainId: "0xaa36a7" }); // sepolia chain id
       uiConsole("Chain switched successfully");
     } catch (err) {
       uiConsole(err);

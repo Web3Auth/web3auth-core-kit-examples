@@ -9,6 +9,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 // RPC libraries for blockchain calls
 // import RPC from "./evm.web3";
+// import RPC from "./evm.viem";
 import RPC from "./evm.ethers";
 import Loading from "./Loading";
 
@@ -25,7 +26,7 @@ const chainConfig = {
   chainId: "0x1",
   rpcTarget: "https://rpc.ankr.com/eth",
   displayName: "Ethereum Mainnet",
-  blockExplorer: "https://goerli.etherscan.io",
+  blockExplorerUrl: "https://etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
 };
@@ -98,7 +99,7 @@ function App() {
     }
   };
 
-  function parseToken(token: any) {
+/*   function parseToken(token: any) {
     try {
       const base64Url = token.split(".")[1];
       const base64 = base64Url.replace("-", "+").replace("_", "/");
@@ -108,7 +109,7 @@ function App() {
       uiConsole(err);
       return null;
     }
-  }
+  } */
 
   const getUserInfo = async () => {
     uiConsole("Get the user details directly from your login provider.", user);
@@ -127,14 +128,14 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x5",
-        displayName: "Goerli",
+        chainId: "0xaa36a7",
+        displayName: "Sepolia Testnet ETH",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Goerli",
+        tickerName: "Sepolia Testnet ETH",
         ticker: "ETH",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        blockExplorer: "https://goerli.etherscan.io",
+        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+        blockExplorerUrl: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
@@ -145,7 +146,7 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x5" });
+      await web3authSfa.switchChain({ chainId: "0xaa36a7" });
       uiConsole("Chain switched successfully");
     } catch (err) {
       uiConsole(err);
