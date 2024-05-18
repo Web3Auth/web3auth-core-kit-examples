@@ -7,11 +7,11 @@ This project is a demonstration of integrating Web3Auth with Telegram OAuth for 
 Follow these steps to set up and run the project:
 
 1. Clone the repository:
-`git clone https://github.com/web3auth/web3auth-pnp-examples`
+`git clone https://github.com/web3auth/web3auth-core-kit-examples`
 
 2. Install dependencies:
 ```
-cd web3auth-byoa/telegram-oauth-connection
+cd single-factor-auth-node/telegram-oauth-connection
 npm install
 ```
 

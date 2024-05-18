@@ -7,11 +7,11 @@ This project integrate Web3Auth with Microsoft OAuth for authentication. Web3Aut
 Follow these steps to set up and run the project:
 
 ### 1. Clone the repository:
-`git clone https://github.com/web3auth/web3auth-pnp-examples`
+`git clone https://github.com/web3auth/web3auth-core-kit-examples`
 
 ### 2. Install dependencies:
 ```
-cd web3auth-byoa/microsoft-oauth-connection
+cd single-factor-auth-node/microsoft-oauth-connection
 npm install
 ```
 

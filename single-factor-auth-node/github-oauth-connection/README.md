@@ -15,11 +15,11 @@ This project is a demonstration of integrating Web3Auth with GitHub OAuth for au
 Follow these steps to set up and run the project:
 
 1. Clone the repository:
-`git clone https://github.com/web3auth/web3auth-pnp-examples`
+`git clone https://github.com/web3auth/web3auth-core-kit-examples`
 
 2. Install dependencies:
 ```
-cd web3auth-byoa/github-oauth-connection
+cd single-factor-auth-node/github-oauth-connection
 npm install
 ```
 
