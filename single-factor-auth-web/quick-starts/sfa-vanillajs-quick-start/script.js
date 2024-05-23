@@ -22,13 +22,12 @@ let email, password, idToken, response;
 let web3auth = null;
 
 (async function init() {
-  $('.btn-logged-in').hide();
-  $('#sign-tx').hide();
+  $(".btn-logged-in").hide();
+  $("#sign-tx").hide();
 
   // IMP START - SDK Initialization
   // IMP START - Dashboard Registration
-  const clientId =
-    "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get your clientId from https://dashboard.web3auth.io
+  const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get your clientId from https://dashboard.web3auth.io
   // IMP END - Dashboard Registration
 
   const chainConfig = {
@@ -41,26 +40,26 @@ let web3auth = null;
     tickerName: "Ethereum",
   };
 
-  uiConsole(window.SingleFactorAuth.Web3Auth);
-  web3auth = new window.SingleFactorAuth.Web3Auth({
-    clientId,
-    web3AuthNetwork: "sapphire_mainnet", // Get your Network from Web3Auth Dashboard
-  });
-
   const ethereumPrivateKeyProvider = new window.EthereumProvider.EthereumPrivateKeyProvider({
     config: { chainConfig },
   });
 
-  await web3auth.init(ethereumPrivateKeyProvider);
+  uiConsole(window.SingleFactorAuth.Web3Auth);
+  web3auth = new window.SingleFactorAuth.Web3Auth({
+    clientId,
+    web3AuthNetwork: "sapphire_mainnet", // Get your Network from Web3Auth Dashboard
+    privateKeyProvider: ethereumPrivateKeyProvider,
+  });
+
+  await web3auth.init();
   // IMP END - SDK Initialization
 
-
   if (web3auth.status === "connected") {
-    $('.btn-logged-in').show();
-    $('.btn-logged-out').hide();
+    $(".btn-logged-in").show();
+    $(".btn-logged-out").hide();
   } else {
-    $('.btn-logged-out').show();
-    $('.btn-logged-in').hide();
+    $(".btn-logged-out").show();
+    $(".btn-logged-in").hide();
   }
 })();
 
@@ -69,8 +68,8 @@ loginButton.addEventListener("click", async function () {
   const verifier = "w3a-firebase-demo";
   // IMP END - Verifier Creation
   // IMP START - Auth Provider Login
-  email = 'custom+jwt@firebase.login';
-  password = 'Testing@123';
+  email = "custom+jwt@firebase.login";
+  password = "Testing@123";
   try {
     uiConsole("Signing in with email and password in firebase");
     response = await signInWithEmailAndPassword(auth, email, password);
@@ -83,7 +82,7 @@ loginButton.addEventListener("click", async function () {
     await web3auth.connect({
       verifier,
       verifierId: response.user.uid,
-      idToken: idToken,
+      idToken,
     });
     // IMP END - Login
 
@@ -92,8 +91,7 @@ loginButton.addEventListener("click", async function () {
       $(".btn-logged-out").hide();
       $(".btn-logged-in").show();
     }
-  }
-  catch (error) {
+  } catch (error) {
     uiConsole(error);
   }
 });
@@ -181,5 +179,3 @@ function uiConsole(...args) {
   }
   console.log(...args);
 }
-
-

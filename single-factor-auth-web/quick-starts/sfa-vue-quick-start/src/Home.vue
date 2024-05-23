@@ -2,42 +2,28 @@
 <template>
   <div id="app">
     <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
-        Web3Auth Single Factor Auth
-      </a>
+      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer"> Web3Auth Single Factor Auth </a>
       & Vue.js Quick Start
     </h2>
 
-    <button v-if="!loggedIn" class="card" @click="login" style="cursor: pointer">
-      Login
-    </button>
+    <button v-if="!loggedIn" class="card" @click="login" style="cursor: pointer">Login</button>
 
     <div v-if="loggedIn">
       <div class="flex-container">
         <div>
-          <button class="card" @click="getUserInfo" style="cursor: pointer">
-            Get User Info
-          </button>
+          <button class="card" @click="getUserInfo" style="cursor: pointer">Get User Info</button>
         </div>
         <div>
-          <button class="card" @click="getAccounts" style="cursor: pointer">
-            Get Accounts
-          </button>
+          <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
         </div>
         <div>
-          <button class="card" @click="getBalance" style="cursor: pointer">
-            Get Balance
-          </button>
+          <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
         </div>
         <div>
-          <button class="card" @click="signMessage" style="cursor: pointer">
-            Sign Message
-          </button>
+          <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
         </div>
         <div>
-          <button class="card" @click="logout" style="cursor: pointer">
-            Logout
-          </button>
+          <button class="card" @click="logout" style="cursor: pointer">Logout</button>
         </div>
       </div>
     </div>
@@ -46,8 +32,11 @@
     </div>
 
     <footer class="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
-        target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Source code
       </a>
     </footer>
@@ -57,8 +46,8 @@
 <script lang="ts">
 import { ref, onMounted } from "vue";
 // IMP START - Quick Start
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS } from "@web3auth/base";
+import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
+import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // IMP END - Quick Start
 import Web3 from "web3";
@@ -75,7 +64,7 @@ export default {
   },
   setup() {
     const loggedIn = ref<boolean>(false);
-    let provider = <IProvider | null>(null);
+    let provider = <IProvider | null>null;
 
     // IMP START - SDK Initialization
     // IMP START - Dashboard Registration
@@ -96,14 +85,16 @@ export default {
       tickerName: "Ethereum",
     };
 
-    const web3auth = new Web3Auth({
-      clientId, // Get your Client ID from Web3Auth Dashboard
-      web3AuthNetwork: "sapphire_mainnet",
-    });
-
     const privateKeyProvider = new EthereumPrivateKeyProvider({
       config: { chainConfig },
     });
+
+    const web3auth = new Web3Auth({
+      clientId, // Get your Client ID from Web3Auth Dashboard
+      web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+      privateKeyProvider,
+    });
+
     // IMP END - SDK Initialization
 
     // IMP START - Auth Provider Login
@@ -121,12 +112,11 @@ export default {
     const app = initializeApp(firebaseConfig);
     // IMP END - Auth Provider Login
 
-
     onMounted(async () => {
       const init = async () => {
         try {
           // IMP START - SDK Initialization
-          await web3auth.init(privateKeyProvider);
+          await web3auth.init();
           // IMP END - SDK Initialization
           provider = web3auth.provider;
           if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
@@ -154,20 +144,10 @@ export default {
       }
     };
 
-    const parseToken = (token: string) => {
-      try {
-        const base64Url = token.split(".")[1];
-        const base64 = base64Url.replace("-", "+").replace("_", "/");
-        return JSON.parse(window.atob(base64 || ""));
-      } catch (err) {
-        console.error(err);
-        return null;
-      }
-    };
     // IMP END - Auth Provider Login
 
     const login = async () => {
-      if (!web3auth.ready) {
+      if (!web3auth) {
         uiConsole("web3auth initialised yet");
         return;
       }
@@ -176,13 +156,13 @@ export default {
       const loginRes = await signInWithGoogle();
       // get the id token from firebase
       const idToken = await loginRes.user.getIdToken(true);
-      const userInfo = parseToken(idToken);
+      const { payload } = decodeToken(idToken);
       // IMP END - Auth Provider Login
 
       // IMP START - Login
       const web3authProvider = await web3auth.connect({
         verifier,
-        verifierId: userInfo.sub,
+        verifierId: (payload as any).sub,
         idToken,
       });
       // IMP END - Login
@@ -336,7 +316,7 @@ a {
   flex-flow: row wrap;
 }
 
-.flex-container>div {
+.flex-container > div {
   width: 100px;
   margin: 10px;
   text-align: center;
