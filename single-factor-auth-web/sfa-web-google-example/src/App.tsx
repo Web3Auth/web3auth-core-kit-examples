@@ -350,7 +350,7 @@ function App() {
         </div>
         <div>
           <button onClick={showCheckout} className="card">
-            Show Checkout
+            (Buy Crypto) Show Checkout
           </button>
         </div>
         <div>
