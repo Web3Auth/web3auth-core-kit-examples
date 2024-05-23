@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import "@farcaster/auth-kit/styles.css";
 
-import Head from "next/head";
-import { useSession, signIn, signOut, getCsrfToken } from "next-auth/react";
-import { SignInButton, AuthKitProvider, StatusAPIResponse } from "@farcaster/auth-kit";
-import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { AuthKitProvider, SignInButton, StatusAPIResponse } from "@farcaster/auth-kit";
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
-import { useCallback, useEffect, useState } from "react";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 import { ethers } from "ethers";
+import Head from "next/head";
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
+import { useCallback, useEffect, useState } from "react";
 
 const config = {
   relay: "https://relay.farcaster.xyz",
@@ -36,10 +37,11 @@ const web3auth = new Web3Auth({
   clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // Get your Client ID from the Web3Auth Dashboard
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
   usePnPKey: false, // By default, this SDK returns CoreKitKey by default.
+  privateKeyProvider,
 });
 
 const login = async (idToken: any) => {
-  if (!web3auth.ready) {
+  if (!web3auth) {
     console.log("web3auth initialised yet");
     return;
   }
@@ -116,20 +118,28 @@ const signTransaction = async (provider: IProvider) => {
 
   const destination = "0xeaA8Af602b2eDE45922818AE5f9f7FdE50cFa1A8";
   const amount = ethers.parseEther("0.005");
-  const tx = await signer.sendTransaction({
-    to: destination,
-    value: amount,
-    // maxPriorityFeePerGas: "5000000000", // Max priority fee per gas
-    // maxFeePerGas: "6000000000000", // Max fee per gas
-  });
-
-  const receipt = await tx.wait();
-  console.log("Transaction Receipt:", receipt);
-  uiConsole(receipt);
-  return receipt;
+  try {
+    const tx = await signer.sendTransaction({
+      to: destination,
+      value: amount,
+      // maxPriorityFeePerGas: "5000000000", // Max priority fee per gas
+      // maxFeePerGas: "6000000000000", // Max fee per gas
+    });
+    const receipt = await tx.wait();
+    console.log("Transaction Receipt:", receipt);
+    uiConsole(receipt);
+    return receipt;
+  } catch (e) {
+    console.error(e);
+    uiConsole(e);
+  }
 };
 
 const logOut = async () => {
+  if (!web3auth) {
+    console.log("web3auth initialised yet");
+    return;
+  }
   await web3auth.logout();
   await signOut();
 };
@@ -162,13 +172,17 @@ function Content() {
   useEffect(() => {
     const init = async () => {
       try {
-        await web3auth.init(privateKeyProvider);
+        web3auth.on(ADAPTER_EVENTS.CONNECTED, (data) => {
+          console.log("sfa:connected", data);
+          console.log("Web3Auth Status", web3auth.status);
+        });
+        await web3auth.init();
 
         if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
           console.log("Web3Auth Status", web3auth.status);
         }
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
       }
     };
 
@@ -199,7 +213,7 @@ function Content() {
       body: JSON.stringify({ userData: res }),
     });
     const data = await response.json();
-    const token = data.token;
+    const { token } = data;
     console.log("token", token);
     const web3authProvider = await login(token);
     const accounts = await getAccounts(web3authProvider as IProvider);

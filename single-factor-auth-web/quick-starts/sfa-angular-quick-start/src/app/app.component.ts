@@ -1,18 +1,17 @@
 import { Component } from "@angular/core";
-// IMP START - Quick Start
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+// IMP START - Quick Start
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
+// Firebase libraries for custom authentication
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
 // IMP END - Quick Start
 import Web3 from "web3";
 
-// Firebase libraries for custom authentication
-import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
-
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
@@ -29,14 +28,16 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const web3auth = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "sapphire_mainnet",
-});
-
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+});
+
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -56,7 +57,6 @@ const firebaseConfig = {
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"],
 })
-
 export class AppComponent {
   title = "angular-app";
 
@@ -72,7 +72,7 @@ export class AppComponent {
     const init = async () => {
       try {
         // IMP START - SDK Initialization
-        await web3auth.init(privateKeyProvider);
+        await web3auth.init();
         // IMP END - SDK Initialization
         this.provider = web3auth.provider;
 
@@ -100,21 +100,10 @@ export class AppComponent {
       throw err;
     }
   };
-
-  parseToken = (token: string) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
   // IMP END - Auth Provider Login
 
   login = async () => {
-    if (!web3auth.ready) {
+    if (!web3auth) {
       this.uiConsole("web3auth initialised yet");
       return;
     }
@@ -123,13 +112,14 @@ export class AppComponent {
     const loginRes = await this.signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
-    const userInfo = this.parseToken(idToken);
+    console.log(idToken);
+    const { payload } = decodeToken(idToken);
     // IMP END - Auth Provider Login
 
     // IMP START - Login
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: userInfo.sub,
+      verifierId: (payload as any).sub,
       idToken,
     });
     // IMP END - Login

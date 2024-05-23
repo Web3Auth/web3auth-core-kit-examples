@@ -2,16 +2,16 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
-// IMP START - Quick Start
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+// IMP START - Quick Start
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 // IMP END - Quick Start
 // IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+import { useEffect, useState } from "react";
 // IMP END - Auth Provider Login
 import Web3 from "web3";
 
@@ -34,14 +34,16 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const web3auth = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "sapphire_mainnet",
-});
-
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+});
+
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -67,7 +69,7 @@ function App() {
     const init = async () => {
       try {
         // IMP START - SDK Initialization
-        await web3auth.init(privateKeyProvider);
+        await web3auth.init();
         // IMP END - SDK Initialization
         setProvider(web3auth.provider);
 
@@ -95,21 +97,10 @@ function App() {
       throw err;
     }
   };
-
-  const parseToken = (token: string) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
   // IMP END - Auth Provider Login
 
   const login = async () => {
-    if (!web3auth.ready) {
+    if (!web3auth) {
       uiConsole("web3auth initialised yet");
       return;
     }
@@ -118,13 +109,13 @@ function App() {
     const loginRes = await signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
-    const userInfo = parseToken(idToken);
+    const { payload } = decodeToken(idToken);
     // IMP END - Auth Provider Login
 
     // IMP START - Login
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: userInfo.sub,
+      verifierId: (payload as any).sub,
       idToken,
     });
     // IMP END - Login

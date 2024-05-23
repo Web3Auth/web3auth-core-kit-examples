@@ -1,9 +1,9 @@
 import { browserSupportsWebAuthn, startAuthentication, startRegistration } from "@simplewebauthn/browser";
 import { getPublicCompressed } from "@toruslabs/eccrypto";
 import { get, post } from "@toruslabs/http-helpers";
-import { CustomChainConfig, IProvider } from "@web3auth/base";
+import { CustomChainConfig, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { Web3Auth } from "@web3auth/single-factor-auth";
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 import * as jose from "jose";
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
@@ -124,16 +124,16 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
       try {
         setIsLoading(true);
         const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
-        const web3AuthInstance = new Web3Auth({
-          clientId,
-          web3AuthNetwork: "sapphire_mainnet",
-        });
-
         const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
           config: { chainConfig: chain["Goerli Testnet"] },
         });
+        const web3AuthInstance = new Web3Auth({
+          clientId,
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+          privateKeyProvider: ethereumPrivateKeyProvider,
+        });
 
-        await web3AuthInstance.init(ethereumPrivateKeyProvider);
+        await web3AuthInstance.init();
         if (web3AuthInstance.status === "connected") {
           setWalletProvider(web3AuthInstance.provider);
           setWeb3AuthIdToken((await web3AuthInstance.authenticateUser()).idToken);
@@ -384,17 +384,6 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
     }
   };
 
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
-
   const verifyServerSide = async (idTokenInFrontend: string) => {
     try {
       if (!provider) {
@@ -418,7 +407,7 @@ export const Web3AuthProvider = ({ children }: IWeb3AuthProps) => {
           "Public Key from decoded JWT: ",
           (jwtDecoded.payload as any).wallets[0].public_key,
           "Parsed Id Token: ",
-          await parseToken(idTokenInFrontend)
+          await decodeToken(idTokenInFrontend)
         );
       } else {
         uiConsole("Validation Failed", "Wallet from decoded JWT: ", (jwtDecoded.payload as any).wallets[0]);
