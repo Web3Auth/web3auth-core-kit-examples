@@ -32,7 +32,6 @@ const chainConfig = {
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
@@ -57,9 +56,9 @@ function App() {
           console.log("sfa:disconnected");
           setProvider(null);
         });
-        setWeb3authSFAuth(web3authSfa);
         await web3authSfa.init();
-        (window as any).web3auth = web3authSfa;
+        setWeb3authSFAuth(web3authSfa);
+        // (window as any).web3auth = web3authSfa;
       } catch (error) {
         console.error(error);
       }
@@ -81,7 +80,6 @@ function App() {
         setIsLoggingIn(false);
         return;
       }
-      setIdToken(idToken);
       const { payload } = decodeToken(idToken);
       await web3authSFAuth.connect({
         verifier,
@@ -213,23 +211,8 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={() => uiConsole(idToken)} className="card">
-            Get OAuth IDToken
-          </button>
-        </div>
-        <div>
           <button onClick={authenticateUser} className="card">
-            Authenticate User
-          </button>
-        </div>
-        <div>
-          <button onClick={addChain} className="card">
-            Add Chain
-          </button>
-        </div>
-        <div>
-          <button onClick={switchChain} className="card">
-            Switch Chain
+            Get ID Token
           </button>
         </div>
         <div>
@@ -240,6 +223,16 @@ function App() {
         <div>
           <button onClick={getBalance} className="card">
             Get Balance
+          </button>
+        </div>
+        <div>
+          <button onClick={addChain} className="card">
+            Add Chain
+          </button>
+        </div>
+        <div>
+          <button onClick={switchChain} className="card">
+            Switch Chain
           </button>
         </div>
         <div>
