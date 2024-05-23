@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { PasskeysPlugin } from "@web3auth/passkeys-sfa-plugin";
 import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
 
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
@@ -15,6 +16,7 @@ import RPC from "./evm.ethers";
 
 import Loading from "./Loading";
 import "./App.css";
+import { shouldSupportPasskey } from "./utils";
 
 const verifier = "w3a-sfa-web-google";
 
@@ -35,8 +37,9 @@ const chainConfig = {
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [pkPlugin, setPkPlugin] = useState<PasskeysPlugin | null>(null);
   const [wsPlugin, setWsPlugin] = useState<WalletServicesPlugin | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -51,6 +54,8 @@ function App() {
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
           privateKeyProvider: ethereumPrivateKeyProvider,
         });
+        const plugin = new PasskeysPlugin({ buildEnv: "testing" });
+        web3authSfa?.addPlugin(plugin);
         const wsPlugin = new WalletServicesPlugin({
           walletInitOptions: {
             whiteLabel: {
@@ -61,6 +66,7 @@ function App() {
         });
         web3authSfa?.addPlugin(wsPlugin);
         setWsPlugin(wsPlugin);
+        setPkPlugin(pkPlugin);
         web3authSfa.on(ADAPTER_EVENTS.CONNECTED, (data) => {
           console.log("sfa:connected", data);
           console.log("sfa:state", web3authSfa?.state);
@@ -106,6 +112,25 @@ function App() {
       // One can use the Web3AuthNoModal SDK to handle this case
       setIsLoggingIn(false);
       console.error(err);
+    }
+  };
+
+  const loginWithPasskey = async () => {
+    try {
+      setIsLoggingIn(true);
+      if (!pkPlugin) throw new Error("Passkey plugin not initialized");
+      const result = shouldSupportPasskey();
+      if (!result.isBrowserSupported) {
+        uiConsole("Browser not supported");
+        return;
+      }
+      await pkPlugin.loginWithPasskey();
+      uiConsole("Passkey logged in successfully");
+    } catch (error) {
+      console.error((error as Error).message);
+      uiConsole((error as Error).message);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -209,6 +234,36 @@ function App() {
     }
   };
 
+  const registerPasskey = async () => {
+    try {
+      if (!pkPlugin || !web3authSFAuth) {
+        uiConsole("plugin not initialized yet");
+        return;
+      }
+      const result = shouldSupportPasskey();
+      if (!result.isBrowserSupported) {
+        uiConsole("Browser not supported");
+        return;
+      }
+      const userInfo = await web3authSFAuth?.getUserInfo();
+      const res = await pkPlugin.registerPasskey({
+        username: `google|${userInfo?.email || userInfo?.name} - ${new Date().toLocaleDateString("en-GB")}`,
+      });
+      if (res) uiConsole("Passkey saved successfully");
+    } catch (error: unknown) {
+      uiConsole((error as Error).message);
+    }
+  };
+
+  const listAllPasskeys = async () => {
+    if (!pkPlugin) {
+      uiConsole("plugin not initialized yet");
+      return;
+    }
+    const res = await pkPlugin.listAllPasskeys();
+    uiConsole(res);
+  };
+
   const showCheckout = async () => {
     if (!wsPlugin) {
       uiConsole("wallet services plugin not initialized yet");
@@ -284,6 +339,16 @@ function App() {
           </button>
         </div>
         <div>
+          <button onClick={registerPasskey} className="card">
+            Register passkey
+          </button>
+        </div>
+        <div>
+          <button onClick={listAllPasskeys} className="card">
+            List all Passkeys
+          </button>
+        </div>
+        <div>
           <button onClick={showCheckout} className="card">
             Show Checkout
           </button>
@@ -311,7 +376,14 @@ function App() {
     </>
   );
 
-  const logoutView = <GoogleLogin onSuccess={onSuccess} useOneTap />;
+  const logoutView = (
+    <>
+      <GoogleLogin onSuccess={onSuccess} useOneTap />
+      <button onClick={loginWithPasskey} className="card passkey">
+        Login with Passkey
+      </button>
+    </>
+  );
 
   return (
     <div className="container">
