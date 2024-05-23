@@ -56,6 +56,7 @@ function App() {
         });
         const plugin = new PasskeysPlugin({ buildEnv: "testing" });
         web3authSfa?.addPlugin(plugin);
+        setPkPlugin(plugin);
         const wsPlugin = new WalletServicesPlugin({
           walletInitOptions: {
             whiteLabel: {
@@ -66,7 +67,6 @@ function App() {
         });
         web3authSfa?.addPlugin(wsPlugin);
         setWsPlugin(wsPlugin);
-        setPkPlugin(plugin);
         web3authSfa.on(ADAPTER_EVENTS.CONNECTED, (data) => {
           console.log("sfa:connected", data);
           console.log("sfa:state", web3authSfa?.state);
