@@ -66,7 +66,7 @@ function App() {
         });
         web3authSfa?.addPlugin(wsPlugin);
         setWsPlugin(wsPlugin);
-        setPkPlugin(pkPlugin);
+        setPkPlugin(plugin);
         web3authSfa.on(ADAPTER_EVENTS.CONNECTED, (data) => {
           console.log("sfa:connected", data);
           console.log("sfa:state", web3authSfa?.state);
