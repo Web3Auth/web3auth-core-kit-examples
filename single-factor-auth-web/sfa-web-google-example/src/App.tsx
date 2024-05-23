@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
+
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
 
 // RPC libraries for blockchain calls
@@ -27,12 +29,14 @@ const chainConfig = {
   decimals: 18,
   rpcTarget: "https://rpc.ankr.com/eth_sepolia",
   blockExplorerUrl: "https://sepolia.etherscan.io",
+  logo: "https://cryptologos.cc/logos/polygon-matic-logo.png",
 };
 
 function App() {
   const [web3authSFAuth, setWeb3authSFAuth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [wsPlugin, setWsPlugin] = useState<WalletServicesPlugin | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -47,6 +51,16 @@ function App() {
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
           privateKeyProvider: ethereumPrivateKeyProvider,
         });
+        const wsPlugin = new WalletServicesPlugin({
+          walletInitOptions: {
+            whiteLabel: {
+              logoLight: "https://web3auth.io/images/web3auth-logo.svg",
+              logoDark: "https://web3auth.io/images/web3auth-logo.svg",
+            },
+          },
+        });
+        web3authSfa?.addPlugin(wsPlugin);
+        setWsPlugin(wsPlugin);
         web3authSfa.on(ADAPTER_EVENTS.CONNECTED, (data) => {
           console.log("sfa:connected", data);
           console.log("sfa:state", web3authSfa?.state);
@@ -195,6 +209,30 @@ function App() {
     }
   };
 
+  const showCheckout = async () => {
+    if (!wsPlugin) {
+      uiConsole("wallet services plugin not initialized yet");
+      return;
+    }
+    await wsPlugin.showCheckout();
+  };
+
+  const showWalletUI = async () => {
+    if (!wsPlugin) {
+      uiConsole("wallet services plugin not initialized yet");
+      return;
+    }
+    await wsPlugin.showWalletUi();
+  };
+
+  const showWalletScanner = async () => {
+    if (!wsPlugin) {
+      uiConsole("wallet services plugin not initialized yet");
+      return;
+    }
+    await wsPlugin.showWalletConnectScanner();
+  };
+
   function uiConsole(...args: any[]): void {
     const el = document.querySelector("#console>p");
     if (el) {
@@ -243,6 +281,21 @@ function App() {
         <div>
           <button onClick={sendTransaction} className="card">
             Send Transaction
+          </button>
+        </div>
+        <div>
+          <button onClick={showCheckout} className="card">
+            Show Checkout
+          </button>
+        </div>
+        <div>
+          <button onClick={showWalletUI} className="card">
+            Show Wallet UI
+          </button>
+        </div>
+        <div>
+          <button onClick={showWalletScanner} className="card">
+            Show Wallet Scanner
           </button>
         </div>
         <div>
