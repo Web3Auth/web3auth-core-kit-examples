@@ -1,4 +1,5 @@
 "use client";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import { CHAIN_NAMESPACES } from "@web3auth/base";
@@ -8,9 +9,9 @@ import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import {
   COREKIT_STATUS,
   generateFactorKey,
-  getWebBrowserFactor,
   IdTokenLoginParams,
   keyToMnemonic,
+  makeEthereumSigner,
   mnemonicToKey,
   parseToken,
   TssShareType,
@@ -25,7 +26,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
 // IMP END - Quick Start
-import { Web3 } from "web3";
+import { core, Web3 } from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -53,13 +54,14 @@ if (typeof window !== "undefined") {
   coreKitInstance = new Web3AuthMPCCoreKit({
     web3AuthClientId,
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-    setupProviderOnInit: false, // needed to skip the provider setup
+    storage: window.localStorage,
     manualSync: true, // This is the recommended approach
+    tssLib: tssLib,
   });
 
   // Setup provider for EVM Chain
   evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-  evmProvider.setupProvider(coreKitInstance);
+  evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 }
 // IMP END - SDK Initialization
 
@@ -239,7 +241,7 @@ function App() {
 
   const getDeviceFactor = async () => {
     try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance);
+      const factorKey = await coreKitInstance.getDeviceFactor();
       setBackupFactorKey(factorKey as string);
       uiConsole("Device share: ", factorKey);
     } catch (e) {
@@ -357,7 +359,7 @@ function App() {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey as string, "hex"),
+      privKey: new BN(coreKitInstance.state.postBoxKey! as string, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
