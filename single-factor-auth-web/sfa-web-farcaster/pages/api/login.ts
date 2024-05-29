@@ -1,11 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<{ token: string }>
-) {
-  const userData = req.body.userData;
+export default function handler(req: NextApiRequest, res: NextApiResponse<{ token: string }>) {
+  const { userData } = req.body;
   const privateKey = process.env.PRIVATE_KEY!;
 
   const jwtToken = jwt.sign(

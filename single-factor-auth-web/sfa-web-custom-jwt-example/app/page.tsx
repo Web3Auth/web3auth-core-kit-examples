@@ -2,15 +2,16 @@
 
 import "./App.css";
 
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // Import Single Factor Auth SDK for no redirect flow
-import { Web3Auth } from "@web3auth/single-factor-auth";
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 import { useEffect, useState } from "react";
 
 // RPC libraries for blockchain calls
 import RPC from "./evm.web3";
 // import RPC from "./evm.ethers";
+// import RPC from "./evm.viem";
 import Loading from "./Loading";
 
 const verifier = "w3a-jwt-for-sfa-web";
@@ -25,30 +26,29 @@ const chainConfig = {
   ticker: "ETH",
   decimals: 18,
   rpcTarget: "https://rpc.ankr.com/eth",
-  blockExplorer: "https://etherscan.io",
+  blockExplorerUrl: "https://etherscan.io",
 };
-
-// Initialising Web3Auth Single Factor Auth SDK
-const web3authSfa = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-});
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
 
+// Initialising Web3Auth Single Factor Auth SDK
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.TESTNET, // ["cyan", "testnet"]
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+  privateKeyProvider,
+});
+
 function App() {
-  const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       try {
-        web3authSfa.init(privateKeyProvider);
+        web3authSfa.init();
       } catch (error) {
         console.error(error);
       }
@@ -56,17 +56,6 @@ function App() {
 
     init();
   }, []);
-
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
 
   const getIdToken = async () => {
     // Get ID Token from server
@@ -96,15 +85,13 @@ function App() {
       }
       setIsLoggingIn(true);
       const idTokenResult = await getIdToken();
-      console.log(idTokenResult);
-      setIdToken(idTokenResult);
-      const { sub } = parseToken(idTokenResult);
+
+      const { payload } = decodeToken(idTokenResult);
       await web3authSfa.connect({
         verifier,
-        verifierId: sub,
+        verifierId: (payload as any).sub,
         idToken: idTokenResult,
       });
-      setUsesSfaSDK(true);
       setIsLoggingIn(false);
       setIsLoggedIn(true);
     } catch (err) {
@@ -116,22 +103,21 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    if (usesSfaSDK) {
-      uiConsole(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
-        parseToken(idToken)
-      );
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+      return;
     }
+    const userInfo = await web3authSfa.getUserInfo();
+    uiConsole(userInfo);
   };
 
   const logout = async () => {
-    if (usesSfaSDK) {
-      console.log(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
-      );
-      web3authSfa.logout();
-      setIsLoggedIn(false);
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+      return;
     }
+    await web3authSfa.logout();
+    setIsLoggedIn(false);
   };
 
   const getAccounts = async () => {
@@ -186,14 +172,14 @@ function App() {
   const addChain = async () => {
     try {
       const newChain = {
-        chainId: "0x5",
-        displayName: "Goerli",
+        chainId: "0xaa36a7",
+        displayName: "Sepolia Testnet ETH",
         chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Goerli",
+        tickerName: "Sepolia Testnet ETH",
         ticker: "ETH",
         decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_goerli",
-        blockExplorer: "https://goerli.etherscan.io",
+        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+        blockExplorerUrl: "https://sepolia.etherscan.io",
       };
       await web3authSfa.addChain(newChain);
       uiConsole("Chain added successfully");
@@ -204,7 +190,7 @@ function App() {
 
   const switchChain = async () => {
     try {
-      await web3authSfa.switchChain({ chainId: "0x5" });
+      await web3authSfa.switchChain({ chainId: "0xaa36a7" });
       uiConsole("Chain switched successfully");
     } catch (err) {
       uiConsole(err);
@@ -217,11 +203,6 @@ function App() {
         <div>
           <button onClick={getUserInfo} className="card">
             Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={() => uiConsole(idToken)} className="card">
-            Get OAuth ID Token
           </button>
         </div>
         <div>

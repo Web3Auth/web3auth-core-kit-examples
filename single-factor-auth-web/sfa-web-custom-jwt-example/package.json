@@ -12,9 +12,9 @@
     "@types/node": "20.5.3",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
-    "@web3auth/base": "^8.4.0",
-    "@web3auth/ethereum-provider": "^8.4.0",
-    "@web3auth/single-factor-auth": "^7.4.0",
+    "@web3auth/base": "^8.6.1",
+    "@web3auth/ethereum-provider": "^8.6.1",
+    "@web3auth/single-factor-auth": "^8.0.2",
     "browserify-fs": "^1.0.0",
     "bufferutil": "^4.0.7",
     "eslint": "8.47.0",
@@ -28,6 +28,7 @@
     "typescript": "5.1.6",
     "utf-8": "^2.0.0",
     "utf-8-validate": "^5.0.10",
+    "viem": "^2.9.15",
     "web3": "^4.1.1"
   }
 }
