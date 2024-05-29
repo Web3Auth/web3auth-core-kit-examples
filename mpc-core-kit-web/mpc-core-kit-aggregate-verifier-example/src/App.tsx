@@ -5,19 +5,22 @@ import {
   WEB3AUTH_NETWORK,
   AggregateVerifierLoginParams,
   TssShareType,
-  getWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
 import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 // IMP END - Quick Start
-import Web3 from "web3";
 import { BN } from "bn.js";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
 
 import "./App.css";
+import RPC from "./web3RPC"; // for using web3.js
+// import RPC from "./viemRPC"; // for using viem
+// import RPC from "./ethersRPC"; // for using ethers.js
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -26,25 +29,28 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  // Avoid using public rpcTarget in production.
+  // Use services like Infura, Quicknode etc
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorerUrl: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false, // needed to skip the provider setup
+  storage: window.localStorage,
   manualSync: true, // This is the recommended approach
-  uxMode: 'popup',
+  tssLib: tssLib
 });
 
-// Setup provider for EVM Chain
-const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-evmProvider.setupProvider(coreKitInstance);
+// Setup evmProvider for EVM Chain
+const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
 function App() {
@@ -249,7 +255,7 @@ const keyDetails = async () => {
 
 const getDeviceFactor = async () => {
   try {
-    const factorKey = await getWebBrowserFactor(coreKitInstance!);
+    const factorKey = await coreKitInstance.getDeviceFactor();
     setBackupFactorKey(factorKey!);
     uiConsole("Device share: ", factorKey);
   } catch (e) {
@@ -303,56 +309,79 @@ const logout = async () => {
 };
 
 // IMP START - Blockchain Calls
-const getAccounts = async () => {
-  if (!coreKitInstance) {
-    uiConsole("provider not initialized yet");
+const getChainId = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
     return;
   }
-  const web3 = new Web3(evmProvider);
+  const rpc = new RPC(evmProvider as IProvider);
+  const chainId = await rpc.getChainId();
+  uiConsole(chainId);
+};
 
-  // Get user's Ethereum public address
-  const address = await web3.eth.getAccounts();
+const getAccounts = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
+    return;
+  }
+  const rpc = new RPC(evmProvider as IProvider);
+  const address = await rpc.getAccounts();
   uiConsole(address);
 };
 
 const getBalance = async () => {
-  if (!coreKitInstance) {
-    uiConsole("provider not initialized yet");
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
     return;
   }
-  const web3 = new Web3(evmProvider);
-
-  // Get user's Ethereum public address
-  const address = (await web3.eth.getAccounts())[0];
-
-  // Get user's balance in ether
-  const balance = web3.utils.fromWei(
-    await web3.eth.getBalance(address), // Balance is in wei
-    "ether"
-  );
+  const rpc = new RPC(evmProvider as IProvider);
+  const balance = await rpc.getBalance();
   uiConsole(balance);
 };
 
-const signMessage = async () => {
-  if (!coreKitInstance) {
-    uiConsole("provider not initialized yet");
+const sendTransaction = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
     return;
   }
-  uiConsole("Signing Message...");
-  const web3 = new Web3(evmProvider);
+  const rpc = new RPC(evmProvider as IProvider);
+  const receipt = await rpc.sendTransaction();
+  uiConsole(receipt);
+};
 
-  // Get user's Ethereum public address
-  const fromAddress = (await web3.eth.getAccounts())[0];
-
-  const originalMessage = "YOUR_MESSAGE";
-
-  // Sign the message
-  const signedMessage = await web3.eth.personal.sign(
-    originalMessage,
-    fromAddress,
-    "test password!" // configure your own password here.
-  );
+const signMessage = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
+    return;
+  }
+  const rpc = new RPC(evmProvider as IProvider);
+  const signedMessage = await rpc.signMessage();
   uiConsole(signedMessage);
+};
+
+const readContract = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
+    return;
+  }
+  const rpc = new RPC(evmProvider as IProvider);
+  const message = await rpc.readContract();
+  uiConsole(message);
+};
+
+const writeContract = async () => {
+  if (!evmProvider) {
+    uiConsole("evmProvider not initialized yet");
+    return;
+  }
+  const rpc = new RPC(evmProvider as IProvider);
+  const receipt = await rpc.writeContract();
+  uiConsole(receipt);
+  if (receipt) {
+    setTimeout(async () => {
+      await readContract();
+    }, 2000);
+  }
 };
 // IMP END - Blockchain Calls
 
@@ -368,7 +397,7 @@ const criticalResetAccount = async (): Promise<void> => {
   //   throw new Error("reset account is not recommended on mainnet");
   // }
   await coreKitInstance.tKey.storageLayer.setMetadata({
-    privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+    privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
     input: { message: "KEY_NOT_FOUND" },
   });
   if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -405,6 +434,11 @@ const loggedInView = (
         </button>
       </div>
       <div>
+        <button onClick={getChainId} className="card">
+          Get Chain ID
+        </button>
+      </div>
+      <div>
         <button onClick={getAccounts} className="card">
           Get Accounts
         </button>
@@ -417,6 +451,21 @@ const loggedInView = (
       <div>
         <button onClick={signMessage} className="card">
           Sign Message
+        </button>
+      </div>
+      <div>
+        <button onClick={sendTransaction} className="card">
+          Send Transaction
+        </button>
+      </div>
+      <div>
+        <button onClick={readContract} className="card">
+          Read from Contract
+        </button>
+      </div>
+      <div>
+        <button onClick={writeContract} className="card">
+          Write a Contract
         </button>
       </div>
       <div>
