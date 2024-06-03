@@ -51,7 +51,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Login in")
-                let auth0Creds = try await webAuth.connection("apple").start()
+                let auth0Creds = try await webAuth.connection("google-oauth2").start()
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
                 guard let email = jwt.body["email"] as? String else {
