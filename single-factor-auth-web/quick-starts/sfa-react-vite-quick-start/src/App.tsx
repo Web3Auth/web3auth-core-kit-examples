@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import Web3 from "web3";
-
-// Firebase libraries for custom authentication
-import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
-
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import "./App.css";
 
-const clientId =
-  "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+import { CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
+// Firebase libraries for custom authentication
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+import { useEffect, useState } from "react";
+import Web3 from "web3";
+
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const verifier = "w3a-firebase-demo";
 
@@ -25,13 +24,14 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const web3auth = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "sapphire_mainnet",
-});
-
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
+});
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
 });
 
 // Your web app's Firebase configuration
@@ -47,7 +47,6 @@ const firebaseConfig = {
 function App() {
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState<Object>({});
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
@@ -55,11 +54,11 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        await web3auth.init(privateKeyProvider);
+        await web3auth.init();
         setProvider(web3auth.provider);
 
-        if (web3auth.sessionId) {
-          setLoggedIn(true);
+        if (web3auth.provider) {
+          setProvider(web3auth.provider);
         }
       } catch (error) {
         console.error(error);
@@ -82,29 +81,16 @@ function App() {
     }
   };
 
-  const parseToken = (token: string) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
-
   const login = async () => {
-    
     // login with firebase
     const loginRes = await signInWithGoogle();
     // get the id token from firebase
     const idToken = await loginRes.user.getIdToken(true);
-    const userInfo = parseToken(idToken);
-    setUserInfo(userInfo);
-    
+    const { payload } = decodeToken(idToken);
+
     const web3authProvider = await web3auth.connect({
       verifier,
-      verifierId: userInfo.email,
+      verifierId: (payload as any).sub,
       idToken,
     });
 
@@ -115,7 +101,7 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    uiConsole(userInfo);
+    uiConsole(await web3auth.getUserInfo());
   };
 
   const logout = async () => {

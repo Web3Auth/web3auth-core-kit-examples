@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { GoogleLogin, CredentialResponse, googleLogout } from "@react-oauth/google";
 
@@ -32,19 +32,19 @@ const chainConfig = {
   blockExplorerUrl: "https://etherscan.io",
 };
 
-// Initialising Web3Auth Single Factor Auth SDK
-const web3authSfa = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-});
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
 
+// Initialising Web3Auth Single Factor Auth SDK
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.TESTNET, // ["cyan", "testnet"]
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+  privateKeyProvider: ethereumPrivateKeyProvider,
+});
+
 function App() {
-  const [usesSfaSDK, setUsesSfaSDK] = useState(false);
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { getIdTokenClaims, loginWithPopup } = useAuth0();
@@ -52,7 +52,7 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        web3authSfa.init(ethereumPrivateKeyProvider);
+        web3authSfa.init();
       } catch (error) {
         console.error(error);
       }
@@ -60,17 +60,6 @@ function App() {
 
     init();
   }, []);
-
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
 
   const loginAuth0GitHub = async () => {
     // trying logging in with the Single Factor Auth SDK
@@ -82,9 +71,10 @@ function App() {
       setLoading(true);
       await loginWithPopup();
       const idToken = (await getIdTokenClaims())?.__raw.toString();
-      setIdToken(idToken!);
-      console.log("idToken", parseToken(idToken));
-      const { email } = parseToken(idToken);
+      if (!idToken) {
+        throw new Error("No id token found");
+      }
+      const { payload } = decodeToken(idToken);
       const subVerifierInfoArray = [
         {
           verifier: "w3a-auth0-github",
@@ -93,11 +83,10 @@ function App() {
       ];
       await web3authSfa.connect({
         verifier,
-        verifierId: email,
+        verifierId: (payload as any).email,
         idToken: idToken!,
         subVerifierInfoArray,
       });
-      setUsesSfaSDK(true);
       setLoading(false);
       setIsLoggedIn(true);
     } catch (err) {
@@ -116,9 +105,11 @@ function App() {
       }
       setLoading(true);
       const idToken = response.credential;
-      setIdToken(idToken!);
-      const { email } = parseToken(idToken);
-      console.log(email);
+      if (!idToken) {
+        throw new Error("No id token found");
+      }
+      const { payload } = decodeToken(idToken);
+
       const subVerifierInfoArray = [
         {
           verifier: "w3a-google",
@@ -127,11 +118,10 @@ function App() {
       ];
       await web3authSfa.connect({
         verifier,
-        verifierId: email,
+        verifierId: (payload as any).email,
         idToken: idToken!,
         subVerifierInfoArray,
       });
-      setUsesSfaSDK(true);
       setLoading(false);
       setIsLoggedIn(true);
     } catch (err) {
@@ -143,25 +133,22 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    if (usesSfaSDK) {
-      uiConsole(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth <code>getUserInfo</code> function won't work for you. Get the user details directly from id token.",
-        parseToken(idToken)
-      );
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
+    const userInfo = await web3authSfa.getUserInfo();
+    uiConsole(userInfo);
   };
 
   const logout = async () => {
-    if (usesSfaSDK) {
-      console.log(
-        "You are directly using Single Factor Auth SDK to login the user, hence the Web3Auth logout function won't work for you. You can logout the user directly from your login provider, or just clear the provider object."
-      );
-      web3authSfa?.logout();
-      googleLogout();
-      setIsLoggedIn(false);
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
+    web3authSfa?.logout();
+    googleLogout();
+    setIsLoggedIn(false);
   };
 
   const getAccounts = async () => {
@@ -254,11 +241,6 @@ function App() {
         <div>
           <button onClick={getUserInfo} className="card">
             Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={() => uiConsole(parseToken(idToken))} className="card">
-            Get OAuth ID Token
           </button>
         </div>
         <div>

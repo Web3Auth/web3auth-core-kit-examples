@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
-import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { auth } from "./FireBaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -31,18 +31,18 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const web3authSfa = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: "testnet", // ["cyan", "testnet"]
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-});
-
 const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
   config: { chainConfig },
 });
 
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.CYAN, // ["cyan", "testnet"]
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+  privateKeyProvider: ethereumPrivateKeyProvider,
+});
+
 function App() {
-  const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,7 +53,7 @@ function App() {
     const init = async () => {
       try {
         // Initialising Web3Auth Single Factor Auth SDK
-        web3authSfa.init(ethereumPrivateKeyProvider);
+        web3authSfa.init();
       } catch (error) {
         uiConsole(error);
       }
@@ -68,12 +68,15 @@ function App() {
         .then(async (loginRes) => {
           uiConsole(loginRes);
           const idToken = await loginRes.user.getIdToken(true);
-
-          setIdToken(idToken);
+          if (!idToken) {
+            uiConsole("No ID Token found");
+            return;
+          }
+          const { payload } = decodeToken(idToken);
 
           await web3authSfa.connect({
             verifier,
-            verifierId: loginRes.user.uid,
+            verifierId: (payload as any).email,
             idToken: idToken,
           });
 
@@ -98,18 +101,6 @@ function App() {
       uiConsole(error);
     }
   };
-
-/*   function parseToken(token: any) {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace("-", "+").replace("_", "/");
-      uiConsole(JSON.parse(window.atob(base64 || "")));
-      return JSON.parse(window.atob(base64 || ""));
-    } catch (err) {
-      uiConsole(err);
-      return null;
-    }
-  } */
 
   const getUserInfo = async () => {
     uiConsole("Get the user details directly from your login provider.", user);
@@ -221,11 +212,6 @@ function App() {
         <div>
           <button onClick={getUserInfo} className="card">
             Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={() => uiConsole(idToken)} className="card">
-            Get OAuth ID Token
           </button>
         </div>
         <div>
