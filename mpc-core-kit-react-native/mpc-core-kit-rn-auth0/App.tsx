@@ -29,9 +29,12 @@ import {
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
-  asyncGetFactor,
-  asyncStoreFactor,
+  makeEthereumSigner,
+  TssLib,
 } from '@web3auth/mpc-core-kit';
+// import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
+// TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion,
+// generateFactorKey, mnemonicToKey, parseToken, DEFAULT_CHAIN_CONFIG } from "@web3auth/mpc-core-kit";
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
@@ -58,6 +61,10 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
+const tsslibInstance: TssLib = {
+  keyType: 'secp256k1',
+  lib: tssLib,
+};
 // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
@@ -71,17 +78,16 @@ const asyncStorageKey = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  chainConfig,
-  setupProviderOnInit: false, // needed to skip the provider setup
+  //setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  asyncStorageKey, // adding the async storage for device share and session id
-  tssLib, // tss lib bridge for react native
+  tssLib: tsslibInstance, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
+  storage: asyncStorageKey, // Add the storage property
 });
 
 // Setup provider for EVM Chain
 const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-evmProvider.setupProvider(coreKitInstance);
+evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
 function Home() {
@@ -234,7 +240,7 @@ function Home() {
 
   const getDeviceFactor = async () => {
     try {
-      const factorKey = await asyncGetFactor(coreKitInstance!, asyncStorageKey);
+      const factorKey = await coreKitInstance.getDeviceFactor();
       setBackupFactorKey(factorKey!);
       uiConsole('Device factor: ', factorKey);
     } catch (error: any) {
@@ -244,12 +250,16 @@ function Home() {
 
   const storeDeviceFactor = async () => {
     try {
-      const factorKey = await generateFactorKey();
-      await asyncStoreFactor(
-        factorKey.private,
-        coreKitInstance!,
-        asyncStorageKey,
-      );
+      if (!coreKitInstance) {
+        throw new Error('coreKitInstance is not set');
+      }
+      setLoading(true);
+      uiConsole('export share type: ', TssShareType.DEVICE);
+      const factorKey = generateFactorKey();
+      await coreKitInstance.createFactor({
+        shareType: TssShareType.DEVICE,
+        factorKey: factorKey.private,
+      });
       uiConsole('Stored factor: ', factorKey);
     } catch (error: any) {
       uiConsole(error.message);
@@ -436,7 +446,7 @@ function Home() {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, 'hex'),
+      privKey: new BN(coreKitInstance.state.postBoxKey!, 'hex'),
       input: {message: 'KEY_NOT_FOUND'},
     });
     uiConsole('reset');
