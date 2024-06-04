@@ -199,8 +199,8 @@ function App() {
         await coreKitInstance.commitChanges();
       }
 
-      // const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-      await coreKitInstance.enableMFA({});
+      const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
+      await coreKitInstance.enableMFA({ factorKey });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
@@ -446,7 +446,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit
         </a>{" "}
-        React Quick Start
+        Popup Flow example
       </h1>
 
       <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>

@@ -76,7 +76,7 @@ const firebaseConfig = {
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
-  title = "Web3Auth tKey Angular Quick Start";
+  title = "Web3Auth MPC Core Kit Angular Quick Start";
 
   coreKitStatus: COREKIT_STATUS = COREKIT_STATUS.NOT_INITIALIZED;
 

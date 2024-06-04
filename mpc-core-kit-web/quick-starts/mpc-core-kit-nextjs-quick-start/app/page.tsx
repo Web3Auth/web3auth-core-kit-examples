@@ -464,7 +464,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit
         </a>{" "}
-        React Quick Start
+        Nextjs Quick Start
       </h1>
 
       <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>

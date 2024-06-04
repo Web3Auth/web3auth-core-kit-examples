@@ -9,6 +9,7 @@ import {
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  SubVerifierDetailsParams,
 } from "@web3auth/mpc-core-kit";
 
 import { BN } from "bn.js";
@@ -26,7 +27,7 @@ const verifier = "w3a-firebase-demo";
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
-  web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
+  web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   storage: window.localStorage,
   manualSync: true,
   tssLib,
@@ -86,7 +87,17 @@ function App() {
         idToken,
       } as IdTokenLoginParams;
 
-      await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      // Uncomment to test with loginWithOAuth
+      const verifierConfig = {
+        subVerifierDetails: {
+          typeOfLogin: 'google',
+          verifier: 'w3a-google-demo',
+          clientId:
+            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
+        }
+      } as SubVerifierDetailsParams;
+
+      await coreKitInstance.loginWithOauth(verifierConfig);
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         // Needed for new accounts
