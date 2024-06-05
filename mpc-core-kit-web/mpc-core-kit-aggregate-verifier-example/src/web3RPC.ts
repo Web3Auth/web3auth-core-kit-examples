@@ -63,25 +63,17 @@ export default class EthereumRpc {
       const destination = fromAddress;
 
       const amount = web3.utils.toWei("0.00001", "ether");
-      
+
       console.log("Amount: ", amount);
-      // Convert 1 ether to wei
-      let transaction = {
-        from: fromAddress,
-        to: destination,
-        data: "0x",
-        value: amount,
-      }
-
-      const gas = await web3.eth.estimateGas(transaction);
-
-      console.log("Estimated gas: ", gas);
-
-      // calculate gas transaction before sending
-      transaction = { ...transaction, gas} as any;
 
       // Submit transaction to the blockchain and wait for it to be mined
-      const receipt = await web3.eth.sendTransaction(transaction);
+      const receipt = await web3.eth.sendTransaction({
+        from: fromAddress,
+        to: destination,
+        value: amount
+      });
+
+      console.log(receipt);
 
       return this.toStringJson(receipt);
     } catch (error) {
@@ -173,9 +165,9 @@ export default class EthereumRpc {
   toStringJson(data: any) {
     // can't serialize a BigInt, so this hack
     return JSON.parse(JSON.stringify(data, (key, value) =>
-        typeof value === 'bigint'
-            ? value.toString()
-            : value // return everything else unchanged
+      typeof value === 'bigint'
+        ? value.toString()
+        : value // return everything else unchanged
     ));
   }
 }
