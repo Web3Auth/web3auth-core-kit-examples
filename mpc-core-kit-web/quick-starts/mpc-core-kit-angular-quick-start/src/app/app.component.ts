@@ -7,7 +7,7 @@ import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import {
   COREKIT_STATUS,
   generateFactorKey,
-  IdTokenLoginParams,
+  JWTLoginParams,
   keyToMnemonic,
   makeEthereumSigner,
   mnemonicToKey,
@@ -141,7 +141,7 @@ export class AppComponent {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      } as IdTokenLoginParams;
+      } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {

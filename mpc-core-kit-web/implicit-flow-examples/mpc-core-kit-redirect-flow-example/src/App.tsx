@@ -121,7 +121,7 @@ function App() {
 
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
-      uiConsole(err);
+      throw err;
     }
   };
   // IMP START - Recover MFA Enabled Account
@@ -442,7 +442,7 @@ function App() {
     <div className="container">
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
-        Web3Auth MPC Core Kit
+          Web3Auth MPC Core Kit
         </a>{" "}
         Redirect Flow Example
       </h1>

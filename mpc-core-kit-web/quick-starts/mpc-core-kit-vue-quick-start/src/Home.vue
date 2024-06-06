@@ -73,7 +73,7 @@ import { ref, onMounted } from "vue";
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
+  JWTLoginParams,
   TssShareType,
   parseToken,
   generateFactorKey,
@@ -202,7 +202,7 @@ export default {
           verifier,
           verifierId: parsedToken.sub,
           idToken,
-        } as IdTokenLoginParams;
+        } as JWTLoginParams;
 
         await coreKitInstance.loginWithJWT(idTokenLoginParams);
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {

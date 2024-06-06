@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
+  JWTLoginParams,
   TssShareType,
   parseToken,
   generateFactorKey,
@@ -24,10 +24,11 @@ import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential, signInWithEmailAndPassword } from "firebase/auth";
+import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -35,7 +36,8 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
-const verifier = "w3a-firebase-demo";
+const verifier = "w3a-sfa-web-google";
+const firebaseVerifier = "w3a-firebase-demo";
 // IMP END - Verifier Creation
 
 const chainConfig = {
@@ -92,38 +94,22 @@ function App() {
     init();
   }, []);
 
-  // IMP START - Auth Provider Login
-  const signInWithGoogle = async (): Promise<UserCredential> => {
-    try {
-      const auth = getAuth(app);
-      const googleProvider = new GoogleAuthProvider();
-      const res = await signInWithPopup(auth, googleProvider);
-      console.log(res);
-      return res;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-  // IMP END - Auth Provider Login
-
-  const login = async () => {
+  const login = async (credentialResponse: CredentialResponse) => {
     try {
       if (!coreKitInstance) {
         throw new Error("initiated to login");
       }
       // IMP START - Auth Provider Login
-      const loginRes = await signInWithGoogle();
-      const idToken = await loginRes.user.getIdToken(true);
+      const idToken = await credentialResponse.credential!;
       const parsedToken = parseToken(idToken);
       // IMP END - Auth Provider Login
 
       // IMP START - Login
       const idTokenLoginParams = {
         verifier,
-        verifierId: parsedToken.sub,
+        verifierId: parsedToken.email,
         idToken,
-      } as IdTokenLoginParams;
+      } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -188,7 +174,7 @@ function App() {
 
       // Use the Web3Auth SFA SDK to generate an account using the Social Factor
       const web3authProvider = await web3authSfa.connect({
-        verifier,
+        verifier: firebaseVerifier,
         verifierId: userInfo.sub,
         idToken,
       });
@@ -427,9 +413,13 @@ function App() {
 
   const unloggedInView = (
     <>
-      <button onClick={login} className="card">
-        Login
-      </button>
+      <GoogleOAuthProvider clientId="519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com">
+        <div className={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
+          <GoogleLogin onSuccess={login} onError={() =>
+            uiConsole("Login Failed")
+          } useOneTap />
+        </div>
+      </GoogleOAuthProvider>
       <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
         <button onClick={() => getDeviceFactor()} className="card">
           Get Device Factor

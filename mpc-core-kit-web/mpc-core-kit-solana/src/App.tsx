@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
   TssShareType,
   parseToken,
   generateFactorKey,
@@ -85,19 +84,21 @@ function App() {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      } as IdTokenLoginParams;
+      };
 
       // Uncomment to test with loginWithOAuth
-      const verifierConfig = {
-        subVerifierDetails: {
-          typeOfLogin: 'google',
-          verifier: 'w3a-google-demo',
-          clientId:
-            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
-        }
-      } as SubVerifierDetailsParams;
+      // const verifierConfig = {
+      //   subVerifierDetails: {
+      //     typeOfLogin: 'google',
+      //     verifier: 'w3a-google-demo',
+      //     clientId:
+      //       '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
+      //   }
+      // } as SubVerifierDetailsParams;
 
-      await coreKitInstance.loginWithOauth(verifierConfig);
+      // await coreKitInstance.loginWithOauth(verifierConfig);
+
+      await coreKitInstance.loginWithJWT(idTokenLoginParams);
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         // Needed for new accounts
