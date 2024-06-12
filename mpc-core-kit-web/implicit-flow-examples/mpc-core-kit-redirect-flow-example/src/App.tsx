@@ -105,7 +105,7 @@ function App() {
         }
       } as SubVerifierDetailsParams;
 
-      await coreKitInstance.loginWithOauth(verifierConfig);
+      await coreKitInstance.loginWithOAuth(verifierConfig);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
