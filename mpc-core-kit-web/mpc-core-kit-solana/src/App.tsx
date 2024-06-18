@@ -225,6 +225,16 @@ function App() {
     uiConsole(address);
   };
 
+  const exportKey = async () => {
+    if (!coreKitInstance) {
+      uiConsole("Provider not initialized yet");
+      return;
+    }
+
+    const key = await coreKitInstance._UNSAFE_exportTssKey();
+    uiConsole(key);
+  }
+
   const getBalance = async () => {
     if (!coreKitInstance) {
       uiConsole("Provider not initialized yet");
@@ -360,6 +370,11 @@ function App() {
         <div>
           <button onClick={criticalResetAccount} className="card">
             [CRITICAL] Reset Account
+          </button>
+        </div>
+        <div>
+          <button onClick={exportKey} className="card">
+            [CRITICAL] Export Key
           </button>
         </div>
         <div>
