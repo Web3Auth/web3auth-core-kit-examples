@@ -11,9 +11,10 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.post('/api/token', async (req, res) => {
 	try {
 		var privateKey = fs.readFileSync('privateKey.pem');
+		const sub = Math.random().toString(36).substring(7);
 		var token = jwt.sign(
 			{
-				sub: "faj2720i2fdG7NsqznOKrthDvq43", // must be unique to each user
+				sub: sub, // must be unique to each user
 			  	name: 'Agrawal Alam Mishra Rawski Bherwani',
 			  	email: 'devrel@web3auth.io',
 			  	aud: 'urn:api-web3auth-io',
