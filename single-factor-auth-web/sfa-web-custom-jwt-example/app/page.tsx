@@ -4,19 +4,12 @@ import "./App.css";
 
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-// Import Single Factor Auth SDK for no redirect flow
 import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 import { useEffect, useState } from "react";
 
-// RPC libraries for blockchain calls
-import RPC from "./evm.web3";
-// import RPC from "./evm.ethers";
-// import RPC from "./evm.viem";
-import Loading from "./Loading";
-
-const verifier = "w3a-jwt-for-sfa-web";
-
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+// Web3Auth Configuration
+const verifier = "test-node-demo";
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainId: "0x1",
@@ -36,7 +29,7 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 // Initialising Web3Auth Single Factor Auth SDK
 const web3authSfa = new Web3Auth({
   clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: WEB3AUTH_NETWORK.TESTNET, // ["cyan", "testnet"]
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET, // ["cyan", "testnet"]
   usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
   privateKeyProvider,
 });
@@ -44,6 +37,7 @@ const web3authSfa = new Web3Auth({
 function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [log, setLog] = useState<string>("");
 
   useEffect(() => {
     const init = async () => {
@@ -69,193 +63,92 @@ function App() {
     return data?.token;
   };
 
-  function uiConsole(...args: any[]): void {
-    const el = document.querySelector("#console>p");
-    if (el) {
-      el.innerHTML = JSON.stringify(args || {}, null, 2);
+  const connectToWeb3Auth = async (idToken: string, verifierId: string) => {
+    try {
+      const provider = await web3authSfa.connect({
+        verifier,
+        verifierId,
+        idToken,
+      });
+      const ethPrivateKey = await provider?.request({ method: "eth_private_key" });
+      const ethAddress = await provider.request({ method: "eth_accounts" });
+      return { verifierId, ethPrivateKey, ethAddress: ethAddress[0] };
+    } catch (error) {
+      console.error(`Error during Web3Auth connection for verifierId ${verifierId}:`, error);
+      return null;
     }
-  }
+  };
+
+  const performConcurrentRegistrations = async (numRegistrations: number) => {
+    const promises = [];
+    for (let i = 0; i < numRegistrations; i++) {
+      const idTokenResult = await getIdToken();
+      const { payload } = decodeToken(idTokenResult);
+      console.log(`payload: ${JSON.stringify(payload)}`);
+      const verifierId = (payload as any).email;
+      console.log(`verifierId: ${verifierId}`);
+      promises.push(connectToWeb3Auth(idTokenResult, verifierId));
+    }
+
+    const results = await Promise.all(promises);
+
+    let logOutput = "";
+    results.forEach((result, index) => {
+      if (result) {
+        logOutput += `Registration ${index + 1}:\nVerifier ID: ${result.verifierId}\nETH PrivateKey: ${result.ethPrivateKey}\nETH Address: ${
+          result.ethAddress
+        }\n\n`;
+      } else {
+        logOutput += `Registration ${index + 1} failed.\n\n`;
+      }
+    });
+
+    const addresses = results.map((result) => result && result.ethAddress).filter(Boolean);
+    const uniqueAddresses = new Set(addresses);
+
+    if (uniqueAddresses.size === 1) {
+      logOutput += "All registrations resulted in the same ETH address.";
+    } else {
+      logOutput += "Registrations resulted in different ETH addresses.";
+    }
+
+    setLog(logOutput);
+  };
 
   const login = async () => {
-    // trying logging in with the Single Factor Auth SDK
     try {
       if (!web3authSfa) {
-        uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+        setLog("Web3Auth Single Factor Auth SDK not initialized yet");
         return;
       }
       setIsLoggingIn(true);
-      const idTokenResult = await getIdToken();
-
-      const { payload } = decodeToken(idTokenResult);
-      await web3authSfa.connect({
-        verifier,
-        verifierId: (payload as any).sub,
-        idToken: idTokenResult,
-      });
+      await performConcurrentRegistrations(5);
       setIsLoggingIn(false);
       setIsLoggedIn(true);
     } catch (err) {
-      // Single Factor Auth SDK throws an error if the user has already enabled MFA
-      // One can use the Web3AuthNoModal SDK to handle this case
       setIsLoggingIn(false);
       console.error(err);
     }
   };
 
-  const getUserInfo = async () => {
-    if (!web3authSfa) {
-      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-      return;
-    }
-    const userInfo = await web3authSfa.getUserInfo();
-    uiConsole(userInfo);
-  };
+  const loginView = (
+    <button onClick={login} className="card">
+      Login
+    </button>
+  );
 
   const logout = async () => {
     if (!web3authSfa) {
-      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+      setLog("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
     await web3authSfa.logout();
     setIsLoggedIn(false);
   };
 
-  const getAccounts = async () => {
-    if (!web3authSfa.provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new RPC(web3authSfa.provider);
-    const userAccount = await rpc.getAccounts();
-    uiConsole(userAccount);
-  };
-
-  const getBalance = async () => {
-    if (!web3authSfa.provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new RPC(web3authSfa.provider);
-    const balance = await rpc.getBalance();
-    uiConsole(balance);
-  };
-
-  const signMessage = async () => {
-    if (!web3authSfa.provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new RPC(web3authSfa.provider);
-    const result = await rpc.signMessage();
-    uiConsole(result);
-  };
-
-  const sendTransaction = async () => {
-    if (!web3authSfa.provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new RPC(web3authSfa.provider);
-    const result = await rpc.signAndSendTransaction();
-    uiConsole(result);
-  };
-
-  const authenticateUser = async () => {
-    try {
-      const userCredential = await web3authSfa.authenticateUser();
-      uiConsole(userCredential);
-    } catch (err) {
-      uiConsole(err);
-    }
-  };
-
-  const addChain = async () => {
-    try {
-      const newChain = {
-        chainId: "0xaa36a7",
-        displayName: "Sepolia Testnet ETH",
-        chainNamespace: CHAIN_NAMESPACES.EIP155,
-        tickerName: "Sepolia Testnet ETH",
-        ticker: "ETH",
-        decimals: 18,
-        rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-        blockExplorerUrl: "https://sepolia.etherscan.io",
-      };
-      await web3authSfa.addChain(newChain);
-      uiConsole("Chain added successfully");
-    } catch (err) {
-      uiConsole(err);
-    }
-  };
-
-  const switchChain = async () => {
-    try {
-      await web3authSfa.switchChain({ chainId: "0xaa36a7" });
-      uiConsole("Chain switched successfully");
-    } catch (err) {
-      uiConsole(err);
-    }
-  };
-
-  const loginView = (
-    <>
-      <div className="flex-container">
-        <div>
-          <button onClick={getUserInfo} className="card">
-            Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={authenticateUser} className="card">
-            Authenticate User
-          </button>
-        </div>
-        <div>
-          <button onClick={getAccounts} className="card">
-            Get Accounts
-          </button>
-        </div>
-        <div>
-          <button onClick={addChain} className="card">
-            Add Chain
-          </button>
-        </div>
-        <div>
-          <button onClick={switchChain} className="card">
-            Switch Chain
-          </button>
-        </div>
-        <div>
-          <button onClick={getBalance} className="card">
-            Get Balance
-          </button>
-        </div>
-        <div>
-          <button onClick={signMessage} className="card">
-            Sign Message
-          </button>
-        </div>
-        <div>
-          <button onClick={sendTransaction} className="card">
-            Send Transaction
-          </button>
-        </div>
-        <div>
-          <button onClick={logout} className="card">
-            Log Out
-          </button>
-        </div>
-      </div>
-
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
-      </div>
-    </>
-  );
-
   const logoutView = (
-    <button onClick={login} className="card">
-      Login
+    <button onClick={logout} className="card">
+      Log Out
     </button>
   );
 
@@ -268,7 +161,11 @@ function App() {
         SFA Next JWT Example
       </h1>
 
-      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (isLoggedIn ? loginView : logoutView) : null}</div>}
+      {isLoggingIn ? <div>Loading...</div> : <div className="grid">{web3authSfa ? (isLoggedIn ? logoutView : loginView) : null}</div>}
+
+      <div id="console" style={{ whiteSpace: "pre-line" }}>
+        <p style={{ whiteSpace: "pre-line" }}>{log}</p>
+      </div>
 
       <footer className="footer">
         <a

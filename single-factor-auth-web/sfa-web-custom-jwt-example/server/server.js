@@ -13,16 +13,16 @@ app.post('/api/token', async (req, res) => {
 		var privateKey = fs.readFileSync('privateKey.pem');
 		var token = jwt.sign(
 			{
-			  sub: "faj2720i2fdG7NsqznOKrthDvq43", // must be unique to each user
-			  name: "Maharshi Mishra",
-			  email: "maharshi@web3auth.io",
-			  aud: "urn:my-resource-server", // -> to be used in Custom Authentication as JWT Field
-			  iss: "https://my-authz-server", // -> to be used in Custom Authentication as JWT Field
-			  iat: Math.floor(Date.now() / 1000),
-			  exp: Math.floor(Date.now() / 1000) + 60 * 60,
+				sub: "faj2720i2fdG7NsqznOKrthDvq43", // must be unique to each user
+			  	name: 'Agrawal Alam Mishra Rawski Bherwani',
+			  	email: 'devrel@web3auth.io',
+			  	aud: 'urn:api-web3auth-io',
+			  	iss: 'https://web3auth.io',
+			  	iat: Math.floor(Date.now() / 1000),
+			  	exp: Math.floor(Date.now() / 1000) + 60 * 60,
 			},
 			privateKey,
-			{ algorithm: "RS256", keyid: "676da9d312c39a429932f543e6c1b7812e4983" } // <-- This has to be present in the JWKS endpoint.
+			{ algorithm: 'RS256', keyid: '46f2304094436dd932ab5e' },
 		);
 		res.status(200).json({ token });
 	} catch (error) {
