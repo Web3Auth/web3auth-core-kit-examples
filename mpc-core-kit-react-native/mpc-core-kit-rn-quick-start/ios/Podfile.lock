@@ -933,7 +933,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
-  - react-native-webview (13.8.4):
+  - react-native-webview (13.10.3):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1105,10 +1105,10 @@ PODS:
     - React-logger (= 0.73.6)
     - React-perflogger (= 0.73.6)
   - RecaptchaInterop (100.0.0)
-  - RNFBApp (19.2.0):
+  - RNFBApp (19.3.0):
     - Firebase/CoreOnly (= 10.24.0)
     - React-Core
-  - RNFBAuth (19.2.0):
+  - RNFBAuth (19.3.0):
     - Firebase/Auth (= 10.24.0)
     - React-Core
     - RNFBApp
@@ -1337,7 +1337,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: d81d930c1b7f4db284e1d721fe7fdc99230ca108
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
-  react-native-webview: 3bfbca2a3ae90e753573e5cc4c64d3ba4b5eec59
+  react-native-webview: af5750ca782633c6c730a015946fb921497b4e7b
   React-nativeconfig: e700ac3ec3d66329076bd2c2787a204411815d43
   React-NativeModulesApple: f7fa541118d195ac850ca2ea460f338152ced167
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
@@ -1359,11 +1359,11 @@ SPEC CHECKSUMS:
   React-utils: a45dd70919baff681d43a4a457e9884ef96b4581
   ReactCommon: e168ee1704806f10f47ee8c7f825b5850b18eaea
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNFBApp: aeac0f8c1c886ed2e38f5ea7e22221353697e920
-  RNFBAuth: 2898b0902f7c0bae35ec708b8e97076503b9aad3
+  RNFBApp: de81f7eb68c1e6107574f2b102b0dee92a9862fa
+  RNFBAuth: 40b9953bc9a8e2e207843e424aa82aa84bf34057
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 805bf71192903b20fc14babe48080582fee65a80
 
-PODFILE CHECKSUM: 4bad70925bacd05d7037d0f60aaa7f110bd11b4e
+PODFILE CHECKSUM: 28f98c2d469c39d31023c62056e6866facfc05b4
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

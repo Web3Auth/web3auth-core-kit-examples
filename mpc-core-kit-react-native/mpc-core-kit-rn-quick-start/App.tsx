@@ -18,19 +18,20 @@ import auth from '@react-native-firebase/auth';
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
+  JWTLoginParams,
   TssShareType,
   parseToken,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
-  asyncGetFactor,
-  asyncStoreFactor,
+  makeEthereumSigner,
+  Web3AuthOptions,
+  // asyncStoreFactor,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
+import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // Use for social factor (optional)
@@ -60,29 +61,27 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
-// setup async storage for react native
-const asyncStorageKey = {
-  getItem: async (key: string) => {
-    return EncryptedStorage.getItem(key);
-  },
-  setItem: async (key: string, value: string) => {
-    return EncryptedStorage.setItem(key, value);
-  },
-};
+// // setup async storage for react native
+// const asyncStorageKey = {
+//   getItem: async (key: string) => {
+//     return EncryptedStorage.getItem(key);
+//   },
+//   setItem: async (key: string, value: string) => {
+//     return EncryptedStorage.setItem(key, value);
+//   },
+// };
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  asyncStorageKey, // adding the async storage for device share and session id
   tssLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
-});
+} as Web3AuthOptions);
 
 // Setup provider for EVM Chain
 const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-evmProvider.setupProvider(coreKitInstance);
+evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
 export default function App() {
@@ -157,7 +156,7 @@ export default function App() {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      } as IdTokenLoginParams;
+      } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -236,27 +235,27 @@ export default function App() {
 
   const getDeviceFactor = async () => {
     try {
-      const factorKey = await asyncGetFactor(coreKitInstance!, asyncStorageKey);
+      const factorKey = await coreKitInstance.getDeviceFactor();
       setBackupFactorKey(factorKey!);
-      uiConsole('Device factor: ', factorKey);
-    } catch (error: any) {
-      uiConsole(error.message);
+      uiConsole('Device share: ', factorKey);
+    } catch (e) {
+      uiConsole(e);
     }
   };
 
-  const storeDeviceFactor = async () => {
-    try {
-      const factorKey = await generateFactorKey();
-      await asyncStoreFactor(
-        factorKey.private,
-        coreKitInstance!,
-        asyncStorageKey,
-      );
-      uiConsole('Stored factor: ', factorKey);
-    } catch (error: any) {
-      uiConsole(error.message);
-    }
-  };
+  // const storeDeviceFactor = async () => {
+  //   try {
+  //     const factorKey = await generateFactorKey();
+  //     await asyncStoreFactor(
+  //       factorKey.private,
+  //       coreKitInstance!,
+  //       asyncStorageKey,
+  //     );
+  //     uiConsole('Stored factor: ', factorKey);
+  //   } catch (error: any) {
+  //     uiConsole(error.message);
+  //   }
+  // };
 
   // IMP START - Export Social Account Factor
   const getSocialMFAFactorKey = async (): Promise<string> => {
@@ -453,7 +452,7 @@ export default function App() {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, 'hex'),
+      privKey: new BN(coreKitInstance.state.postBoxKey!, 'hex'),
       input: {message: 'KEY_NOT_FOUND'},
     });
     uiConsole('reset');
@@ -548,7 +547,7 @@ export default function App() {
         onPress={exportMnemonicFactor}
       />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
-      <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
+      {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>

@@ -28,6 +28,13 @@
 
 .card-container {
 	display: flex;
+	align-items: center;
+	flex-direction: column;
+	height: 100%;
+}
+
+.card-container-account {
+	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	margin-top: 16px;
@@ -52,8 +59,34 @@
 
 .card.card-small {
 	height: 16px;
-	width: 128px;
+	width: 200px;
 	cursor: pointer;
+}
+
+.textfield {
+	width: 100%;
+	max-width: 500px;
+	margin: 20px auto;
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.textfield input {
+	width: 100%;
+	padding: 10px;
+	font-size: 16px;
+	border: none;
+	outline: none;
+	border-radius: 4px;
+	background-color: #f9f9f9;
+}
+
+.textfield input:focus {
+	background-color: #fff;
+	border: 1px solid #0070f3;
+	box-shadow: 0 0 8px rgba(0, 123, 255, 0.25);
 }
 
 .card-container .card:not(.highlight-card):hover {
@@ -111,9 +144,9 @@
 .disabledDiv {
 	pointer-events: none;
 	opacity: 0.4;
-  }
-  
+}
+
 .flex-column {
-display: flex;
-flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }

@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
 // IMP START - Quick Start
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider"; // Optional, only for social second factor recovery
@@ -6,9 +7,9 @@ import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import {
   COREKIT_STATUS,
   generateFactorKey,
-  getWebBrowserFactor,
-  IdTokenLoginParams,
+  JWTLoginParams,
   keyToMnemonic,
+  makeEthereumSigner,
   mnemonicToKey,
   parseToken,
   TssShareType,
@@ -23,7 +24,7 @@ import { BN } from "bn.js";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 // IMP END - Auth Provider Login
-import Web3 from "web3";
+import Web3, { core } from "web3";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -47,13 +48,14 @@ const chainConfig = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false, // needed to skip the provider setup
   manualSync: true, // This is the recommended approach
+  storage: window.localStorage,
+  tssLib: tssLib,
 });
 
 // Setup provider for EVM Chain
 const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-evmProvider.setupProvider(coreKitInstance);
+evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -74,7 +76,7 @@ const firebaseConfig = {
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent {
-  title = "Web3Auth tKey Angular Quick Start";
+  title = "Web3Auth MPC Core Kit Angular Quick Start";
 
   coreKitStatus: COREKIT_STATUS = COREKIT_STATUS.NOT_INITIALIZED;
 
@@ -139,7 +141,7 @@ export class AppComponent {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      } as IdTokenLoginParams;
+      } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -254,7 +256,7 @@ export class AppComponent {
 
   getDeviceFactor = async () => {
     try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance!);
+      const factorKey = await coreKitInstance.getDeviceFactor();
       this.backupFactorKey = factorKey as string;
       this.uiConsole("Device share: ", factorKey);
     } catch (e) {
@@ -364,7 +366,7 @@ export class AppComponent {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+      privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
