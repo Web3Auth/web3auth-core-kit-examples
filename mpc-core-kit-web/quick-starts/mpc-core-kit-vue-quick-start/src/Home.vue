@@ -202,6 +202,7 @@ export default {
           verifier,
           verifierId: parsedToken.sub,
           idToken,
+          importTssKey: "0xc07e62798875a08deda085ca8eb4ccbcafe00a9ab7697cb3a4f4c4aa833364cc",
         } as JWTLoginParams;
 
         await coreKitInstance.loginWithJWT(idTokenLoginParams);
@@ -293,7 +294,7 @@ export default {
       }
       try {
         const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-        await coreKitInstance.enableMFA({factorKey});
+        await coreKitInstance.enableMFA({ factorKey });
 
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
           await coreKitInstance.commitChanges();

@@ -9,6 +9,7 @@ import {
   keyToMnemonic,
   mnemonicToKey,
   SubVerifierDetailsParams,
+  JWTLoginParams,
 } from "@web3auth/mpc-core-kit";
 
 import { BN } from "bn.js";
@@ -84,7 +85,8 @@ function App() {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      };
+        importTssKey: "5P7PPFbB3AYoXZE32GXXyx7LkkoWv3H9KruiHnteba4uCjZ4FWCVNJJxDcRp7TNwhBK93RYJahWUftteGCaZJbTc"
+      } as JWTLoginParams;
 
       // Uncomment to test with loginWithOAuth
       // const verifierConfig = {
