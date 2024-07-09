@@ -7,10 +7,10 @@
 
 import Foundation
 import mpc_core_kit_swift
-import MPCEthereumProvider
+import MpcProviderSwift
 import web3
 import UIKit
-import tkey_mpc_swift
+import tkey
 import Auth0
 import JWTDecode
 
@@ -26,7 +26,9 @@ class MainViewModel: ObservableObject {
     
     private var mpcCoreKit: MpcCoreKit!
     private var ethereumClient: EthereumClient!
+    private var mpcEthereumProvider: MPCEthereumProvider!
     private var webAuth: WebAuth!
+    var userInfo: [String: Any]!
     var alertContent: String = ""
     var loaderContent: String = ""
     
@@ -61,6 +63,8 @@ class MainViewModel: ObservableObject {
                     verifierId: email,
                     idToken: auth0Creds.idToken
                 )
+                
+                userInfo = try mpcCoreKit.getUserInfo()
                 
                 DispatchQueue.main.async {
                     self.isRecoveryRequired = result.requiredFactors > 0
@@ -128,7 +132,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Signing Message")
-                let signature = try mpcCoreKit.signMessage(
+                let signature = try mpcEthereumProvider.signMessage(
                     message: "Welcome to Web3Auth".data(using: .ascii)!
                 )
                 hideLoader()
@@ -162,7 +166,7 @@ class MainViewModel: ObservableObject {
                 let finalTransaction = EthereumTransaction(
                     from: address,
                     to: address,
-                    value: TorusWeb3Utils.toWei(ether: 0.001),
+                    value: 1000000000000000,
                     data: transaction.data,
                     nonce: nonce,
                     gasPrice: gasPrice,
@@ -170,7 +174,7 @@ class MainViewModel: ObservableObject {
                     chainId: Int(self.ethereumClient.getChainId())
                 )
                 
-                let signedTransaction = try mpcCoreKit.sign(
+                let signedTransaction = try mpcEthereumProvider.sign(
                     transaction: finalTransaction
                 )
                 
@@ -279,6 +283,10 @@ class MainViewModel: ObservableObject {
     
     private func login() async throws {
         let pubKey = try await mpcCoreKit.getTssPubKey()
+        let keyDetails = try await mpcCoreKit.getKeyDetails()
+        print(keyDetails.requiredFactors)
+        
+        mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
         
         let fullAddress = try KeyPoint(
             address: pubKey.hexString
@@ -288,8 +296,9 @@ class MainViewModel: ObservableObject {
         let address = KeyUtil.generateAddress(
             from: Data(hex: fullAddress).suffix(64)
         )
+        print(address)
         
-        publicAddress = address.asString()
+        publicAddress = mpcEthereumProvider.address.toChecksumAddress()
         await refreshFactorPubs()
         toggleIsLoggedIn()
     }

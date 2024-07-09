@@ -1,4 +1,5 @@
 {
+  "originHash" : "6eb679ca10e6ba273c0a4c520af3222830fe4d28810a355d4409ece0c2cf4329",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -28,21 +29,12 @@
       }
     },
     {
-      "identity" : "cryptoswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
-      "state" : {
-        "revision" : "c9c3df6ab812de32bae61fc0cd1bf6d45170ebf0",
-        "version" : "1.8.2"
-      }
-    },
-    {
       "identity" : "curvelib.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/curvelib.swift",
       "state" : {
-        "revision" : "7dad3bf1793de263f83406c08c18c9316abf082f",
-        "version" : "0.1.2"
+        "revision" : "9f88bd5e56d1df443a908f7a7e81ae4f4d9170ea",
+        "version" : "1.0.1"
       }
     },
     {
@@ -50,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/customauth-swift-sdk",
       "state" : {
-        "revision" : "bb0c8249b6f0e2866e51e47bebdc801848fae45a",
-        "version" : "9.0.0"
+        "revision" : "60b48acb161fb4341c353c27bc6dd96af76887ff",
+        "version" : "10.0.1"
       }
     },
     {
@@ -59,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "bf2f0759da5c5c80765773b08c2756045edf608f",
-        "version" : "5.2.0"
+        "revision" : "22bfadf7491d77a0bc1953af002cadbd61383e7d",
+        "version" : "6.0.2"
       }
     },
     {
@@ -95,8 +87,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/mpc-core-kit-swift",
       "state" : {
-        "branch" : "fix/get-tss-pub",
-        "revision" : "983109f49fad21438eed5942ff2fd1976362f7f4"
+        "branch" : "main",
+        "revision" : "183f205cb24ff8aa9c6c59bea905f365fe03d34e"
+      }
+    },
+    {
+      "identity" : "mpcproviderswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tkey/MpcProviderSwift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f087b89ee543710fc23b35dc05fa233b1d16b7e1"
       }
     },
     {
@@ -113,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "c89d9205a1ce38cd6c6374b906a9039d9cc03f05",
-        "version" : "3.1.1"
+        "revision" : "20cc7bff065d7fe53164d17e7714a3f17d4cea2a",
+        "version" : "4.0.2"
       }
     },
     {
@@ -131,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "8baa2b8cf55b0a38cb98c412bea1c6597adb78ba",
-        "version" : "4.0.0"
+        "revision" : "73c5066d369c7d2aa1057c56a89b7f1dcdda3270",
+        "version" : "5.0.0"
       }
     },
     {
@@ -248,8 +249,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/tkey-mpc-swift",
       "state" : {
-        "revision" : "0b1020f2fe0c3790bc50aa133bb613ff1b55172f",
-        "version" : "2.1.0"
+        "revision" : "8fe0cc8d5cc2ad5d38bf068bc29f6af7e3146d08",
+        "version" : "3.0.0"
       }
     },
     {
@@ -257,8 +258,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "4c17ef5166c162455d0a37115c033eeff8cb282d",
-        "version" : "8.0.1"
+        "revision" : "ff85c3e96bfa29013309b487875c4d9383e4ac80",
+        "version" : "8.1.1"
       }
     },
     {
@@ -266,17 +267,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/tss-client-swift.git",
       "state" : {
-        "revision" : "9590a1d784177d4679eca62d4dbfe781e9870c40",
-        "version" : "2.0.2"
-      }
-    },
-    {
-      "identity" : "web3-swift-mpc-provider",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/tkey/web3-swift-mpc-provider",
-      "state" : {
-        "branch" : "address-fix",
-        "revision" : "d54f177b934b3190cb310d0c23a34b6cbbbc9910"
+        "revision" : "40246d5e3ff1d2c97d41846576f7a81d58858981",
+        "version" : "4.0.0"
       }
     },
     {
@@ -298,5 +290,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

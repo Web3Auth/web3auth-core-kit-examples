@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
+  JWTLoginParams,
   TssShareType,
   parseToken,
-  getWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
 import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
 import { CHAIN_NAMESPACES } from "@web3auth/base";
@@ -24,9 +24,11 @@ import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential, signInWithEmailAndPassword } from "firebase/auth";
+import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
+import { CredentialResponse, GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -34,7 +36,8 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 // IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
-const verifier = "w3a-firebase-demo";
+const verifier = "w3a-sfa-web-google";
+const firebaseVerifier = "w3a-firebase-demo";
 // IMP END - Verifier Creation
 
 const chainConfig = {
@@ -50,13 +53,14 @@ const chainConfig = {
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  setupProviderOnInit: false, // needed to skip the provider setup
+  storage: window.localStorage,
   manualSync: true, // This is the recommended approach
+  tssLib: tssLib
 });
 
 // Setup provider for EVM Chain
-const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
-evmProvider.setupProvider(coreKitInstance);
+const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
 // IMP START - Auth Provider Login
@@ -90,38 +94,22 @@ function App() {
     init();
   }, []);
 
-  // IMP START - Auth Provider Login
-  const signInWithGoogle = async (): Promise<UserCredential> => {
-    try {
-      const auth = getAuth(app);
-      const googleProvider = new GoogleAuthProvider();
-      const res = await signInWithPopup(auth, googleProvider);
-      console.log(res);
-      return res;
-    } catch (err) {
-      console.error(err);
-      throw err;
-    }
-  };
-  // IMP END - Auth Provider Login
-
-  const login = async () => {
+  const login = async (credentialResponse: CredentialResponse) => {
     try {
       if (!coreKitInstance) {
         throw new Error("initiated to login");
       }
       // IMP START - Auth Provider Login
-      const loginRes = await signInWithGoogle();
-      const idToken = await loginRes.user.getIdToken(true);
+      const idToken = await credentialResponse.credential!;
       const parsedToken = parseToken(idToken);
       // IMP END - Auth Provider Login
 
       // IMP START - Login
       const idTokenLoginParams = {
         verifier,
-        verifierId: parsedToken.sub,
+        verifierId: parsedToken.email,
         idToken,
-      } as IdTokenLoginParams;
+      } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -164,44 +152,44 @@ function App() {
   // IMP END - Recover MFA Enabled Account
 
   // IMP START - Export Social Account Factor
-  const getSocialMFAFactorKey = async (): Promise <string> => {
+  const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
-    // Initialise the Web3Auth SFA SDK
-    // You can do this on the constructor as well for faster experience 
-    const web3authSfa = new Web3AuthSingleFactorAuth({
-      clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
-      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-      usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-    });
-    const privateKeyProvider = new CommonPrivateKeyProvider(({config: {chainConfig}}));
-    await web3authSfa.init(privateKeyProvider);
+      // Initialise the Web3Auth SFA SDK
+      // You can do this on the constructor as well for faster experience 
+      const web3authSfa = new Web3AuthSingleFactorAuth({
+        clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+      });
+      const privateKeyProvider = new CommonPrivateKeyProvider(({ config: { chainConfig } }));
+      await web3authSfa.init(privateKeyProvider);
 
-    // Login using Firebase Email Password
-    const auth = getAuth(app);
-    const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
-      'Testing@123');
-    console.log(res);
-    const idToken = await res.user.getIdToken(true);
-    const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
+        'Testing@123');
+      console.log(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-    // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-    const web3authProvider = await web3authSfa.connect({
-      verifier,
-      verifierId: userInfo.sub,
-      idToken,
-    });
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      const web3authProvider = await web3authSfa.connect({
+        verifier: firebaseVerifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
-    // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-    const factorKey = await web3authProvider!.request({
-      method: "private_key",
-    });
-    uiConsole("Social Factor Key: ", factorKey);
-    setBackupFactorKey(factorKey as string);
-    return factorKey as string;
-  } catch (err) {
-    uiConsole(err);
-    return "";
-  }
+      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+      const factorKey = await web3authProvider!.request({
+        method: "private_key",
+      });
+      uiConsole("Social Factor Key: ", factorKey);
+      setBackupFactorKey(factorKey as string);
+      return factorKey as string;
+    } catch (err) {
+      uiConsole(err);
+      return "";
+    }
   }
   // IMP END - Export Social Account Factor  
 
@@ -213,11 +201,11 @@ function App() {
     try {
       const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
       await coreKitInstance.enableMFA({ factorKey });
-  
+
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
       }
-  
+
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app");
     } catch (e) {
       uiConsole(e);
@@ -234,7 +222,7 @@ function App() {
 
   const getDeviceFactor = async () => {
     try {
-      const factorKey = await getWebBrowserFactor(coreKitInstance!);
+      const factorKey = await coreKitInstance.getDeviceFactor();
       setBackupFactorKey(factorKey!);
       uiConsole("Device share: ", factorKey);
     } catch (e) {
@@ -353,7 +341,7 @@ function App() {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+      privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
       input: { message: "KEY_NOT_FOUND" },
     });
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -425,9 +413,13 @@ function App() {
 
   const unloggedInView = (
     <>
-      <button onClick={login} className="card">
-        Login
-      </button>
+      <GoogleOAuthProvider clientId="519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com">
+        <div className={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
+          <GoogleLogin onSuccess={login} onError={() =>
+            uiConsole("Login Failed")
+          } useOneTap />
+        </div>
+      </GoogleOAuthProvider>
       <div className={coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}>
         <button onClick={() => getDeviceFactor()} className="card">
           Get Device Factor
@@ -447,7 +439,7 @@ function App() {
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-        
+
       </div>
     </>
   );
