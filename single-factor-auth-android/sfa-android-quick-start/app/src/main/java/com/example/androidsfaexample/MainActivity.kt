@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET, "")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         // IMP END - Initialize Web3Auth SFA
 
@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun signOut() {
         publicAddress = ""
+        Firebase.auth.signOut()
         reRender()
     }
 
