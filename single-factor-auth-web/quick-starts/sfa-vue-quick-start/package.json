@@ -9,8 +9,8 @@
   },
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
-    "@web3auth/base": "^8.8.0",
-    "@web3auth/ethereum-provider": "^8.10.2",
+    "@web3auth/base": "^8.6.1",
+    "@web3auth/ethereum-provider": "^8.6.1",
     "@web3auth/single-factor-auth": "^8.0.2",
     "firebase": "^10.4.0",
     "core-js": "^3.26.1",
