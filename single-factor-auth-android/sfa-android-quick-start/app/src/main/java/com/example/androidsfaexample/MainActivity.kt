@@ -20,7 +20,7 @@ import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusKey
-import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 // IMP END - Quick Start
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.MAINNET, "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA")
+        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.MAINNET, "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         // IMP END - Initialize Web3Auth SFA
 
