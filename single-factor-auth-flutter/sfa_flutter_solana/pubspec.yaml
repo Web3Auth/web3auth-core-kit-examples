@@ -36,8 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   get_it: ^7.6.7
-  single_factor_auth_flutter:
-    git: https://github.com/Web3Auth/single-factor-auth-flutter
+  single_factor_auth_flutter: ^3.0.0
   firebase_auth: ^4.17.4
   firebase_core: ^2.25.4
   google_sign_in: ^6.2.1

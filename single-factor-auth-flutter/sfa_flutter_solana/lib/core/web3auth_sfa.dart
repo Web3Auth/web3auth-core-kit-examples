@@ -12,7 +12,10 @@ class Web3AuthSFA {
 
   Future<void> init() async {
     await singleFactAuthFlutter.init(
-      Web3AuthNetwork(network: TorusNetwork.cyan),
+      SFAParams(
+        network: Web3AuthNetwork.cyan,
+        clientid: "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk",
+      ),
     );
   }
 
@@ -30,7 +33,7 @@ class Web3AuthSFA {
   Future<TorusKey> getKey(User user) async {
     try {
       final token = await user.getIdToken(true);
-    
+
       final TorusKey torusKey = await singleFactAuthFlutter.getKey(
         LoginParams(
           verifier: 'w3a-sfa-flutter-google',
