@@ -20,7 +20,7 @@ import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
 import com.web3auth.singlefactorauth.types.TorusKey
-import org.torusresearch.fetchnodedetails.types.TorusNetwork
+import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 // IMP END - Quick Start
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SingleFactorAuthArgs(TorusNetwork.TESTNET)
+        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.MAINNET, "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA")
         singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
         // IMP END - Initialize Web3Auth SFA
 
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             singleFactorAuth.initialize(this.applicationContext)
         sessionResponse.whenComplete { torusKey, error ->
             if (torusKey != null) {
-                publicAddress = torusKey?.publicAddress.toString()
+                publicAddress = torusKey.publicAddress.toString()
                 println("""Private Key: ${torusKey.privateKey?.toString(16)}""".trimIndent())
                 reRender()
             } else {
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "sub = $sub")
                             // IMP START - Verifier Creation
                             loginParams =
-                                LoginParams("web3auth-firebase-examples", "$sub", "$idToken")
+                                LoginParams("w3a-firebase-demo", "$sub", "$idToken")
                             // IMP END - Verifier Creation
                             try {
                                 // IMP START - Get Key
@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun signOut() {
         publicAddress = ""
+        Firebase.auth.signOut()
         reRender()
     }
 
