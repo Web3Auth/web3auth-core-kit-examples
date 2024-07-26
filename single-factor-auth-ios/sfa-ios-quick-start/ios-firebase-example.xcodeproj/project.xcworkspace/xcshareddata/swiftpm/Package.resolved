@@ -1,4 +1,5 @@
 {
+  "originHash" : "59bfc7bae12407049688975fa759649124acdf54cb57fc8a2a4bf55916fb7ff0",
   "pins" : [
     {
       "identity" : "abseil-cpp-swiftpm",
@@ -50,7 +51,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "5f67cd080c26cf38ae91e7fe63e6217c6e401c07",
+        "revision" : "22bfadf7491d77a0bc1953af002cadbd61383e7d",
         "version" : "6.0.2"
       }
     },
@@ -176,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "73c5066d369c7d2aa1057c56a89b7f1dcdda3270",
-        "version" : "5.0.0"
+        "revision" : "4caaaa858950b25ea420dbba79de6b4c58801db4",
+        "version" : "6.0.0"
       }
     },
     {
@@ -307,5 +308,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
