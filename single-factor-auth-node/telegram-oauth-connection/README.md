@@ -18,9 +18,9 @@ npm install
 3. Create a `.env` file in the project root and set the following variables:
 
 ```env
-TELEGRAM_APP_TOKEN=#token from telegram bot (complete) 
-TELEGRAM_APP_NAME=#name from telegram bot
-SERVER_HOST_URL=# get URL from running  ngrok http 5005
+TELEGRAM_BOT_TOKEN= #token from telegram bot (complete) 
+TELEGRAM_BOT_NAME= #name from telegram bot
+SERVER_HOST_URL= # get URL from running  ngrok http 5005
 PRIVATE_KEY_FILE_NAME=privateKey.pem
 WEB3AUTH_VERIFIER_ID=w3a-telegram-oauth-demo #create a verifier at https://dashboard.web3auth.io
 ```
