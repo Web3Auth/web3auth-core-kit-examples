@@ -255,6 +255,7 @@ export default {
           web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
+        
         const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
         await web3authSfa.init(privateKeyProvider);
 

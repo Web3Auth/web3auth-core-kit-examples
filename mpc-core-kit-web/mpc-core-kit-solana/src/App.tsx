@@ -8,7 +8,6 @@ import {
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
-  SubVerifierDetailsParams,
 } from "@web3auth/mpc-core-kit";
 
 import { BN } from "bn.js";
@@ -225,14 +224,18 @@ function App() {
     uiConsole(address);
   };
 
-  const exportKey = async () => {
+  const exportSeed = async () => {
     if (!coreKitInstance) {
       uiConsole("Provider not initialized yet");
       return;
     }
+    try {
 
-    const key = await coreKitInstance._UNSAFE_exportTssKey();
-    uiConsole(key);
+      const key = await coreKitInstance._UNSAFE_exportTssEd25519Seed();
+      uiConsole(key);
+    } catch (e) {
+      uiConsole(e);
+    }
   }
 
   const getBalance = async () => {
@@ -373,8 +376,8 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={exportKey} className="card">
-            [CRITICAL] Export Key
+          <button onClick={exportSeed} className="card">
+            [CRITICAL] Export Seed
           </button>
         </div>
         <div>
