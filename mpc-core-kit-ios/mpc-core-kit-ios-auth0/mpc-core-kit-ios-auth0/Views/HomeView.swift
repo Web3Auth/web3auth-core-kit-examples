@@ -19,7 +19,7 @@ struct HomeView: View {
         NavigationView {
             LoadingView(viewModel: viewModel, content: {
                 Form {
-                    Section(header: Text("Public Address")) {
+                    Section(header: Text("User Info")) {
                         Button(
                             action: {
                                 viewModel.showAlert(message: "Address is copied to clipboard")
@@ -28,7 +28,15 @@ struct HomeView: View {
                                 Text(viewModel.publicAddress)
                             })
                         
+                        Button(
+                            action: {
+                                viewModel.showAlert(message: viewModel.userInfo.debugDescription)
+                            }, label: {
+                                Text("View User info")
+                            })
+                        
                     }
+                    
                     
                     Section(header: Text("Chain Interactions")) {
                         Button(

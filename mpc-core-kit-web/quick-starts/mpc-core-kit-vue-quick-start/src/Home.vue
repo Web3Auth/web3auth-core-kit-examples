@@ -2,7 +2,8 @@
 <template>
   <div id="app">
     <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer"> Web3Auth MPC Core Kit </a>
+      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer"> Web3Auth MPC Core
+        Kit </a>
       Vue.js Quick Start
     </h2>
 
@@ -58,11 +59,8 @@
     </div>
 
     <footer class="footer">
-      <a
-        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
+        target="_blank" rel="noopener noreferrer">
         Source code
       </a>
     </footer>
@@ -75,15 +73,16 @@ import { ref, onMounted } from "vue";
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
+  JWTLoginParams,
   TssShareType,
   parseToken,
-  getWebBrowserFactor,
   generateFactorKey,
   COREKIT_STATUS,
   keyToMnemonic,
   mnemonicToKey,
+  makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // Optional, only for social second factor recovery
@@ -130,13 +129,15 @@ export default {
     const coreKitInstance = new Web3AuthMPCCoreKit({
       web3AuthClientId,
       web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-      setupProviderOnInit: false, // needed to skip the provider setup
       manualSync: true,
+      storage: window.localStorage,
+      tssLib,
     });
 
     // Setup provider for EVM Chain
     const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-    evmProvider.setupProvider(coreKitInstance);
+    evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
+
     // IMP END - SDK Initialization
 
     // IMP START - Auth Provider Login
@@ -201,7 +202,7 @@ export default {
           verifier,
           verifierId: parsedToken.sub,
           idToken,
-        } as IdTokenLoginParams;
+        } as JWTLoginParams;
 
         await coreKitInstance.loginWithJWT(idTokenLoginParams);
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -254,6 +255,7 @@ export default {
           web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
+        
         const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
         await web3authSfa.init(privateKeyProvider);
 
@@ -292,7 +294,7 @@ export default {
       }
       try {
         const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-        await coreKitInstance.enableMFA({ factorKey });
+        await coreKitInstance.enableMFA({factorKey});
 
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
           await coreKitInstance.commitChanges();
@@ -316,7 +318,7 @@ export default {
 
     const getDeviceFactor = async () => {
       try {
-        const factorKey = await getWebBrowserFactor(coreKitInstance!);
+        const factorKey = await coreKitInstance.getDeviceFactor();
         backupFactorKey.value = factorKey!;
         uiConsole("Device share: ", factorKey);
       } catch (e) {
@@ -435,7 +437,7 @@ export default {
       //   throw new Error("reset account is not recommended on mainnet");
       // }
       await coreKitInstance.tKey.storageLayer.setMetadata({
-        privKey: new BN(coreKitInstance.metadataKey!, "hex"),
+        privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
         input: { message: "KEY_NOT_FOUND" },
       });
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -528,7 +530,7 @@ a {
   flex-flow: row wrap;
 }
 
-.flex-container > div {
+.flex-container>div {
   width: 100px;
   margin: 10px;
   text-align: center;

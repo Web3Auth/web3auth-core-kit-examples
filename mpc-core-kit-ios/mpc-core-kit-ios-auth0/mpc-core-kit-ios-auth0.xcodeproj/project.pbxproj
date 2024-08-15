@@ -15,17 +15,18 @@
 		281ED7222BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7212BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift */; };
 		281ED7242BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7232BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift */; };
 		281ED7342BE0E00A002E990C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7332BE0E00A002E990C /* MainViewModel.swift */; };
-		281ED7372BE0E106002E990C /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7362BE0E106002E990C /* mpc-core-kit-swift */; };
-		281ED73A2BE0E227002E990C /* MPCEthereumProvider in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7392BE0E227002E990C /* MPCEthereumProvider */; };
 		281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73C2BE0E5AF002E990C /* Auth0 */; };
 		281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73F2BE0E5DD002E990C /* web3.swift */; };
 		281ED7422BE0E77B002E990C /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7412BE0E77B002E990C /* EthereumClient.swift */; };
 		281ED7442BE0E795002E990C /* UserStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7432BE0E795002E990C /* UserStorage.swift */; };
-		281ED7482BE0EAE1002E990C /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED7472BE0EAE1002E990C /* JWTDecode */; };
 		281ED74A2BE0EC3B002E990C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7492BE0EC3B002E990C /* LoginView.swift */; };
 		281ED74C2BE0EC77002E990C /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74B2BE0EC77002E990C /* RecoveryView.swift */; };
 		281ED74E2BE0EC8F002E990C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74D2BE0EC8F002E990C /* HomeView.swift */; };
 		282411192BE0F5590097006B /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282411182BE0F5590097006B /* LoadingView.swift */; };
+		2847121A2BFB825A0088411D /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712192BFB825A0088411D /* mpc-core-kit-swift */; };
+		2847121D2BFB826A0088411D /* MpcProviderSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2847121C2BFB826A0088411D /* MpcProviderSwift */; };
+		2847121F2BFB83250088411D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2847121E2BFB83250088411D /* Extensions.swift */; };
+		28BE823B2BF37114008A2B0C /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 28BE823A2BF37114008A2B0C /* JWTDecode */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		281ED74B2BE0EC77002E990C /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
 		281ED74D2BE0EC8F002E990C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		282411182BE0F5590097006B /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		2847121E2BFB83250088411D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,10 +74,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */,
-				281ED7372BE0E106002E990C /* mpc-core-kit-swift in Frameworks */,
 				281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */,
-				281ED7482BE0EAE1002E990C /* JWTDecode in Frameworks */,
-				281ED73A2BE0E227002E990C /* MPCEthereumProvider in Frameworks */,
+				28BE823B2BF37114008A2B0C /* JWTDecode in Frameworks */,
+				2847121A2BFB825A0088411D /* mpc-core-kit-swift in Frameworks */,
+				2847121D2BFB826A0088411D /* MpcProviderSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +170,7 @@
 			children = (
 				281ED7412BE0E77B002E990C /* EthereumClient.swift */,
 				281ED7432BE0E795002E990C /* UserStorage.swift */,
+				2847121E2BFB83250088411D /* Extensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -201,11 +204,11 @@
 			);
 			name = "mpc-core-kit-ios-auth0";
 			packageProductDependencies = (
-				281ED7362BE0E106002E990C /* mpc-core-kit-swift */,
-				281ED7392BE0E227002E990C /* MPCEthereumProvider */,
 				281ED73C2BE0E5AF002E990C /* Auth0 */,
 				281ED73F2BE0E5DD002E990C /* web3.swift */,
-				281ED7472BE0EAE1002E990C /* JWTDecode */,
+				28BE823A2BF37114008A2B0C /* JWTDecode */,
+				284712192BFB825A0088411D /* mpc-core-kit-swift */,
+				2847121C2BFB826A0088411D /* MpcProviderSwift */,
 			);
 			productName = "mpc-core-kit-ios-auth0";
 			productReference = 281ED7032BE0DFB9002E990C /* mpc-core-kit-ios-auth0.app */;
@@ -280,11 +283,11 @@
 			);
 			mainGroup = 281ED6FA2BE0DFB9002E990C;
 			packageReferences = (
-				281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
-				281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */,
 				281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */,
 				281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */,
-				281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */,
+				28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */,
+				284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
+				2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */,
 			);
 			productRefGroup = 281ED7042BE0DFB9002E990C /* Products */;
 			projectDirPath = "";
@@ -333,6 +336,7 @@
 				281ED74C2BE0EC77002E990C /* RecoveryView.swift in Sources */,
 				281ED7422BE0E77B002E990C /* EthereumClient.swift in Sources */,
 				281ED7072BE0DFB9002E990C /* mpc_core_kit_ios_auth0App.swift in Sources */,
+				2847121F2BFB83250088411D /* Extensions.swift in Sources */,
 				281ED74E2BE0EC8F002E990C /* HomeView.swift in Sources */,
 				281ED7342BE0E00A002E990C /* MainViewModel.swift in Sources */,
 				281ED7442BE0E795002E990C /* UserStorage.swift in Sources */,
@@ -670,22 +674,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
-			requirement = {
-				branch = "fix/get-tss-pub";
-				kind = branch;
-			};
-		};
-		281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/web3-swift-mpc-provider";
-			requirement = {
-				branch = "address-fix";
-				kind = branch;
-			};
-		};
 		281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/Auth0.swift";
@@ -702,7 +690,23 @@
 				minimumVersion = 1.6.1;
 			};
 		};
-		281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */ = {
+		284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/MpcProviderSwift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/JWTDecode.swift";
 			requirement = {
@@ -713,16 +717,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		281ED7362BE0E106002E990C /* mpc-core-kit-swift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 281ED7352BE0E106002E990C /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
-			productName = "mpc-core-kit-swift";
-		};
-		281ED7392BE0E227002E990C /* MPCEthereumProvider */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 281ED7382BE0E227002E990C /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */;
-			productName = MPCEthereumProvider;
-		};
 		281ED73C2BE0E5AF002E990C /* Auth0 */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */;
@@ -733,9 +727,19 @@
 			package = 281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */;
 			productName = web3.swift;
 		};
-		281ED7472BE0EAE1002E990C /* JWTDecode */ = {
+		284712192BFB825A0088411D /* mpc-core-kit-swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 281ED7462BE0EAE1002E990C /* XCRemoteSwiftPackageReference "JWTDecode" */;
+			package = 284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
+			productName = "mpc-core-kit-swift";
+		};
+		2847121C2BFB826A0088411D /* MpcProviderSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */;
+			productName = MpcProviderSwift;
+		};
+		28BE823A2BF37114008A2B0C /* JWTDecode */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */;
 			productName = JWTDecode;
 		};
 /* End XCSwiftPackageProductDependency section */
