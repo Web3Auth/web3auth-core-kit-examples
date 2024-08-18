@@ -1,39 +1,35 @@
-# Telegram OAuth Server for Web3Auth
+# Telegram OAuth Server for Web3Auth SFA Node
 
-This project is a demonstration of integrating Web3Auth with Telegram OAuth for authentication. Web3Auth is a decentralized authentication protocol that allows users to sign in to applications using their Ethereum wallets. In this demo, Telegram OAuth is used to authenticate users, and Web3Auth is employed to provide Ethereum private key access.
+### Download Manually
 
-## Getting Started
-
-Follow these steps to set up and run the project:
-
-1. Clone the repository:
-`git clone https://github.com/web3auth/web3auth-core-kit-examples`
-
-2. Install dependencies:
+```bash
+npx degit Web3Auth/web3auth-core-kit-examples/single-factor-auth-node/sfa-telegram-oauth-server w3a-sfa-telegram-oauth-server
 ```
-cd single-factor-auth-node/telegram-oauth-connection
+
+### Setup
+
+1. Create a `.env` file in the project root and set the following variables:
+
+```bash
+TELEGRAM_BOT_NAME="" # e.g. @your_bot_name
+TELEGRAM_BOT_TOKEN="" # e.g. 1234567890:ABCDEF
+SERVER_URL="" # e.g. http://localhost:3000
+CLIENT_URL="" # e.g. http://localhost:5173
+JWT_KEY_ID="" # e.g. your_key_id
+W3A_VERIFIER_NAME="" # e.g. your_verifier_name
+```
+
+2. Run the following commands:
+
+```bash
 npm install
+npm start
+# it will start the server at http://localhost:3000
+
+# use ngrok to expose the server to the internet
+# ngrok http 3000
+# copy the ngrok url and update the SERVER_URL in the .env file
+# also update the telegram bot domain to the ngrok url
 ```
 
-3. Create a `.env` file in the project root and set the following variables:
-
-```env
-TELEGRAM_BOT_TOKEN= #token from telegram bot (complete) 
-TELEGRAM_BOT_NAME= #name from telegram bot
-SERVER_HOST_URL= # get URL from running  ngrok http 5005
-PRIVATE_KEY_FILE_NAME=privateKey.pem
-WEB3AUTH_VERIFIER_ID=w3a-telegram-oauth-demo #create a verifier at https://dashboard.web3auth.io
-```
-
-4. Run the application in 2 consoles:
-
-   ```bash
-   ngrok http 5005 
-   ```
-
-   ```bash
-   npm start
-   ```
-4. Add the URL from ngrok to the `.env` file as `SERVER_HOST_URL` and go to the Telegram Father Bot and send `/setdomain` and set the URL from ngrok from the your bot.
-
-5. Open your browser and navigate to `http://<URL>/telegram/login` to initiate the Telegram OAuth flow. 
+3. Open your browser and navigate to `http://<URL>/login` to initiate the Telegram OAuth flow. 
