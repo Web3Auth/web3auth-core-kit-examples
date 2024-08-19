@@ -391,6 +391,13 @@ function App() {
         >
           Source code
         </a>
+        <a
+          href="https://stakely.io/faucet/near-near"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Testnet faucet
+        </a>
       </footer>
     </div>
   );
