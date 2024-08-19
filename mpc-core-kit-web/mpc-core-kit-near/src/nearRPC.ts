@@ -36,7 +36,7 @@ export default class NearRPC {
 
     async getBalance(): Promise<string> {
         try {
-            let state = await this.jsonRPCProvider.query<AccountView>({
+            const state = await this.jsonRPCProvider.query<AccountView>({
                 request_type: 'view_account',
                 account_id: this.getAccount(),
                 finality: 'optimistic'
@@ -44,13 +44,16 @@ export default class NearRPC {
 
             return state.amount;
         } catch (error) {
+            if (error.type === "AccountDoesNotExist") {
+                return "Account has no funds and it does not exist. Please add funds to the account.";
+            }
             return error as string;
         }
     }
 
     async getAccessKey(): Promise<AccessKeyViewRaw> {
         try {
-            let acessKey = await this.jsonRPCProvider.query<AccessKeyViewRaw>({
+            const acessKey = await this.jsonRPCProvider.query<AccessKeyViewRaw>({
                 request_type: "view_access_key",
                 account_id: this.getAccount(),
                 finality: 'optimistic',
