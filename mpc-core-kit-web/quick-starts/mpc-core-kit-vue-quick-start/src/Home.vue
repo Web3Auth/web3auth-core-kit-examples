@@ -44,6 +44,9 @@
           <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
         </div>
         <div>
+          <button class="card" @click="sendTransaction" style="cursor: pointer">Send Transaction</button>
+        </div>
+        <div>
           <button class="card" @click="logout" style="cursor: pointer">Logout</button>
         </div>
         <div>
@@ -95,6 +98,7 @@ import { BN } from "bn.js";
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
+import { sendTransaction } from "web3/lib/commonjs/eth.exports";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -118,10 +122,10 @@ export default {
 
     const chainConfig = {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: "0x1", // Please use 0x1 for Mainnet
-      rpcTarget: "https://rpc.ankr.com/eth",
-      displayName: "Ethereum Mainnet",
-      blockExplorer: "https://etherscan.io/",
+      chainId: "0xaa36a7", // Please use 0x1 for Mainnet
+      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+      displayName: "Ethereum Sepolia Testnet",
+      blockExplorer: "https://sepolia.etherscan.io",
       ticker: "ETH",
       tickerName: "Ethereum",
     };
@@ -255,7 +259,7 @@ export default {
           web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
-        
+
         const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
         await web3authSfa.init(privateKeyProvider);
 
@@ -294,7 +298,7 @@ export default {
       }
       try {
         const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-        await coreKitInstance.enableMFA({factorKey});
+        await coreKitInstance.enableMFA({ factorKey });
 
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
           await coreKitInstance.commitChanges();
@@ -424,6 +428,30 @@ export default {
       );
       uiConsole(signedMessage);
     };
+
+    const sendTransaction = async () => {
+      if (!coreKitInstance) {
+        uiConsole("provider not initialized yet");
+        return;
+      }
+      uiConsole("Sending transaction...");
+      const web3 = new Web3(evmProvider);
+
+      // Get user's Ethereum public address
+      const fromAddress = (await web3.eth.getAccounts())[0];
+
+      // Convert 0.0001 ether to wei
+      const amount = web3.utils.toWei("0.0001", "wei");
+
+      // Send the transaction
+      const receipt = await web3.eth.sendTransaction({
+        from: fromAddress,
+        to: fromAddress,
+        value: amount,
+      });
+
+      uiConsole(receipt.transactionHash);
+    };
     // IMP END - Blockchain Calls
 
     const criticalResetAccount = async (): Promise<void> => {
@@ -469,6 +497,7 @@ export default {
       getAccounts,
       getBalance,
       signMessage,
+      sendTransaction,
       criticalResetAccount,
       keyDetails,
       enableMFA,

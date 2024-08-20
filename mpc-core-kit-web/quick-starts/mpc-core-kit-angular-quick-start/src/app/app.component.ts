@@ -37,10 +37,10 @@ const verifier = "w3a-firebase-demo";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7", // Please use 0x1 for Mainnet
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorer: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
 };
@@ -352,6 +352,30 @@ export class AppComponent {
       "test password!" // configure your own password here.
     );
     this.uiConsole(signedMessage);
+  };
+
+  sendTransaction = async () => {
+    if (!coreKitInstance) {
+      this.uiConsole("provider not initialized yet");
+      return;
+    }
+    this.uiConsole("Sending transaction...");
+    const web3 = new Web3(evmProvider);
+
+    // Get user's Ethereum public address
+    const fromAddress = (await web3.eth.getAccounts())[0];
+
+    // Convert 0.0001 ether to wei
+    const amount = web3.utils.toWei("0.0001", "wei");
+
+    // Send the transaction
+    const receipt = await web3.eth.sendTransaction({
+      from: fromAddress,
+      to: fromAddress,
+      value: amount,
+    });
+
+    this.uiConsole(receipt.transactionHash);
   };
   // IMP END - Blockchain Calls
 

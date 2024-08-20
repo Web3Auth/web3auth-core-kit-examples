@@ -24,7 +24,7 @@ import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
@@ -42,10 +42,10 @@ const firebaseVerifier = "w3a-firebase-demo";
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7", // Please use 0x1 for Mainnet
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorer: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
 };
@@ -327,6 +327,30 @@ function App() {
     );
     uiConsole(signedMessage);
   };
+
+  const sendTransaction = async () => {
+    if (!coreKitInstance) {
+      uiConsole("provider not initialized yet");
+      return;
+    }
+    uiConsole("Sending transaction...");
+    const web3 = new Web3(evmProvider);
+
+    // Get user's Ethereum public address
+    const fromAddress = (await web3.eth.getAccounts())[0];
+
+    // Convert 0.0001 ether to wei
+    const amount = web3.utils.toWei("0.0001", "wei");
+
+    // Send the transaction
+    const receipt = await web3.eth.sendTransaction({
+      from: fromAddress,
+      to: fromAddress,
+      value: amount,
+    });
+
+    uiConsole(receipt.transactionHash);
+  };
   // IMP END - Blockchain Calls
 
   const criticalResetAccount = async (): Promise<void> => {
@@ -390,6 +414,11 @@ function App() {
         <div>
           <button onClick={signMessage} className="card">
             Sign Message
+          </button>
+        </div>
+        <div>
+          <button onClick={sendTransaction} className="card">
+            Send Transaction
           </button>
         </div>
         <div>
