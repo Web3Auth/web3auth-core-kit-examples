@@ -12,6 +12,8 @@
 	"main": "index.js",
 	"name": "sfa-web-telegram-server",
 	"scripts": {
+		"lint": "eslint",
+		"start": "node index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"version": "1.0.0"
