@@ -3,11 +3,12 @@ import "@farcaster/auth-kit/styles.css";
 
 import { AuthKitProvider, SignInButton, StatusAPIResponse } from "@farcaster/auth-kit";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
-import { COREKIT_STATUS, parseToken, WEB3AUTH_NETWORK, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
+import { COREKIT_STATUS, makeEthereumSigner, parseToken, WEB3AUTH_NETWORK, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
 import { ethers } from "ethers";
 import Head from "next/head";
 import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
+import { tssLib } from "@toruslabs/tss-dkls-lib";
 
 const config = {
   relay: "https://relay.farcaster.xyz",
@@ -52,8 +53,9 @@ function Content() {
         const coreKitInstance = new Web3AuthMPCCoreKit({
           web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // Your Web3Auth Client ID
           web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET, // Web3Auth Network
-          setupProviderOnInit: false, // if needed to skip the provider setup
+          storage: window.localStorage,
           manualSync: true, // This is the recommended approach since it allows you to control the sync process
+          tssLib: tssLib,
         });
         setWeb3Auth(coreKitInstance);
 
@@ -70,7 +72,7 @@ function Content() {
             },
           },
         });
-        evmProvider.setupProvider(coreKitInstance);
+        evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
         setProvider(evmProvider);
         await coreKitInstance.init();
 
