@@ -1,12 +1,13 @@
 PODS:
+  - AnyCodable-FlightSchool (0.6.7)
   - AppAuth (1.6.2):
     - AppAuth/Core (= 1.6.2)
     - AppAuth/ExternalUserAgent (= 1.6.2)
   - AppAuth/Core (1.6.2)
   - AppAuth/ExternalUserAgent (1.6.2):
     - AppAuth/Core
-  - BigInt (5.0.0)
-  - CryptoSwift (1.5.1)
+  - BigInt (5.2.0)
+  - curvelib.swift (1.0.1)
   - Firebase/Auth (10.20.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 10.20.0)
@@ -34,7 +35,6 @@ PODS:
   - FirebaseCoreInternal (10.21.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - Flutter (1.0.0)
-  - GenericJSON (2.0.2)
   - google_sign_in_ios (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -65,28 +65,23 @@ PODS:
   - KeychainSwift (20.0.0)
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
-  - secp256k1.swift (0.1.4)
   - single_factor_auth_flutter (0.0.1):
     - Flutter
-    - SingleFactorAuth (~> 2.0.3)
-  - SingleFactorAuth (2.0.3):
-    - Torus-fetchNodeDetails (~> 4.0.1)
-    - Torus-utils (~> 5.0.0)
-    - TorusSessionManager (~> 2.0.0)
-  - Torus-fetchNodeDetails (4.0.1):
-    - web3.swift (~> 0.9.3)
-  - Torus-utils (5.0.0):
-    - CryptoSwift (~> 1.5.1)
-    - secp256k1.swift (~> 0.1.4)
-    - Torus-fetchNodeDetails (~> 4.0.0)
-  - TorusSessionManager (2.0.0):
-    - CryptoSwift (~> 1.5.1)
+    - SingleFactorAuth (~> 5.0.0)
+  - SingleFactorAuth (5.0.0):
+    - curvelib.swift (~> 1.0.1)
+    - Torus-fetchNodeDetails (~> 6.0.1)
+    - Torus-utils (~> 8.1.0)
+    - TorusSessionManager (~> 4.0.2)
+  - Torus-fetchNodeDetails (6.0.3):
+    - BigInt (~> 5.2.0)
+  - Torus-utils (8.1.0):
+    - AnyCodable-FlightSchool (~> 0.6.0)
+    - curvelib.swift (~> 1.0.1)
+    - Torus-fetchNodeDetails (~> 6.0.1)
+  - TorusSessionManager (4.0.2):
+    - curvelib.swift (~> 1.0.1)
     - KeychainSwift (~> 20.0.0)
-    - web3.swift (~> 0.9.3)
-  - web3.swift (0.9.3):
-    - BigInt (~> 5.0.0)
-    - GenericJSON (~> 2.0)
-    - secp256k1.swift (~> 0.1)
 
 DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -97,15 +92,15 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AnyCodable-FlightSchool
     - AppAuth
     - BigInt
-    - CryptoSwift
+    - curvelib.swift
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreInternal
-    - GenericJSON
     - GoogleSignIn
     - GoogleUtilities
     - GTMAppAuth
@@ -113,12 +108,10 @@ SPEC REPOS:
     - KeychainSwift
     - PromisesObjC
     - RecaptchaInterop
-    - secp256k1.swift
     - SingleFactorAuth
     - Torus-fetchNodeDetails
     - Torus-utils
     - TorusSessionManager
-    - web3.swift
 
 EXTERNAL SOURCES:
   firebase_auth:
@@ -133,9 +126,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/single_factor_auth_flutter/ios"
 
 SPEC CHECKSUMS:
+  AnyCodable-FlightSchool: 261cbe76757802b17d471b9059b21e6fa5edf57b
   AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
-  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
-  CryptoSwift: c4f2debceb38bf44c80659afe009f71e23e4a082
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  curvelib.swift: d0746ae82bee34016c06da3567a97e493b3c979f
   Firebase: 10c8cb12fb7ad2ae0c09ffc86cd9c1ab392a0031
   firebase_auth: 29a10d4129d53aa690c10dbd838ed1a059ef0c9b
   firebase_core: a46c312d8bae4defa3d009b2aa7b5b413aeb394e
@@ -144,7 +138,6 @@ SPEC CHECKSUMS:
   FirebaseCore: 28045c1560a2600d284b9c45a904fe322dc890b6
   FirebaseCoreInternal: 43c1788eaeee9d1b97caaa751af567ce11010d00
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  GenericJSON: 79a840eeb77030962e8cf02a62d36bd413b67626
   google_sign_in_ios: 989eea5abe94af62050782714daf920be883d4a2
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
@@ -153,13 +146,11 @@ SPEC CHECKSUMS:
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
-  single_factor_auth_flutter: dc31ec16f89101af2d7be3a0f4f807889dc96726
-  SingleFactorAuth: 9aa82543902e2a4de5a0a456a294eed5d3816d9d
-  Torus-fetchNodeDetails: a92d02f1bfe91bd61c90f92d64df023babaa5bfa
-  Torus-utils: 9ac46eb76935e328a6628108c94b66e1af1e7fa7
-  TorusSessionManager: dcd47b52067fe32a8289f970580299783d58e286
-  web3.swift: c6c3bf1f853743f8a7a58d263e5f7e46545e22c7
+  single_factor_auth_flutter: 32a02b25ceb8405f3cedce4b675cfb906b8cb099
+  SingleFactorAuth: ee61a0969705e016871d0fb1fa65dd4a22e08316
+  Torus-fetchNodeDetails: 6c349f47cbca36a4b3f276fe26d03c1b39b20949
+  Torus-utils: 3ec4dba5ea50935ab129077adef4207af5a00225
+  TorusSessionManager: 05a1a8f3265d0949a1a342c4ba2c52882445b614
 
 PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38
 
