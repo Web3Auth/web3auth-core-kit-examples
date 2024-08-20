@@ -10,7 +10,7 @@
 	"keywords": [],
 	"license": "ISC",
 	"main": "index.js",
-	"name": "sfa-web-telegram-server",
+	"name": "sfa-web-ton-telegram-server",
 	"scripts": {
 		"lint": "eslint",
 		"start": "node index.js",
