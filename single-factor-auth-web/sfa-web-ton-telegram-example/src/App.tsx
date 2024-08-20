@@ -10,6 +10,7 @@ import TonRPC from "./tonRpc";
 
 import Loading from "./Loading";
 import "./App.css";
+import { get } from "http";
 
 const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-telegram-demo";
 
@@ -63,7 +64,7 @@ function App() {
   }, []);
 
   const login = async () => {
-    const URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
+    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
     window.location.href = `${URL}/login`;
   };
 
@@ -147,12 +148,22 @@ function App() {
   };
 
   const authenticateUser = async () => {
-    try {
-      const userCredential = await web3authSfa.authenticateUser();
-      uiConsole(userCredential);
-    } catch (err) {
-      uiConsole(err);
+    // try {
+    const userCredential = await web3authSfa.authenticateUser();
+    uiConsole(userCredential);
+    // } catch (err) {
+    //   uiConsole(err);
+    // }
+  };
+
+  const getPrivateKey = async () => {
+    if (!web3authSfa.provider) {
+      uiConsole("No provider found");
+      return "";
     }
+    const rpc = new TonRPC(web3authSfa.provider);
+    const privateKey = await rpc.getPrivateKey();
+    return privateKey;
   };
 
   function uiConsole(...args: any[]): void {
@@ -193,6 +204,11 @@ function App() {
         <div>
           <button onClick={sendTransaction} className="card">
             Send Transaction
+          </button>
+        </div>
+        <div>
+          <button onClick={getPrivateKey} className="card">
+            Get Private Key
           </button>
         </div>
         <div>
