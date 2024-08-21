@@ -73,22 +73,14 @@ const sendTransaction = async (provider: IProvider): Promise<any> => {
     const web3 = new Web3(provider as any);
 
     // Get user's Ethereum public address
-    const address = (await web3.eth.getAccounts())[0];
+    const fromAddress = (await web3.eth.getAccounts())[0];
 
-    // Get user's balance in ether
-    const balance = web3.utils.fromWei(
-      await web3.eth.getBalance(address), // Balance is in wei
-      "ether"
-    );
-
-    if (balance === "0") {
-      throw new Error("Insufficient balance, please fund your account to use this");
-    }
+    const destination = fromAddress;
 
     const amount = web3.utils.toWei("0.001", "ether"); // Convert 1 ether to wei
     let transaction = {
-      from: address,
-      to: address,
+      from: fromAddress,
+      to: destination,
       data: "0x",
       value: amount,
     };
