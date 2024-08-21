@@ -102,7 +102,6 @@
       }
     }
   },
-  "defaultProject": "angular-web3auth-modal",
   "cli": {
     "analytics": false
   }
