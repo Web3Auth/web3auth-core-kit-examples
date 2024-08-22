@@ -14,6 +14,9 @@ const app = express();
 const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, SERVER_URL, CLIENT_URL, JWT_KEY_ID } = process.env;
 const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "utf8");
 
+// Extract the bot ID from the token
+const TELEGRAM_BOT_ID = TELEGRAM_BOT_TOKEN.split(":")[0];
+
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
@@ -49,7 +52,7 @@ app.get("/login", (req, res) => {
   const state = Math.random().toString(36).substring(2); // Create a random state value
   req.session.state = state; // Store the state in session
 
-  const telegramLoginUrl = `https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_NAME}&origin=${SERVER_URL}&redirect_url=${SERVER_URL}/callback&state=${state}`;
+  const telegramLoginUrl = `https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_ID}&origin=${SERVER_URL}&redirect_url=${SERVER_URL}/callback&state=${state}`;
   res.redirect(telegramLoginUrl);
 });
 
