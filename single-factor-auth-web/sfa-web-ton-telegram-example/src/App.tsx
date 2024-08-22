@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
+import WebApp from "@twa-dev/sdk";
 
 // TonRPC libraries for blockchain calls
 import TonRPC from "./tonRpc";
@@ -46,12 +47,9 @@ function App() {
         await web3auth.init(); // Ensure init is called before using web3auth
         setWeb3authSfa(web3auth);
 
-        // Check if there is a token in URL params and attempt login
-        const params = new URLSearchParams(window.location.search);
-        const jwtToken = params.get("token");
-        if (jwtToken) {
-          await loginWithWeb3Auth(jwtToken, web3auth);
-          window.history.replaceState({}, document.title, window.location.pathname); // Clean up URL
+        // Check if user is already authenticated with Telegram
+        if (WebApp.initDataUnsafe.user) {
+          await loginWithTelegram(web3auth);
         }
       } catch (error) {
         console.error("Web3Auth initialization failed:", error);
@@ -60,6 +58,34 @@ function App() {
 
     initWeb3Auth();
   }, []);
+
+  const loginWithTelegram = async (web3auth: Web3Auth) => {
+    try {
+      setIsLoggingIn(true);
+      const userData = WebApp.initDataUnsafe.user;
+      if (userData) {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            telegramInitData: WebApp.initData,
+            user: userData,
+          }),
+        });
+        if (!response.ok) {
+          throw new Error("Authentication failed");
+        }
+        const { token } = await response.json();
+        await loginWithWeb3Auth(token, web3auth);
+      }
+    } catch (error) {
+      console.error("Telegram login failed:", error);
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
 
   const loginWithWeb3Auth = async (idToken: string, web3auth: Web3Auth) => {
     try {
@@ -79,8 +105,11 @@ function App() {
   };
 
   const login = async () => {
-    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
-    window.location.href = `${URL}/login`;
+    if (!web3authSfa) {
+      console.error("Web3Auth not initialized");
+      return;
+    }
+    await loginWithTelegram(web3authSfa);
   };
 
   const getUserInfo = async () => {
@@ -212,7 +241,6 @@ function App() {
           </button>
         </div>
       </div>
-
       <div id="console" style={{ whiteSpace: "pre-line" }}>
         <p style={{ whiteSpace: "pre-line" }}></p>
       </div>
@@ -221,18 +249,13 @@ function App() {
 
   const logoutView = (
     <button onClick={login} className="card">
-      Login
+      Login with Telegram
     </button>
   );
 
   return (
     <div className="container">
-      <h1 className="title">
-        <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
-          Web3Auth
-        </a>{" "}
-        SFA React Telegram GitHub Example
-      </h1>
+      <h1 className="title">Web3Auth SFA React Telegram Example</h1>
 
       {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
 
