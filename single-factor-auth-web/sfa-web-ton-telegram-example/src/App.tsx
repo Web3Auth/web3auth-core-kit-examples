@@ -53,7 +53,7 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        web3authSfa.init();
+        await web3authSfa.init();
       } catch (error) {
         console.error(error);
       }
@@ -70,7 +70,9 @@ function App() {
   const loginWithWeb3Auth = async (idToken: string) => {
     // trying logging in with the Single Factor Auth SDK
     try {
-      web3authSfa.init();
+      if(web3authSfa.status === 'not_ready') {
+        await web3authSfa.init();
+      }
       const { payload } = decodeToken(idToken);
       await web3authSfa.connect({
         verifier,
