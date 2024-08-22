@@ -78,6 +78,11 @@ function App() {
     }
   };
 
+  const login = async () => {
+    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
+    window.location.href = `${URL}/login`;
+  };
+
   const getUserInfo = async () => {
     if (!web3authSfa) {
       uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
