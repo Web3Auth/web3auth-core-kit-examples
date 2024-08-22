@@ -70,24 +70,14 @@ function App() {
   const loginWithWeb3Auth = async (idToken: string) => {
     // trying logging in with the Single Factor Auth SDK
     try {
-      if(web3authSfa.status === 'not_ready') {
-        await web3authSfa.init();
-      }
       const { payload } = decodeToken(idToken);
-      if(web3authSfa.status === 'ready') {
-        await web3authSfa.connect({
-          verifier,
-          verifierId: (payload as any).sub,
-          idToken: idToken!,
-        });
-        setIsLoggingIn(false);
-        setLoggedIn(true);
-      }
-      else if(web3authSfa.status === 'connected') {
-        await web3authSfa.authenticateUser();
-        setIsLoggingIn(false);
-        setLoggedIn(true);
-      }
+      await web3authSfa.connect({
+        verifier,
+        verifierId: (payload as any).sub,
+        idToken: idToken!,
+      });
+      setIsLoggingIn(false);
+      setLoggedIn(true);
     } catch (err) {
       // Single Factor Auth SDK throws an error if the user has already enabled MFA
       // One can use the Web3AuthNoModal SDK to handle this case
