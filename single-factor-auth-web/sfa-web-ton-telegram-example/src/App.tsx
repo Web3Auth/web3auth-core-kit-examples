@@ -10,7 +10,6 @@ import TonRPC from "./tonRpc";
 
 import Loading from "./Loading";
 import "./App.css";
-import { get } from "http";
 
 const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-telegram-demo";
 
