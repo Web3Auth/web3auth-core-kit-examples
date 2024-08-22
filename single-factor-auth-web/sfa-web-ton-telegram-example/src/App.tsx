@@ -12,7 +12,6 @@ import Loading from "./Loading";
 import "./App.css";
 
 const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-telegram-demo";
-
 const clientId = import.meta.env.VITE_W3A_CLIENT_ID || "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
@@ -25,64 +24,57 @@ const chainConfig = {
   tickerName: "Toncoin",
 };
 
-const privateKeyProvider = new CommonPrivateKeyProvider({
-  config: { chainConfig },
-});
-
-// Initialising Web3Auth Single Factor Auth SDK
-const web3authSfa = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-  privateKeyProvider,
-});
-
 function App() {
+  const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const jwtToken = params.get("token");
-    if (jwtToken) {
-      loginWithWeb3Auth(jwtToken);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
-  useEffect(() => {
-    const init = async () => {
+    const initWeb3Auth = async () => {
       try {
-        await web3authSfa.init();
+        const privateKeyProvider = new CommonPrivateKeyProvider({
+          config: { chainConfig },
+        });
+
+        const web3auth = new Web3Auth({
+          clientId, // Get your Client ID from Web3Auth Dashboard
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+          privateKeyProvider,
+        });
+
+        await web3auth.init(); // Ensure init is called before using web3auth
+        setWeb3authSfa(web3auth);
+
+        // Check if there is a token in URL params and attempt login
+        const params = new URLSearchParams(window.location.search);
+        const jwtToken = params.get("token");
+        if (jwtToken) {
+          await loginWithWeb3Auth(jwtToken, web3auth);
+          window.history.replaceState({}, document.title, window.location.pathname); // Clean up URL
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Web3Auth initialization failed:", error);
       }
     };
 
-    init();
+    initWeb3Auth();
   }, []);
 
-  const login = async () => {
-    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
-    window.location.href = `${URL}/login`;
-  };
-
-  const loginWithWeb3Auth = async (idToken: string) => {
-    // trying logging in with the Single Factor Auth SDK
+  const loginWithWeb3Auth = async (idToken: string, web3auth: Web3Auth) => {
     try {
+      setIsLoggingIn(true);
       const { payload } = decodeToken(idToken);
-      await web3authSfa.connect({
+      await web3auth.connect({
         verifier,
         verifierId: (payload as any).sub,
-        idToken: idToken!,
+        idToken,
       });
-      setIsLoggingIn(false);
       setLoggedIn(true);
     } catch (err) {
-      // Single Factor Auth SDK throws an error if the user has already enabled MFA
-      // One can use the Web3AuthNoModal SDK to handle this case
+      console.error("Login failed:", err);
+    } finally {
       setIsLoggingIn(false);
-      console.error(err);
     }
   };
 
