@@ -2,15 +2,20 @@ import type { IProvider } from "@web3auth/base";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 
-const rpc = await getHttpEndpoint(); 
-
 export default class TonRPC {
     private provider: IProvider;
     private tonweb: TonWeb;
+    private rpc: string;
 
     constructor(provider: IProvider) {
         this.provider = provider;
-        this.tonweb = new TonWeb(new TonWeb.HttpProvider(rpc));
+        this.rpc = ""; // Initialize with an empty string
+        this.initializeTonWeb();
+    }
+
+    private async initializeTonWeb(): Promise<void> {
+        this.rpc = await getHttpEndpoint(); 
+        this.tonweb = new TonWeb(new TonWeb.HttpProvider(this.rpc));
     }
 
     async getAccounts(): Promise<string> {
@@ -52,7 +57,6 @@ export default class TonRPC {
             const address = await wallet.getAddress();
             console.log("Wallet address:", address.toString(true, true, true));
 
-            // Check if the wallet is deployed by checking its balance
             const balance = await this.tonweb.getBalance(address);
             console.log("Wallet balance:", TonWeb.utils.fromNano(balance));
 
@@ -64,7 +68,6 @@ export default class TonRPC {
                 return { error: "Wallet not deployed or has zero balance" };
             }
 
-            // Get the current seqno with retry
             let seqno;
             for (let i = 0; i < 3; i++) {
                 try {
@@ -83,10 +86,10 @@ export default class TonRPC {
 
             const transfer = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: 'EQD4FPq-PRDieyQKkizFTRtSDyucUIqrj0v_zXJmqaDp6_0t', // Replace with actual recipient address
-                amount: TonWeb.utils.toNano('0.01'), // Amount in TON
+                toAddress: 'EQD4FPq-PRDieyQKkizFTRtSDyucUIqrj0v_zXJmqaDp6_0t',
+                amount: TonWeb.utils.toNano('0.01'),
                 seqno: seqno,
-                payload: 'Hello, TON!', // Optional message
+                payload: 'Hello, TON!',
                 sendMode: 3,
             });
 
@@ -105,18 +108,14 @@ export default class TonRPC {
     }
 
     public getKeyPairFromPrivateKey(privateKey: string): { publicKey: Uint8Array; secretKey: Uint8Array } {
-        // Convert the hex string to a Uint8Array
         const privateKeyBytes = new Uint8Array(privateKey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 
-        // Ensure the private key is 32 bytes (256 bits)
         if (privateKeyBytes.length !== 32) {
-            // If it's shorter, pad it. If it's longer, truncate it.
             const adjustedPrivateKey = new Uint8Array(32);
             adjustedPrivateKey.set(privateKeyBytes.slice(0, 32));
             return TonWeb.utils.nacl.sign.keyPair.fromSeed(adjustedPrivateKey);
         }
 
-        // If it's already 32 bytes, use it directly
         return TonWeb.utils.nacl.sign.keyPair.fromSeed(privateKeyBytes);
     }
 
@@ -125,13 +124,10 @@ export default class TonRPC {
             const privateKey = await this.getPrivateKey();
             const keyPair = this.getKeyPairFromPrivateKey(privateKey);
             
-            // Convert the message to Uint8Array
             const messageBytes = new TextEncoder().encode(message);
             
-            // Sign the message
             const signature = TonWeb.utils.nacl.sign.detached(messageBytes, keyPair.secretKey);
             
-            // Convert the signature to a hex string
             return Buffer.from(signature).toString('hex');
         } catch (error) {
             console.error("Error signing message:", error);
