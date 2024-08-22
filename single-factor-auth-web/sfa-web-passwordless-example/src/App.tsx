@@ -17,9 +17,9 @@ import { signInWithEmailLink, isSignInWithEmailLink, sendSignInLinkToEmail } fro
 
 import "./App.css";
 
-const verifier = "web3auth-firebase-examples";
+const verifier = "w3a-firebase-demo";
 
-const clientId = "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk"; // get from https://dashboard.web3auth.io
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -37,7 +37,7 @@ const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
 
 const web3authSfa = new Web3Auth({
   clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: WEB3AUTH_NETWORK.CYAN, // ["cyan", "testnet"]
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET, 
   usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
   privateKeyProvider: ethereumPrivateKeyProvider,
 });
@@ -76,7 +76,7 @@ function App() {
 
           await web3authSfa.connect({
             verifier,
-            verifierId: (payload as any).email,
+            verifierId: (payload as any).sub,
             idToken: idToken,
           });
 
