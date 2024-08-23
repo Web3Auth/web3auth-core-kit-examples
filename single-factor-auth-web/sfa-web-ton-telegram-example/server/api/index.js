@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 const { AuthDataValidator } = require("@telegram-auth/server");
 const { objectToAuthDataMap } = require("@telegram-auth/server/utils");
-const crypto = require('crypto');
 
 dotenv.config();
 
@@ -30,33 +29,6 @@ const generateJwtToken = (userData) => {
 
   return jwt.sign(payload, privateKey, { algorithm: "RS256", keyid: JWT_KEY_ID });
 };
-
-function validateTelegramWebAppData(telegramInitData) {
-  // Parse the received init data
-  const initData = new URLSearchParams(telegramInitData);
-
-  // Extract the hash and remove it from the data
-  const hash = initData.get('hash');
-  initData.delete('hash');
-
-  // Sort the data alphabetically
-  const sortedInitData = new URLSearchParams([...initData.entries()].sort());
-
-  // Create a data check string
-  const dataCheckString = sortedInitData.toString();
-
-  // Create a secret key from the bot token
-  const secretKey = crypto.createHmac('sha256', 'WebAppData').update(process.env.TELEGRAM_BOT_TOKEN).digest();
-
-  // Calculate the hmac-sha256 signature
-  const calculatedHash = crypto
-    .createHmac('sha256', secretKey)
-    .update(dataCheckString)
-    .digest('hex');
-
-  // Compare the calculated hash with the received hash
-  return calculatedHash === hash;
-}
 
 app.get("/", (req, res) => res.send("Express on Vercel for Telegram Login to be used with Web3Auth"));
 
@@ -117,28 +89,6 @@ app.get("/callback", async (req, res) => {
     console.error("Error validating Telegram data:", error);
     res.status(400).send("Invalid Telegram data");
   }
-});
-
-app.post("/auth", (req, res) => {
-  const { telegramInitData, user } = req.body;
-
-  if (!validateTelegramWebAppData(telegramInitData)) {
-    return res.status(401).json({ error: 'Invalid Telegram data' });
-  }
-
-  // If validation passes, generate a JWT token
-  const token = jwt.sign(
-    { 
-      telegramId: user.id, 
-      username: user.username,
-      firstName: user.first_name,
-      lastName: user.last_name
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
-
-  res.json({ token });
 });
 
 app.listen(3000, () => console.log("Server ready on port 3000."));

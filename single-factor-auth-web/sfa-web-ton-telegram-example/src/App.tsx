@@ -69,14 +69,8 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            telegramInitData: WebApp.initData,
-            user: userData,
-          }),
+          body: JSON.stringify(userData),
         });
-        if (!response.ok) {
-          throw new Error("Authentication failed");
-        }
         const { token } = await response.json();
         await loginWithWeb3Auth(token, web3auth);
       }
@@ -241,6 +235,7 @@ function App() {
           </button>
         </div>
       </div>
+
       <div id="console" style={{ whiteSpace: "pre-line" }}>
         <p style={{ whiteSpace: "pre-line" }}></p>
       </div>
@@ -249,13 +244,18 @@ function App() {
 
   const logoutView = (
     <button onClick={login} className="card">
-      Login with Telegram
+      Login
     </button>
   );
 
   return (
     <div className="container">
-      <h1 className="title">Web3Auth SFA React Telegram Example</h1>
+      <h1 className="title">
+        <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
+          Web3Auth
+        </a>{" "}
+        SFA React Telegram GitHub Example
+      </h1>
 
       {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
 
