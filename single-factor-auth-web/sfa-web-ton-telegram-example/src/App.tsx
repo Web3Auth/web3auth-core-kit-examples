@@ -80,8 +80,8 @@ function App() {
   };
 
   const login = async () => {
-    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
-    WebApp.openTelegramLink(`${URL}/login`);
+    // const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
+    WebApp.openTelegramLink("https://www.google.com");
   };
 
   const getUserInfo = async () => {
