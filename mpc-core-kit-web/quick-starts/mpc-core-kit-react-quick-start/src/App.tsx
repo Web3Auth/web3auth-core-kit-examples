@@ -155,14 +155,16 @@ function App() {
   const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
       // Initialise the Web3Auth SFA SDK
-      // You can do this on the constructor as well for faster experience 
+      // You can do this on the constructor as well for faster experience
+      const privateKeyProvider = new CommonPrivateKeyProvider(({ config: { chainConfig } }));
+
       const web3authSfa = new Web3AuthSingleFactorAuth({
         clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
         usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        privateKeyProvider
       });
-      const privateKeyProvider = new CommonPrivateKeyProvider(({ config: { chainConfig } }));
-      await web3authSfa.init(privateKeyProvider);
+      await web3authSfa.init();
 
       // Login using Firebase Email Password
       const auth = getAuth(app);
