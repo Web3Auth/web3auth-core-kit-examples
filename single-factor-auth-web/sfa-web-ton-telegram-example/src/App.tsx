@@ -253,11 +253,7 @@ function App() {
         SFA React Ton GitHub Example
       </h1>
 
-      {isLoading || isLoggingIn ? (
-        <Loading />
-      ) : (
-        <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>
-      )}
+      {isLoading || isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
 
       <footer className="footer">
         <a
