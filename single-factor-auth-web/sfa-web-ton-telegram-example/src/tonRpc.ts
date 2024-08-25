@@ -2,20 +2,18 @@ import type { IProvider } from "@web3auth/base";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 
+const rpc = await getHttpEndpoint({
+    network: "testnet",
+    protocol: "json-rpc",
+}); 
+
 export default class TonRPC {
     private provider: IProvider;
     private tonweb: TonWeb;
-    private rpc: string;
 
     constructor(provider: IProvider) {
         this.provider = provider;
-        this.rpc = ""; // Initialize with an empty string
-        this.initializeTonWeb();
-    }
-
-    private async initializeTonWeb(): Promise<void> {
-        this.rpc = await getHttpEndpoint(); 
-        this.tonweb = new TonWeb(new TonWeb.HttpProvider(this.rpc));
+        this.tonweb = new TonWeb(new TonWeb.HttpProvider(rpc));
     }
 
     async getAccounts(): Promise<string> {
@@ -34,6 +32,10 @@ export default class TonRPC {
         }
     }
 
+     getChainId(): string {
+        return "testnet"; 
+    }
+
     async getBalance(): Promise<string> {
         try {
             const address = await this.getAccounts();
@@ -49,74 +51,38 @@ export default class TonRPC {
         try {
             const privateKey = await this.getPrivateKey();
             const keyPair = this.getKeyPairFromPrivateKey(privateKey);
-            const WalletClass = this.tonweb.wallet.all['v3R2'];
-            const wallet = new WalletClass(this.tonweb.provider, {
-                publicKey: keyPair.publicKey
-            });
-
+            
+            const WalletClass = this.tonweb.wallet.all["v3R2"];
+            const wallet = new WalletClass(this.tonweb.provider, { publicKey: keyPair.publicKey });
+    
             const address = await wallet.getAddress();
             console.log("Wallet address:", address.toString(true, true, true));
-
+    
             const balance = await this.tonweb.getBalance(address);
-            console.log("Wallet balance:", TonWeb.utils.fromNano(balance));
-
-            const isDeployed = balance !== '0';
-            console.log("Is wallet deployed:", isDeployed);
-
-            if (!isDeployed) {
-                console.log("Wallet not deployed or has zero balance. Please deploy the wallet and fund it before sending transactions.");
-                return { error: "Wallet not deployed or has zero balance" };
-            }
-
-            let seqno;
-            for (let i = 0; i < 3; i++) {
-                try {
-                    seqno = await wallet.methods.seqno().call();
-                    console.log("Current seqno:", seqno);
-                    if (seqno !== null) break;
-                } catch (seqnoError) {
-                    console.error(`Error getting seqno (attempt ${i + 1}):`, seqnoError);
-                }
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
-
-            if (seqno === null) {
-                throw new Error("Failed to retrieve seqno after multiple attempts");
-            }
-
+            console.log("Wallet balance:", TonWeb.utils.fromNano(balance.toString()));
+    
+            let seqno = await wallet.methods.seqno().call() ?? 0;
+            console.log("Using seqno:", seqno);
+    
             const transfer = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: 'EQD4FPq-PRDieyQKkizFTRtSDyucUIqrj0v_zXJmqaDp6_0t',
-                amount: TonWeb.utils.toNano('0.01'),
+                toAddress: '0QCeWpE40bPUiuj-8ZfZd2VzMOxCMUuQFa_VKmdD8ssy5ukA',
+                amount: TonWeb.utils.toNano('0.004'),
                 seqno: seqno,
                 payload: 'Hello, TON!',
                 sendMode: 3,
             });
-
-            console.log("Prepared transfer:", transfer);
-
+    
+            console.log("Sending transaction...");
             const result = await transfer.send();
-            console.log("Transaction result:", result);
-
-            return {
-                transactionHash: result.hash,
-            };
+            
+            console.log(result);
+            // Return the full result for display in uiConsole
+            return result;
         } catch (error) {
             console.error("Error sending transaction:", error);
-            return { error: error.message };
+            return { error: error instanceof Error ? error.message : String(error) };
         }
-    }
-
-    public getKeyPairFromPrivateKey(privateKey: string): { publicKey: Uint8Array; secretKey: Uint8Array } {
-        const privateKeyBytes = new Uint8Array(privateKey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
-
-        if (privateKeyBytes.length !== 32) {
-            const adjustedPrivateKey = new Uint8Array(32);
-            adjustedPrivateKey.set(privateKeyBytes.slice(0, 32));
-            return TonWeb.utils.nacl.sign.keyPair.fromSeed(adjustedPrivateKey);
-        }
-
-        return TonWeb.utils.nacl.sign.keyPair.fromSeed(privateKeyBytes);
     }
 
     async signMessage(message: string): Promise<string> {
@@ -133,6 +99,22 @@ export default class TonRPC {
             console.error("Error signing message:", error);
             throw error;
         }
+    }
+
+    public getKeyPairFromPrivateKey(privateKey: string): { publicKey: Uint8Array; secretKey: Uint8Array } {
+        // Convert the hex string to a Uint8Array
+        const privateKeyBytes = new Uint8Array(privateKey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+
+        // Ensure the private key is 32 bytes (256 bits)
+        if (privateKeyBytes.length !== 32) {
+            // If it's shorter, pad it. If it's longer, truncate it.
+            const adjustedPrivateKey = new Uint8Array(32);
+            adjustedPrivateKey.set(privateKeyBytes.slice(0, 32));
+            return TonWeb.utils.nacl.sign.keyPair.fromSeed(adjustedPrivateKey);
+        }
+
+        // If it's already 32 bytes, use it directly
+        return TonWeb.utils.nacl.sign.keyPair.fromSeed(privateKeyBytes);
     }
 
     async getPrivateKey(): Promise<string> {

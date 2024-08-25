@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
-import WebApp from "@twa-dev/sdk";
+import { getHttpEndpoint } from "@orbs-network/ton-access";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // TonRPC libraries for blockchain calls
 import TonRPC from "./tonRpc";
@@ -12,15 +13,19 @@ import TonRPC from "./tonRpc";
 import Loading from "./Loading";
 import "./App.css";
 
-const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-telegram-demo";
+const testnetRpc = await getHttpEndpoint({
+  network: "testnet",
+  protocol: "json-rpc",
+});
+const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-auth0-demo";
 const clientId = import.meta.env.VITE_W3A_CLIENT_ID || "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.OTHER,
-  chainId: "mainnet", // Replace with actual TON chain ID
-  rpcTarget: "https://toncenter.com/api/v2/jsonTonRPC", // Replace with actual TON TonRPC endpoint
-  displayName: "TON Mainnet",
-  blockExplorerUrl: "https://tonscan.org",
+  chainId: "testnet", // Replace with actual TON chain ID
+  rpcTarget: testnetRpc,
+  displayName: "TON Testnet",
+  blockExplorerUrl: "https://testnet.tonscan.org",
   ticker: "TON",
   tickerName: "Toncoin",
 };
@@ -29,6 +34,7 @@ function App() {
   const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const { getIdTokenClaims, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
     const initWeb3Auth = async () => {
@@ -80,8 +86,34 @@ function App() {
   };
 
   const login = async () => {
-    const URL = import.meta.env.VITE_SERVER_URL || "https://sfa-web-ton-telegram-server.vercel.app";
-    WebApp.openLink(`${URL}/login`, {try_instant_view:true});
+    // trying logging in with the Single Factor Auth SDK
+    try {
+      if (!web3authSfa) {
+        uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+        return;
+      }
+      setIsLoggingIn(true);
+      await loginWithRedirect();
+      const idToken = (await getIdTokenClaims())?.__raw.toString();
+      console.log("idToken", idToken);
+      if (!idToken) {
+        console.error("No id token found");
+        return;
+      }
+      const { payload } = decodeToken(idToken);
+      await web3authSfa.connect({
+        verifier,
+        verifierId: (payload as any).sub,
+        idToken: idToken!,
+      });
+      setIsLoggingIn(false);
+      setLoggedIn(true);
+    } catch (err) {
+      // Single Factor Auth SDK throws an error if the user has already enabled MFA
+      // One can use the Web3AuthNoModal SDK to handle this case
+      setIsLoggingIn(false);
+      console.error(err);
+    }
   };
 
   const getUserInfo = async () => {

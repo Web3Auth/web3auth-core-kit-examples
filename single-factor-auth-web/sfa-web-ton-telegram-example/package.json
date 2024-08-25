@@ -14,6 +14,7 @@
     ]
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.4",
     "@orbs-network/ton-access": "^2.3.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -24,9 +25,9 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^4.3.1",
-    "@web3auth/base": "^8.12.2",
-    "@web3auth/base-provider": "^8.12.2",
-    "@web3auth/ethereum-provider": "^8.6.1",
+    "@web3auth/base": "^8.12.4",
+    "@web3auth/base-provider": "^8.12.4",
+    "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/single-factor-auth": "^8.1.1",
     "ethers": "^6.7.0",
     "react": "^18.3.1",
