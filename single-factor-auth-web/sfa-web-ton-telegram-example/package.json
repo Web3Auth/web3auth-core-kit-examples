@@ -26,19 +26,15 @@
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^4.3.1",
     "@web3auth/base": "^8.12.4",
-    "@web3auth/base-provider": "^8.12.4",
-    "@web3auth/ethereum-provider": "^8.12.4",
-    "@web3auth/single-factor-auth": "^8.1.1",
-    "ethers": "^6.7.0",
+    "@web3auth/base-provider": "^8.4.0",   
+    "@web3auth/single-factor-auth": "^7.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "source-map-loader": "^4.0.1",
     "tonweb": "^0.0.66",
     "typescript": "^5.0.4",
-    "viem": "^2.9.15",
     "vite": "^5.4.1",
-    "web-vitals": "^3.1.1",
-    "web3": "^4.1.1"
+    "web-vitals": "^3.1.1"
   },
   "devDependencies": {
     "buffer": "^6.0.3",

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// Import Single Factor Auth SDK for no redirect flow
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
@@ -17,8 +16,8 @@ const testnetRpc = await getHttpEndpoint({
   network: "testnet",
   protocol: "json-rpc",
 });
-const verifier = import.meta.env.VITE_W3A_VERIFIER_NAME || "w3a-auth0-demo";
-const clientId = import.meta.env.VITE_W3A_CLIENT_ID || "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+const verifier = "w3a-a0-github-demo";
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.OTHER,
@@ -30,94 +29,80 @@ const chainConfig = {
   tickerName: "Toncoin",
 };
 
+const privateKeyProvider = new CommonPrivateKeyProvider({
+  config: { chainConfig },
+});
+
+const web3authSfa = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+});
+
 function App() {
-  const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const { getIdTokenClaims, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect, logout: auth0Logout } = useAuth0();
+  const [provider, setProvider] = useState<any>(null);
 
   useEffect(() => {
-    const initWeb3Auth = async () => {
+    const init = async () => {
       try {
-        const privateKeyProvider = new CommonPrivateKeyProvider({
-          config: { chainConfig },
-        });
-
-        const web3auth = new Web3Auth({
-          clientId, // Get your Client ID from Web3Auth Dashboard
-          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-          privateKeyProvider,
-        });
-
-        await web3auth.init(); // Ensure init is called before using web3auth
-        setWeb3authSfa(web3auth);
-
-        // Check if there is a token in URL params and attempt login
-        const params = new URLSearchParams(window.location.search);
-        const jwtToken = params.get("token");
-        if (jwtToken) {
-          await loginWithWeb3Auth(jwtToken, web3auth);
-          window.history.replaceState({}, document.title, window.location.pathname); // Clean up URL
+        await web3authSfa.init(privateKeyProvider);
+        if (web3authSfa.status === "connected") {
+          setLoggedIn(true);
+          setProvider(web3authSfa.provider);
         }
       } catch (error) {
-        console.error("Web3Auth initialization failed:", error);
+        console.error(error);
       }
     };
 
-    initWeb3Auth();
+    init();
   }, []);
 
-  const loginWithWeb3Auth = async (idToken: string, web3auth: Web3Auth) => {
-    try {
-      setIsLoggingIn(true);
-      const { payload } = decodeToken(idToken);
-      await web3auth.connect({
-        verifier,
-        verifierId: (payload as any).sub,
-        idToken,
-      });
-      setLoggedIn(true);
-    } catch (err) {
-      console.error("Login failed:", err);
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
+  useEffect(() => {
+    const connectWeb3Auth = async () => {
+      if (isAuthenticated && !loggedIn && web3authSfa.status === "ready") {
+        try {
+          setIsLoggingIn(true);
+          const idToken = (await getIdTokenClaims())?.__raw;
+          if (!idToken) {
+            console.error("No id token found");
+            return;
+          }
+          const { payload } = decodeToken(idToken);
+          await web3authSfa.connect({
+            verifier,
+            verifierId: (payload as any).sub,
+            idToken: idToken,
+          });
+          setIsLoggingIn(false);
+          setLoggedIn(true);
+          setProvider(web3authSfa.provider);
+        } catch (err) {
+          setIsLoggingIn(false);
+          console.error(err);
+        }
+      }
+    };
+
+    connectWeb3Auth();
+  }, [isAuthenticated, loggedIn, getIdTokenClaims]);
 
   const login = async () => {
-    // trying logging in with the Single Factor Auth SDK
-    try {
-      if (!web3authSfa) {
-        uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-        return;
-      }
-      setIsLoggingIn(true);
-      await loginWithRedirect();
-      const idToken = (await getIdTokenClaims())?.__raw.toString();
-      console.log("idToken", idToken);
-      if (!idToken) {
-        console.error("No id token found");
-        return;
-      }
-      const { payload } = decodeToken(idToken);
-      await web3authSfa.connect({
-        verifier,
-        verifierId: (payload as any).sub,
-        idToken: idToken!,
-      });
-      setIsLoggingIn(false);
-      setLoggedIn(true);
-    } catch (err) {
-      // Single Factor Auth SDK throws an error if the user has already enabled MFA
-      // One can use the Web3AuthNoModal SDK to handle this case
-      setIsLoggingIn(false);
-      console.error(err);
+    if (!web3authSfa) {
+      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
+      return;
     }
+    if (web3authSfa.status === "not_ready") {
+      await web3authSfa.init(privateKeyProvider);
+    }
+    await loginWithRedirect();
   };
 
   const getUserInfo = async () => {
-    if (!web3authSfa) {
+    if (!provider) {
       uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
@@ -125,18 +110,19 @@ function App() {
     uiConsole(userInfo);
   };
 
-  const logout = () => {
-    if (!web3authSfa) {
+  const logout = async () => {
+    if (!provider) {
       uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
-    web3authSfa.logout();
+    await web3authSfa.logout();
     setLoggedIn(false);
-    return;
+    setProvider(null);
+    auth0Logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   const getAccounts = async () => {
-    if (!web3authSfa.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
@@ -146,7 +132,7 @@ function App() {
   };
 
   const getBalance = async () => {
-    if (!web3authSfa.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
@@ -156,7 +142,7 @@ function App() {
   };
 
   const signMessage = async () => {
-    if (!web3authSfa.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
@@ -166,22 +152,22 @@ function App() {
   };
 
   const sendTransaction = async () => {
-    if (!web3authSfa.provider) {
+    if (!provider) {
       uiConsole("No provider found");
       return;
     }
     const rpc = new TonRPC(web3authSfa.provider);
     const result = await rpc.sendTransaction();
-    uiConsole("Transaction Hash:", result.transactionHash);
+    uiConsole(result);
   };
 
   const authenticateUser = async () => {
-    // try {
+    if (!provider) {
+      uiConsole("No provider found");
+      return;
+    }
     const userCredential = await web3authSfa.authenticateUser();
     uiConsole(userCredential);
-    // } catch (err) {
-    //   uiConsole(err);
-    // }
   };
 
   const getPrivateKey = async () => {
@@ -264,14 +250,18 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
           Web3Auth
         </a>{" "}
-        SFA React Telegram GitHub Example
+        SFA React Ton GitHub Example
       </h1>
 
-      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
+      {isLoading || isLoggingIn ? (
+        <Loading />
+      ) : (
+        <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>
+      )}
 
       <footer className="footer">
         <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-web-auth0-example"
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-web-ton-telegram-example"
           target="_blank"
           rel="noopener noreferrer"
         >

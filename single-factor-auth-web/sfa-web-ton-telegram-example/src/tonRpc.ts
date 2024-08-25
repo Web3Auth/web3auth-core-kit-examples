@@ -67,7 +67,7 @@ export default class TonRPC {
             const transfer = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: '0QCeWpE40bPUiuj-8ZfZd2VzMOxCMUuQFa_VKmdD8ssy5ukA',
-                amount: TonWeb.utils.toNano('0.004'),
+                amount: TonWeb.utils.toNano('0.001'),
                 seqno: seqno,
                 payload: 'Hello, TON!',
                 sendMode: 3,
