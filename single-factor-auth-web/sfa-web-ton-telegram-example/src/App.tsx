@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
@@ -37,6 +36,7 @@ const web3authSfa = new Web3Auth({
   clientId, // Get your Client ID from Web3Auth Dashboard
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
   usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+  privateKeyProvider,
 });
 
 function App() {
@@ -48,13 +48,13 @@ function App() {
   useEffect(() => {
     const init = async () => {
       try {
-        await web3authSfa.init(privateKeyProvider);
+        await web3authSfa.init();
         if (web3authSfa.status === "connected") {
           setLoggedIn(true);
           setProvider(web3authSfa.provider);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error during Web3Auth initialization:", error);
       }
     };
 
@@ -68,7 +68,7 @@ function App() {
           setIsLoggingIn(true);
           const idToken = (await getIdTokenClaims())?.__raw;
           if (!idToken) {
-            console.error("No id token found");
+            console.error("No ID token found");
             return;
           }
           const { payload } = decodeToken(idToken);
@@ -82,7 +82,7 @@ function App() {
           setProvider(web3authSfa.provider);
         } catch (err) {
           setIsLoggingIn(false);
-          console.error(err);
+          console.error("Error during Web3Auth connection:", err);
         }
       }
     };
@@ -96,7 +96,7 @@ function App() {
       return;
     }
     if (web3authSfa.status === "not_ready") {
-      await web3authSfa.init(privateKeyProvider);
+      await web3authSfa.init();
     }
     await loginWithRedirect();
   };
