@@ -14,7 +14,7 @@ import '@ethersproject/shims';
 import {useAuth0, Auth0Provider} from 'react-native-auth0';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import * as tssLib from '@toruslabs/react-native-tss-lib-bridge';
+import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
 import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 
@@ -22,7 +22,6 @@ import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 import {
   Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
-  IdTokenLoginParams,
   TssShareType,
   parseToken,
   generateFactorKey,
@@ -31,6 +30,7 @@ import {
   mnemonicToKey,
   makeEthereumSigner,
   TssLib,
+  JWTLoginParams,
 } from '@web3auth/mpc-core-kit';
 // import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
 // TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion,
@@ -61,10 +61,7 @@ const chainConfig = {
   tickerName: 'Ethereum',
 };
 
-const tsslibInstance: TssLib = {
-  keyType: 'secp256k1',
-  lib: tssLib,
-};
+const tsslibInstance = tssLib;
 // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
@@ -156,11 +153,11 @@ function Home() {
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken!);
 
-      const idTokenLoginParams = {
+      const idTokenLoginParams: JWTLoginParams = {
         verifier,
-        verifierId: parsedToken.email,
-        idToken,
-      } as IdTokenLoginParams;
+        verifierId: parsedToken.sub,
+        idToken: idToken!,
+      };
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
