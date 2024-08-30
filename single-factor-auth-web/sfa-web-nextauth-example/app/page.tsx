@@ -26,6 +26,17 @@ export default async function Home() {
         </div>
       </div>
       {!session ? <SignIn /> : <Profile session={session} />}
+
+      <div className="mt-8">
+        <a
+          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-web-nextauth-example"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-slate-500 hover:text-blue-300 font-mono text-sm"
+        >
+          Source Code
+        </a>
+      </div>
     </main>
   );
 }
