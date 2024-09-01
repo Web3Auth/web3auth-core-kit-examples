@@ -28,7 +28,7 @@
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "react": "18.2.0",
-    "react-native": "0.71.8",
+    "react-native": "0.75.2",
     "react-native-auth0": "^2.17.4",
     "react-native-get-random-values": "^1.9.0",
     "stream-browserify": "^3.0.0"
