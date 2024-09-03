@@ -8,7 +8,7 @@ const {
   parseToken,
   TssShareType,
   generateFactorKey,
-  factorKeyMnemonic,
+  keyToMnemonic,
 } = require("@web3auth/mpc-core-kit");
 const { CHAIN_NAMESPACES } = require("@web3auth/base");
 const { readFileSync } = require("fs");
@@ -96,6 +96,18 @@ const initializeCoreKit = async () => {
   }
 };
 // IMP END - MPC Core Kit Initialization
+
+// const MnemonicToFactorKeyHex = async (mnemonic) => {
+//   if (!coreKitInstance) {
+//     throw new Error("coreKitInstance is not set");
+//   }
+//   try {
+//     const factorKey = await mnemonicToKey(mnemonic);
+//     return factorKey;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 const getSocialMFAFactorKey = async () => {
   try {
@@ -198,11 +210,13 @@ const initAndLogin = async () => {
       shareType: TssShareType.RECOVERY,
       factorKey: recoveryFactorKey.private,
     });
-    const factorKeyMnemonic = await keyToMnemonic(recoveryFactorKey.private.toString("hex"));
+    const factorKeyMnemonic = keyToMnemonic(recoveryFactorKey.private.toString("hex"));
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
-    console.log("Device factor: ", await coreKitInstance.getDeviceFactor());
+    
+    console.log("Mnemonic: ", factorKeyMnemonic);
+    console.log("Device factor: ", await coreKitInstance.getDeviceFactor(), global.window.localStorage);
     console.log("Key details: ", coreKitInstance.keyDetails);
   } else {
     console.log("coreKitInstance is not initialized.");
