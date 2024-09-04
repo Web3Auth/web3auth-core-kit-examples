@@ -1,6 +1,11 @@
 // Define required constants
+// IMP START - Dashboard Registration
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
+// IMP END - Dashboard Registration
+// IMP START - Verifier Creation
 const firebaseVerifier = "w3a-firebase-demo";
+// IMP END - Verifier Creation
+
 const firebaseConfig = {
   apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
   authDomain: "web3auth-oauth-logins.firebaseapp.com",
@@ -11,6 +16,7 @@ const firebaseConfig = {
 };
 
 // Import required modules
+// IMP START - Quick Start
 const { EthereumSigningProvider } = require("@web3auth/ethereum-mpc-provider");
 const {
   COREKIT_STATUS,
@@ -21,9 +27,10 @@ const {
   TssShareType,
   generateFactorKey,
   keyToMnemonic,
-  mnemonicToKey,
 } = require("@web3auth/mpc-core-kit");
 const { CHAIN_NAMESPACES } = require("@web3auth/base");
+// IMP END - Quick Start
+
 const { sign } = require("jsonwebtoken");
 const { BN } = require("bn.js");
 const { tssLib } = require("@toruslabs/tss-dkls-lib");
@@ -76,6 +83,7 @@ async function removeItem(key) {
 let evmProvider;
 let coreKitInstance;
 
+// IMP START - SDK Initialization
 // Chain configuration for Ethereum Mainnet
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -109,8 +117,9 @@ const initializeCoreKit = async () => {
   await coreKitInstance.init();
   console.log("Core Kit Initialized, Status:", coreKitInstance.status);
 };
+// IMP END - SDK Initialization
 
-// Social MFA Factor Key Retrieval
+// IMP START - Auth Provider Login
 const getSocialMFAFactorKey = async () => {
   try {
     const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
@@ -144,6 +153,7 @@ const getSocialMFAFactorKey = async () => {
     return "";
   }
 };
+// IMP END - Auth Provider Login
 
 // Get Key Details
 const keyDetails = async () => {
@@ -153,7 +163,7 @@ const keyDetails = async () => {
   console.log(coreKitInstance.getKeyDetails());
 };
 
-// Export Mnemonic Factor
+// IMP START - Export Mnemonic Factor
 const exportMnemonicFactor = async () => {
   const recoveryFactorKey = generateFactorKey();
   await coreKitInstance.createFactor({
@@ -167,6 +177,7 @@ const exportMnemonicFactor = async () => {
     await coreKitInstance.commitChanges();
   }
 };
+// IMP END - Export Mnemonic Factor
 
 // Get Device Factor
 const getDeviceFactor = async () => {
@@ -175,13 +186,15 @@ const getDeviceFactor = async () => {
 };
 
 // Get User Info
+// IMP START - Get User Information
 const getUserInfo = async () => {
   const user = coreKitInstance.getUserInfo();
   console.log("User Info:", user);
 };
+// IMP END - Get User Information
 
 // Blockchain Calls
-
+// IMP START - Blockchain Calls
 // Get Ethereum Accounts
 const getAccounts = async () => {
   const web3 = new Web3(evmProvider);
@@ -219,6 +232,7 @@ const signMessage = async (message) => {
     console.error("Error signing message:", error);
   }
 };
+// IMP END - Blockchain Calls
 
 // Perform JWT Login and MFA Setup
 const initAndLogin = async () => {
