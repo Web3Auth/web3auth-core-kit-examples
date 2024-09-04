@@ -112,10 +112,10 @@ struct HomeView: View {
                     ) {
                         Button(
                             action: {
-                                viewModel.enableMFA()
+                                viewModel.resetAccount()
                             },
                             label: {
-                                Text("Enable MFA")
+                                Text("Reset Account")
                             }
                         )
                         Button(
@@ -124,6 +124,19 @@ struct HomeView: View {
                             },
                             label: {
                                 Text("Create new Factor")
+                            }
+                        )
+                    }
+                    
+                    Section(
+                        header: Text("Account Operations")
+                    ) {
+                        Button(
+                            action: {
+                                viewModel.toggleIsLoggedIn()
+                            },
+                            label: {
+                                Text("Log out")
                             }
                         )
                     }

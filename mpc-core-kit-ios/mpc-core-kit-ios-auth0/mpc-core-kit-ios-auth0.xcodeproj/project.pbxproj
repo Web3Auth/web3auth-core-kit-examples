@@ -15,18 +15,19 @@
 		281ED7222BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7212BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITests.swift */; };
 		281ED7242BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7232BE0DFBB002E990C /* mpc_core_kit_ios_auth0UITestsLaunchTests.swift */; };
 		281ED7342BE0E00A002E990C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7332BE0E00A002E990C /* MainViewModel.swift */; };
-		281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73C2BE0E5AF002E990C /* Auth0 */; };
-		281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 281ED73F2BE0E5DD002E990C /* web3.swift */; };
 		281ED7422BE0E77B002E990C /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7412BE0E77B002E990C /* EthereumClient.swift */; };
 		281ED7442BE0E795002E990C /* UserStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7432BE0E795002E990C /* UserStorage.swift */; };
 		281ED74A2BE0EC3B002E990C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED7492BE0EC3B002E990C /* LoginView.swift */; };
 		281ED74C2BE0EC77002E990C /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74B2BE0EC77002E990C /* RecoveryView.swift */; };
 		281ED74E2BE0EC8F002E990C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 281ED74D2BE0EC8F002E990C /* HomeView.swift */; };
 		282411192BE0F5590097006B /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282411182BE0F5590097006B /* LoadingView.swift */; };
-		2847121A2BFB825A0088411D /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712192BFB825A0088411D /* mpc-core-kit-swift */; };
-		2847121D2BFB826A0088411D /* MpcProviderSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2847121C2BFB826A0088411D /* MpcProviderSwift */; };
 		2847121F2BFB83250088411D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2847121E2BFB83250088411D /* Extensions.swift */; };
-		28BE823B2BF37114008A2B0C /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 28BE823A2BF37114008A2B0C /* JWTDecode */; };
+		2859C2E62C889672005418F7 /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2E52C889672005418F7 /* Auth0 */; };
+		2859C2E92C889681005418F7 /* JWTDecode in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2E82C889681005418F7 /* JWTDecode */; };
+		2859C2EC2C889692005418F7 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2EB2C889692005418F7 /* web3.swift */; };
+		2859C2EF2C8896A6005418F7 /* MpcProviderSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2EE2C8896A6005418F7 /* MpcProviderSwift */; };
+		2859C2F22C8896BF005418F7 /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2F12C8896BF005418F7 /* mpc-core-kit-swift */; };
+		2859C2F52C889732005418F7 /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 2859C2F42C889732005418F7 /* BigInt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,11 +74,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				281ED73D2BE0E5AF002E990C /* Auth0 in Frameworks */,
-				281ED7402BE0E5DD002E990C /* web3.swift in Frameworks */,
-				28BE823B2BF37114008A2B0C /* JWTDecode in Frameworks */,
-				2847121A2BFB825A0088411D /* mpc-core-kit-swift in Frameworks */,
-				2847121D2BFB826A0088411D /* MpcProviderSwift in Frameworks */,
+				2859C2E62C889672005418F7 /* Auth0 in Frameworks */,
+				2859C2E92C889681005418F7 /* JWTDecode in Frameworks */,
+				2859C2EC2C889692005418F7 /* web3.swift in Frameworks */,
+				2859C2F52C889732005418F7 /* BigInt in Frameworks */,
+				2859C2F22C8896BF005418F7 /* mpc-core-kit-swift in Frameworks */,
+				2859C2EF2C8896A6005418F7 /* MpcProviderSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,11 +206,12 @@
 			);
 			name = "mpc-core-kit-ios-auth0";
 			packageProductDependencies = (
-				281ED73C2BE0E5AF002E990C /* Auth0 */,
-				281ED73F2BE0E5DD002E990C /* web3.swift */,
-				28BE823A2BF37114008A2B0C /* JWTDecode */,
-				284712192BFB825A0088411D /* mpc-core-kit-swift */,
-				2847121C2BFB826A0088411D /* MpcProviderSwift */,
+				2859C2E52C889672005418F7 /* Auth0 */,
+				2859C2E82C889681005418F7 /* JWTDecode */,
+				2859C2EB2C889692005418F7 /* web3.swift */,
+				2859C2EE2C8896A6005418F7 /* MpcProviderSwift */,
+				2859C2F12C8896BF005418F7 /* mpc-core-kit-swift */,
+				2859C2F42C889732005418F7 /* BigInt */,
 			);
 			productName = "mpc-core-kit-ios-auth0";
 			productReference = 281ED7032BE0DFB9002E990C /* mpc-core-kit-ios-auth0.app */;
@@ -283,11 +286,12 @@
 			);
 			mainGroup = 281ED6FA2BE0DFB9002E990C;
 			packageReferences = (
-				281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */,
-				281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */,
-				28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */,
-				284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
-				2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */,
+				2859C2E42C889672005418F7 /* XCRemoteSwiftPackageReference "Auth0" */,
+				2859C2E72C889681005418F7 /* XCRemoteSwiftPackageReference "JWTDecode" */,
+				2859C2EA2C889692005418F7 /* XCRemoteSwiftPackageReference "web3" */,
+				2859C2ED2C8896A6005418F7 /* XCRemoteSwiftPackageReference "MpcProviderSwift" */,
+				2859C2F02C8896BF005418F7 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
+				2859C2F32C889732005418F7 /* XCRemoteSwiftPackageReference "BigInt" */,
 			);
 			productRefGroup = 281ED7042BE0DFB9002E990C /* Products */;
 			projectDirPath = "";
@@ -674,39 +678,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */ = {
+		2859C2E42C889672005418F7 /* XCRemoteSwiftPackageReference "Auth0" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/Auth0.swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.7.0;
+				minimumVersion = 2.8.0;
 			};
 		};
-		281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/argentlabs/web3.swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.6.1;
-			};
-		};
-		284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
-			requirement = {
-				branch = fix/base64;
-				kind = branch;
-			};
-		};
-		2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/MpcProviderSwift";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
-		28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */ = {
+		2859C2E72C889681005418F7 /* XCRemoteSwiftPackageReference "JWTDecode" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/auth0/JWTDecode.swift";
 			requirement = {
@@ -714,33 +694,70 @@
 				minimumVersion = 3.1.0;
 			};
 		};
+		2859C2EA2C889692005418F7 /* XCRemoteSwiftPackageReference "web3" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argentlabs/web3.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.1;
+			};
+		};
+		2859C2ED2C8896A6005418F7 /* XCRemoteSwiftPackageReference "MpcProviderSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/MpcProviderSwift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		2859C2F02C8896BF005418F7 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			requirement = {
+				branch = fix/racing;
+				kind = branch;
+			};
+		};
+		2859C2F32C889732005418F7 /* XCRemoteSwiftPackageReference "BigInt" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/attaswift/BigInt";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		281ED73C2BE0E5AF002E990C /* Auth0 */ = {
+		2859C2E52C889672005418F7 /* Auth0 */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 281ED73B2BE0E5AF002E990C /* XCRemoteSwiftPackageReference "Auth0" */;
+			package = 2859C2E42C889672005418F7 /* XCRemoteSwiftPackageReference "Auth0" */;
 			productName = Auth0;
 		};
-		281ED73F2BE0E5DD002E990C /* web3.swift */ = {
+		2859C2E82C889681005418F7 /* JWTDecode */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 281ED73E2BE0E5DD002E990C /* XCRemoteSwiftPackageReference "web3" */;
+			package = 2859C2E72C889681005418F7 /* XCRemoteSwiftPackageReference "JWTDecode" */;
+			productName = JWTDecode;
+		};
+		2859C2EB2C889692005418F7 /* web3.swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2859C2EA2C889692005418F7 /* XCRemoteSwiftPackageReference "web3" */;
 			productName = web3.swift;
 		};
-		284712192BFB825A0088411D /* mpc-core-kit-swift */ = {
+		2859C2EE2C8896A6005418F7 /* MpcProviderSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 284712182BFB825A0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
-			productName = "mpc-core-kit-swift";
-		};
-		2847121C2BFB826A0088411D /* MpcProviderSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2847121B2BFB826A0088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */;
+			package = 2859C2ED2C8896A6005418F7 /* XCRemoteSwiftPackageReference "MpcProviderSwift" */;
 			productName = MpcProviderSwift;
 		};
-		28BE823A2BF37114008A2B0C /* JWTDecode */ = {
+		2859C2F12C8896BF005418F7 /* mpc-core-kit-swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 28BE82392BF37114008A2B0C /* XCRemoteSwiftPackageReference "JWTDecode" */;
-			productName = JWTDecode;
+			package = 2859C2F02C8896BF005418F7 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
+			productName = "mpc-core-kit-swift";
+		};
+		2859C2F42C889732005418F7 /* BigInt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2859C2F32C889732005418F7 /* XCRemoteSwiftPackageReference "BigInt" */;
+			productName = BigInt;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

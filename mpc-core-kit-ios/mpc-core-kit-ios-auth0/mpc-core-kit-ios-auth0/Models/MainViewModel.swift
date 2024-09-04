@@ -102,7 +102,7 @@ class MainViewModel: ObservableObject {
                 showLoader("Resetting Account")
                 try await mpcCoreKit.resetAccount()
                 DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
+                    self.isLoggedIn.toggle()
                 }
                 hideLoader()
             } catch let error {

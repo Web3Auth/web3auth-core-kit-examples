@@ -130,36 +130,6 @@
             endingLineNumber = "261"
             landmarkName = "existingUser()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "A7C6C901-5B82-480F-95E3-9482EEA68609 - d0215de426b131a9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "mpc_core_kit_swift.MpcCoreKit.existingUser() async throws -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/mpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "261"
-                  endingLineNumber = "261">
-               </Location>
-               <Location
-                  uuid = "A7C6C901-5B82-480F-95E3-9482EEA68609 - 707c6c8aeb6acace"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.existingUser() async throws -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/mpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "261"
-                  endingLineNumber = "261">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -528,64 +498,6 @@
             endingLineNumber = "42"
             landmarkName = "getTorusKey(loginParams:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "FFD55B41-3CEB-49EB-8FFB-382A94FDAACE - dd4ca164820040f5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-               <Location
-                  uuid = "FFD55B41-3CEB-49EB-8FFB-382A94FDAACE - dd4ca164820040f5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-               <Location
-                  uuid = "FFD55B41-3CEB-49EB-8FFB-382A94FDAACE - e6763c38deecc97"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-               <Location
-                  uuid = "FFD55B41-3CEB-49EB-8FFB-382A94FDAACE - 6c1c90c7da25e7e1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(12) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "42"
-                  endingLineNumber = "42">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -608,7 +520,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "1CBA92E2-5124-445B-B92D-093272FFC2F9"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
@@ -618,71 +530,13 @@
             endingLineNumber = "80"
             landmarkName = "getTorusKey(loginParams:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "1CBA92E2-5124-445B-B92D-093272FFC2F9 - dd4ca164820045db"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80">
-               </Location>
-               <Location
-                  uuid = "1CBA92E2-5124-445B-B92D-093272FFC2F9 - b927c2e07dc8c9a8"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(8) await resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80">
-               </Location>
-               <Location
-                  uuid = "1CBA92E2-5124-445B-B92D-093272FFC2F9 - 63be25ba895d4d9f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80">
-               </Location>
-               <Location
-                  uuid = "1CBA92E2-5124-445B-B92D-093272FFC2F9 - c30a5b5d94a3e7ac"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(13) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "80"
-                  endingLineNumber = "80">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "7DF8EB6A-BB25-4D27-92DE-F42D7D854E94"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
@@ -692,36 +546,6 @@
             endingLineNumber = "90"
             landmarkName = "getTorusKey(loginParams:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "7DF8EB6A-BB25-4D27-92DE-F42D7D854E94 - e6763c38deecb67"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "90"
-                  endingLineNumber = "90">
-               </Location>
-               <Location
-                  uuid = "7DF8EB6A-BB25-4D27-92DE-F42D7D854E94 - 63be25ba895d4f41"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.getTorusKey(loginParams: SingleFactorAuth.LoginParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "90"
-                  endingLineNumber = "90">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -738,92 +562,6 @@
             endingLineNumber = "71"
             landmarkName = "broadcastSignedTransaction(transaction:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 5017fd042fdc99e6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 5017fd042fdc99e6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 1c2e778850b55de4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 1c2e778850b55de4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 66c1acb25f3eb3e5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-               <Location
-                  uuid = "28493224-82B7-411C-A5F6-4034CEF039D3 - 66c1acb25f3eb3e5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "71"
-                  endingLineNumber = "71">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -872,64 +610,6 @@
             endingLineNumber = "181"
             landmarkName = "sendTransaction(onSend:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E3FBA6D2-F0C2-411D-B519-530F5BDFFB20 - 8bfdc43776d30d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.sendTransaction(onSend: (Swift.Optional&lt;Swift.String&gt;, Swift.Optional&lt;Swift.String&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181">
-               </Location>
-               <Location
-                  uuid = "E3FBA6D2-F0C2-411D-B519-530F5BDFFB20 - 9ed3f4d2340ec765"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(8) await resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.sendTransaction(onSend: (Swift.Optional&lt;Swift.String&gt;, Swift.Optional&lt;Swift.String&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181">
-               </Location>
-               <Location
-                  uuid = "E3FBA6D2-F0C2-411D-B519-530F5BDFFB20 - 5c5e3ac1109f9f0f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.sendTransaction(onSend: (Swift.Optional&lt;Swift.String&gt;, Swift.Optional&lt;Swift.String&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181">
-               </Location>
-               <Location
-                  uuid = "E3FBA6D2-F0C2-411D-B519-530F5BDFFB20 - 5c142b33d202fd47"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(13) suspend resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.sendTransaction(onSend: (Swift.Optional&lt;Swift.String&gt;, Swift.Optional&lt;Swift.String&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "181"
-                  endingLineNumber = "181">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -946,78 +626,6 @@
             endingLineNumber = "59"
             landmarkName = "broadcastSignedTransaction(transaction:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E0B7BD93-BB3F-43D7-B3CD-2F0E3277491C - 5017fd042fdc986a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-               <Location
-                  uuid = "E0B7BD93-BB3F-43D7-B3CD-2F0E3277491C - ecf66e8db6b5d55"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-               <Location
-                  uuid = "E0B7BD93-BB3F-43D7-B3CD-2F0E3277491C - 1c2e778850b55c68"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-               <Location
-                  uuid = "E0B7BD93-BB3F-43D7-B3CD-2F0E3277491C - 66c1acb25f3eadf5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "55"
-                  endingLineNumber = "55">
-               </Location>
-               <Location
-                  uuid = "E0B7BD93-BB3F-43D7-B3CD-2F0E3277491C - 66c1acb25f3eb269"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_ios_auth0.EthereumClient.broadcastSignedTransaction(transaction: web3.SignedTransaction) async throws -&gt; Swift.String"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Helpers/EthereumClient.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1081,6 +689,38 @@
             startingLineNumber = "63"
             endingLineNumber = "63"
             landmarkName = "loginWithAuth0JWT()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A654B33D-BC1D-417F-B0C2-C3D72F565C23"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "325"
+            endingLineNumber = "325"
+            landmarkName = "retrieveShare(legacyMetadataHost:allowHost:enableOneKey:network:clientId:endpoints:verifier:verifierParams:idToken:extraParams:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CA6FFF0C-FFF3-4C86-8B12-CD9B1680DA49"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "313"
+            endingLineNumber = "313"
+            landmarkName = "retrieveShare(legacyMetadataHost:allowHost:enableOneKey:network:clientId:endpoints:verifier:verifierParams:idToken:extraParams:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

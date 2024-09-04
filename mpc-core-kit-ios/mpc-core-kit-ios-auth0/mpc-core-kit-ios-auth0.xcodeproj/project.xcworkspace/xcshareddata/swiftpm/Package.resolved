@@ -1,5 +1,5 @@
 {
-  "originHash" : "4d094b864a39c380b5e848611658ba8bd3cac9cdcd330d5fac7b11f59399ea97",
+  "originHash" : "6687faa95cc8d358b03c398d578884604696557e11f02749fc2690467b0e2c9c",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/Auth0.swift",
       "state" : {
-        "revision" : "ecd6fbd0c00d2144d9275a6dbceb213afc7f2a2d",
-        "version" : "2.7.0"
+        "revision" : "024503207ea5e8b4a0edb38125723f4a1c386139",
+        "version" : "2.8.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/customauth-swift-sdk",
       "state" : {
-        "revision" : "60b48acb161fb4341c353c27bc6dd96af76887ff",
-        "version" : "10.0.1"
+        "branch" : "fix/racing",
+        "revision" : "c4b63f291907bc81adb72a9d74ccb98e45d43b6e"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/mpc-core-kit-swift",
       "state" : {
-        "branch" : "fix/base64",
-        "revision" : "f9589805cc30adaf3af92015e60ea51ba0279aca"
+        "branch" : "fix/racing",
+        "revision" : "ac04076038264ae5905079fa232c8210a605a1a2"
       }
     },
     {
@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "4caaaa858950b25ea420dbba79de6b4c58801db4",
-        "version" : "6.0.0"
+        "branch" : "fix/racing",
+        "revision" : "88bd1da964cf9561997bd667ace9109ef88f25b7"
       }
     },
     {
@@ -249,17 +249,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/tkey-mpc-swift",
       "state" : {
-        "branch" : "fix/base64-Sep",
-        "revision" : "2ee8d557a19b8bc3771f248c431172be2985ef98"
+        "branch" : "fix/racing",
+        "revision" : "9f65ae2e8ba4d8d8773236b7bb3d299bb7ce4a76"
       }
     },
     {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
+      "location" : "https://github.com/torusresearch/torus-utils-swift",
       "state" : {
-        "revision" : "ff85c3e96bfa29013309b487875c4d9383e4ac80",
-        "version" : "8.1.1"
+        "branch" : "fix/racing",
+        "revision" : "141216c5aaa0dc695ce3816018495c8224bfc841"
       }
     },
     {
