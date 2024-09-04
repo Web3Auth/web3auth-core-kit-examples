@@ -51,16 +51,16 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Login in")
-                let auth0Creds = try await webAuth.connection("google-oauth2").start()
+                let auth0Creds = try await webAuth.connection("apple").start()
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
-                guard let email = jwt.body["email"] as? String else {
-                    throw "Email not found in JWT"
+                guard let sub = jwt.body["sub"] as? String else {
+                    throw "SUB not found in JWT"
                 }
                 
                 let result = try await mpcCoreKit.loginWithJwt(
-                    verifier: "w3a-auth0-demo",
-                    verifierId: email,
+                    verifier: "core-kit-swift",
+                    verifierId: sub,
                     idToken: auth0Creds.idToken
                 )
                 

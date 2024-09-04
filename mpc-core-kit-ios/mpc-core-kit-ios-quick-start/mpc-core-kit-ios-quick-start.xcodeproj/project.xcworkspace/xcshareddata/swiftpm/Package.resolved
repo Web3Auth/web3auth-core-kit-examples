@@ -1,5 +1,5 @@
 {
-  "originHash" : "d4e2e31ed5983dc7f95752b5f7cec96879f6838af173debe46909665a1b9adab",
+  "originHash" : "85823ce731e504f26e228ca4424bd5103974c9a0e33aa647daf561a6cc5a403d",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/mpc-core-kit-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "183f205cb24ff8aa9c6c59bea905f365fe03d34e"
+        "branch" : "fix/base64",
+        "revision" : "f9589805cc30adaf3af92015e60ea51ba0279aca"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "73c5066d369c7d2aa1057c56a89b7f1dcdda3270",
-        "version" : "5.0.0"
+        "revision" : "4caaaa858950b25ea420dbba79de6b4c58801db4",
+        "version" : "6.0.0"
       }
     },
     {
@@ -231,8 +231,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/tkey-mpc-swift",
       "state" : {
-        "revision" : "8fe0cc8d5cc2ad5d38bf068bc29f6af7e3146d08",
-        "version" : "3.0.0"
+        "branch" : "fix/base64-Sep",
+        "revision" : "2ee8d557a19b8bc3771f248c431172be2985ef98"
       }
     },
     {

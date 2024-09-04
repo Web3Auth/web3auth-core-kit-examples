@@ -26,7 +26,7 @@ struct EthereumClient {
            let nonce = try await web3Client.eth_getTransactionCount(
                 address: address, block: .Latest
             )
-            return nonce + 1
+            return nonce
         } catch let error {
             throw error
         }
