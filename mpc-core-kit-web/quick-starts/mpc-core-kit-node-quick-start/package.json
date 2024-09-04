@@ -1,0 +1,32 @@
+{
+  "author": "MSA",
+  "//IMP START": "IMP START - Web3Auth Installation",
+  "dependencies": {
+    "@toruslabs/tss-dkls-lib": "^3.0.0",
+    "@web3auth/base": "^8.12.4",
+    "@web3auth/base-provider": "^8.12.4",
+    "@web3auth/ethereum-mpc-provider": "^8.12.4",
+    "@web3auth/ethereum-provider": "^7.2.1",
+    "@web3auth/mpc-core-kit": "^3.1.1",
+    "@web3auth/node-sdk": "^3.2.0",
+    "@web3auth/single-factor-auth": "^8.1.1",
+    "bn.js": "^5.2.1",
+    "firebase": "^10.13.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "web3": "^4.12.1"
+  },
+  "//IMP END": "IMP END - Web3Auth Installation",
+  "description": "Web3Auth's Node SDK Demo App",
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "mpc-core-kit-node-quick-start",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "version": "1.0.0",
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6"
+  }
+}
