@@ -31,8 +31,7 @@ import {
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
-import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import {tssLib, Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // Use for social factor (optional)
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
@@ -152,13 +151,13 @@ export default function App() {
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken);
 
-      const idTokenLoginParams = {
+      const LoginParams = {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
       } as JWTLoginParams;
 
-      await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      await coreKitInstance.loginWithJWT(LoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
