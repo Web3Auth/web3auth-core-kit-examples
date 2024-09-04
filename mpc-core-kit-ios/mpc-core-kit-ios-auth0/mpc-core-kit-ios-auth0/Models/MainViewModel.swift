@@ -54,13 +54,13 @@ class MainViewModel: ObservableObject {
                 let auth0Creds = try await webAuth.connection("apple").start()
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
-                guard let email = jwt.body["email"] as? String else {
-                    throw "Email not found in JWT"
+                guard let sub = jwt.body["sub"] as? String else {
+                    throw "Sub not found in JWT"
                 }
                 
                 let result = try await mpcCoreKit.loginWithJwt(
-                    verifier: "w3a-auth0-demo",
-                    verifierId: email,
+                    verifier: "core-kit-swift",
+                    verifierId: sub,
                     idToken: auth0Creds.idToken
                 )
                 
@@ -154,7 +154,7 @@ class MainViewModel: ObservableObject {
                 )
                 let transaction = EthereumTransaction.init(
                     to: address,
-                    data: Data.init(hex: "0x")
+                    data: Data.init(hex: "0x00")
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
@@ -166,7 +166,7 @@ class MainViewModel: ObservableObject {
                 let finalTransaction = EthereumTransaction(
                     from: address,
                     to: address,
-                    value: 1000000000000000,
+                    value: 1000000000000,
                     data: transaction.data,
                     nonce: nonce,
                     gasPrice: gasPrice,
