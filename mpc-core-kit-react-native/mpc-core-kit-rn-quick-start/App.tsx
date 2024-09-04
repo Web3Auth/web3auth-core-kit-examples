@@ -470,12 +470,14 @@ export default function App() {
   const loginScreen = (
     <View style={styles.buttonArea}>
       <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+      <Text style={styles.subHeading}>This is a test example, you can enter a random email & password to create a new account</Text>
       <View style={styles.section}>
         <Text>Enter your Email</Text>
         <TextInput
           style={styles.input}
           onChangeText={setEmail}
           value={email}
+          secureTextEntry={false}
           autoCapitalize="none"
         />
       </View>
@@ -593,9 +595,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   subHeading: {
-    fontSize: 15,
+    fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   consoleArea: {
     margin: 20,
@@ -626,7 +629,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     margin: 20,
-    gap: 40,
   },
   disabledSection: {
     opacity: 0.5,
