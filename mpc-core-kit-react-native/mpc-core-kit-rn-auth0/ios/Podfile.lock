@@ -963,7 +963,7 @@ PODS:
     - RCT-Folly (= 2022.05.16.00)
     - React
     - React-Core
-  - react-native-webview (13.8.6):
+  - react-native-webview (13.12.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1392,7 +1392,7 @@ SPEC CHECKSUMS:
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-quick-crypto: baf477ca99eb2d142ebc8fd10c82eba98f4ebfa6
-  react-native-webview: d6607cbbe7bad689cc08d6d5e35cbf9938093223
+  react-native-webview: af2cf33a5cb5dc5789b9ac8811714a4f66a4c505
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: cd26e56d56350e123da0c1e3e4c76cb58a05e1ee
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
@@ -1415,7 +1415,7 @@ SPEC CHECKSUMS:
   ReactCommon: 2aa35648354bd4c4665b9a5084a7d37097b89c10
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
+  Yoga: 805bf71192903b20fc14babe48080582fee65a80
 
 PODFILE CHECKSUM: 1a3458f40f2b81d631519b0c779e211db1e54541
 

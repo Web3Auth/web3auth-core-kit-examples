@@ -29,7 +29,6 @@ import {
   keyToMnemonic,
   mnemonicToKey,
   makeEthereumSigner,
-  TssLib,
   JWTLoginParams,
 } from '@web3auth/mpc-core-kit';
 // import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
