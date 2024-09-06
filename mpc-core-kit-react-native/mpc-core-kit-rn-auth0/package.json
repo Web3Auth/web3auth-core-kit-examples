@@ -13,7 +13,7 @@
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
     "@toruslabs/eccrypto": "^5.0.4",
-    "@toruslabs/react-native-tss-lib-bridge": "^2.0.0",
+    "@toruslabs/react-native-tss-lib-bridge": "/Users/yashovardhanagrawal/Documents/GitHub/react-native-tss-lib/toruslabs-react-native-tss-lib-bridge-2.0.0.tgz",
     "@web3auth/base": "^8.6.2",
     "@web3auth/ethereum-mpc-provider": "^8.6.1",
     "@web3auth/mpc-core-kit": "3.1.1",
