@@ -61,14 +61,14 @@ const chainConfig = {
 };
 
 // // setup async storage for react native
-// const asyncStorageKey = {
-//   getItem: async (key: string) => {
-//     return EncryptedStorage.getItem(key);
-//   },
-//   setItem: async (key: string, value: string) => {
-//     return EncryptedStorage.setItem(key, value);
-//   },
-// };
+const asyncStorageKey = {
+  getItem: async (key: string) => {
+    return EncryptedStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    return EncryptedStorage.setItem(key, value);
+  },
+};
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
@@ -76,6 +76,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   uxMode: 'react-native',
   tssLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
+  storage: asyncStorageKey, // Add the storage property
 } as Web3AuthOptions);
 
 // Setup provider for EVM Chain
