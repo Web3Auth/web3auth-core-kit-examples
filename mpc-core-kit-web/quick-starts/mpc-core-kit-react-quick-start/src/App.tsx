@@ -55,7 +55,8 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   storage: window.localStorage,
   manualSync: true, // This is the recommended approach
-  tssLib: tssLib
+  tssLib: tssLib,
+  useDKG: false,
 });
 
 // Setup provider for EVM Chain
@@ -111,10 +112,14 @@ function App() {
         idToken,
       } as JWTLoginParams;
 
+      const timeBeforeLogin = new Date().getTime();
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
+      const timeAfterLogin = new Date().getTime();
+      const totalTimeTaken = timeAfterLogin - timeBeforeLogin;
+      uiConsole(`Login Time: ${totalTimeTaken}ms`);
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account

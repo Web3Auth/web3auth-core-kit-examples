@@ -534,7 +534,7 @@ export default function App() {
   );
 
   const loggedInView = (
-    <View style={styles.buttonArea}>
+    <View style={styles.compressedButtons}>
       <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
@@ -628,6 +628,12 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     justifyContent: 'space-around',
+    margin: 20,
+  },
+  compressedButtons: {
+    flex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
     margin: 20,
   },
   disabledSection: {
