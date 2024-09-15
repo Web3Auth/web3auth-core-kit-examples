@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		284712222BFB94220088411D /* MpcProviderSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712212BFB94220088411D /* MpcProviderSwift */; };
-		284712242BFB94450088411D /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284712232BFB94450088411D /* Extension.swift */; };
 		284712272BFB97FE0088411D /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712262BFB97FE0088411D /* mpc-core-kit-swift */; };
 		284BE5FE2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE5FD2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift */; };
 		284BE6002BC509500049C203 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE5FF2BC509500049C203 /* ContentView.swift */; };
@@ -22,7 +20,6 @@
 		284BE6322BC50C4A0049C203 /* UserStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE6312BC50C4A0049C203 /* UserStorage.swift */; };
 		284BE6342BC512A80049C203 /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE6332BC512A80049C203 /* RecoveryView.swift */; };
 		284BE6362BC512B20049C203 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE6352BC512B20049C203 /* HomeView.swift */; };
-		284BE63E2BC55A080049C203 /* EthereumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE63D2BC55A080049C203 /* EthereumHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +40,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		284712232BFB94450088411D /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		284BE5FA2BC509500049C203 /* mpc-core-kit-ios-quick-start.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mpc-core-kit-ios-quick-start.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		284BE5FD2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mpc_core_kit_ios_quick_startApp.swift; sourceTree = "<group>"; };
 		284BE5FF2BC509500049C203 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,7 +55,6 @@
 		284BE6312BC50C4A0049C203 /* UserStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStorage.swift; sourceTree = "<group>"; };
 		284BE6332BC512A80049C203 /* RecoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryView.swift; sourceTree = "<group>"; };
 		284BE6352BC512B20049C203 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		284BE63D2BC55A080049C203 /* EthereumHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +62,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284712222BFB94220088411D /* MpcProviderSwift in Frameworks */,
 				284712272BFB97FE0088411D /* mpc-core-kit-swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -170,8 +164,6 @@
 			isa = PBXGroup;
 			children = (
 				284BE6312BC50C4A0049C203 /* UserStorage.swift */,
-				284BE63D2BC55A080049C203 /* EthereumHelper.swift */,
-				284712232BFB94450088411D /* Extension.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -193,7 +185,6 @@
 			);
 			name = "mpc-core-kit-ios-quick-start";
 			packageProductDependencies = (
-				284712212BFB94220088411D /* MpcProviderSwift */,
 				284712262BFB97FE0088411D /* mpc-core-kit-swift */,
 			);
 			productName = "mpc-core-kit-ios-quick-start";
@@ -269,7 +260,6 @@
 			);
 			mainGroup = 284BE5F12BC509500049C203;
 			packageReferences = (
-				284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */,
 				284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
 			);
 			productRefGroup = 284BE5FB2BC509500049C203 /* Products */;
@@ -314,14 +304,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284712242BFB94450088411D /* Extension.swift in Sources */,
 				284BE62D2BC50A1F0049C203 /* LoginView.swift in Sources */,
 				284BE6362BC512B20049C203 /* HomeView.swift in Sources */,
 				284BE6002BC509500049C203 /* ContentView.swift in Sources */,
 				284BE5FE2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift in Sources */,
 				284BE6342BC512A80049C203 /* RecoveryView.swift in Sources */,
 				284BE62F2BC50A310049C203 /* MainViewModel.swift in Sources */,
-				284BE63E2BC55A080049C203 /* EthereumHelper.swift in Sources */,
 				284BE6322BC50C4A0049C203 /* UserStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -654,30 +642,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/MpcProviderSwift";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
 			requirement = {
-				branch = main;
+				branch = update_dependencies;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		284712212BFB94220088411D /* MpcProviderSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */;
-			productName = MpcProviderSwift;
-		};
 		284712262BFB97FE0088411D /* mpc-core-kit-swift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;

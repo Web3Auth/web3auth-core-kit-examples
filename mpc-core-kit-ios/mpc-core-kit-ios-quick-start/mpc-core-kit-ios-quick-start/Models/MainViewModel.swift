@@ -7,8 +7,7 @@
 
 import Foundation
 import mpc_core_kit_swift
-import MpcProviderSwift
-import web3
+import CustomAuth
 import UIKit
 
 class MainViewModel: ObservableObject {
@@ -20,17 +19,14 @@ class MainViewModel: ObservableObject {
     
     
     private var mpcCoreKit: MpcCoreKit!
-    private var ethereumClient: EthereumClient!
-    private var mpcEthereumProvider: MPCEthereumProvider!
     
     func initialize() {
-        mpcCoreKit = MpcCoreKit(
+        mpcCoreKit = try! MpcCoreKit(options: Web3AuthOptions(
             web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+            manualSync: true,
+            web3AuthNetwork: .sapphire(.SAPPHIRE_MAINNET),
+            localStorage: UserStorage())
         )
-        
-        ethereumClient = EthereumClient()
     }
     
     func loginWithJWT() {
@@ -56,11 +52,7 @@ class MainViewModel: ObservableObject {
     func loginWithOAuth() {
         Task {
             do {
-                let result = try await mpcCoreKit.loginWithOAuth(
-                    loginProvider: .google,
-                    clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
-                    verifier: "w3a-google-demo"
-                    
+                let result = try await mpcCoreKit.loginWithOAuth(singleLoginParams: SingleLoginParams(typeOfLogin: .google, verifier: "w3a-google-demo", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
                 )
                 
                 DispatchQueue.main.async {
@@ -105,8 +97,8 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 print(mpcCoreKit.debugDescription)
-                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
-                onSigned(signature, nil)
+                //let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
+                //onSigned(signature, nil)
             } catch let error  {
                 onSigned(nil, error.localizedDescription)
             }
@@ -116,7 +108,7 @@ class MainViewModel: ObservableObject {
     func sendTransaction(onSend: @escaping (String?, String?) -> ()) {
         Task {
             do {
-                
+                /*
                 let address = EthereumAddress(
                     stringLiteral: self.publicAddress
                 )
@@ -151,7 +143,7 @@ class MainViewModel: ObservableObject {
                 )
                 
                 onSend(hash, nil)
-                
+                */
                 
             } catch let error {
                 print(error.localizedDescription)
@@ -164,17 +156,15 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
                     factorKey: factor,
                     format: "mnemonic"
-                ) else {
-                    return
-                }
+                )
                 
                 print(seedPhrase)
                 
@@ -187,12 +177,10 @@ class MainViewModel: ObservableObject {
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
+                let factorKey = try mpcCoreKit.mnemonicToKey(
                     shareMnemonic: seedPhrase,
                     format: "mnemonic"
-                ) else {
-                    return
-                }
+                )
                 
                 print(factorKey.count)
                 
@@ -223,8 +211,8 @@ class MainViewModel: ObservableObject {
     }
     
     private func login() async throws {
-        mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
-        publicAddress = mpcEthereumProvider.address.toChecksumAddress()
+        // mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
+        // publicAddress = mpcEthereumProvider.address.toChecksumAddress()
         try await refreshFactorPubs()
         toggleIsLoggedIn()
     }
