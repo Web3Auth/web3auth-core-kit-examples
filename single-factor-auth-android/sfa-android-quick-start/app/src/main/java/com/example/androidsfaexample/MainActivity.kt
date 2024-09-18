@@ -1,5 +1,9 @@
 package com.example.androidsfaexample
 
+// IMP START - Auth Provider Login
+// IMP END - Auth Provider Login
+// IMP START - Quick Start
+// IMP END - Quick Start
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
@@ -9,29 +13,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
-// IMP START - Auth Provider Login
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-// IMP END - Auth Provider Login
 import com.google.gson.Gson
-// IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SingleFactorAuthArgs
-import com.web3auth.singlefactorauth.types.TorusKey
+import com.web3auth.singlefactorauth.types.SFAKey
+import com.web3auth.singlefactorauth.types.SFAParams
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
-// IMP END - Quick Start
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var singleFactorAuthArgs: SingleFactorAuthArgs
+    private lateinit var singleFactorAuthArgs: SFAParams
     private lateinit var loginParams: LoginParams
-    private var torusKey: TorusKey? = null
+    private var torusKey: SFAKey? = null
+
     // IMP START - Auth Provider Login
     private lateinit var auth: FirebaseAuth
+
     // IMP END - Auth Provider Login
     private var publicAddress: String = ""
     private val gson = Gson()
@@ -41,8 +41,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SingleFactorAuthArgs(Web3AuthNetwork.MAINNET, "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA")
-        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs)
+        singleFactorAuthArgs = SFAParams(
+            Web3AuthNetwork.MAINNET,
+            "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA"
+        )
+        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs, this)
         // IMP END - Initialize Web3Auth SFA
 
 
@@ -53,22 +56,14 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut() }
 
-        val sessionResponse: CompletableFuture<TorusKey> =
-            singleFactorAuth.initialize(this.applicationContext)
-        sessionResponse.whenComplete { torusKey, error ->
-            if (torusKey != null) {
-                publicAddress = torusKey.publicAddress.toString()
-                println("""Private Key: ${torusKey.privateKey?.toString(16)}""".trimIndent())
-                reRender()
-            } else {
-                Log.d("MainActivity_SFA", error.message ?: "Something went wrong")
-            }
-        }
+        val sessionResponse: SFAKey = singleFactorAuth.initialize(this)
+        publicAddress = sessionResponse.getPublicAddress()
+        println("""Private Key: ${sessionResponse.getPrivateKey()}""".trimIndent())
 
         reRender()
     }
 
-    private fun signIn(){
+    private fun signIn() {
         // Initialize Firebase Auth
         // IMP START - Auth Provider Login
         auth = Firebase.auth
@@ -93,21 +88,14 @@ class MainActivity : AppCompatActivity() {
                             loginParams =
                                 LoginParams("w3a-firebase-demo", "$sub", "$idToken")
                             // IMP END - Verifier Creation
-                            try {
-                                // IMP START - Get Key
-                                torusKey = singleFactorAuth.getKey(
+                            // IMP START - Get Key
+                                torusKey = singleFactorAuth.connect(
                                     loginParams,
                                     this.applicationContext,
-                                    86400
-                                ).get()
+                                )
                                 // IMP END - Get Key
-                            } catch (e: ExecutionException) {
-                                e.printStackTrace()
-                            } catch (e: InterruptedException) {
-                                e.printStackTrace()
-                            }
-                            publicAddress = torusKey?.publicAddress.toString()
-                            println("""Private Key: ${torusKey?.privateKey?.toString(16)}""".trimIndent())
+                            publicAddress = torusKey?.getPublicAddress().toString()
+                            println("""Private Key: ${torusKey?.getPrivateKey()}""".trimIndent())
                             println("""Public Address: $publicAddress""".trimIndent())
                             reRender()
                         };
