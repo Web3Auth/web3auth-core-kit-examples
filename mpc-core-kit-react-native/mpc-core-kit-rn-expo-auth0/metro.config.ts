@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// Learn more https://docs.expo.io/guides/customizing-metro
+
 const { getDefaultConfig } = require("metro-config");
 
 module.exports = (async () => {
@@ -14,12 +13,12 @@ module.exports = (async () => {
     resolver: {
       // IMP START - Bundler Issues
       extraNodeModules: {
-        assert: require.resolve("empty-module"), // assert can be polyfilled here if needed
-        http: require.resolve("empty-module"), // stream-http can be polyfilled here if needed
-        https: require.resolve("empty-module"), // https-browserify can be polyfilled here if needed
-        os: require.resolve("empty-module"), // os-browserify can be polyfilled here if needed
-        url: require.resolve("empty-module"), // url can be polyfilled here if needed
-        zlib: require.resolve("empty-module"), // browserify-zlib can be polyfilled here if needed
+        assert: require.resolve("empty-module"),
+        http: require.resolve("empty-module"),
+        https: require.resolve("empty-module"),
+        os: require.resolve("empty-module"),
+        url: require.resolve("empty-module"),
+        zlib: require.resolve("empty-module"),
         path: require.resolve("empty-module"),
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
@@ -27,13 +26,11 @@ module.exports = (async () => {
       },
       // IMP END - Bundler Issues
 
-      // assetExts: assetExts.filter(ext => ext !== 'svg'),
-      // @ts-ignore
-      assetExts: assetExts.filter((ext) => ext !== "svg"),
+      // Ensure PNG and other image files are resolved correctly
+      assetExts: assetExts.filter((ext: string) => ext !== "svg").concat(["png"]),
 
+      // Extending source extensions for your use case
       sourceExts: process.env.TEST_REACT_NATIVE ? ["e2e.js"].concat(defaultSourceExts) : defaultSourceExts,
-      //   ? ['e2e.js'].concat(defaultSourceExts)
-      //   : defaultSourceExts,
     },
     transformer: {
       getTransformOptions: async () => ({
@@ -42,8 +39,7 @@ module.exports = (async () => {
           inlineRequires: true,
         },
       }),
-      // This detects entry points of React app and transforms them
-      // For the other files this will switch to use default `metro-react-native-babel-transformer` for transforming
+      // Custom Babel Transformer Path for React Bridge
       babelTransformerPath: require.resolve("react-native-react-bridge/lib/plugin"),
     },
   };

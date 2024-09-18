@@ -23,8 +23,10 @@
     "expo-status-bar": "~1.12.1",
     "metro-config": "^0.80.12",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-native": "0.74.5",
     "react-native-auth0": "^3.2.1",
+    "react-native-quick-base64": "^2.1.2",
     "react-native-quick-crypto": "^0.7.4",
     "react-native-react-bridge": "^0.11.2",
     "react-native-webview": "13.8.6"
@@ -32,7 +34,6 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@ethersproject/shims": "^5.7.0",
-    "@expo/metro-runtime": "~3.2.3",
     "@types/react": "^18.3.7",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
