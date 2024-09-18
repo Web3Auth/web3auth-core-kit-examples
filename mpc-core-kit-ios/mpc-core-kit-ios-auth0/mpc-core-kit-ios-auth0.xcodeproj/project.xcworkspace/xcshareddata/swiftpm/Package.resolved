@@ -1,15 +1,6 @@
 {
-  "originHash" : "6eb679ca10e6ba273c0a4c520af3222830fe4d28810a355d4409ece0c2cf4329",
+  "originHash" : "4d094b864a39c380b5e848611658ba8bd3cac9cdcd330d5fac7b11f59399ea97",
   "pins" : [
-    {
-      "identity" : "anycodable",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Flight-School/AnyCodable",
-      "state" : {
-        "revision" : "862808b2070cd908cb04f9aafe7de83d35f81b05",
-        "version" : "0.6.7"
-      }
-    },
     {
       "identity" : "auth0.swift",
       "kind" : "remoteSourceControl",
@@ -42,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/customauth-swift-sdk",
       "state" : {
-        "revision" : "60b48acb161fb4341c353c27bc6dd96af76887ff",
-        "version" : "10.0.1"
+        "branch" : "features_update",
+        "revision" : "576139ce446e397bce4f2b68b9b7d28ab5b0082f"
       }
     },
     {
@@ -51,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "22bfadf7491d77a0bc1953af002cadbd61383e7d",
-        "version" : "6.0.2"
+        "revision" : "4bd96c33ba8d02d9e27190c5c7cedf09cfdfd656",
+        "version" : "6.0.3"
       }
     },
     {
@@ -87,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/mpc-core-kit-swift",
       "state" : {
-        "branch" : "main",
-        "revision" : "183f205cb24ff8aa9c6c59bea905f365fe03d34e"
+        "branch" : "update_dependencies",
+        "revision" : "37cc49d743f7e4b211ec6168bdaf3110288bdd88"
       }
     },
     {
@@ -132,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "73c5066d369c7d2aa1057c56a89b7f1dcdda3270",
-        "version" : "5.0.0"
+        "branch" : "7.0.0",
+        "revision" : "d9a8fd7885e37e74e61010f8fb240cbbafd1e577"
       }
     },
     {
@@ -249,8 +240,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/tkey-mpc-swift",
       "state" : {
-        "revision" : "8fe0cc8d5cc2ad5d38bf068bc29f6af7e3146d08",
-        "version" : "3.0.0"
+        "branch" : "update_features",
+        "revision" : "00ed189447df83681092aabd5c64e65671ccd0d1"
       }
     },
     {
@@ -258,8 +249,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "ff85c3e96bfa29013309b487875c4d9383e4ac80",
-        "version" : "8.1.1"
+        "revision" : "23083bf8196d1f78c05b085ba8347f94734b1a16",
+        "version" : "9.0.1"
       }
     },
     {

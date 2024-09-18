@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		284712222BFB94220088411D /* MpcProviderSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712212BFB94220088411D /* MpcProviderSwift */; };
 		284712242BFB94450088411D /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284712232BFB94450088411D /* Extension.swift */; };
-		284712272BFB97FE0088411D /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 284712262BFB97FE0088411D /* mpc-core-kit-swift */; };
 		284BE5FE2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE5FD2BC509500049C203 /* mpc_core_kit_ios_quick_startApp.swift */; };
 		284BE6002BC509500049C203 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE5FF2BC509500049C203 /* ContentView.swift */; };
 		284BE6022BC509520049C203 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 284BE6012BC509520049C203 /* Assets.xcassets */; };
@@ -23,6 +21,9 @@
 		284BE6342BC512A80049C203 /* RecoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE6332BC512A80049C203 /* RecoveryView.swift */; };
 		284BE6362BC512B20049C203 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE6352BC512B20049C203 /* HomeView.swift */; };
 		284BE63E2BC55A080049C203 /* EthereumHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284BE63D2BC55A080049C203 /* EthereumHelper.swift */; };
+		28CC81D62C96B44B0041F724 /* mpc-core-kit-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 28CC81D52C96B44B0041F724 /* mpc-core-kit-swift */; };
+		28CC81D92C97F7B40041F724 /* Web3SwiftMpcProvider in Frameworks */ = {isa = PBXBuildFile; productRef = 28CC81D82C97F7B40041F724 /* Web3SwiftMpcProvider */; };
+		28CC81DC2C97FC850041F724 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 28CC81DB2C97FC850041F724 /* web3.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,8 +68,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284712222BFB94220088411D /* MpcProviderSwift in Frameworks */,
-				284712272BFB97FE0088411D /* mpc-core-kit-swift in Frameworks */,
+				28CC81D62C96B44B0041F724 /* mpc-core-kit-swift in Frameworks */,
+				28CC81DC2C97FC850041F724 /* web3.swift in Frameworks */,
+				28CC81D92C97F7B40041F724 /* Web3SwiftMpcProvider in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,8 +195,9 @@
 			);
 			name = "mpc-core-kit-ios-quick-start";
 			packageProductDependencies = (
-				284712212BFB94220088411D /* MpcProviderSwift */,
-				284712262BFB97FE0088411D /* mpc-core-kit-swift */,
+				28CC81D52C96B44B0041F724 /* mpc-core-kit-swift */,
+				28CC81D82C97F7B40041F724 /* Web3SwiftMpcProvider */,
+				28CC81DB2C97FC850041F724 /* web3.swift */,
 			);
 			productName = "mpc-core-kit-ios-quick-start";
 			productReference = 284BE5FA2BC509500049C203 /* mpc-core-kit-ios-quick-start.app */;
@@ -269,8 +272,9 @@
 			);
 			mainGroup = 284BE5F12BC509500049C203;
 			packageReferences = (
-				284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */,
-				284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
+				28CC81D42C96B44B0041F724 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */,
+				28CC81D72C97F7B40041F724 /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */,
+				28CC81DA2C97FC850041F724 /* XCRemoteSwiftPackageReference "web3" */,
 			);
 			productRefGroup = 284BE5FB2BC509500049C203 /* Products */;
 			projectDirPath = "";
@@ -654,34 +658,47 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */ = {
+		28CC81D42C96B44B0041F724 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/MpcProviderSwift";
+			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			requirement = {
+				kind = revision;
+				revision = 37cc49d743f7e4b211ec6168bdaf3110288bdd88;
+			};
+		};
+		28CC81D72C97F7B40041F724 /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tkey/web3-swift-mpc-provider";
 			requirement = {
 				branch = main;
 				kind = branch;
 			};
 		};
-		284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
+		28CC81DA2C97FC850041F724 /* XCRemoteSwiftPackageReference "web3" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			repositoryURL = "https://github.com/argentlabs/web3.swift";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		284712212BFB94220088411D /* MpcProviderSwift */ = {
+		28CC81D52C96B44B0041F724 /* mpc-core-kit-swift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 284712202BFB94220088411D /* XCRemoteSwiftPackageReference "MpcProviderSwift" */;
-			productName = MpcProviderSwift;
-		};
-		284712262BFB97FE0088411D /* mpc-core-kit-swift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 284712252BFB97FE0088411D /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
+			package = 28CC81D42C96B44B0041F724 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */;
 			productName = "mpc-core-kit-swift";
+		};
+		28CC81D82C97F7B40041F724 /* Web3SwiftMpcProvider */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CC81D72C97F7B40041F724 /* XCRemoteSwiftPackageReference "web3-swift-mpc-provider" */;
+			productName = Web3SwiftMpcProvider;
+		};
+		28CC81DB2C97FC850041F724 /* web3.swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28CC81DA2C97FC850041F724 /* XCRemoteSwiftPackageReference "web3" */;
+			productName = web3.swift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

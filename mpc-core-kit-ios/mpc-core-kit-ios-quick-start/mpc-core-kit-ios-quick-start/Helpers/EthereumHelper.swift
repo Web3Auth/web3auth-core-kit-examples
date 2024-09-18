@@ -50,12 +50,9 @@ struct EthereumClient {
         }
     }
     
-    func broadcastSignedTransaction(transaction: SignedTransaction) async throws -> String {
+    func broadcastSignedTransaction(transactionHex: String) async throws -> String {
         do {
-            guard let transactionHex = transaction.raw?.web3.hexString else {
-                throw EthereumClientError.encodeIssue
-            }
-
+            
             let data = try await web3Client.networkProvider.send(
                 method: "eth_sendRawTransaction",
                 params: [transactionHex],

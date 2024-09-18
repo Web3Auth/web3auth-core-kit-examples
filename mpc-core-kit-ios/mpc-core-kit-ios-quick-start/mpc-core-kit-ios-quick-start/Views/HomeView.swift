@@ -21,9 +21,9 @@ struct HomeView: View {
                 Section(header: Text("Public Address")) {
                     Button(
                         action: {
-                            UIPasteboard.general.string = viewModel.publicAddress
+                            UIPasteboard.general.string = viewModel.publicAddress.toChecksumAddress()
                         }, label: {
-                            Text(viewModel.publicAddress)
+                            Text(viewModel.publicAddress.toChecksumAddress())
                         })
                     
                 }

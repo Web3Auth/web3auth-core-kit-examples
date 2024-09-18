@@ -694,7 +694,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
 			requirement = {
-				branch = main;
+				branch = update_dependencies;
 				kind = branch;
 			};
 		};

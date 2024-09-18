@@ -21,22 +21,24 @@ class MainViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var isLoaderVisible: Bool = false
     
-    var publicAddress: String!
-    
+    var publicAddress: EthereumAddress!
     
     private var mpcCoreKit: MpcCoreKit!
     private var ethereumClient: EthereumClient!
-    private var mpcEthereumProvider: MPCEthereumProvider!
     private var webAuth: WebAuth!
     var userInfo: [String: Any]!
     var alertContent: String = ""
     var loaderContent: String = ""
     
     func initialize() {
-        mpcCoreKit = MpcCoreKit(
-            web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+        mpcCoreKit = try! MpcCoreKit(
+            options: .init(
+                web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+                manualSync: false,
+                web3AuthNetwork: .sapphire(.SAPPHIRE_MAINNET),
+                localStorage: UserStorage(),
+                overwriteMetadataUrl: "http://127.0.0.1:5051"
+            )
         )
         
         webAuth = Auth0.webAuth(clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O", domain: "web3auth.au.auth0.com")
@@ -72,7 +74,7 @@ class MainViewModel: ObservableObject {
                 
                 if(!self.isRecoveryRequired) {
                     try await login()
-                   
+                    
                 }
                 
                 hideLoader()
@@ -131,12 +133,17 @@ class MainViewModel: ObservableObject {
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
-                showLoader("Signing Message")
-                let signature = try mpcEthereumProvider.signMessage(
-                    message: "Welcome to Web3Auth".data(using: .ascii)!
-                )
+                let message = "YOUR_MESSAGE".data(using: .ascii)!
+                let prefix = "\u{19}Ethereum Signed Message:\n\(String(message.count))"
+                guard var data = prefix.data(using: .ascii) else {
+                    throw "Incorrect Data"
+                }
+                
+                data.append(message)
+                let hash = data.web3.keccak256
+                let signature = try await mpcCoreKit.tssSign(message: hash)
                 hideLoader()
-                onSigned(signature, nil)
+                onSigned(signature.hexString, nil)
             } catch let error  {
                 hideLoader()
                 onSigned(nil, error.localizedDescription)
@@ -149,23 +156,20 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Sending Transaction")
-                let address = EthereumAddress(
-                    stringLiteral: self.publicAddress
-                )
                 let transaction = EthereumTransaction.init(
-                    to: address,
-                    data: Data.init(hex: "0x00")
+                    to: self.publicAddress,
+                    data: Data.init(hex: "0x00")!
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
                     transaction: transaction
                 )
                 let gasPrice = try await self.ethereumClient.getGasPrice()
-                let nonce = try await self.ethereumClient.getNonce(address: address)
+                let nonce = try await self.ethereumClient.getNonce(address: self.publicAddress)
                 
                 let finalTransaction = EthereumTransaction(
-                    from: address,
-                    to: address,
+                    from: self.publicAddress,
+                    to: self.publicAddress,
                     value: 1000000000000,
                     data: transaction.data,
                     nonce: nonce,
@@ -174,12 +178,10 @@ class MainViewModel: ObservableObject {
                     chainId: Int(self.ethereumClient.getChainId())
                 )
                 
-                let signedTransaction = try mpcEthereumProvider.sign(
-                    transaction: finalTransaction
-                )
+                let signedTransaction = try await mpcCoreKit.tssSign(message: finalTransaction.raw!.web3.keccak256)
                 
                 let hash = try await ethereumClient.broadcastSignedTransaction(
-                    transaction: signedTransaction
+                    transactionHex: signedTransaction.hexString
                 )
                 hideLoader()
                 onSend(hash, nil)
@@ -199,18 +201,15 @@ class MainViewModel: ObservableObject {
             do {
                 showLoader("Adding new factor")
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
                     factorKey: factor,
                     format: "mnemonic"
-                ) else {
-                    return
-                }
-                
+                )
                 print(seedPhrase)
                 
                 UIPasteboard.general.string = seedPhrase
@@ -228,13 +227,10 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Recovering account")
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
+                let factorKey = try mpcCoreKit.mnemonicToKey(
                     shareMnemonic: seedPhrase,
                     format: "mnemonic"
-                ) else {
-                    hideLoader()
-                    return
-                }
+                )
                 
                 try await mpcCoreKit.inputFactor(
                     factorKey: factorKey
@@ -258,19 +254,16 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Enabling MFA")
-                let recoveryFactorKey = try await mpcCoreKit.enableMFA()
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
-                    factorKey: recoveryFactorKey!,
-                    format: "mnemonic"
-                ) else {
-                    hideLoader()
-                    return
-                }
-                
-                print(seedPhrase)
-                
-                UIPasteboard.general.string = seedPhrase
-                showAlert(message: "MFA is enabled, and seedphrase is copied to clipboard. \(seedPhrase)")
+                let recoveryFactorKey = try await mpcCoreKit.enableMFAWithRecoveryFactor()
+//                let seedPhrase = try mpcCoreKit.keyToMnemonic(
+//                    factorKey: recoveryFactorKey,
+//                    format: "mnemonic"
+//                )
+//                
+//                print(seedPhrase)
+//                
+//                UIPasteboard.general.string = seedPhrase
+//                showAlert(message: "MFA is enabled, and seedphrase is copied to clipboard. \(seedPhrase)")
                 hideLoader()
                 await refreshFactorPubs()
             } catch let error {
@@ -286,19 +279,16 @@ class MainViewModel: ObservableObject {
         let keyDetails = try await mpcCoreKit.getKeyDetails()
         print(keyDetails.requiredFactors)
         
-        mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
         
         let fullAddress = try KeyPoint(
             address: pubKey.hexString
         ).getPublicKey(format: .FullAddress)
         
         
-        let address = KeyUtil.generateAddress(
-            from: Data(hex: fullAddress).suffix(64)
+        publicAddress = KeyUtil.generateAddress(
+            from: Data(hex: fullAddress)!.suffix(64)
         )
-        print(address)
         
-        publicAddress = mpcEthereumProvider.address.toChecksumAddress()
         await refreshFactorPubs()
         toggleIsLoggedIn()
     }

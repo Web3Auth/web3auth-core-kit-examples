@@ -23,9 +23,9 @@ struct HomeView: View {
                         Button(
                             action: {
                                 viewModel.showAlert(message: "Address is copied to clipboard")
-                                UIPasteboard.general.string = viewModel.publicAddress
+                                UIPasteboard.general.string = viewModel.publicAddress.toChecksumAddress()
                             }, label: {
-                                Text(viewModel.publicAddress)
+                                Text(viewModel.publicAddress.toChecksumAddress())
                             })
                         
                         Button(

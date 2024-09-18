@@ -7,7 +7,7 @@
 
 import Foundation
 import mpc_core_kit_swift
-import MpcProviderSwift
+import Web3SwiftMpcProvider
 import web3
 import UIKit
 
@@ -16,18 +16,20 @@ class MainViewModel: ObservableObject {
     @Published var isRecoveryRequired: Bool = false
     @Published var factorPubs: [String] = []
     
-    var publicAddress: String!
+    var publicAddress: EthereumAddress!
     
     
     private var mpcCoreKit: MpcCoreKit!
     private var ethereumClient: EthereumClient!
-    private var mpcEthereumProvider: MPCEthereumProvider!
     
     func initialize() {
-        mpcCoreKit = MpcCoreKit(
-            web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+        mpcCoreKit = try! MpcCoreKit(
+            options: Web3AuthOptions(
+                web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+                manualSync: false,
+                web3AuthNetwork: .sapphire(.SAPPHIRE_MAINNET),
+                localStorage: UserStorage()
+            )
         )
         
         ethereumClient = EthereumClient()
@@ -57,10 +59,11 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let result = try await mpcCoreKit.loginWithOAuth(
-                    loginProvider: .google,
-                    clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
-                    verifier: "w3a-google-demo"
-                    
+                    singleLoginParams: .init(
+                        typeOfLogin: .google,
+                        verifier: "w3a-google-demo", 
+                        clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com"
+                    )
                 )
                 
                 DispatchQueue.main.async {
@@ -83,6 +86,7 @@ class MainViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isRecoveryRequired.toggle()
                 }
+                toggleIsLoggedIn()
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -104,9 +108,17 @@ class MainViewModel: ObservableObject {
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
-                print(mpcCoreKit.debugDescription)
-                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
-                onSigned(signature, nil)
+                let message = "YOUR_MESSAGE".data(using: .ascii)!
+                let prefix = "\u{19}Ethereum Signed Message:\n\(String(message.count))"
+                guard var data = prefix.data(using: .ascii) else {
+                    throw "Incorrect Data"
+                }
+                
+                data.append(message)
+                let hash = data.web3.keccak256
+                let signature = try await mpcCoreKit.tssSign(message: hash)
+               
+                onSigned(signature.web3.hexString, nil)
             } catch let error  {
                 onSigned(nil, error.localizedDescription)
             }
@@ -118,11 +130,11 @@ class MainViewModel: ObservableObject {
             do {
                 
                 let address = EthereumAddress(
-                    stringLiteral: self.publicAddress
+                    stringLiteral: self.publicAddress.toChecksumAddress()
                 )
                 let transaction = EthereumTransaction.init(
                     to: address,
-                    data: Data.init(hex: "0x")
+                    data: Data.init(hex: "0x")!
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
@@ -142,12 +154,12 @@ class MainViewModel: ObservableObject {
                     chainId: Int(self.ethereumClient.getChainId())
                 )
                 
-                let signedTransaction = try mpcEthereumProvider.sign(
-                    transaction: finalTransaction
-                )
+               
+                
+                let signedTransaction = try await mpcCoreKit.tssSign(message: finalTransaction.raw!.web3.keccak256)
                 
                 let hash = try await ethereumClient.broadcastSignedTransaction(
-                    transaction: signedTransaction
+                    transactionHex: signedTransaction.hexString
                 )
                 
                 onSend(hash, nil)
@@ -164,22 +176,22 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
                     factorKey: factor,
                     format: "mnemonic"
-                ) else {
-                    return
-                }
+                )
                 
                 print(seedPhrase)
                 
                 UIPasteboard.general.string = seedPhrase
                 try await refreshFactorPubs()
+            } catch let error {
+                print(error.localizedDescription)
             }
         }
     }
@@ -187,12 +199,10 @@ class MainViewModel: ObservableObject {
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
+                let factorKey = try mpcCoreKit.mnemonicToKey(
                     shareMnemonic: seedPhrase,
                     format: "mnemonic"
-                ) else {
-                    return
-                }
+                )
                 
                 print(factorKey.count)
                 
@@ -214,7 +224,7 @@ class MainViewModel: ObservableObject {
     func enableMFA() {
         Task {
             do {
-                _ = try await mpcCoreKit.enableMFA()
+                _ = try await mpcCoreKit.enableMFAWithRecoveryFactor()
                 try await refreshFactorPubs()
             } catch let error {
                 print(error.localizedDescription)
@@ -223,8 +233,10 @@ class MainViewModel: ObservableObject {
     }
     
     private func login() async throws {
-        mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
-        publicAddress = mpcEthereumProvider.address.toChecksumAddress()
+        let extendedPubKey = try await mpcCoreKit.getTssPubKey()
+        
+        
+        publicAddress = KeyUtil.generateAddress(from: extendedPubKey)
         try await refreshFactorPubs()
         toggleIsLoggedIn()
     }
