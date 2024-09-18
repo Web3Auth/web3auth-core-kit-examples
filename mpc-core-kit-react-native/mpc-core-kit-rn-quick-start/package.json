@@ -17,7 +17,6 @@
     "@toruslabs/react-native-tss-lib-bridge": "^2.1.0",
     "@web3auth/base-provider": "^8.12.4",
     "@web3auth/ethereum-mpc-provider": "^8.12.4",
-    "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/mpc-core-kit": "^3.1.1",
     "@web3auth/single-factor-auth-react-native": "^2.1.0",
     "ethers": "^6.13.2",

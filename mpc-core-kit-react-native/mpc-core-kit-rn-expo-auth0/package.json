@@ -1,0 +1,50 @@
+{
+  "name": "mpc-core-kit-rn-expo-auth0",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start -c",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@toruslabs/react-native-tss-lib-bridge": "^2.1.0",
+    "@types/react-native": "^0.72.8",
+    "@web3auth/base": "^8.12.4",
+    "@web3auth/base-provider": "^8.12.4",
+    "@web3auth/ethereum-mpc-provider": "^8.12.4",
+    "@web3auth/mpc-core-kit": "^3.1.2",
+    "@web3auth/single-factor-auth-react-native": "^2.1.0",
+    "bn.js": "^5.2.1",
+    "ethers": "^6.13.2",
+    "expo": "~51.0.28",
+    "expo-secure-store": "^13.0.2",
+    "expo-status-bar": "~1.12.1",
+    "metro-config": "^0.80.12",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-auth0": "^3.2.1",
+    "react-native-quick-crypto": "^0.7.4",
+    "react-native-react-bridge": "^0.11.2",
+    "react-native-webview": "13.8.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@ethersproject/shims": "^5.7.0",
+    "@expo/metro-runtime": "~3.2.3",
+    "@types/react": "^18.3.7",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "empty-module": "^0.0.2",
+    "metro-core": "^0.80.12",
+    "metro-react-native-babel-transformer": "^0.77.0",
+    "react-native-get-random-values": "^1.11.0",
+    "react-native-url-polyfill": "^2.0.0",
+    "stream-browserify": "^3.0.0",
+    "text-encoding": "^0.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  },
+  "private": true
+}
