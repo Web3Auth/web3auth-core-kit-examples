@@ -56,9 +56,12 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut() }
 
-        val sessionResponse: SFAKey = singleFactorAuth.initialize(this)
-        publicAddress = sessionResponse.getPublicAddress()
-        println("""Private Key: ${sessionResponse.getPrivateKey()}""".trimIndent())
+
+        if (singleFactorAuth.isSessionIdExists()) {
+            val sfakey = singleFactorAuth.initialize(this.applicationContext)
+            publicAddress = sfakey.getPublicAddress()
+            println("""Private Key: ${sfakey.getPrivateKey()}""".trimIndent())
+        }
 
         reRender()
     }
@@ -98,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                             println("""Private Key: ${torusKey?.getPrivateKey()}""".trimIndent())
                             println("""Public Address: $publicAddress""".trimIndent())
                             reRender()
-                        };
+                        }
                     }
                 } else {
                     // If sign in fails, display a message to the user.
