@@ -24,7 +24,7 @@ struct EthereumClient {
     let ethereumAccount: EthereumAccount!
     var networkId: String = "11155111"
     
-    init(user: TorusSFAKey) {
+    init(user: SFAKey) {
         self.web3Client = EthereumHttpClient(
             url: URL(string: "https://1rpc.io/sepolia")!,
             network: .fromString(networkId)
@@ -53,12 +53,12 @@ struct EthereumClient {
     }
 
     func signMessage() throws -> String {
-        return try ethereumAccount.signMessage(message: Data.init(hex: "0x1214"))
+        return try ethereumAccount.signMessage(message: Data.init(hex: "0x1214")!)
     }
 
 }
 
-extension TorusSFAKey: EthereumSingleKeyStorageProtocol {
+extension SFAKey: EthereumSingleKeyStorageProtocol {
     public func storePrivateKey(key: Data) throws {
         
     }
