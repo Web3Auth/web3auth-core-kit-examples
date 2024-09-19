@@ -10,7 +10,7 @@ import FirebaseAuth
 class ViewModel: ObservableObject {
     // IMP START - Installation
     var singleFactorAuth: SingleFactorAuth!
-    var singleFactorAuthArgs: SFAParams!
+    var sfaParams: SFAParams!
     var ethereumClient: EthereumClient!
     var userBalance: String!
     
@@ -30,8 +30,8 @@ class ViewModel: ObservableObject {
         })
         
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", network: .sapphire(.SAPPHIRE_MAINNET))
-        singleFactorAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
+        sfaParams = SFAParams(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", network: .sapphire(.SAPPHIRE_MAINNET))
+        singleFactorAuth = try! SingleFactorAuth(params: sfaParams)
         
         // IMP END - Initialize Web3Auth SFA
         await MainActor.run(body: {
