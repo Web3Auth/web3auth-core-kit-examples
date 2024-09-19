@@ -306,7 +306,7 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
           Web3Auth
         </a>{" "}
-        SFA React Auth0 GitHub Example
+        SFA (Auth0 GitHub)-(Google) Aggregate React Example
       </h1>
 
       {loading ? <Loading /> : <div className="grid">{isLoggedIn ? loginView : logoutView}</div>}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 // Import Single Factor Auth SDK for no redirect flow
-import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
+import { decodeToken, Web3Auth, ADAPTER_STATUS } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { auth } from "./FireBaseConfig";
@@ -53,7 +53,9 @@ function App() {
     const init = async () => {
       try {
         // Initialising Web3Auth Single Factor Auth SDK
-        web3authSfa.init();
+        if (web3authSfa.status === ADAPTER_STATUS.NOT_READY) {
+          web3authSfa.init();
+        }
       } catch (error) {
         uiConsole(error);
       }
@@ -73,14 +75,14 @@ function App() {
             return;
           }
           const { payload } = decodeToken(idToken);
-
-          await web3authSfa.connect({
-            verifier,
-            verifierId: (payload as any).email,
-            idToken: idToken,
-          });
-
-          setIsLoggedIn(true);
+          if (web3authSfa.status === ADAPTER_STATUS.NOT_READY) {
+            await web3authSfa.connect({
+              verifier,
+              verifierId: (payload as any).email,
+              idToken: idToken,
+            });
+            setIsLoggedIn(true);
+          }
         })
         .catch((error) => {
           uiConsole(error);
