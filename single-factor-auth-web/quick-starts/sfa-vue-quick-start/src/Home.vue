@@ -1,37 +1,31 @@
 <!-- eslint-disable vue/no-ref-as-operand -->
 <template>
   <div id="app">
-    <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer"> Web3Auth Single Factor Auth </a>
-      & Vue.js Quick Start
-    </h2>
+    <header>
+      <h1>Web3Auth Single Factor Auth & Vue.js</h1>
+    </header>
 
-    <button v-if="!loggedIn" class="card" @click="login" style="cursor: pointer">Login</button>
+    <main>
+      <div v-if="!loggedIn" class="login-container">
+        <button class="btn btn-primary" @click="login">Login</button>
+      </div>
 
-    <div v-if="loggedIn">
-      <div class="flex-container">
-        <div>
-          <button class="card" @click="getUserInfo" style="cursor: pointer">Get User Info</button>
+      <div v-if="loggedIn" class="dashboard">
+        <div class="user-actions">
+          <button class="btn" @click="getUserInfo">Get User Info</button>
+          <button class="btn" @click="getAccounts">Get Accounts</button>
+          <button class="btn" @click="getBalance">Get Balance</button>
+          <button class="btn" @click="signMessage">Sign Message</button>
+          <button class="btn btn-danger" @click="logout">Logout</button>
         </div>
-        <div>
-          <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
-        </div>
-        <div>
-          <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
-        </div>
-        <div>
-          <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
-        </div>
-        <div>
-          <button class="card" @click="logout" style="cursor: pointer">Logout</button>
+        <div id="console">
+          <h3>Console Output:</h3>
+          <pre></pre>
         </div>
       </div>
-    </div>
-    <div id="console" style="white-space: pre-line">
-      <p style="white-space: pre-line"></p>
-    </div>
+    </main>
 
-    <footer class="footer">
+    <footer>
       <a
         href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
         target="_blank"
@@ -243,7 +237,7 @@ export default {
     // IMP END - Blockchain Calls
 
     function uiConsole(...args: any[]): void {
-      const el = document.querySelector("#console>p");
+      const el = document.querySelector("#console>pre");
       if (el) {
         el.innerHTML = JSON.stringify(args || {}, null, 2);
       }
@@ -268,69 +262,103 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #app {
-  width: 80%;
-  margin: auto;
-  padding: 0 2rem;
+  font-family: "Arial", sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: #333;
 }
 
-h3 {
-  margin: 40px 0 0;
+header {
+  margin-bottom: 2rem;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+h1 {
+  color: #2c3e50;
+  font-size: 2rem;
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
-
-.card {
-  margin: 0.5rem;
-  padding: 0.7rem;
-  text-align: center;
-  color: #0070f3;
-  background-color: #fafafa;
-  text-decoration: none;
-  border: 1px solid #0070f3;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  width: 100%;
-}
-
-.card:hover,
-.card:focus,
-.card:active {
-  cursor: pointer;
-  background-color: #f1f1f1;
-}
-
-.flex-container {
+.login-container {
   display: flex;
-  flex-flow: row wrap;
+  justify-content: center;
+  margin-top: 2rem;
 }
 
-.flex-container > div {
-  width: 100px;
-  margin: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 30px;
+.dashboard {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
 }
 
 #console {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  word-wrap: break-word;
-  font-size: 16px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  border-radius: 4px;
+  padding: 1rem;
   font-family: monospace;
   text-align: left;
+}
+
+#console h3 {
+  margin-top: 0;
+  color: #3498db;
+}
+
+#console pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+footer a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
 </style>
