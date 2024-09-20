@@ -10,6 +10,7 @@ import FirebaseAuth
 class ViewModel: ObservableObject {
     // IMP START - Installation
     var singleFactorAuth: SingleFactorAuth!
+    var sfaParams: SFAParams!
     var ethereumClient: EthereumClient!
     var userBalance: String!
     
@@ -29,12 +30,8 @@ class ViewModel: ObservableObject {
         })
         
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuth = SingleFactorAuth(
-            singleFactorAuthArgs: .init(
-                web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-                network: Web3AuthNetwork.SAPPHIRE_MAINNET
-            )
-        )
+        sfaParams = SFAParams(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", network: .sapphire(.SAPPHIRE_MAINNET))
+        singleFactorAuth = try! SingleFactorAuth(params: sfaParams)
         
         // IMP END - Initialize Web3Auth SFA
         await MainActor.run(body: {
@@ -55,7 +52,7 @@ class ViewModel: ObservableObject {
                 let verifierName = "w3a-firebase-demo"
                 // IMP END - Verifier Creation
                 // IMP START - Get Key
-                let result = try await singleFactorAuth.getKey(
+                let result = try await singleFactorAuth.connect(
                     loginParams: .init(
                         verifier: verifierName,
                         verifierId: res.user.uid,
@@ -110,7 +107,7 @@ class ViewModel: ObservableObject {
 }
 
 extension ViewModel {
-    func showResult(result: TorusSFAKey) {
+    func showResult(result: SFAKey) {
         print("""
         Signed in successfully!
             Private key: \(result.getPrivateKey())
