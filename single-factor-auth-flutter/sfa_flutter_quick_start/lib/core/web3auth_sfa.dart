@@ -16,9 +16,10 @@ class Web3AuthSFA {
     // IMP START - Initialize Web3Auth SFA
     await singleFactAuthFlutter.init(
       SFAParams(
-        network: Web3AuthNetwork.mainnet,
-        clientid:
+        network: Web3AuthNetwork.sapphire_mainnet,
+        clientId:
             "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
+            sessionTime: 40
       ),
     );
     // IMP END - Initialize Web3Auth SFA
@@ -26,7 +27,9 @@ class Web3AuthSFA {
 
   Future<void> initialize() async {
     try {
-      final TorusKey? torusKey = await singleFactAuthFlutter.initialize();
+      final isSessionPresent = await singleFactAuthFlutter.isSessionIdExists();
+      log("Is session present: $isSessionPresent");
+      final SFAKey? torusKey = await singleFactAuthFlutter.initialize();
       if (torusKey != null) {
         log('Initialized successfully. Private Key: ${torusKey.privateKey}');
       }
@@ -35,11 +38,11 @@ class Web3AuthSFA {
     }
   }
 
-  Future<TorusKey> getKey(User user) async {
+  Future<SFAKey> getKey(User user) async {
     // IMP START - Get Key
     try {
       final token = await user.getIdToken(true);
-      final TorusKey torusKey = await singleFactAuthFlutter.getKey(
+      final SFAKey torusKey = await singleFactAuthFlutter.connect(
         LoginParams(
           // IMP START - Verifier Creation
           verifier: 'w3a-firebase-demo',
