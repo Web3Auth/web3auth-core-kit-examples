@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@react-native-community/eslint-config": "^3.2.0",
-    "@toruslabs/eslint-config-typescript": "^1.4.0"
+    "@toruslabs/eslint-config-typescript": "^1.4.0",
+    "@toruslabs/react-native-tss-lib-bridge": "file:../react-native-tss-lib/toruslabs-react-native-tss-lib-bridge-2.1.0.tgz"
   }
 }
