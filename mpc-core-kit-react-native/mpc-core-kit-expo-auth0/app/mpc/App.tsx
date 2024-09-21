@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// import { Bridge, tssLib } from "@toruslabs/react-native-tss-lib-bridge";
-// import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
-// TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion,
-// generateFactorKey, mnemonicToKey, parseToken, DEFAULT_CHAIN_CONFIG } from "@web3auth/mpc-core-kit";
+import { Bridge, tssLib } from "@toruslabs/react-native-tss-lib-bridge";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
@@ -29,7 +26,6 @@ import { Auth0Provider, useAuth0 } from "react-native-auth0";
 import { createPublicClient, createWalletClient, custom, http, parseEther } from "viem";
 import { sepolia } from "viem/chains";
 
-import { Bridge, tssLib } from "../../webapp";
 import { styles } from "./style";
 
 // IMP START - SDK Initialization
@@ -370,7 +366,7 @@ function Home() {
     const address = (await client.getAddresses())[0];
 
     const originalMessage = "YOUR_MESSAGE";
-    const signedMessage = client.signMessage({
+    const signedMessage = await client.signMessage({
       account: address,
       message: originalMessage,
     });
@@ -511,9 +507,11 @@ export default function App() {
   return (
     <>
       <Auth0Provider domain={"https://web3auth.au.auth0.com"} clientId={"hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O"}>
-        <Home />
+        <>
+          <Home />
+          <Bridge logLevel={"debug"} />
+        </>
       </Auth0Provider>
-      <Bridge />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import "../globals";
 
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import App from "./mpc/App";
 
@@ -13,7 +13,6 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
       <App />
     </View>
   );
