@@ -17,7 +17,7 @@ config.resolver.extraNodeModules = {
   zlib: require.resolve('empty-module'), // browserify-zlib can be polyfilled here if needed
   path: require.resolve('empty-module'),
   crypto: require.resolve('empty-module'),
-  buffer: require.resolve('buffer'),
+  buffer: require.resolve('@craftzdog/react-native-buffer'),
 
 }
 
