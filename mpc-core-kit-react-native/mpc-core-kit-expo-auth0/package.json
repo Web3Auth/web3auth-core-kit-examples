@@ -18,7 +18,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-native/metro-config": "^0.75.3",
     "@react-navigation/native": "^6.0.2",
-    "@toruslabs/react-native-tss-lib-bridge": "file:../../../react-native-tss-lib/toruslabs-react-native-tss-lib-bridge-2.1.0.tgz",
+    "@toruslabs/react-native-tss-lib-bridge": "^2.2.0",
     "@toruslabs/tss-dkls-lib": "^4.0.0",
     "@web3auth/base": "^8.12.4",
     "@web3auth/ethereum-mpc-provider": "^8.12.4",
@@ -47,7 +47,6 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.12.2",
-    "text-encoding": "^0.7.0",
     "viem": "^2.21.9"
   },
   "devDependencies": {
