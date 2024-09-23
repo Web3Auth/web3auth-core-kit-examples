@@ -19,9 +19,6 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```
 
 
-
-
-
 ## Learn more
 
 To learn more about developing your project with Expo, look at the following resources:
