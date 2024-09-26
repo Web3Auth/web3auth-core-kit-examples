@@ -1,9 +1,7 @@
+import "./globals";
 import "@ethersproject/shims";
 
 import { Bridge, tssLib } from "@toruslabs/react-native-tss-lib-bridge";
-// import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
-// TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion,
-// generateFactorKey, mnemonicToKey, parseToken, DEFAULT_CHAIN_CONFIG } from "@web3auth/mpc-core-kit";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
@@ -502,7 +500,7 @@ export default function App() {
       <Auth0Provider domain={"https://web3auth.au.auth0.com"} clientId={"hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O"}>
         <Home />
       </Auth0Provider>
-      <Bridge />
+      <Bridge logLevel={"debug"} />
     </>
   );
 }

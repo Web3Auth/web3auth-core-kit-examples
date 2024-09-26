@@ -34,7 +34,7 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-target 'mpcckrnexpoauth0' do
+target 'mpccorekitexpoauth0' do
   use_expo_modules!
   config = use_native_modules!
 

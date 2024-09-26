@@ -1,4 +1,4 @@
-package com.mpcckrnexpoauth0
+package com.anonymous.mpccorekitexpoauth0
 
 import android.os.Build
 import android.os.Bundle

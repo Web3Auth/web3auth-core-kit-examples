@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>mpcckrnexpoauth0</string>
+    <string>mpccorekitexpoauth0</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,7 +27,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.mpcckrnexpoauth0</string>
+          <string>com.anonymous.mpccorekitexpoauth0</string>
         </array>
       </dict>
     </array>

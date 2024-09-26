@@ -109,9 +109,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.mpcckrnexpoauth0'
+    namespace 'com.anonymous.mpccorekitexpoauth0'
     defaultConfig {
-        applicationId 'com.mpcckrnexpoauth0'
+        applicationId 'com.anonymous.mpccorekitexpoauth0'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

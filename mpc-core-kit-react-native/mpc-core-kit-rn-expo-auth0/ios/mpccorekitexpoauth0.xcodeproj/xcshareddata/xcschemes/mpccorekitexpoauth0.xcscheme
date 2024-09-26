@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "mpcckrnexpoauth0.app"
-               BlueprintName = "mpcckrnexpoauth0"
-               ReferencedContainer = "container:mpcckrnexpoauth0.xcodeproj">
+               BuildableName = "mpccorekitexpoauth0.app"
+               BlueprintName = "mpccorekitexpoauth0"
+               ReferencedContainer = "container:mpccorekitexpoauth0.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "mpcckrnexpoauth0Tests.xctest"
-               BlueprintName = "mpcckrnexpoauth0Tests"
-               ReferencedContainer = "container:mpcckrnexpoauth0.xcodeproj">
+               BuildableName = "mpccorekitexpoauth0Tests.xctest"
+               BlueprintName = "mpccorekitexpoauth0Tests"
+               ReferencedContainer = "container:mpccorekitexpoauth0.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "mpcckrnexpoauth0.app"
-            BlueprintName = "mpcckrnexpoauth0"
-            ReferencedContainer = "container:mpcckrnexpoauth0.xcodeproj">
+            BuildableName = "mpccorekitexpoauth0.app"
+            BlueprintName = "mpccorekitexpoauth0"
+            ReferencedContainer = "container:mpccorekitexpoauth0.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "mpcckrnexpoauth0.app"
-            BlueprintName = "mpcckrnexpoauth0"
-            ReferencedContainer = "container:mpcckrnexpoauth0.xcodeproj">
+            BuildableName = "mpccorekitexpoauth0.app"
+            BlueprintName = "mpccorekitexpoauth0"
+            ReferencedContainer = "container:mpccorekitexpoauth0.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

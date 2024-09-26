@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'mpcckrnexpoauth0'
+rootProject.name = 'mpccorekitexpoauth0'
 
 dependencyResolutionManagement {
   versionCatalogs {
