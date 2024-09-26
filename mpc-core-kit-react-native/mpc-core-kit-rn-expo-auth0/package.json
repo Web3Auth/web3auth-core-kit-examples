@@ -27,7 +27,8 @@
     "react-native-auth0": "^3.2.1",
     "react-native-quick-crypto": "^0.7.5",
     "react-native-webview": "13.8.6",
-    "react-native-react-bridge": "^0.12.1"
+    "react-native-react-bridge": "^0.12.1",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/react-native": "^0.72.8",
