@@ -18,21 +18,17 @@
           <button class="btn" @click="signMessage">Sign Message</button>
           <button class="btn btn-danger" @click="logout">Logout</button>
         </div>
-        <div id="console">
-          <h3>Console Output:</h3>
-          <pre></pre>
-          <div>
-            <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
-          </div>
-          <div>
-            <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
-          </div>
-          <div>
-            <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
-          </div>
-          <div>
-            <button class="card" @click="logout" style="cursor: pointer">Logout</button>
-          </div>
+        <div>
+          <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
+        </div>
+        <div>
+          <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
+        </div>
+        <div>
+          <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
+        </div>
+        <div>
+          <button class="card" @click="logout" style="cursor: pointer">Logout</button>
         </div>
       </div>
     </main>

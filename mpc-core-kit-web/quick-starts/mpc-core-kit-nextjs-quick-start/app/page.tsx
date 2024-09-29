@@ -1,7 +1,6 @@
 "use client";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
 /* eslint-disable @typescript-eslint/no-use-before-define */
-
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
@@ -25,10 +24,14 @@ import { BN } from "bn.js";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
-// IMP END - Quick Start
-import { core, Web3 } from "web3";
 
-// IMP START - SDK Initialization
+// IMP END - Quick Start
+// IMP START - Blockchain Calls
+// import RPC from "./ethersRPC";
+// import RPC from "./viemRPC";
+import RPC from "./web3RPC";
+// IMP END - Blockchain Calls
+
 // IMP START - Dashboard Registration
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
@@ -37,16 +40,22 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 const verifier = "w3a-firebase-demo";
 // IMP END - Verifier Creation
 
+// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  // Avoid using public rpcTarget in production.
+  // Use services like Infura, Quicknode etc
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorerUrl: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
+// IMP END - Chain Config
 
+// IMP START - SDK Initialization
 let coreKitInstance: Web3AuthMPCCoreKit;
 let evmProvider: EthereumSigningProvider;
 
@@ -56,7 +65,7 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true, // This is the recommended approach
-    tssLib: tssLib,
+    tssLib,
   });
 
   // Setup provider for EVM Chain
@@ -174,13 +183,15 @@ function App() {
     try {
       // Initialise the Web3Auth SFA SDK
       // You can do this on the constructor as well for faster experience
+      const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+
       const web3authSfa = new Web3AuthSingleFactorAuth({
         clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        usePnPKey: false,
+        privateKeyProvider, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
       });
-      const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
-      await web3authSfa.init(privateKeyProvider);
+      await web3authSfa.init();
 
       // Login using Firebase Email Password
       const auth = getAuth(app);
@@ -202,6 +213,7 @@ function App() {
       });
       uiConsole("Social Factor Key: ", factorKey);
       setBackupFactorKey(factorKey as string);
+      web3authSfa.logout();
       return factorKey as string;
     } catch (err) {
       uiConsole(err);
@@ -295,56 +307,26 @@ function App() {
   };
 
   // IMP START - Blockchain Calls
+  // Check the RPC file for the implementation
   const getAccounts = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const address = await web3.eth.getAccounts();
+    const address = await RPC.getAccounts(evmProvider);
     uiConsole(address);
   };
 
   const getBalance = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const address = (await web3.eth.getAccounts())[0];
-
-    // Get user's balance in ether
-    const balance = web3.utils.fromWei(
-      await web3.eth.getBalance(address), // Balance is in wei
-      "ether"
-    );
+    const balance = await RPC.getBalance(evmProvider);
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    uiConsole("Signing Message...");
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const fromAddress = (await web3.eth.getAccounts())[0];
-
-    const originalMessage = "YOUR_MESSAGE";
-
-    // Sign the message
-    const signedMessage = await web3.eth.personal.sign(
-      originalMessage,
-      fromAddress,
-      "test password!" // configure your own password here.
-    );
+    const signedMessage = await RPC.signMessage(evmProvider);
     uiConsole(signedMessage);
+  };
+
+  const sendTransaction = async () => {
+    uiConsole("Sending Transaction...");
+    const transactionReceipt = await RPC.sendTransaction(evmProvider);
+    uiConsole(transactionReceipt);
   };
   // IMP END - Blockchain Calls
 
@@ -409,6 +391,11 @@ function App() {
         <div>
           <button onClick={signMessage} className="card">
             Sign Message
+          </button>
+        </div>
+        <div>
+          <button onClick={sendTransaction} className="card">
+            Send Transaction
           </button>
         </div>
         <div>

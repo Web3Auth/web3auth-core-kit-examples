@@ -11,27 +11,29 @@
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
     "@toruslabs/tss-dkls-lib": "^3.0.0",
-    "@web3auth/base": "^8.4.0",
-    "@web3auth/base-provider": "^8.4.0",
-    "@web3auth/ethereum-mpc-provider": "^8.6.1",
-    "@web3auth/mpc-core-kit": "3.0.0",
-    "@web3auth/single-factor-auth": "^7.4.0",
+    "@web3auth/base": "^8.12.4",
+    "@web3auth/base-provider": "^8.12.4",
+    "@web3auth/ethereum-mpc-provider": "^8.12.4",
+    "@web3auth/mpc-core-kit": "3.1.0",
+    "@web3auth/single-factor-auth": "^8.1.1",
     "bn.js": "^5.2.1",
-    "firebase": "^10.11.1",
-    "next": "13.4.9",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "web3": "^4.8.0"
+    "ethers": "^6.13.2",
+    "firebase": "^10.13.0",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "viem": "^2.19.8",
+    "web3": "^4.11.1"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
-    "@toruslabs/eslint-config-typescript": "^3.0.3",
-    "@types/elliptic": "^6.4.14",
+    "@toruslabs/eslint-config-typescript": "^3.3.3",
+    "@types/elliptic": "^6.4.18",
     "@types/node": "20.4.1",
-    "@types/react": "18.2.14",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "18.3.4",
+    "@types/react-dom": "18.3.0",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
-    "typescript": "5.1.6"
+    "typescript": "5.5.4"
   }
 }

@@ -28,6 +28,15 @@
     "web3": "^4.11.1"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "buffer": "^6.0.3",
+    "process": "^0.11.10",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -47,14 +56,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "buffer": "^6.0.3",
-    "process": "^0.11.10",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.1"
   }
 }
