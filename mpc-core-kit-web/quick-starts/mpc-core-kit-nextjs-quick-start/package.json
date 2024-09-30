@@ -10,6 +10,7 @@
   },
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
+    "@tkey/common-types": "^15.0.2",
     "@toruslabs/tss-dkls-lib": "^4.0.0",
     "@web3auth/base": "^9.0.2",
     "@web3auth/base-provider": "^9.0.2",
@@ -18,22 +19,22 @@
     "@web3auth/single-factor-auth": "^9.0.0",
     "bn.js": "^5.2.1",
     "ethers": "^6.13.2",
-    "firebase": "^10.13.0",
-    "next": "14.2.5",
+    "firebase": "^10.13.2",
+    "next": "14.2.13",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "viem": "^2.19.8",
-    "web3": "^4.11.1"
+    "viem": "^2.21.15",
+    "web3": "^4.13.0"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
     "@toruslabs/eslint-config-typescript": "^3.3.3",
     "@types/elliptic": "^6.4.18",
     "@types/node": "20.4.1",
-    "@types/react": "18.3.4",
+    "@types/react": "18.3.10",
     "@types/react-dom": "18.3.0",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
-    "typescript": "5.5.4"
+    "typescript": "5.6.2"
   }
 }

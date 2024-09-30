@@ -1,11 +1,12 @@
 import { Component } from "@angular/core";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
 // IMP START - Quick Start
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider"; // Optional, only for social second factor recovery
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import {
   COREKIT_STATUS,
+  FactorKeyTypeShareDescription,
   generateFactorKey,
   JWTLoginParams,
   keyToMnemonic,
@@ -16,12 +17,13 @@ import {
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
-import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth"; // Optional, only for social second factor recovery
+import {Web3Auth as Web3AuthSingleFactorAuth} from "@web3auth/single-factor-auth"; // Optional, only for social second factor recovery
 // IMP END - Quick Start
 import { BN } from "bn.js";
 // IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
+import { Point, secp256k1 } from "@tkey/common-types";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 
 // IMP END - Auth Provider Login
@@ -95,6 +97,8 @@ export class AppComponent {
   backupFactorKey = "";
 
   mnemonicFactor = "";
+
+  loading = false;
 
   getBackupFactorKeyInputEvent(event: any) {
     this.backupFactorKey = event.target.value;
@@ -209,6 +213,7 @@ export class AppComponent {
       });
       await web3authSfa.init();
 
+      if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
       // Login using Firebase Email Password
       const auth = getAuth(this.app);
       const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
@@ -217,14 +222,14 @@ export class AppComponent {
       const userInfo = parseToken(idToken);
 
       // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-      const web3authProvider = await web3authSfa.connect({
+      await web3authSfa.connect({
         verifier,
         verifierId: userInfo.sub,
         idToken,
-      });
-
+        });
+      }
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await web3authProvider?.request({
+      const factorKey = await web3authSfa!.provider!.request({
         method: "private_key",
       });
       this.uiConsole("Social Factor Key: ", factorKey);
@@ -244,7 +249,8 @@ export class AppComponent {
     }
     try {
       const factorKey = new BN(await this.getSocialMFAFactorKey(), "hex");
-      await coreKitInstance.enableMFA({ factorKey });
+      this.uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
+      await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
@@ -258,6 +264,29 @@ export class AppComponent {
     }
   };
   // IMP END - Enable Multi Factor Authentication
+
+  // IMP START - Delete Factor
+  deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      this.uiConsole("Deleting Social Factor, please wait...", "Factor Pub:", factorPub);
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      this.uiConsole("Social Factor deleted");
+    } else {
+      this.uiConsole("No social factor found to delete");
+    }
+  };
+  // IMP END - Delete Factor
 
   keyDetails = async () => {
     if (!coreKitInstance) {
@@ -276,7 +305,7 @@ export class AppComponent {
     }
   };
 
-  exportMnemonicFactor = async (): Promise<void> => {
+  createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
@@ -285,6 +314,7 @@ export class AppComponent {
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
+      shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {

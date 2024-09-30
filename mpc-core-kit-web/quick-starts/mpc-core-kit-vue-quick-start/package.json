@@ -9,16 +9,17 @@
   },
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
+    "@tkey/common-types": "^15.0.2",
     "@toruslabs/tss-dkls-lib": "^4.0.0",
     "@web3auth/base": "^9.0.2",
     "@web3auth/base-provider": "^9.0.2",
     "@web3auth/ethereum-mpc-provider": "^9.0.2",
     "@web3auth/mpc-core-kit": "3.2.2",
     "@web3auth/single-factor-auth": "^9.0.0",
-    "core-js": "^3.26.1",
-    "firebase": "^10.11.1",
-    "vue": "^3.3.4",
-    "web3": "^4.8.0"
+    "core-js": "^3.38.1",
+    "firebase": "^10.13.2",
+    "vue": "^3.5.10",
+    "web3": "^4.13.0"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
@@ -29,7 +30,7 @@
     "@vue/cli-plugin-typescript": "~5.0.8",
     "@vue/cli-service": "~5.0.8",
     "@vue/eslint-config-typescript": "^11.0.2",
-    "assert": "^2.0.0",
+    "assert": "^2.1.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -41,7 +42,7 @@
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
-    "typescript": "~4.9.4",
-    "url": "^0.11.1"
+    "typescript": "~5.6.2",
+    "url": "^0.11.4"
   }
 }

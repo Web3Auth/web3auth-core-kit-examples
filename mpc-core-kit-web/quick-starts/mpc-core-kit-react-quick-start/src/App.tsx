@@ -11,11 +11,13 @@ import {
   keyToMnemonic,
   mnemonicToKey,
   makeEthereumSigner,
+  FactorKeyTypeShareDescription,
 } from "@web3auth/mpc-core-kit";
+import { Point, secp256k1 } from "@tkey/common-types";
 import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 // Optional, only for social second factor recovery
-import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth";
+import { Web3Auth as Web3AuthSingleFactorAuth } from "@web3auth/single-factor-auth";
 import { CommonPrivateKeyProvider } from '@web3auth/base-provider';
 
 // IMP END - Quick Start
@@ -24,7 +26,7 @@ import { BN } from "bn.js";
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import {getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
@@ -166,23 +168,25 @@ function App() {
       });
       await web3authSfa.init();
 
-      // Login using Firebase Email Password
-      const auth = getAuth(app);
-      const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
-        'Testing@123');
-      console.log(res);
-      const idToken = await res.user.getIdToken(true);
-      const userInfo = parseToken(idToken);
+      if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
+        // Login using Firebase Email Password
+        const auth = getAuth(app);
+        const res = await signInWithEmailAndPassword(auth, 'custom+jwt@firebase.login',
+          'Testing@123');
+        console.log(res);
+        const idToken = await res.user.getIdToken(true);
+        const userInfo = parseToken(idToken);
 
-      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-      const web3authProvider = await web3authSfa.connect({
-        verifier: firebaseVerifier,
-        verifierId: userInfo.sub,
-        idToken,
-      });
+        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+        await web3authSfa.connect({
+          verifier: firebaseVerifier,
+          verifierId: userInfo.sub,
+          idToken,
+        });
+      }
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await web3authProvider!.request({
+      const factorKey = await web3authSfa!.provider!.request({
         method: "private_key",
       });
       uiConsole("Social Factor Key: ", factorKey);
@@ -202,7 +206,8 @@ function App() {
     }
     try {
       const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-      await coreKitInstance.enableMFA({ factorKey });
+      uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
+      await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
@@ -214,6 +219,30 @@ function App() {
     }
   };
   // IMP END - Enable Multi Factor Authentication
+
+
+  // IMP START - Delete Factor
+  const deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      uiConsole("Deleting Social Factor, please wait...", "Factor Pub:", factorPub);
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      uiConsole("Social Factor deleted");
+    } else {
+      uiConsole("No social factor found to delete");
+    }
+  };
+  // IMP END - Delete Factor
 
   const keyDetails = async () => {
     if (!coreKitInstance) {
@@ -232,7 +261,7 @@ function App() {
     }
   };
 
-  const exportMnemonicFactor = async (): Promise<void> => {
+  const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
@@ -241,6 +270,7 @@ function App() {
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
+      shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -405,7 +435,12 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={exportMnemonicFactor} className="card">
+          <button onClick={deleteFactor} className="card">
+            Delete Social Factor
+          </button>
+        </div>
+        <div>
+          <button onClick={createMnemonicFactor} className="card">
             Generate Backup (Mnemonic)
           </button>
         </div>
