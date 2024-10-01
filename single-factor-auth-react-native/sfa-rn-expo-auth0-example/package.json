@@ -19,7 +19,7 @@
     "ethers": "^6.8.0",
     "expo": "~48.0.18",
     "expo-constants": "~13.2.4",
-    "expo-linking": "~3.2.2",
+    "expo-linking": "~6.3.1",
     "expo-secure-store": "^12.3.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
