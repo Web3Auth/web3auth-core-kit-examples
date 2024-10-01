@@ -8,7 +8,7 @@ import { decodeToken, Web3Auth } from "@web3auth/single-factor-auth";
 // IMP END - Quick Start
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, signOut } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 // IMP START - Blockchain Calls
@@ -143,6 +143,7 @@ function App() {
     // IMP START - Logout
     await web3auth.logout();
     // IMP END - Logout
+    await signOut(getAuth(app));
     setProvider(null);
     setLoggedIn(false);
     uiConsole("logged out");
