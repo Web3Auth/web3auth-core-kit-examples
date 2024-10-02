@@ -21,6 +21,9 @@ export default defineConfig({
       _stream_transform: "empty-module",
     },
   },
+  server: {
+    port: 3000,
+  },
   define: {
     global: "globalThis",
   },
