@@ -391,8 +391,10 @@ function App() {
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
           Web3Auth
         </a>{" "}
-        SFA React Google Example
+        SFA React Google + Passkeys Example
       </h1>
+
+      <p className="grid">Sign in with Google and register passkeys before doing Login with Passkey</p>
 
       {isLoggingIn ? <Loading /> : <div className="grid">{web3authSFAuth ? (provider ? loginView : logoutView) : null}</div>}
 

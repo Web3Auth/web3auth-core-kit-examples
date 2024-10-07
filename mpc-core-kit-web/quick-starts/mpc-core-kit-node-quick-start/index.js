@@ -9,6 +9,7 @@ const {
   TssShareType,
   generateFactorKey,
   keyToMnemonic,
+  FactorKeyTypeShareDescription,
 } = require("@web3auth/mpc-core-kit");
 const { CHAIN_NAMESPACES } = require("@web3auth/base");
 const { CommonPrivateKeyProvider } = require("@web3auth/base-provider");
@@ -119,12 +120,12 @@ const keyDetails = async () => {
 };
 
 // IMP START - Export Mnemonic Factor
-const exportMnemonicFactor = async () => {
+const createMnemonicFactor = async () => {
   const recoveryFactorKey = generateFactorKey();
   await coreKitInstance.createFactor({
     shareType: TssShareType.RECOVERY,
     factorKey: recoveryFactorKey.private,
-    shareDescription: "Mnemonic Factor",
+    shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
   });
   const factorKeyMnemonic = keyToMnemonic(recoveryFactorKey.private.toString("hex"));
   console.log("Mnemonic:", factorKeyMnemonic);
@@ -239,7 +240,7 @@ const deleteFactor = async () => {
   for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
     if (value.length > 0) {
       const parsedData = JSON.parse(value[0]);
-      if (parsedData.module === "Social Factor") {
+      if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
         factorPub = key;
       }
     }
@@ -310,11 +311,11 @@ const initAndLogin = async () => {
       "Account Created, it contains a hashed share for one click login for user. Enabling MFA in the next step using a social mfa factor."
     );
 
-    const socialFactorKey = new BN(await getSocialMFAFactorKey(), "hex");
+    const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
 
     console.log("\x1b[33m%s\x1b[0m", "Social Factor Key:", socialFactorKey.toString("hex"));
 
-    await coreKitInstance.enableMFA({ socialFactorKey, shareDescription: "Social Factor" });
+    await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
     await coreKitInstance.commitChanges();
     await keyDetails(); // Get Key Details
 
@@ -324,7 +325,7 @@ const initAndLogin = async () => {
 
     console.log("\x1b[33m%s\x1b[0m", "Exporting a new Mnemonic Factor for recovery.");
 
-    await exportMnemonicFactor(); // Export Mnemonic for recovery
+    await createMnemonicFactor(); // Export Mnemonic for recovery
     await keyDetails(); // Get Key Details
 
     console.log("\x1b[33m%s\x1b[0m", "Doing some blockchain interactions...");

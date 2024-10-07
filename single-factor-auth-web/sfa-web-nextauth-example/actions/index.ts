@@ -8,6 +8,13 @@ export async function handleSignIn() {
 }
 
 export async function handleSignOut() {
-  await signOut();
-  await web3auth.logout();
+  try {
+    if (web3auth.status === "connected") {
+      await web3auth.logout();
+    }
+  } catch (error) {
+    console.error("Error during Web3Auth logout:", error);
+  } finally {
+    await signOut({ redirect: false });
+  }
 }

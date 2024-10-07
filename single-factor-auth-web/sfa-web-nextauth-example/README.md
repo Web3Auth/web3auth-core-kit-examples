@@ -24,6 +24,7 @@ AUTH_SECRET="" # Added by `npx auth`. Read more: https://cli.authjs.dev
 AUTH_GOOGLE_ID=""
 AUTH_GOOGLE_SECRET=""
 NEXT_PUBLIC_WEB3AUTH_CLIENT_ID=""
+NEXT_PUBLIC_WEB3AUTH_VERIFIER=""
 ```
 
 Install & Run:

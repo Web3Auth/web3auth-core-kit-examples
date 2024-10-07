@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@toruslabs/tss-frost-lib": "^0.2.0",
+    "@toruslabs/tss-frost-lib": "^1.0.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
-    "@web3auth/mpc-core-kit": "^3.0.0",
+    "@web3auth/mpc-core-kit": "^3.2.2",
     "bn.js": "^5.2.1",
     "firebase": "^10.4.0",
     "near-api-js": "^4.0.3",

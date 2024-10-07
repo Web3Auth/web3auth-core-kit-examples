@@ -5,10 +5,21 @@ const dotenv = require("dotenv");
 const path = require("path");
 const { AuthDataValidator } = require("@telegram-auth/server");
 const { objectToAuthDataMap } = require("@telegram-auth/server/utils");
+const RateLimit = require("express-rate-limit");
 
 dotenv.config();
 
 const app = express();
+
+// Rate limiter configuration: limit to 100 requests per 15 minutes
+const limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later."
+});
+
+// Apply the rate limiter to specific routes
+app.use(limiter);
 
 const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, SERVER_URL, CLIENT_URL, JWT_KEY_ID } = process.env;
 const TELEGRAM_BOT_CALLBACK = `${SERVER_URL}/callback`;
@@ -32,7 +43,7 @@ const generateJwtToken = (userData) => {
 
 app.get("/", (req, res) => res.send("Express on Vercel for Telegram Login to be used with Web3Auth"));
 
-app.get("/.well-known/jwks.json", (req, res) => {
+app.get("/.well-known/jwks.json", limiter, (req, res) => {
   const jwks = fs.readFileSync(path.resolve(__dirname, "jwks.json"), "utf8");
   res.send(JSON.parse(jwks));
 });
@@ -75,7 +86,7 @@ app.get("/login", (req, res) => {
 });
 
 // Endpoint to handle the Telegram callback
-app.get("/callback", async (req, res) => {
+app.get("/callback", limiter, async (req, res) => {
   const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
   const data = objectToAuthDataMap(req.query || {});
 

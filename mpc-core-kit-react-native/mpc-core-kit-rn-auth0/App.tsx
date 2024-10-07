@@ -266,7 +266,7 @@ function Home() {
     }
   };
 
-  const exportMnemonicFactor = async (): Promise<void> => {
+  const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
@@ -476,7 +476,7 @@ function Home() {
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button
         title="Generate Backup (Mnemonic) - CreateFactor"
-        onPress={exportMnemonicFactor}
+        onPress={createMnemonicFactor}
       />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
