@@ -1,13 +1,14 @@
 "use client";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
 /* eslint-disable @typescript-eslint/no-use-before-define */
-
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
+import { Point, secp256k1 } from "@tkey/common-types";
 // IMP START - Quick Start
 import {
   COREKIT_STATUS,
+  FactorKeyTypeShareDescription,
   generateFactorKey,
   JWTLoginParams,
   keyToMnemonic,
@@ -19,16 +20,20 @@ import {
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
 // Optional, only for social second factor recovery
-import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth";
+import { Web3Auth as Web3AuthSingleFactorAuth } from "@web3auth/single-factor-auth";
 import { BN } from "bn.js";
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
-// IMP END - Quick Start
-import { core, Web3 } from "web3";
 
-// IMP START - SDK Initialization
+// IMP END - Quick Start
+// IMP START - Blockchain Calls
+// import RPC from "./ethersRPC";
+// import RPC from "./viemRPC";
+import RPC from "./web3RPC";
+// IMP END - Blockchain Calls
+
 // IMP START - Dashboard Registration
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
@@ -37,16 +42,22 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 const verifier = "w3a-firebase-demo";
 // IMP END - Verifier Creation
 
+// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x1", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
-  displayName: "Ethereum Mainnet",
-  blockExplorer: "https://etherscan.io/",
+  chainId: "0xaa36a7",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  // Avoid using public rpcTarget in production.
+  // Use services like Infura, Quicknode etc
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorerUrl: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
+// IMP END - Chain Config
 
+// IMP START - SDK Initialization
 let coreKitInstance: Web3AuthMPCCoreKit;
 let evmProvider: EthereumSigningProvider;
 
@@ -56,7 +67,7 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true, // This is the recommended approach
-    tssLib: tssLib,
+    tssLib,
   });
 
   // Setup provider for EVM Chain
@@ -174,34 +185,39 @@ function App() {
     try {
       // Initialise the Web3Auth SFA SDK
       // You can do this on the constructor as well for faster experience
+      const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+
       const web3authSfa = new Web3AuthSingleFactorAuth({
         clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        usePnPKey: false,
+        privateKeyProvider, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
       });
-      const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
-      await web3authSfa.init(privateKeyProvider);
+      await web3authSfa.init();
 
-      // Login using Firebase Email Password
-      const auth = getAuth(app);
-      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-      console.log(res);
-      const idToken = await res.user.getIdToken(true);
-      const userInfo = parseToken(idToken);
+      if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
+        // Login using Firebase Email Password
+        const auth = getAuth(app);
+        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+        console.log(res);
+        const idToken = await res.user.getIdToken(true);
+        const userInfo = parseToken(idToken);
 
-      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-      const web3authProvider = await web3authSfa.connect({
-        verifier,
-        verifierId: userInfo.sub,
-        idToken,
-      });
+        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+        await web3authSfa.connect({
+          verifier,
+          verifierId: userInfo.sub,
+          idToken,
+        });
+      }
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await web3authProvider?.request({
+      const factorKey = await web3authSfa!.provider!.request({
         method: "private_key",
       });
       uiConsole("Social Factor Key: ", factorKey);
       setBackupFactorKey(factorKey as string);
+      web3authSfa.logout();
       return factorKey as string;
     } catch (err) {
       uiConsole(err);
@@ -217,7 +233,8 @@ function App() {
     }
     try {
       const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-      await coreKitInstance.enableMFA({ factorKey });
+      uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
+      await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
@@ -231,6 +248,29 @@ function App() {
     }
   };
   // IMP END - Enable Multi Factor Authentication
+
+  // IMP START - Delete Factor
+  const deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      uiConsole("Deleting Social Factor, please wait...", "Factor Pub:", factorPub);
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      uiConsole("Social Factor deleted");
+    } else {
+      uiConsole("No social factor found to delete");
+    }
+  };
+  // IMP END - Delete Factor
 
   const keyDetails = async () => {
     if (!coreKitInstance) {
@@ -249,7 +289,7 @@ function App() {
     }
   };
 
-  const exportMnemonicFactor = async (): Promise<void> => {
+  const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
@@ -258,6 +298,7 @@ function App() {
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
+      shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -295,56 +336,26 @@ function App() {
   };
 
   // IMP START - Blockchain Calls
+  // Check the RPC file for the implementation
   const getAccounts = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const address = await web3.eth.getAccounts();
+    const address = await RPC.getAccounts(evmProvider);
     uiConsole(address);
   };
 
   const getBalance = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const address = (await web3.eth.getAccounts())[0];
-
-    // Get user's balance in ether
-    const balance = web3.utils.fromWei(
-      await web3.eth.getBalance(address), // Balance is in wei
-      "ether"
-    );
+    const balance = await RPC.getBalance(evmProvider);
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    if (!coreKitInstance) {
-      uiConsole("provider not initialized yet");
-      return;
-    }
-    uiConsole("Signing Message...");
-    const web3 = new Web3(evmProvider);
-
-    // Get user's Ethereum public address
-    const fromAddress = (await web3.eth.getAccounts())[0];
-
-    const originalMessage = "YOUR_MESSAGE";
-
-    // Sign the message
-    const signedMessage = await web3.eth.personal.sign(
-      originalMessage,
-      fromAddress,
-      "test password!" // configure your own password here.
-    );
+    const signedMessage = await RPC.signMessage(evmProvider);
     uiConsole(signedMessage);
+  };
+
+  const sendTransaction = async () => {
+    uiConsole("Sending Transaction...");
+    const transactionReceipt = await RPC.sendTransaction(evmProvider);
+    uiConsole(transactionReceipt);
   };
   // IMP END - Blockchain Calls
 
@@ -379,59 +390,67 @@ function App() {
   }
 
   const loggedInView = (
-    <>
-      <div className="flex-container">
-        <div>
-          <button onClick={getUserInfo} className="card">
-            Get User Info
-          </button>
-        </div>
-        <div>
-          <button onClick={keyDetails} className="card">
-            Key Details
-          </button>
-        </div>
-        <div>
-          <button onClick={enableMFA} className="card">
-            Enable MFA
-          </button>
-        </div>
-        <div>
-          <button onClick={getAccounts} className="card">
-            Get Accounts
-          </button>
-        </div>
-        <div>
-          <button onClick={getBalance} className="card">
-            Get Balance
-          </button>
-        </div>
-        <div>
-          <button onClick={signMessage} className="card">
-            Sign Message
-          </button>
-        </div>
-        <div>
-          <button onClick={logout} className="card">
-            Log Out
-          </button>
-        </div>
-        <div>
-          <button onClick={criticalResetAccount} className="card">
-            [CRITICAL] Reset Account
-          </button>
-        </div>
-        <div>
-          <button onClick={exportMnemonicFactor} className="card">
-            Generate Backup (Mnemonic)
-          </button>
-        </div>
+    <div className="flex-container">
+      <div>
+        <button onClick={getUserInfo} className="card">
+          Get User Info
+        </button>
       </div>
-    </>
+      <div>
+        <button onClick={keyDetails} className="card">
+          Key Details
+        </button>
+      </div>
+      <div>
+        <button onClick={enableMFA} className="card">
+          Enable MFA
+        </button>
+      </div>
+      <div>
+        <button onClick={getAccounts} className="card">
+          Get Accounts
+        </button>
+      </div>
+      <div>
+        <button onClick={getBalance} className="card">
+          Get Balance
+        </button>
+      </div>
+      <div>
+        <button onClick={signMessage} className="card">
+          Sign Message
+        </button>
+      </div>
+      <div>
+        <button onClick={sendTransaction} className="card">
+          Send Transaction
+        </button>
+      </div>
+      <div>
+        <button onClick={logout} className="card">
+          Log Out
+        </button>
+      </div>
+      <div>
+        <button onClick={criticalResetAccount} className="card">
+          [CRITICAL] Reset Account
+        </button>
+      </div>
+      <div>
+        <button onClick={deleteFactor} className="card">
+          Delete Social Factor
+        </button>
+      </div>
+      <div>
+        <button onClick={createMnemonicFactor} className="card">
+          Generate Backup (Mnemonic)
+        </button>
+      </div>
+    </div>
   );
 
   const unloggedInView = (
-    <>
+    <div className="flex-container">
       <button onClick={login} className="card">
         Login
       </button>
@@ -455,7 +474,7 @@ function App() {
           [CRITICAL] Reset Account
         </button>
       </div>
-    </>
+    </div>
   );
 
   return (

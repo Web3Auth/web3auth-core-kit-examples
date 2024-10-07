@@ -25,21 +25,26 @@ let web3auth = null;
   $(".btn-logged-in").hide();
   $("#sign-tx").hide();
 
-  // IMP START - SDK Initialization
   // IMP START - Dashboard Registration
   const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get your clientId from https://dashboard.web3auth.io
   // IMP END - Dashboard Registration
 
+  // IMP START - Chain Config
   const chainConfig = {
     chainNamespace: "eip155",
-    chainId: "0x1", // Please use 0x1 for Mainnet
-    rpcTarget: "https://rpc.ankr.com/eth",
-    displayName: "Ethereum Mainnet",
-    blockExplorer: "https://etherscan.io/",
+    chainId: "0xaa36a7",
+    rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+    // Avoid using public rpcTarget in production.
+    // Use services like Infura, Quicknode etc
+    displayName: "Ethereum Sepolia Testnet",
+    blockExplorerUrl: "https://sepolia.etherscan.io",
     ticker: "ETH",
     tickerName: "Ethereum",
+    logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
   };
+  // IMP END - Chain Config
 
+  // IMP START - SDK Initialization
   const ethereumPrivateKeyProvider = new window.EthereumProvider.EthereumPrivateKeyProvider({
     config: { chainConfig },
   });
