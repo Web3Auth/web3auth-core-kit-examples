@@ -16,10 +16,9 @@ class Web3AuthSFA {
     // IMP START - Initialize Web3Auth SFA
     await singleFactAuthFlutter.init(
       SFAParams(
-        network: Web3AuthNetwork.mainnet,
+        network: Web3AuthNetwork.sapphire_mainnet,
         clientId:
-            "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
-            sessionTime: 40
+            "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
       ),
     );
     // IMP END - Initialize Web3Auth SFA
