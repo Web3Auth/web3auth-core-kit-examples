@@ -43,8 +43,6 @@ results in a standard cryptographic key provider specific to the user and applic
 | `@web3auth/single-factor-auth` | `React - Vite` | [SFA Quick Start - React Vite](/single-factor-auth-web/quick-starts/sfa-react-vite-quick-start/) |
 | `@web3auth/single-factor-auth` | `JavaScript`   | [SFA Quick Start - Vanilla JS](/single-factor-auth-web/quick-starts/sfa-vanillajs-quick-start/)  |
 | `@web3auth/single-factor-auth` | `Vue.js`       | [SFA Quick Start - Vue](/single-factor-auth-web/quick-starts/sfa-vue-quick-start/)               |
-| Playgrounds                    |                |                                                                                                  |
-| `@web3auth/single-factor-auth` | `React`        | [SFA Playground - React](/single-factor-auth-web/sfa-web-react-playground/)                      |
 | Other examples                 |                |                                                                                                  |
 | `@web3auth/single-factor-auth` | `React`        | [SFA Aggregate Verifier - React](/single-factor-auth-web/sfa-web-aggregate-verifier-example/)    |
 | `@web3auth/single-factor-auth` | `React`        | [SFA Auth0 example - React](/single-factor-auth-web/sfa-web-auth0-example/)                      |
@@ -90,4 +88,4 @@ Ask us on our [Community Forum](https://community.web3auth.io/) or reach out to 
 
 ## License
 
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](/LICENSE)
+[MIT License](/LICENSE)
