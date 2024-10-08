@@ -95,7 +95,7 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { authorize, clearSession, getCredentials } = useAuth0();
+  const { authorize, getCredentials } = useAuth0();
 
   const signInWithAuth0 = async () => {
     try {
@@ -293,7 +293,6 @@ function Home() {
     // Log out from Auth0
     setLoading(false);
     try {
-      await clearSession();
       uiConsole("logged out from auth0");
     } catch (error: any) {
       uiConsole(error.message);
