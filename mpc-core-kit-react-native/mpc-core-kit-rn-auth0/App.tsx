@@ -256,6 +256,7 @@ function Home() {
         shareType: TssShareType.DEVICE,
         factorKey: factorKey.private,
       });
+      setLoading(false);
       uiConsole('Stored factor: ', factorKey);
     } catch (error: any) {
       uiConsole(error.message);
