@@ -1,5 +1,4 @@
 PODS:
-  - AnyCodable-FlightSchool (0.6.7)
   - BigInt (5.2.0)
   - curvelib.swift (1.0.1)
   - Firebase/Auth (10.18.0):
@@ -57,19 +56,18 @@ PODS:
   - RecaptchaInterop (100.0.0)
   - single_factor_auth_flutter (0.0.1):
     - Flutter
-    - SingleFactorAuth (~> 5.0.0)
-  - SingleFactorAuth (5.0.0):
+    - SingleFactorAuth (= 8.0.0)
+  - SingleFactorAuth (8.0.0):
     - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.1)
-    - Torus-utils (~> 8.1.0)
-    - TorusSessionManager (~> 4.0.2)
+    - Torus-fetchNodeDetails (~> 6.0.3)
+    - Torus-utils (~> 9.0.1)
+    - TorusSessionManager (~> 5.0.0)
   - Torus-fetchNodeDetails (6.0.3):
     - BigInt (~> 5.2.0)
-  - Torus-utils (8.1.0):
-    - AnyCodable-FlightSchool (~> 0.6.0)
+  - Torus-utils (9.0.1):
     - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.1)
-  - TorusSessionManager (4.0.2):
+    - Torus-fetchNodeDetails (~> 6.0.3)
+  - TorusSessionManager (5.0.0):
     - curvelib.swift (~> 1.0.1)
     - KeychainSwift (~> 20.0.0)
 
@@ -81,7 +79,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AnyCodable-FlightSchool
     - BigInt
     - curvelib.swift
     - Firebase
@@ -110,7 +107,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/single_factor_auth_flutter/ios"
 
 SPEC CHECKSUMS:
-  AnyCodable-FlightSchool: 261cbe76757802b17d471b9059b21e6fa5edf57b
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   curvelib.swift: d0746ae82bee34016c06da3567a97e493b3c979f
   Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
@@ -126,12 +122,12 @@ SPEC CHECKSUMS:
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  single_factor_auth_flutter: 32a02b25ceb8405f3cedce4b675cfb906b8cb099
-  SingleFactorAuth: ee61a0969705e016871d0fb1fa65dd4a22e08316
+  single_factor_auth_flutter: 9617e5ffce9c0251bddb19cbe49293f921c13b79
+  SingleFactorAuth: 2bfa8ad0fe8d0023fffdf1a5f0c9634ca3ee66d8
   Torus-fetchNodeDetails: 6c349f47cbca36a4b3f276fe26d03c1b39b20949
-  Torus-utils: 3ec4dba5ea50935ab129077adef4207af5a00225
-  TorusSessionManager: 05a1a8f3265d0949a1a342c4ba2c52882445b614
+  Torus-utils: 1d23e6eedf9ee7df9ecc2605b765ad68eb194f71
+  TorusSessionManager: 42c21f100d895976fabe3806cb9c575392f6e424
 
 PODFILE CHECKSUM: 8829a2c70d7efdc95f3d8431d36cdb48fed2bec5
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

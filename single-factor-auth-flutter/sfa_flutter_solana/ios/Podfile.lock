@@ -1,85 +1,93 @@
 PODS:
-  - AnyCodable-FlightSchool (0.6.7)
-  - AppAuth (1.6.2):
-    - AppAuth/Core (= 1.6.2)
-    - AppAuth/ExternalUserAgent (= 1.6.2)
-  - AppAuth/Core (1.6.2)
-  - AppAuth/ExternalUserAgent (1.6.2):
+  - AppAuth (1.7.5):
+    - AppAuth/Core (= 1.7.5)
+    - AppAuth/ExternalUserAgent (= 1.7.5)
+  - AppAuth/Core (1.7.5)
+  - AppAuth/ExternalUserAgent (1.7.5):
     - AppAuth/Core
   - BigInt (5.2.0)
   - curvelib.swift (1.0.1)
-  - Firebase/Auth (10.20.0):
+  - Firebase/Auth (11.0.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 10.20.0)
-  - Firebase/CoreOnly (10.20.0):
-    - FirebaseCore (= 10.20.0)
-  - firebase_auth (4.17.4):
-    - Firebase/Auth (= 10.20.0)
+    - FirebaseAuth (~> 11.0.0)
+  - Firebase/CoreOnly (11.0.0):
+    - FirebaseCore (= 11.0.0)
+  - firebase_auth (5.3.0):
+    - Firebase/Auth (= 11.0.0)
     - firebase_core
     - Flutter
-  - firebase_core (2.25.4):
-    - Firebase/CoreOnly (= 10.20.0)
+  - firebase_core (3.5.0):
+    - Firebase/CoreOnly (= 11.0.0)
     - Flutter
-  - FirebaseAppCheckInterop (10.21.0)
-  - FirebaseAuth (10.20.0):
-    - FirebaseAppCheckInterop (~> 10.17)
-    - FirebaseCore (~> 10.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
-    - GoogleUtilities/Environment (~> 7.8)
-    - GTMSessionFetcher/Core (< 4.0, >= 2.1)
+  - FirebaseAppCheckInterop (11.2.0)
+  - FirebaseAuth (11.0.0):
+    - FirebaseAppCheckInterop (~> 11.0)
+    - FirebaseAuthInterop (~> 11.0)
+    - FirebaseCore (~> 11.0)
+    - FirebaseCoreExtension (~> 11.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GTMSessionFetcher/Core (~> 3.4)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseCore (10.20.0):
-    - FirebaseCoreInternal (~> 10.0)
-    - GoogleUtilities/Environment (~> 7.12)
-    - GoogleUtilities/Logger (~> 7.12)
-  - FirebaseCoreInternal (10.21.0):
-    - "GoogleUtilities/NSData+zlib (~> 7.8)"
+  - FirebaseAuthInterop (11.2.0)
+  - FirebaseCore (11.0.0):
+    - FirebaseCoreInternal (~> 11.0)
+    - GoogleUtilities/Environment (~> 8.0)
+    - GoogleUtilities/Logger (~> 8.0)
+  - FirebaseCoreExtension (11.2.0):
+    - FirebaseCore (~> 11.0)
+  - FirebaseCoreInternal (11.2.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.0)"
   - Flutter (1.0.0)
   - google_sign_in_ios (0.0.1):
     - Flutter
     - FlutterMacOS
     - GoogleSignIn (~> 7.0)
-  - GoogleSignIn (7.0.0):
-    - AppAuth (~> 1.5)
-    - GTMAppAuth (< 3.0, >= 1.3)
-    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
-  - GoogleUtilities/AppDelegateSwizzler (7.12.0):
+  - GoogleSignIn (7.1.0):
+    - AppAuth (< 2.0, >= 1.7.3)
+    - GTMAppAuth (< 5.0, >= 4.1.1)
+    - GTMSessionFetcher/Core (~> 3.3)
+  - GoogleUtilities/AppDelegateSwizzler (8.0.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.12.0):
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.12.0):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.0.2):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.0.2):
     - GoogleUtilities/Environment
-  - GoogleUtilities/Network (7.12.0):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.0.2):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.12.0)"
-  - GoogleUtilities/Reachability (7.12.0):
+  - "GoogleUtilities/NSData+zlib (8.0.2)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.0.2)
+  - GoogleUtilities/Reachability (8.0.2):
     - GoogleUtilities/Logger
-  - GTMAppAuth (2.0.0):
-    - AppAuth/Core (~> 1.6)
-    - GTMSessionFetcher/Core (< 4.0, >= 1.5)
-  - GTMSessionFetcher/Core (3.3.1)
+    - GoogleUtilities/Privacy
+  - GTMAppAuth (4.1.1):
+    - AppAuth/Core (~> 1.7)
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3)
+  - GTMSessionFetcher/Core (3.5.0)
   - KeychainSwift (20.0.0)
-  - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
   - single_factor_auth_flutter (0.0.1):
     - Flutter
-    - SingleFactorAuth (~> 5.0.0)
-  - SingleFactorAuth (5.0.0):
+    - SingleFactorAuth (= 8.0.0)
+  - SingleFactorAuth (8.0.0):
     - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.1)
-    - Torus-utils (~> 8.1.0)
-    - TorusSessionManager (~> 4.0.2)
+    - Torus-fetchNodeDetails (~> 6.0.3)
+    - Torus-utils (~> 9.0.1)
+    - TorusSessionManager (~> 5.0.0)
   - Torus-fetchNodeDetails (6.0.3):
     - BigInt (~> 5.2.0)
-  - Torus-utils (8.1.0):
-    - AnyCodable-FlightSchool (~> 0.6.0)
+  - Torus-utils (9.0.1):
     - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.1)
-  - TorusSessionManager (4.0.2):
+    - Torus-fetchNodeDetails (~> 6.0.3)
+  - TorusSessionManager (5.0.0):
     - curvelib.swift (~> 1.0.1)
     - KeychainSwift (~> 20.0.0)
 
@@ -92,21 +100,21 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AnyCodable-FlightSchool
     - AppAuth
     - BigInt
     - curvelib.swift
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
+    - FirebaseAuthInterop
     - FirebaseCore
+    - FirebaseCoreExtension
     - FirebaseCoreInternal
     - GoogleSignIn
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - KeychainSwift
-    - PromisesObjC
     - RecaptchaInterop
     - SingleFactorAuth
     - Torus-fetchNodeDetails
@@ -126,32 +134,32 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/single_factor_auth_flutter/ios"
 
 SPEC CHECKSUMS:
-  AnyCodable-FlightSchool: 261cbe76757802b17d471b9059b21e6fa5edf57b
-  AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
+  AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   curvelib.swift: d0746ae82bee34016c06da3567a97e493b3c979f
-  Firebase: 10c8cb12fb7ad2ae0c09ffc86cd9c1ab392a0031
-  firebase_auth: 29a10d4129d53aa690c10dbd838ed1a059ef0c9b
-  firebase_core: a46c312d8bae4defa3d009b2aa7b5b413aeb394e
-  FirebaseAppCheckInterop: 69fc7d8f6a1cbfa973efb8d1723651de30d12525
-  FirebaseAuth: 9c5c400d2c3055d8ae3a0284944c86fa95d48dac
-  FirebaseCore: 28045c1560a2600d284b9c45a904fe322dc890b6
-  FirebaseCoreInternal: 43c1788eaeee9d1b97caaa751af567ce11010d00
+  Firebase: 9f574c08c2396885b5e7e100ed4293d956218af9
+  firebase_auth: f27287630c4d9e2c3c63e64d9240822ad6b07e5b
+  firebase_core: 2ec6b789859c7c24766344ec71fdf78639402d56
+  FirebaseAppCheckInterop: ea21450529cf0ebd132788dd8916a0269abc684f
+  FirebaseAuth: d5cf28be74d7e82257f6a3f717509eff70d3cf4a
+  FirebaseAuthInterop: 47c09558af5d1b31f16fb352387c72d4804f4a24
+  FirebaseCore: 3cf438f431f18c12cdf2aaf64434648b63f7e383
+  FirebaseCoreExtension: cda74ddfb001224bd8fd1d6e74698b4ed07803de
+  FirebaseCoreInternal: 0c569513412da9f3b31bd0b340013bbee8f295c5
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   google_sign_in_ios: 989eea5abe94af62050782714daf920be883d4a2
-  GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
-  GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
-  GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
-  GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
+  GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
+  GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
+  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
-  PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  single_factor_auth_flutter: 32a02b25ceb8405f3cedce4b675cfb906b8cb099
-  SingleFactorAuth: ee61a0969705e016871d0fb1fa65dd4a22e08316
+  single_factor_auth_flutter: 9617e5ffce9c0251bddb19cbe49293f921c13b79
+  SingleFactorAuth: 2bfa8ad0fe8d0023fffdf1a5f0c9634ca3ee66d8
   Torus-fetchNodeDetails: 6c349f47cbca36a4b3f276fe26d03c1b39b20949
-  Torus-utils: 3ec4dba5ea50935ab129077adef4207af5a00225
-  TorusSessionManager: 05a1a8f3265d0949a1a342c4ba2c52882445b614
+  Torus-utils: 1d23e6eedf9ee7df9ecc2605b765ad68eb194f71
+  TorusSessionManager: 42c21f100d895976fabe3806cb9c575392f6e424
 
 PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
