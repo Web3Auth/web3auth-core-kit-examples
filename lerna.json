@@ -4,10 +4,8 @@
   "useWorkspaces": false,
   "version": "0.0.0",
   "packages": [
-    "mpc-core-kit/**/*",
-    "node-sdk/**/*",
-    "single-factor-auth-web/**/*",
-    "tkey-web/**/*",
-    "single-factor-auth-react-native/**/*"
+    "mpc-core-kit-web/**/*",
+    "single-factor-auth-node/**/*",
+    "single-factor-auth-web/**/*"
   ]
 }

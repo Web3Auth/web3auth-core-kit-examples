@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@web3auth/base": "^9.0.0",
-    "@web3auth/ethereum-provider": "^9.0.0",
-    "@web3auth/no-modal": "^9.0.0",
+    "@web3auth/base": "^9.0.2",
+    "@web3auth/ethereum-provider": "^9.0.2",
+    "@web3auth/no-modal": "^9.1.0",
     "@web3auth/single-factor-auth": "^9.0.0",
     "next": "14.2.7",
     "next-auth": "^5.0.0-beta.20",

@@ -161,7 +161,7 @@ function App() {
     }
   };
 
-  const exportMnemonicFactor = async (): Promise<void> => {
+  const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
@@ -335,7 +335,7 @@ function App() {
           </button>
         </div>
         <div>
-          <button onClick={exportMnemonicFactor} className="card">
+          <button onClick={createMnemonicFactor} className="card">
             Generate Backup (Mnemonic)
           </button>
         </div>

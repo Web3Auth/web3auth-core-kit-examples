@@ -14,6 +14,7 @@ Future<void> main() async {
   await ServiceLocator.init();
   final Web3AuthSFA web3authSFA = ServiceLocator.getIt<Web3AuthSFA>();
   web3authSFA.init();
+  // await web3authSFA.initialize();
 
   runApp(const MyApp());
 }
