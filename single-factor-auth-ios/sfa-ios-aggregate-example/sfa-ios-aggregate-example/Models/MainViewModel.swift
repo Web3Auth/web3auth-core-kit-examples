@@ -103,8 +103,8 @@ class MainViewModel: ObservableObject {
     func loginWithEmailPasswordless() {
         Task {
             do {
-                showLoader("Login in")
-                let auth0Creds = try await webAuth.start()
+                showLoader("Logging in")
+                let auth0Creds = try await webAuth.connection("").start()
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
                 guard let sub = jwt.body["email"] as? String else {
