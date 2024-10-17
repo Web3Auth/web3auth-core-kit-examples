@@ -63,6 +63,7 @@ internal/
 **/.DS_Store
 .settings
 **/.vs
+**/ios_build.tar.gz
 !**/.vscode/tasks.json
 !**/.vscode/settings.template.json
 !**/.vscode/launch.template.json
