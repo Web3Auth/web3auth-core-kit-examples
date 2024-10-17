@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   verticalGap,
                   Text(
-                    "userName",
+                    appManager.userDisplayName,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   Row(

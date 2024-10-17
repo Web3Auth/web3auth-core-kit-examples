@@ -17,6 +17,7 @@ class AppManager with ChangeNotifier {
   late web3.Credentials _keyPair;
   late SFAKey _web3AuthSFAKey;
   bool _isLoggedIn = false;
+  String _userDisplayName = 'User';
 
   AppManager({
     required this.auth0helper,
@@ -27,6 +28,7 @@ class AppManager with ChangeNotifier {
   web3.Credentials get keyPair => _keyPair;
   String get address => _keyPair.address.hex;
   String get privateKey => _web3AuthSFAKey.privateKey;
+  String get userDisplayName => _userDisplayName;
 
   Future<void> login(LoginType loginType) async {
     try {
@@ -45,6 +47,8 @@ class AppManager with ChangeNotifier {
         );
       }
 
+      _userDisplayName = _getUserDisplayName(credentials);
+
       _keyPair = web3.EthPrivateKey.fromHex(_web3AuthSFAKey.privateKey);
       _isLoggedIn = true;
       notifyListeners();
@@ -56,6 +60,8 @@ class AppManager with ChangeNotifier {
   Future<void> initialize() async {
     try {
       _web3AuthSFAKey = await web3authSFA.initialize();
+      final credentials = await auth0helper.getCredentials();
+      _userDisplayName = _getUserDisplayName(credentials);
       _keyPair = web3.EthPrivateKey.fromHex(_web3AuthSFAKey.privateKey);
       _isLoggedIn = true;
       notifyListeners();
@@ -68,5 +74,15 @@ class AppManager with ChangeNotifier {
     await auth0helper.signOut();
     _isLoggedIn = false;
     notifyListeners();
+  }
+
+  String _getUserDisplayName(Credentials credentials) {
+    if (credentials.user.name != null && credentials.user.name!.isNotEmpty) {
+      return credentials.user.name!;
+    } else if (credentials.user.email != null &&
+        credentials.user.email!.isNotEmpty) {
+      return credentials.user.email!;
+    }
+    return 'User';
   }
 }
