@@ -16,7 +16,7 @@ import auth from '@react-native-firebase/auth';
 
 // IMP START - Quick Start
 import {
-  Web3AuthMPCCoreKit,
+  // Web3AuthMPCCoreKit,
   WEB3AUTH_NETWORK,
   JWTLoginParams,
   TssShareType,
@@ -31,7 +31,7 @@ import {
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {tssLib, Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // Use for social factor (optional)
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
@@ -39,6 +39,9 @@ import {CommonPrivateKeyProvider} from '@web3auth/base-provider';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
+// import { Bridge, mpclib } from './mpc';
+import { Bridge, mpclib } from '@web3auth/react-native-mpc-core-kit';
+
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -70,7 +73,16 @@ const asyncStorageKey = {
   },
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
+// const coreKitInstance = new Web3AuthMPCCoreKit({
+//   web3AuthClientId,
+//   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+//   uxMode: 'react-native',
+//   tssLib, // tss lib bridge for react native
+//   manualSync: true, // This is the recommended approach
+//   storage: asyncStorageKey, // Add the storage property
+// } as Web3AuthOptions);
+
+const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   uxMode: 'react-native',
@@ -94,21 +106,25 @@ export default function App() {
   const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [bridgeReady, setBridgeReady] = useState<boolean>(false);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        // IMP START - SDK Initialization
-        await coreKitInstance.init();
-        // IMP END - SDK Initialization
-      } catch (error) {
-        uiConsole(error, 'mounted caught');
-      }
-      setCoreKitStatus(coreKitInstance.status);
-    };
-    init();
+    if (bridgeReady) {
+      const init = async () => {
+        try {
+          // IMP START - SDK Initialization
+          await coreKitInstance.init();
+          // IMP END - SDK Initialization
+        } catch (error) {
+          uiConsole(error, 'mounted caught');
+        }
+        setCoreKitStatus(coreKitInstance.status);
+      };
+      init();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bridgeReady]);
 
   // IMP START - Auth Provider Login
   const firebaseSignIn = async () => {
@@ -210,7 +226,7 @@ export default function App() {
       uiConsole('Enabling MFA, please wait');
 
       const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      await coreKitInstance.enableMFA({factorKey});
+      await coreKitInstance.enableMFA({factorKey}, false);
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
@@ -220,9 +236,6 @@ export default function App() {
     }
     setLoading(false);
 
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await coreKitInstance.commitChanges();
-    }
   };
   // IMP END - Enable Multi Factor Authentication
 
@@ -230,7 +243,7 @@ export default function App() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance not found');
     }
-    uiConsole(coreKitInstance.getKeyDetails());
+    uiConsole(await coreKitInstance.getKeyDetails());
   };
 
   const getDeviceFactor = async () => {
@@ -243,19 +256,16 @@ export default function App() {
     }
   };
 
-  // const storeDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await generateFactorKey();
-  //     await asyncStoreFactor(
-  //       factorKey.private,
-  //       coreKitInstance!,
-  //       asyncStorageKey,
-  //     );
-  //     uiConsole('Stored factor: ', factorKey);
-  //   } catch (error: any) {
-  //     uiConsole(error.message);
-  //   }
-  // };
+  const storeDeviceFactor = async () => {
+    try {
+      const currentFactor =  coreKitInstance.getCurrentFactorKey();
+      uiConsole('current factor: ', currentFactor);
+      await coreKitInstance.setDeviceFactor(currentFactor.factorKey, true);
+      uiConsole('stored factor');
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
 
   // IMP START - Export Social Account Factor
   const getSocialMFAFactorKey = async (): Promise<string> => {
@@ -378,7 +388,7 @@ export default function App() {
     const signer = await ethersProvider.getSigner();
 
     // Get user's Ethereum public address
-    const address = signer.getAddress();
+    const address = await signer.getAddress();
     setLoading(false);
     uiConsole(address);
   };
@@ -400,7 +410,7 @@ export default function App() {
     const signer = await ethersProvider.getSigner();
 
     // Get user's Ethereum public address
-    const address = signer.getAddress();
+    const address = await signer.getAddress();
 
     // Get user's balance in ether
     // For ethers v5
@@ -427,10 +437,14 @@ export default function App() {
     // const ethersProvider = new ethers.providers.Web3Provider(this.provider);
     const ethersProvider = new ethers.BrowserProvider(evmProvider);
 
+    // let hash = keccak256(Buffer.from('Message'));
+    // coreKitInstance.sign(Buffer.from(hash, 'hex'), true);
     // For ethers v5
     // const signer = ethersProvider.getSigner();
     const signer = await ethersProvider.getSigner();
     const originalMessage = 'YOUR_MESSAGE';
+
+    uiConsole('Signing message2');
 
     // Sign the message
     const signedMessage = await signer.signMessage(originalMessage);
@@ -447,18 +461,7 @@ export default function App() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    //@ts-ignore
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey!, 'hex'),
-      input: {message: 'KEY_NOT_FOUND'},
-    });
-    uiConsole('reset');
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await coreKitInstance.commitChanges();
-    }
+    await coreKitInstance._UNSAFE_resetAccount();
     setLoading(false);
     logout();
   };
@@ -549,6 +552,7 @@ export default function App() {
         onPress={exportMnemonicFactor}
       />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
+      <Button title="store Device Factor" onPress={() => storeDeviceFactor()} />
       {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
@@ -575,7 +579,9 @@ export default function App() {
           <Text>{consoleUI}</Text>
         </ScrollView>
       </View>
-      <Bridge />
+      <Bridge logLevel={'DEBUG'} resolveReady={ (ready) => {
+        setBridgeReady(ready);
+      }}/>
     </View>
   );
 }
