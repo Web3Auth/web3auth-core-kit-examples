@@ -13,15 +13,16 @@ class Web3AuthSFA {
   Future<void> init() async {
     await singleFactAuthFlutter.init(
       SFAParams(
-        network: Web3AuthNetwork.cyan,
-        clientid: "BEglQSgt4cUWcj6SKRdu5QkOXTsePmMcusG5EAoyjyOYKlVRjIF1iCNnMOTfpzCiunHRrMui8TIwQPXdkQ8Yxuk",
+        network: Web3AuthNetwork.sapphire_mainnet,
+        clientId:
+            "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
       ),
     );
   }
 
   Future<void> initialize() async {
     try {
-      final TorusKey? torusKey = await singleFactAuthFlutter.initialize();
+      final SFAKey? torusKey = await singleFactAuthFlutter.initialize();
       if (torusKey != null) {
         log('Initialized successfully. Private Key: ${torusKey.privateKey}');
       }
@@ -30,13 +31,13 @@ class Web3AuthSFA {
     }
   }
 
-  Future<TorusKey> getKey(User user) async {
+  Future<SFAKey> getKey(User user) async {
     try {
       final token = await user.getIdToken(true);
 
-      final TorusKey torusKey = await singleFactAuthFlutter.getKey(
+      final SFAKey torusKey = await singleFactAuthFlutter.connect(
         LoginParams(
-          verifier: 'w3a-sfa-flutter-google',
+          verifier: 'w3a-firebase-demo',
           verifierId: user.uid,
           idToken: token!,
         ),

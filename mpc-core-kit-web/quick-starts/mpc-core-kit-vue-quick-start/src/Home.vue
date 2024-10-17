@@ -18,7 +18,6 @@
         <span v-html="backupFactorKey"></span>
         <button @click="inputBackupFactorKey" class="card">Input Backup Factor Key</button>
         <button @click="criticalResetAccount" class="card">[CRITICAL] Reset Account</button>
-
         <button @click="MnemonicToFactorKeyHex" class="card">Get Recovery Factor Key using Mnemonic</button>
       </div>
     </div>
@@ -50,7 +49,10 @@
           <button class="card" @click="criticalResetAccount" style="cursor: pointer">[CRITICAL] Reset Account</button>
         </div>
         <div>
-          <button class="card" @click="exportMnemonicFactor" style="cursor: pointer">Generate Backup (Mnemonic)</button>
+          <button class="card" @click="deleteFactor" style="cursor: pointer">Delete Social Factor</button>
+        </div>
+        <div>
+          <button class="card" @click="createMnemonicFactor" style="cursor: pointer">Generate Backup (Mnemonic)</button>
         </div>
       </div>
     </div>
@@ -81,12 +83,14 @@ import {
   keyToMnemonic,
   mnemonicToKey,
   makeEthereumSigner,
+  FactorKeyTypeShareDescription,
 } from "@web3auth/mpc-core-kit";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
+import { Point, secp256k1 } from "@tkey/common-types";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // Optional, only for social second factor recovery
-import Web3AuthSingleFactorAuth from "@web3auth/single-factor-auth";
+import {Web3Auth as Web3AuthSingleFactorAuth} from "@web3auth/single-factor-auth";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 // IMP END - Quick Start
 import Web3 from "web3";
@@ -250,15 +254,18 @@ export default {
       try {
         // Initialise the Web3Auth SFA SDK
         // You can do this on the constructor as well for faster experience
+        const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+
         const web3authSfa = new Web3AuthSingleFactorAuth({
           clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
           web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+          privateKeyProvider,
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
         });
         
-        const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
-        await web3authSfa.init(privateKeyProvider);
+        await web3authSfa.init();
 
+        if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
         // Login using Firebase Email Password
         const auth = getAuth(app);
         const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
@@ -267,14 +274,15 @@ export default {
         const userInfo = parseToken(idToken);
 
         // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        const web3authProvider = await web3authSfa.connect({
+        await web3authSfa.connect({
           verifier,
           verifierId: userInfo.sub,
           idToken,
         });
+      }
 
         // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-        const factorKey = await web3authProvider!.request({
+        const factorKey = await web3authSfa!.provider!.request({
           method: "private_key",
         });
         uiConsole("Social Factor Key: ", factorKey);
@@ -294,7 +302,8 @@ export default {
       }
       try {
         const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-        await coreKitInstance.enableMFA({factorKey});
+        uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
+        await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
           await coreKitInstance.commitChanges();
@@ -308,6 +317,30 @@ export default {
       }
     };
     // IMP END - Enable Multi Factor Authentication
+
+
+    // IMP START - Delete Factor
+    const deleteFactor = async () => {
+      let factorPub: string | undefined;
+      for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+        if (value.length > 0) {
+          const parsedData = JSON.parse(value[0]);
+          if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
+            factorPub = key;
+          }
+        }
+      }
+      if (factorPub) {
+        uiConsole("Deleting Social Factor, please wait...", "Factor Pub:", factorPub);
+        const pub = Point.fromSEC1(secp256k1, factorPub);
+        await coreKitInstance.deleteFactor(pub);
+        await coreKitInstance.commitChanges();
+        uiConsole("Social Factor deleted");
+      } else {
+        uiConsole("No social factor found to delete");
+      }
+    };
+    // IMP END - Delete Factor
 
     const keyDetails = async () => {
       if (!coreKitInstance) {
@@ -326,7 +359,7 @@ export default {
       }
     };
 
-    const exportMnemonicFactor = async (): Promise<void> => {
+    const createMnemonicFactor = async (): Promise<void> => {
       if (!coreKitInstance) {
         throw new Error("coreKitInstance is not set");
       }
@@ -335,6 +368,7 @@ export default {
       await coreKitInstance.createFactor({
         shareType: TssShareType.RECOVERY,
         factorKey: factorKey.private,
+        shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
       });
       const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
 
@@ -458,6 +492,7 @@ export default {
     return {
       coreKitStatus,
       getDeviceFactor,
+      deleteFactor,
       COREKIT_STATUS,
       backupFactorKey,
       inputBackupFactorKey,
@@ -472,7 +507,7 @@ export default {
       criticalResetAccount,
       keyDetails,
       enableMFA,
-      exportMnemonicFactor,
+      createMnemonicFactor,
       getSocialMFAFactorKey,
     };
   },

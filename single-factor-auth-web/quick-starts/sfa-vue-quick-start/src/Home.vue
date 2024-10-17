@@ -18,19 +18,24 @@
           <button class="btn" @click="signMessage">Sign Message</button>
           <button class="btn btn-danger" @click="logout">Logout</button>
         </div>
-        <div id="console">
-          <h3>Console Output:</h3>
-          <pre></pre>
+        <div>
+          <button class="card" @click="getAccounts" style="cursor: pointer">Get Accounts</button>
+        </div>
+        <div>
+          <button class="card" @click="getBalance" style="cursor: pointer">Get Balance</button>
+        </div>
+        <div>
+          <button class="card" @click="signMessage" style="cursor: pointer">Sign Message</button>
+        </div>
+        <div>
+          <button class="card" @click="logout" style="cursor: pointer">Logout</button>
         </div>
       </div>
     </main>
 
     <footer>
-      <a
-        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/quick-starts/sfa-vue-quick-start"
+        target="_blank" rel="noopener noreferrer">
         Source code
       </a>
     </footer>
@@ -44,7 +49,11 @@ import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, IProvider, ADAPTER_EVENTS, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 // IMP END - Quick Start
-import Web3 from "web3";
+// IMP START - Blockchain Calls
+import RPC from "./ethersRPC";
+// import RPC from "./viemRPC";
+// import RPC from "./web3RPC";
+// IMP END - Blockchain Calls
 
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
@@ -69,15 +78,20 @@ export default {
     const verifier = "w3a-firebase-demo";
     // IMP END - Verifier Creation
 
+    // IMP START - Chain Config
     const chainConfig = {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: "0x1", // Please use 0x1 for Mainnet
-      rpcTarget: "https://rpc.ankr.com/eth",
-      displayName: "Ethereum Mainnet",
-      blockExplorer: "https://etherscan.io/",
+      chainId: "0xaa36a7",
+      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+      // Avoid using public rpcTarget in production.
+      // Use services like Infura, Quicknode etc
+      displayName: "Ethereum Sepolia Testnet",
+      blockExplorerUrl: "https://sepolia.etherscan.io",
       ticker: "ETH",
       tickerName: "Ethereum",
+      logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
     };
+    // IMP END - Chain Config
 
     const privateKeyProvider = new EthereumPrivateKeyProvider({
       config: { chainConfig },
@@ -189,10 +203,7 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(provider as any);
-
-      // Get user's Ethereum public address
-      const address = await web3.eth.getAccounts();
+      const address = await RPC.getAccounts(provider);
       uiConsole(address);
     };
 
@@ -201,16 +212,7 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(provider as any);
-
-      // Get user's Ethereum public address
-      const address = (await web3.eth.getAccounts())[0];
-
-      // Get user's balance in ether
-      const balance = web3.utils.fromWei(
-        await web3.eth.getBalance(address), // Balance is in wei
-        "ether"
-      );
+      const balance = await RPC.getBalance(provider);
       uiConsole(balance);
     };
 
@@ -219,20 +221,19 @@ export default {
         uiConsole("provider not initialized yet");
         return;
       }
-      const web3 = new Web3(provider as any);
-
-      // Get user's Ethereum public address
-      const fromAddress = (await web3.eth.getAccounts())[0];
-
-      const originalMessage = "YOUR_MESSAGE";
-
-      // Sign the message
-      const signedMessage = await web3.eth.personal.sign(
-        originalMessage,
-        fromAddress,
-        "test password!" // configure your own password here.
-      );
+      const signedMessage = await RPC.signMessage(provider);
       uiConsole(signedMessage);
+    };
+
+
+    const sendTransaction = async () => {
+      if (!provider) {
+        uiConsole("provider not initialized yet");
+        return;
+      }
+      uiConsole("Sending Transaction...");
+      const transactionReceipt = await RPC.sendTransaction(provider);
+      uiConsole(transactionReceipt);
     };
     // IMP END - Blockchain Calls
 

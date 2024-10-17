@@ -11,18 +11,19 @@
     "@types/node": "^18.13.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
-    "@web3auth/base": "^9.0.0",
-    "@web3auth/ethereum-provider": "^9.0.0",
+    "@web3auth/base": "^9.0.2",
+    "@web3auth/ethereum-provider": "^9.0.2",
     "@web3auth/passkeys-sfa-plugin": "^9.0.0",
     "@web3auth/single-factor-auth": "^9.0.0",
-    "@web3auth/wallet-services-plugin": "^9.0.0",
+    "@web3auth/wallet-services-plugin": "^9.1.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "ethers": "^6.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
     "source-map-loader": "^4.0.1",
     "typescript": "^5.0.4",
     "viem": "^2.9.15",
+    "vite": "^5.4.2",
     "web-vitals": "^3.1.1",
     "web3": "^4.1.1"
   },
@@ -51,15 +52,13 @@
   },
   "devDependencies": {
     "buffer": "^6.0.3",
+    "empty-module": "^0.0.2",
     "prettier": "^2.8.4",
-    "process": "^0.11.10",
-    "react-app-rewired": "^2.2.1"
+    "process": "^0.11.10"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "eject": "react-scripts eject",
-    "lint": "react-scripts lint"
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
   }
 }
