@@ -7,12 +7,13 @@ export default defineConfig({
   resolve: {
     alias: {
       crypto: "empty-module",
+      buffer: "buffer/",
     },
   },
   define: {
     global: "globalThis",
   },
   build: {
-    target: 'esnext',
+    target: 'es2020',
   },
 });

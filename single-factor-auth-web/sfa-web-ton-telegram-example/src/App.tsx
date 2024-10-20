@@ -3,222 +3,181 @@ import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { useLaunchParams } from "@telegram-apps/sdk-react"; // For capturing initDataRaw from Telegram WebApp
+import { useLaunchParams, isTMA } from "@telegram-apps/sdk-react";
+import { mockTelegramEnvironment } from "./hooks/useMockTelegramInitData";
+import TonRPC from "./tonRpc";
+import Loading from "./Loading";
+import "./App.css";
 
-import TonRPC from "./tonRpc"; // Your TonRPC utility for blockchain interaction
-import Loading from "./Loading"; // Loading component to show during login process
-import "./App.css"; // Import any necessary styles
-
-// Get TON testnet RPC endpoint
-const testnetRpc = await getHttpEndpoint({
-  network: "testnet",
-  protocol: "json-rpc",
-});
-
-// Web3Auth configuration
-const verifier = "w3a-telegram-demo"; // Your verifier name for Web3Auth
-const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // Web3Auth Client ID
-
-// TON chain configuration for Web3Auth
-const chainConfig = {
-  chainNamespace: CHAIN_NAMESPACES.OTHER,
-  chainId: "testnet", // TON testnet chain ID
-  rpcTarget: testnetRpc,
-  displayName: "TON Testnet",
-  blockExplorerUrl: "https://testnet.tonscan.org",
-  ticker: "TON",
-  tickerName: "Toncoin",
-};
-
-// Create a provider for the TON blockchain
-const privateKeyProvider = new CommonPrivateKeyProvider({
-  config: { chainConfig },
-});
-
-// Initialize Web3Auth
-const web3authSfa = new Web3Auth({
-  clientId, // Web3Auth Client ID
-  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-  usePnPKey: false, // Default key is CoreKitKey; change to true for PnP Web SDK key
-  privateKeyProvider,
-});
+const verifier = "w3a-telegram-demo";
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
 
 function App() {
-  const [isLoggingIn, setIsLoggingIn] = useState(false); // Loader state
-  const [loggedIn, setLoggedIn] = useState(false); // Login state
-  const [provider, setProvider] = useState<any>(null); // Web3Auth provider
-  const [initDataRaw, setInitDataRaw] = useState<string | null>(null); // Store initDataRaw from Telegram
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [provider, setProvider] = useState<any>(null);
+  const [initDataRaw, setInitDataRaw] = useState<string | null>(null);
+  const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
+  const [web3AuthInitialized, setWeb3AuthInitialized] = useState(false);
 
-  // Capture initDataRaw from Telegram WebApp upon opening
+  const { initDataRaw: launchData } = useLaunchParams() || {};
+
   useEffect(() => {
-    const { initDataRaw } = useLaunchParams(); // Extract initDataRaw using TWA SDK
-    if (initDataRaw) {
-      setInitDataRaw(initDataRaw); // Store initDataRaw in state
-    }
+    const checkTelegramEnvironment = async () => {
+      if (await isTMA()) {
+        console.log("Running inside Telegram Mini App.");
+      } else {
+        console.warn("Not running inside Telegram Mini App. Mocking environment for development...");
+        if (process.env.NODE_ENV === "development") {
+          mockTelegramEnvironment();
+        }
+      }
+
+      if (launchData) {
+        console.log("initDataRaw found: ", launchData);
+        setInitDataRaw(launchData);
+      } else {
+        console.warn("initDataRaw not found or undefined.");
+      }
+    };
+
+    checkTelegramEnvironment();
+  }, [launchData]);
+
+  useEffect(() => {
+    const initializeWeb3Auth = async () => {
+      try {
+        console.log("Fetching TON Testnet RPC endpoint...");
+        const testnetRpc = await getHttpEndpoint({
+          network: "testnet",
+          protocol: "json-rpc",
+        });
+
+        console.log("TON Testnet RPC endpoint: ", testnetRpc);
+
+        const chainConfig = {
+          chainNamespace: CHAIN_NAMESPACES.OTHER,
+          chainId: "testnet",
+          rpcTarget: testnetRpc,
+          displayName: "TON Testnet",
+          blockExplorerUrl: "https://testnet.tonscan.org",
+          ticker: "TON",
+          tickerName: "Toncoin",
+        };
+
+        const privateKeyProvider = new CommonPrivateKeyProvider({
+          config: { chainConfig },
+        });
+
+        const web3authInstance = new Web3Auth({
+          clientId,
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+          usePnPKey: false,
+          privateKeyProvider,
+        });
+
+        console.log("Web3Auth initialized.");
+        setWeb3authSfa(web3authInstance);
+
+        await web3authInstance.init(); // Ensure Web3Auth is initialized
+        setWeb3AuthInitialized(true);
+        console.log("Web3Auth is now ready.");
+      } catch (error) {
+        console.error("Error fetching TON Testnet RPC endpoint: ", error);
+      }
+    };
+
+    initializeWeb3Auth();
   }, []);
 
-  // Automatically authenticate and connect Web3Auth once initDataRaw is available
   useEffect(() => {
     const connectWeb3Auth = async () => {
-      if (!loggedIn && web3authSfa.status === "ready" && initDataRaw) {
-        setIsLoggingIn(true); // Show loader while logging in
+      if (web3authSfa && web3AuthInitialized && !loggedIn && initDataRaw) {
+        setIsLoggingIn(true);
         try {
-          const idToken = await getIdTokenFromServer(); // Fetch idToken from server
+          console.log("Starting Web3Auth connection...");
+
+          const idToken = await getIdTokenFromServer();
           if (!idToken) {
-            console.error("No ID token found");
+            console.error("No ID token found.");
             setIsLoggingIn(false);
             return;
           }
 
           const { payload } = decodeToken(idToken);
+          console.log("Decoded idToken payload: ", payload);
+
           await web3authSfa.connect({
             verifier,
-            verifierId: (payload as any).sub, // Use Telegram user ID as verifierId
+            verifierId: (payload as any).sub,
             idToken: idToken,
           });
 
-          setProvider(web3authSfa.provider); // Set Web3Auth provider
-          setLoggedIn(true); // Update login status
+          setProvider(web3authSfa.provider);
+          setLoggedIn(true);
+          console.log("Successfully logged in.");
         } catch (error) {
           console.error("Error during Web3Auth connection:", error);
         } finally {
-          setIsLoggingIn(false); // Hide loader after login attempt
+          setIsLoggingIn(false);
         }
+      } else {
+        console.warn("Web3Auth is not ready or already logged in.");
       }
     };
 
-    if (initDataRaw) {
-      connectWeb3Auth(); // Trigger login process when initDataRaw is available
+    if (web3AuthInitialized && initDataRaw) {
+      connectWeb3Auth();
     }
-  }, [initDataRaw, loggedIn]);
+  }, [initDataRaw, loggedIn, web3authSfa, web3AuthInitialized]);
 
-  // Function to request idToken from your server using initDataRaw
   const getIdTokenFromServer = async () => {
+    console.log("Requesting ID token from server with initDataRaw: ", initDataRaw);
     try {
       const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/auth/telegram`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({ initDataRaw }),
+        credentials: "include",
+        mode: "cors",
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
-      return data.token; // Return idToken received from the server
+      console.log("ID token received: ", data.token);
+      return data.token;
     } catch (error) {
-      console.error("Error fetching idToken from server:", error);
+      console.error("Error fetching ID token from server: ", error);
       return null;
     }
   };
-
-  // Methods for handling different actions when logged in
 
   const getUserInfo = async () => {
     if (!provider) {
       console.log("Web3Auth Single Factor Auth SDK not initialized yet");
       return;
     }
-    const userInfo = await web3authSfa.getUserInfo();
+    const userInfo = await web3authSfa?.getUserInfo();
     console.log(userInfo);
   };
 
-  const getAccounts = async () => {
-    if (!provider) {
-      console.log("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const userAccount = await rpc.getAccounts();
-    console.log(userAccount);
-  };
-
-  const getBalance = async () => {
-    if (!provider) {
-      console.log("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const balance = await rpc.getBalance();
-    console.log(balance);
-  };
-
-  const signMessage = async () => {
-    if (!provider) {
-      console.log("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const result = await rpc.signMessage("Hello, TON!");
-    console.log(`Message signed. Signature: ${result}`);
-  };
-
-  const sendTransaction = async () => {
-    if (!provider) {
-      console.log("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const result = await rpc.sendTransaction();
-    console.log(result);
-  };
-
-  const authenticateUser = async () => {
-    if (!provider) {
-      console.log("No provider found");
-      return;
-    }
-    const userCredential = await web3authSfa.authenticateUser();
-    console.log(userCredential);
-  };
-
-  const getPrivateKey = async () => {
-    if (!web3authSfa.provider) {
-      console.log("No provider found");
-      return "";
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const privateKey = await rpc.getPrivateKey();
-    return privateKey;
-  };
-
-  // Main app view when the user is logged in
   const loginView = (
     <>
       <div className="flex-container">
         <button onClick={getUserInfo} className="card">
           Get User Info
         </button>
-        <button onClick={authenticateUser} className="card">
-          Authenticate User
-        </button>
-        <button onClick={getAccounts} className="card">
-          Get Accounts
-        </button>
-        <button onClick={getBalance} className="card">
-          Get Balance
-        </button>
-        <button onClick={signMessage} className="card">
-          Sign Message
-        </button>
-        <button onClick={sendTransaction} className="card">
-          Send Transaction
-        </button>
-        <button onClick={getPrivateKey} className="card">
-          Get Private Key
-        </button>
-        <button onClick={async () => await web3authSfa.logout()} className="card">
-          Log Out
-        </button>
-      </div>
-
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
+        {/* Add other actions here */}
       </div>
     </>
   );
 
-  // View when the user is logged out
   const logoutView = (
-    <button onClick={async () => await web3authSfa.init()} className="card">
+    <button onClick={async () => await web3authSfa?.init()} className="card">
       Login
     </button>
   );
@@ -226,10 +185,7 @@ function App() {
   return (
     <div className="container">
       <h1 className="title">Web3Auth SFA React TON Example</h1>
-
-      {/* Show the loader while logging in */}
-      {isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
-
+      {isLoggingIn ? <Loading /> : <div className="grid">{provider ? (loggedIn ? loginView : logoutView) : null}</div>}
       <footer className="footer">
         <a href="https://github.com/Web3Auth" target="_blank" rel="noopener noreferrer">
           Source code
