@@ -5,7 +5,7 @@ import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import { useLaunchParams, isTMA } from "@telegram-apps/sdk-react";
 import { mockTelegramEnvironment } from "./hooks/useMockTelegramInitData";
-import TonRPC from "./tonRpc";
+// import TonRPC from "./tonRpc";
 import Loading from "./Loading";
 import "./App.css";
 
