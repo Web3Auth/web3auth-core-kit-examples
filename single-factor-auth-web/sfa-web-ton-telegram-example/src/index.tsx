@@ -2,10 +2,10 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import WebApp from "@telegram-apps/sdk-react"; // Importing Telegram WebApp SDK
+import { init } from "@telegram-apps/sdk-react"; // Importing Telegram WebApp SDK
 
 // Initialize Telegram WebApp
-WebApp.init(); // Initialize the Telegram WebApp, required for the app to run inside Telegram
+init(); // By calling this function, Telegram Mini Apps event handlers will be created
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);
