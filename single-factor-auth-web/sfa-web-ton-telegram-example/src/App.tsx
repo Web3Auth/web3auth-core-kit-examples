@@ -37,7 +37,10 @@ function App() {
         console.log("initDataRaw found: ", launchData);
         setInitDataRaw(launchData);
       } else {
-        console.warn("initDataRaw not found or undefined.");
+        console.warn("initDataRaw not found or undefined. Using mock data.");
+        if (process.env.NODE_ENV === "development") {
+          mockTelegramEnvironment();
+        }
       }
     };
 

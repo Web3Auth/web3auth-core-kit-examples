@@ -18,16 +18,16 @@ const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "u
 
 // CORS configuration
 const corsOptions = {
-  origin: SERVER_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  origin: SERVER_URL || 'http://localhost:3000', // Use the SERVER_URL from .env or fallback to localhost during dev
+  credentials: true, // This allows cookies/credentials to be sent across domains
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'], // Allowed headers
 };
 
 // Apply CORS middleware to all routes
 app.use(cors(corsOptions));
 
-// Handle preflight requests for all routes
+// Handle preflight requests (OPTIONS method) for all routes
 app.options('*', cors(corsOptions));
 
 // Rate limiter configuration
