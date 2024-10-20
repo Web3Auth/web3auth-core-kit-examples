@@ -10,6 +10,7 @@ const RateLimit = require("express-rate-limit");
 dotenv.config();
 
 const app = express();
+app.use(express.json()); // Middleware to parse JSON requests
 
 // Rate limiter configuration: limit to 100 requests per 15 minutes
 const limiter = RateLimit({
@@ -18,90 +19,66 @@ const limiter = RateLimit({
   message: "Too many requests from this IP, please try again later."
 });
 
-// Apply the rate limiter to specific routes
+// Apply rate limiter to all routes
 app.use(limiter);
 
-const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, SERVER_URL, CLIENT_URL, JWT_KEY_ID } = process.env;
-const TELEGRAM_BOT_CALLBACK = `${SERVER_URL}/callback`;
+const { TELEGRAM_BOT_TOKEN, SERVER_URL, JWT_KEY_ID } = process.env;
+
+// Read private key for JWT signing
 const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "utf8");
 
-// A helper function to generate JWT token using the Telegram user data
+// Helper function to generate JWT token using the Telegram user data
 const generateJwtToken = (userData) => {
   const payload = {
     telegram_id: userData.id,
     username: userData.username,
     avatar_url: userData.photo_url,
-    sub: userData.id.toString(),
-    name: userData.first_name,
-    iss: "https://api.telegram.org",
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour expiration
+    sub: userData.id.toString(), // Subject is the user ID
+    name: userData.first_name, // Full name if you want to include
+    iss: "https://api.telegram.org", // Issuer is your server URL
+    iat: Math.floor(Date.now() / 1000), // Issued at time
+    exp: Math.floor(Date.now() / 1000) + 60 * 60, // Expires in 1 hour
   };
 
   return jwt.sign(payload, privateKey, { algorithm: "RS256", keyid: JWT_KEY_ID });
 };
 
+// Default route to check if the server is running
 app.get("/", (req, res) => res.send("Express on Vercel for Telegram Login to be used with Web3Auth"));
 
-app.get("/.well-known/jwks.json", limiter, (req, res) => {
+// Serving the JWKS for verifying JWT signature
+app.get("/.well-known/jwks.json", (req, res) => {
   const jwks = fs.readFileSync(path.resolve(__dirname, "jwks.json"), "utf8");
-  res.send(JSON.parse(jwks));
+  res.json(JSON.parse(jwks)); // Return JWKS JSON file
 });
 
-// Endpoint to serve the login page
-app.get("/login", (req, res) => {
-  let htmlContent = `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <title>Telegram OAuth App with Web3Auth</title>
-      <style>
-        body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          margin: 0;
-        }
-      </style>
-    </head>
-    <body>
-      <script>
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = "https://telegram.org/js/telegram-widget.js?22";
-        script.setAttribute("data-telegram-login", "${TELEGRAM_BOT_NAME}");
-        script.setAttribute("data-size", "large");
-        script.setAttribute("data-userpic", "false");
-        script.setAttribute("data-auth-url", "${SERVER_URL}/callback");
+// Endpoint to validate Telegram data and generate JWT
+app.post("/auth/telegram", async (req, res) => {
+  const { initDataRaw } = req.body; // Get initDataRaw from the request body
 
-        document.body.appendChild(script);
-      </script>
-      <noscript>You need to enable JavaScript to run this app.</noscript>
-    </body>
-  </html>
-  `;
+  if (!initDataRaw) {
+    return res.status(400).json({ error: "initDataRaw is required" });
+  }
 
-  res.send(htmlContent);
-});
-
-// Endpoint to handle the Telegram callback
-app.get("/callback", limiter, async (req, res) => {
   const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
-  const data = objectToAuthDataMap(req.query || {});
+  const data = objectToAuthDataMap(new URLSearchParams(initDataRaw)); // Parse initDataRaw
 
   try {
+    // Validate Telegram data
     const user = await validator.validate(data);
+
+    // Generate a JWT token
     const JWTtoken = generateJwtToken(user);
 
-    const redirectUrl = `${CLIENT_URL}?token=${JWTtoken}`; // Redirect back to frontend with token
-    res.redirect(redirectUrl);
+    // Send back the JWT token to the client
+    res.json({ token: JWTtoken });
   } catch (error) {
     console.error("Error validating Telegram data:", error);
-    res.status(400).send("Invalid Telegram data");
+    res.status(400).json({ error: "Invalid Telegram data" });
   }
 });
 
+// Server listening on port 3000 (or replace with your Vercel/Heroku port settings)
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
 module.exports = app;

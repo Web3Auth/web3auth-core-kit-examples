@@ -2,24 +2,13 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import WebApp from "@twa-dev/sdk";
-import { Auth0Provider } from "@auth0/auth0-react";
+import WebApp from "@telegram-apps/sdk-react"; // Importing Telegram WebApp SDK
 
-WebApp.ready();
+// Initialize Telegram WebApp
+WebApp.init(); // Initialize the Telegram WebApp, required for the app to run inside Telegram
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-root.render(
-  <Auth0Provider
-    domain="web3auth.au.auth0.com"
-    clientId="hiLqaop0amgzCC0AXo4w0rrG9abuJTdu"
-    authorizationParams={{
-      redirect_uri: window.location.origin,
-      connection: "github",
-    }}
-  >
-    <App />
-  </Auth0Provider>
-);
+root.render(<App />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
