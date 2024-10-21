@@ -14,7 +14,7 @@ export default defineConfig({
     global: "globalThis",
   },
   build: {
-    target: 'es2020',
+    target: 'esnext',
   },
   server: {
     proxy: {
