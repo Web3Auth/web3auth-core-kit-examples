@@ -36,6 +36,9 @@ app.use((req, res, next) => {
   next(); // Pass control to the next middleware
 });
 
+// Trust proxy to handle X-Forwarded-For
+app.set('trust proxy', 1); // Trust the first proxy in the chain (Vercel)
+
 // Rate limiter configuration
 const limiter = RateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -71,42 +74,43 @@ app.post("/auth/telegram", async (req, res) => {
   const { initDataRaw, isMocked } = req.body;
   console.log("Received initDataRaw:", initDataRaw);
   console.log("isMocked:", isMocked);
+
   if (!initDataRaw) {
     return res.status(400).json({ error: "initDataRaw is required" });
   }
 
   try {
-    const data = new URLSearchParams(initDataRaw);
-    console.log("Decoded Init Data:", data.toString());
+    // Parse initDataRaw correctly
+    const params = new URLSearchParams(initDataRaw);
+    const data = Object.fromEntries(params.entries());
+    console.log("Parsed Init Data:", data);
 
     if (isMocked) {
-      const user = JSON.parse(decodeURIComponent(data.get("user"))); // Decode the 'user' parameter from initDataRaw
-
+      // Handle the mock case
+      const user = JSON.parse(decodeURIComponent(data.user));
       const mockUser = {
         id: user.id,
         username: user.username,
-        photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Default photo URL for mocked user
+        photo_url: user.photo_url || "https://www.gravatar.com/avatar",
         first_name: user.first_name,
       };
-
       console.log("Parsed mock user data:", mockUser);
+
       const JWTtoken = generateJwtToken(mockUser);
       return res.json({ token: JWTtoken });
     }
 
     // For real scenarios, proceed with validation
     const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
-    const telegramData = objectToAuthDataMap(data);
-
+    const telegramData = objectToAuthDataMap(params);
     console.log("Telegram data before validation:", telegramData);
 
     const user = await validator.validate(telegramData);
-
     console.log("Validated user:", user);
 
     const validatedUser = {
       ...user,
-      photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Fallback photo URL if missing
+      photo_url: user.photo_url || "https://www.gravatar.com/avatar",
     };
 
     const JWTtoken = generateJwtToken(validatedUser);
