@@ -16,4 +16,13 @@ export default defineConfig({
   build: {
     target: 'es2020',
   },
+  server: {
+    proxy: {
+      "/auth": {
+        target: process.env.SERVER_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

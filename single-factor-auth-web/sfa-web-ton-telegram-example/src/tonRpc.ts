@@ -2,21 +2,14 @@ import type { IProvider } from "@web3auth/base";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 
+const rpc = await getHttpEndpoint(); 
+
 export default class TonRPC {
     private provider: IProvider;
     private tonweb: TonWeb;
 
     constructor(provider: IProvider) {
         this.provider = provider;
-        // Initialize tonweb in the constructor
-        this.initTonWeb();
-    }
-
-    private async initTonWeb() {
-        const rpc = await getHttpEndpoint({
-            network: "testnet",
-            protocol: "json-rpc",
-        });
         this.tonweb = new TonWeb(new TonWeb.HttpProvider(rpc));
     }
 
