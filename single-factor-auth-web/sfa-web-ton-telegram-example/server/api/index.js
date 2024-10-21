@@ -75,32 +75,35 @@ app.post("/auth/telegram", async (req, res) => {
     return res.status(400).json({ error: "initDataRaw is required" });
   }
 
-  if (isMocked) {
-    // Directly parse the mocked initDataRaw without validation
-    const data = new URLSearchParams(initDataRaw);
-    const user = JSON.parse(decodeURIComponent(data.get("user"))); // Decode the 'user' parameter from initDataRaw
-
-    const mockUser = {
-      id: user.id,
-      username: user.username,
-      photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Default photo URL for mocked user
-      first_name: user.first_name,
-    };
-
-    console.log("Parsed mock user data:", mockUser);
-
-    const JWTtoken = generateJwtToken(mockUser);
-    return res.json({ token: JWTtoken });
-  }
-
-  // For real scenarios, proceed with validation
-  const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
-  const data = objectToAuthDataMap(new URLSearchParams(initDataRaw));
-
   try {
-    const user = await validator.validate(data);
+    const data = new URLSearchParams(initDataRaw);
+    console.log("Decoded Init Data:", data.toString());
 
-    // Ensure a photo URL is available or use a default one
+    if (isMocked) {
+      const user = JSON.parse(decodeURIComponent(data.get("user"))); // Decode the 'user' parameter from initDataRaw
+
+      const mockUser = {
+        id: user.id,
+        username: user.username,
+        photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Default photo URL for mocked user
+        first_name: user.first_name,
+      };
+
+      console.log("Parsed mock user data:", mockUser);
+      const JWTtoken = generateJwtToken(mockUser);
+      return res.json({ token: JWTtoken });
+    }
+
+    // For real scenarios, proceed with validation
+    const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
+    const telegramData = objectToAuthDataMap(data);
+
+    console.log("Telegram data before validation:", telegramData);
+
+    const user = await validator.validate(telegramData);
+
+    console.log("Validated user:", user);
+
     const validatedUser = {
       ...user,
       photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Fallback photo URL if missing
