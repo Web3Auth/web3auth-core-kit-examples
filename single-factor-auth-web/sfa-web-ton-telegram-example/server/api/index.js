@@ -1,6 +1,7 @@
+const jwt = require("jsonwebtoken"); 
+const fs = require("fs");
 const express = require("express");
 const dotenv = require("dotenv");
-const fs = require("fs");
 const path = require("path");
 const { validate } = require("@telegram-apps/init-data-node");
 const RateLimit = require("express-rate-limit");
@@ -26,7 +27,6 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
-  // Handle preflight requests (OPTIONS method)
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
     return res.sendStatus(204);
