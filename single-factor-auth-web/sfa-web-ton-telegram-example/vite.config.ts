@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       crypto: "empty-module",
+      buffer: "buffer/",
     },
   },
   define: {
@@ -14,5 +15,14 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+  },
+  server: {
+    proxy: {
+      "/auth": {
+        target: process.env.SERVER_URL,
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

@@ -1,3 +1,4 @@
+/* Main Container */
 .container {
   width: 60%;
   margin: auto;
@@ -28,8 +29,8 @@
 
 .grid {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .card {
@@ -100,4 +101,81 @@
   word-wrap: break-word;
   font-size: 16px;
   font-family: monospace;
+}
+
+/* Updated box sizes */
+.user-info-box, .info-box {
+  padding: 15px;
+  margin: 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.info-box:hover {
+  background-color: #eef;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Ellipsis for long strings */
+p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; /* Ensure ellipsis kicks in at full box width */
+}
+
+/* Adjust alignment and spacing of ID and Logo */
+.id-with-logo {
+  display: inline-flex;
+  align-items: center; /* Vertically align the text and logo */
+  gap: 4px; /* Reduce the gap between the ID and the logo */
+  margin-bottom: 0; /* Remove unnecessary margin below the ID */
+  max-width: fit-content; /* Adjust width to fit content only */
+}
+
+/* Style the logo */
+.telegram-logo {
+  width: 20px;
+  height: 20px;
+  margin-left: 4px; /* Minimal space between the ID and logo */
+}
+
+/* Adjust overall spacing for user-info-box */
+.user-info-box {
+  padding: 15px;
+  margin: 10px 0; /* Adjust the margin for better spacing */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
 }

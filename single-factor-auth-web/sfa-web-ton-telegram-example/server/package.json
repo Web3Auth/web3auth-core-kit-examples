@@ -2,6 +2,7 @@
 	"author": "",
 	"dependencies": {
 		"@telegram-auth/server": "^1.0.3",
+		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"express-rate-limit": "^7.4.0",
@@ -15,7 +16,7 @@
 	"name": "sfa-web-ton-telegram-server",
 	"scripts": {
 		"lint": "eslint",
-		"start": "node index.js",
+		"start": "node api/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"version": "1.0.0",
