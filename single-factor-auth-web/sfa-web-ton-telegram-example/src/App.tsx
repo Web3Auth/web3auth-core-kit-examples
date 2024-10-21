@@ -135,7 +135,7 @@ function App() {
   const getIdTokenFromServer = async (initDataRaw: string) => {
     const isMocked = !!sessionStorage.getItem("____mocked");
 
-    const response = await fetch(`${process.env.SERVER_URL}/auth/telegram`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/telegram`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
