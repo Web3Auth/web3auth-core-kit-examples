@@ -22,7 +22,7 @@ function App() {
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const { initDataRaw } = useLaunchParams() || {};
+  const { initDataRaw, initData } = useLaunchParams() || {};
 
   useTelegramMock(); // Initialize the Telegram mock data
 
@@ -90,7 +90,7 @@ function App() {
             console.log("Web3Auth initialized.");
           }
 
-          const idToken = await getIdTokenFromServer(initDataRaw);
+          const idToken = await getIdTokenFromServer(initDataRaw, initData.user.photoUrl); // Pass photoUrl
           if (!idToken) {
             console.error("No ID token found.");
             setIsLoggingIn(false);
@@ -132,7 +132,7 @@ function App() {
     }
   }, [initDataRaw, web3authSfa, web3AuthInitialized]);
 
-  const getIdTokenFromServer = async (initDataRaw: string) => {
+  const getIdTokenFromServer = async (initDataRaw: string, photoUrl: string | undefined) => {
     const isMocked = !!sessionStorage.getItem("____mocked");
 
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/telegram`, {
@@ -140,7 +140,7 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ initDataRaw, isMocked }),
+      body: JSON.stringify({ initDataRaw, isMocked, photoUrl }), // Send photoUrl as an additional field
     });
 
     const data = await response.json();

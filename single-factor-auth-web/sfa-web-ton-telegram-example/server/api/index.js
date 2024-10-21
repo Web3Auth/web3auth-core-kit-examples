@@ -65,10 +65,11 @@ app.get("/test", (req, res) => {
 
 // Route 2: Telegram authentication route
 app.post("/auth/telegram", async (req, res) => {
-  const { initDataRaw, isMocked } = req.body;
+  const { initDataRaw, isMocked, photoUrl } = req.body; // Extract photoUrl from request body
 
   console.log("Received initDataRaw:", initDataRaw);
   console.log("isMocked:", isMocked);
+  console.log("photoUrl:", photoUrl); // Log the photoUrl for debugging
 
   if (!initDataRaw) {
     return res.status(400).json({ error: "initDataRaw is required" });
@@ -82,7 +83,7 @@ app.post("/auth/telegram", async (req, res) => {
     const mockUser = {
       id: user.id,
       username: user.username,
-      photo_url: user.photo_url || "https://www.gravatar.com/avatar",
+      photo_url: photoUrl || user.photo_url || "https://www.gravatar.com/avatar", // Use photoUrl passed or fallback to user.photo_url
       first_name: user.first_name,
     };
 
@@ -100,7 +101,7 @@ app.post("/auth/telegram", async (req, res) => {
 
     const validatedUser = {
       ...user,
-      photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Fallback photo URL if missing
+      photo_url: photoUrl || user.photo_url || "https://www.gravatar.com/avatar", // Use photoUrl passed or fallback to user.photo_url
     };
 
     // Generate the JWT token
