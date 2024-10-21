@@ -1,10 +1,8 @@
-const jwt = require("jsonwebtoken");
-const fs = require("fs");
 const express = require("express");
 const dotenv = require("dotenv");
+const fs = require("fs");
 const path = require("path");
-const { AuthDataValidator } = require("@telegram-auth/server");
-const { objectToAuthDataMap } = require("@telegram-auth/server/utils");
+const { validate } = require("@telegram-apps/init-data-node");
 const RateLimit = require("express-rate-limit");
 
 dotenv.config();
@@ -16,45 +14,41 @@ const { TELEGRAM_BOT_TOKEN, JWT_KEY_ID, APP_URL } = process.env;
 const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "utf8");
 
 // Define allowed origins
-const allowedOrigins = [APP_URL]; // Add more origins if needed
+const allowedOrigins = [APP_URL];
 
 // CORS configuration
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin); // Allow only the allowed origins
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-    res.setHeader('Access-Control-Allow-Credentials', 'true'); // Allow credentials like cookies
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
   // Handle preflight requests (OPTIONS method)
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-    return res.sendStatus(204); // Send no content status for OPTIONS requests
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+    return res.sendStatus(204);
   }
-  next(); // Pass control to the next middleware
+  next();
 });
-
-// Trust proxy to handle X-Forwarded-For
-app.set('trust proxy', 1); // Trust the first proxy in the chain (Vercel)
 
 // Rate limiter configuration
 const limiter = RateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later."
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
 });
 
 app.use(limiter);
 
 // Helper function to generate JWT token
 const generateJwtToken = (userData) => {
-  console.log("id", userData.id);
   const payload = {
     telegram_id: userData.id,
     username: userData.username,
-    avatar_url: userData.photo_url || "https://www.gravatar.com/avatar", // Default photo URL if not available
+    avatar_url: userData.photo_url || "https://www.gravatar.com/avatar",
     sub: userData.id.toString(),
     name: userData.first_name,
     iss: "https://api.telegram.org",
@@ -72,6 +66,7 @@ app.get("/test", (req, res) => {
 // Route 2: Telegram authentication route
 app.post("/auth/telegram", async (req, res) => {
   const { initDataRaw, isMocked } = req.body;
+
   console.log("Received initDataRaw:", initDataRaw);
   console.log("isMocked:", isMocked);
 
@@ -79,40 +74,36 @@ app.post("/auth/telegram", async (req, res) => {
     return res.status(400).json({ error: "initDataRaw is required" });
   }
 
+  if (isMocked) {
+    // Handle mock data parsing
+    const data = new URLSearchParams(initDataRaw);
+    const user = JSON.parse(decodeURIComponent(data.get("user")));
+
+    const mockUser = {
+      id: user.id,
+      username: user.username,
+      photo_url: user.photo_url || "https://www.gravatar.com/avatar",
+      first_name: user.first_name,
+    };
+
+    const JWTtoken = generateJwtToken(mockUser);
+    return res.json({ token: JWTtoken });
+  }
+
   try {
-    // Parse initDataRaw correctly
-    const params = new URLSearchParams(initDataRaw);
-    const data = Object.fromEntries(params.entries());
-    console.log("Parsed Init Data:", data);
+    // Validate the real initDataRaw using @telegram-apps/init-data-node
+    validate(initDataRaw, TELEGRAM_BOT_TOKEN); // If validation fails, this will throw an error
 
-    if (isMocked) {
-      // Handle the mock case
-      const user = JSON.parse(decodeURIComponent(data.user));
-      const mockUser = {
-        id: user.id,
-        username: user.username,
-        photo_url: user.photo_url || "https://www.gravatar.com/avatar",
-        first_name: user.first_name,
-      };
-      console.log("Parsed mock user data:", mockUser);
-
-      const JWTtoken = generateJwtToken(mockUser);
-      return res.json({ token: JWTtoken });
-    }
-
-    // For real scenarios, proceed with validation
-    const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
-    const telegramData = objectToAuthDataMap(params);
-    console.log("Telegram data before validation:", telegramData);
-
-    const user = await validator.validate(telegramData);
-    console.log("Validated user:", user);
+    // If validation is successful, parse the data
+    const data = new URLSearchParams(initDataRaw);
+    const user = JSON.parse(decodeURIComponent(data.get("user")));
 
     const validatedUser = {
       ...user,
-      photo_url: user.photo_url || "https://www.gravatar.com/avatar",
+      photo_url: user.photo_url || "https://www.gravatar.com/avatar", // Fallback photo URL if missing
     };
 
+    // Generate the JWT token
     const JWTtoken = generateJwtToken(validatedUser);
     res.json({ token: JWTtoken });
   } catch (error) {
