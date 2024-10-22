@@ -89,6 +89,9 @@ function App() {
             await web3authSfa.init();
             console.log("Web3Auth initialized.");
           }
+          console.log("initData: ", initData);
+          console.log("initData.user: ", initData.user);
+          console.log("initData.user.photoUrl: ", initData.user.photoUrl);
 
           const idToken = await getIdTokenFromServer(initDataRaw, initData.user.photoUrl); // Pass photoUrl
           if (!idToken) {
