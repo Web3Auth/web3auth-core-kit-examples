@@ -56,7 +56,8 @@
 .card:focus,
 .card:active {
 	cursor: pointer;
-	background-color: #f1f1f1;
+	background-color: #2980b9;
+	box-shadow: 0 0 5px rgba(41, 128, 185, 0.8);
 }
 
 .footer {
@@ -210,4 +211,21 @@
 
 .hidden {
 	display: none;
+}
+
+.warning-box {
+	background-color: #fff3cd;
+	border: 1px solid #ffeeba;
+	border-radius: 4px;
+	color: #856404;
+	margin: 20px 0;
+	padding: 15px;
+}
+
+.warning-box p {
+	margin: 5px 0;
+}
+
+.warning-box strong {
+	color: #664d03;
 }

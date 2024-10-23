@@ -410,7 +410,8 @@ function App() {
           Enable MFA
         </button>
       </div>
-      <div>
+
+      {/* <div>
         <button onClick={getAccounts} className="card">
           Get Accounts
         </button>
@@ -429,7 +430,7 @@ function App() {
         <button onClick={sendTransaction} className="card">
           Send Transaction
         </button>
-      </div>
+      </div> */}
 
       <div>
         <button onClick={createMnemonicFactor} className="card">

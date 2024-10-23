@@ -311,16 +311,33 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
     <div>
       <h1>BitcoinComponent Signing</h1>
 
-      <button onClick={showAddress} className="card">
-        Show Address
-      </button>
       <div className="flex-container">
-        <input value={receiverAddr as string} onChange={(e) => setReceiverAddr(e.target.value)} placeholder="set Receiver Address"></input>
-        <input value={amount as string} onChange={(e) => setAmount(e.target.value)} placeholder="set Receiver Amount  "></input>
-        <input value={minerFee as string} onChange={(e) => setMinerFee(e.target.value)} placeholder="set Miner Fee"></input>
-        <input value={latestBalance as string} onChange={(e) => setLatestBalance(e.target.value)} placeholder="set latest balance"></input>
-        <input value={bitcoinUTXID as string} onChange={(e) => setBitcoinUTXID(e.target.value)} placeholder="set UTXID here"></input>
-        <input value={fundingTxIndex as string} onChange={(e) => setFundingTxIndex(e.target.value)} placeholder="FundingTxIndex (often 0)"></input>
+        <input
+          value={receiverAddr as string}
+          onChange={(e) => setReceiverAddr(e.target.value)}
+          placeholder="set Receiver Address"
+          style={{ marginRight: "10px" }}
+        />
+        <input
+          value={amount as string}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="set Receiver Amount"
+          style={{ marginRight: "10px" }}
+        />
+        <input value={minerFee as string} onChange={(e) => setMinerFee(e.target.value)} placeholder="set Miner Fee" style={{ marginRight: "10px" }} />
+        <input
+          value={latestBalance as string}
+          onChange={(e) => setLatestBalance(e.target.value)}
+          placeholder="set latest balance"
+          style={{ marginRight: "10px" }}
+        />
+        <input
+          value={bitcoinUTXID as string}
+          onChange={(e) => setBitcoinUTXID(e.target.value)}
+          placeholder="set UTXID here"
+          style={{ marginRight: "10px" }}
+        />
+        <input value={fundingTxIndex as string} onChange={(e) => setFundingTxIndex(e.target.value)} placeholder="FundingTxIndex (often 0)" />
       </div>
       <div className="flex-container">
         <button onClick={() => signTransaction()} className="card">
@@ -336,11 +353,19 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
         </button>
       </div>
 
-      <div>This For Demo Purpose only</div>
-      <div>Send via Centralized Server - BlockStream </div>
-      <span>Production should relay transaction to bitcoin nodes</span>
+      <div className="warning-box">
+        <p>
+          <strong>⚠️ Warning: Demo Purpose Only</strong>
+        </p>
+        <p>This implementation sends transactions via a centralized server (BlockStream).</p>
+        <p>In a production environment, transactions should be relayed directly to Bitcoin nodes.</p>
+      </div>
 
       <div className="flex-container">
+        <button onClick={showAddress} className="card">
+          Show Address
+        </button>
+
         <button onClick={() => signTransaction(true)} className="card">
           Send PSBT Transaction
         </button>
