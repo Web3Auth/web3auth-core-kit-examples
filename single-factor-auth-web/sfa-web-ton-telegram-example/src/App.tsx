@@ -22,9 +22,18 @@ function App() {
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const { initDataRaw, initData } = useLaunchParams() || {};
+  const { initDataRaw, initData, themeParams } = useLaunchParams() || {};
 
   useTelegramMock(); // Initialize the Telegram mock data
+
+  useEffect(() => {
+    if (themeParams) {
+      const bgColor = themeParams.bg_color || "#ffffff";
+      const textColor = themeParams.text_color || "#333333";
+      document.documentElement.style.setProperty("--bg-color", bgColor);
+      document.documentElement.style.setProperty("--text-color", textColor);
+    }
+  }, []);
 
   useEffect(() => {
     const initializeWeb3Auth = async () => {
