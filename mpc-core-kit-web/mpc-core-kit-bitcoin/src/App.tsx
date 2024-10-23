@@ -520,9 +520,15 @@ function App() {
         Bitcoin Example
       </h1>
 
-      <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
+      <div className="two-panel-layout">
+        <div className="left-panel">
+          <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
+        </div>
+        <div className="right-panel">
+          <div id="console" style={{ whiteSpace: "pre-line" }}>
+            <p style={{ whiteSpace: "pre-line" }}></p>
+          </div>
+        </div>
       </div>
 
       <footer className="footer">
