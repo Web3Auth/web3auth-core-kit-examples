@@ -309,7 +309,7 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
 
   return (
     <div>
-      <h1>BitcoinComponent Signing</h1>
+      <h1>BitcoinComponent</h1>
 
       <div className="flex-container">
         <input
