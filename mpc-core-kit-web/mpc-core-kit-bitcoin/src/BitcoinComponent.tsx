@@ -201,6 +201,7 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
     }
 
     const sendAmount = amount - Math.floor(fee);
+    console.log("sendAmount", sendAmount);
 
     // const selfAddr = account.address!;
     // console.log("TESTTTTTTTT");

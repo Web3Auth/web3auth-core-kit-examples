@@ -6,8 +6,12 @@ export function createBitcoinJsSigner(props: { coreKitInstance: Web3AuthMPCCoreK
   return {
     sign: async (hash: Buffer, lowR?: boolean) => {
       let sig = await props.coreKitInstance.sign(hash);
+      console.log("sig", sig);
       const { r, s } = sigToRSV(sig);
+      console.log("r", r);
+      console.log("s", s);
       const sigBuffer = Buffer.concat([r, s]);
+      console.log("sigBuffer", sigBuffer);
       return sigBuffer;
     },
     publicKey: props.coreKitInstance.getPubKeyPoint().toSEC1(secp256k1, true),
