@@ -40,7 +40,6 @@ results in a standard cryptographic key provider specific to the user and applic
 | `@web3auth/single-factor-auth` | `Angular`      | [SFA Quick Start - Angular](/single-factor-auth-web/quick-starts/sfa-angular-quick-start/)       |
 | `@web3auth/single-factor-auth` | `Next.js`      | [SFA Quick Start - Next.js](/single-factor-auth-web/quick-starts/sfa-nextjs-quick-start/)        |
 | `@web3auth/single-factor-auth` | `React`        | [SFA Quick Start - React](/single-factor-auth-web/quick-starts/sfa-react-quick-start/)           |
-| `@web3auth/single-factor-auth` | `React - Vite` | [SFA Quick Start - React Vite](/single-factor-auth-web/quick-starts/sfa-react-vite-quick-start/) |
 | `@web3auth/single-factor-auth` | `JavaScript`   | [SFA Quick Start - Vanilla JS](/single-factor-auth-web/quick-starts/sfa-vanillajs-quick-start/)  |
 | `@web3auth/single-factor-auth` | `Vue.js`       | [SFA Quick Start - Vue](/single-factor-auth-web/quick-starts/sfa-vue-quick-start/)               |
 | Other examples                 |                |                                                                                                  |
