@@ -3,264 +3,230 @@ import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
-import { useAuth0 } from "@auth0/auth0-react";
-
-// TonRPC libraries for blockchain calls
-import TonRPC from "./tonRpc";
-
+import TonRPC from "./tonRpc"; // Import the TonRPC class
+import { useLaunchParams } from "@telegram-apps/sdk-react";
+import { useTelegramMock } from "./hooks/useMockTelegramInitData";
 import Loading from "./Loading";
+import TelegramLogo from "./assets/Logo.svg"; // Assuming the logo is in the assets folder
 import "./App.css";
 
-const testnetRpc = await getHttpEndpoint({
-  network: "testnet",
-  protocol: "json-rpc",
-});
-const verifier = "w3a-a0-github-demo";
-const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
-
-const chainConfig = {
-  chainNamespace: CHAIN_NAMESPACES.OTHER,
-  chainId: "testnet", // Replace with actual TON chain ID
-  rpcTarget: testnetRpc,
-  displayName: "TON Testnet",
-  blockExplorerUrl: "https://testnet.tonscan.org",
-  ticker: "TON",
-  tickerName: "Toncoin",
-};
-
-const privateKeyProvider = new CommonPrivateKeyProvider({
-  config: { chainConfig },
-});
-
-const web3authSfa = new Web3Auth({
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-  usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-  privateKeyProvider,
-});
+const verifier = "w3a-telegram-demo";
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
 
 function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect, logout: auth0Logout } = useAuth0();
-  const [provider, setProvider] = useState<any>(null);
+  const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
+  const [web3AuthInitialized, setWeb3AuthInitialized] = useState(false);
+  const [userData, setUserData] = useState<any | null>(null); // State to hold parsed user info
+  const [tonAccountAddress, setTonAccountAddress] = useState<string | null>(null);
+  const [signedMessage, setSignedMessage] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const { initDataRaw, initData, themeParams } = useLaunchParams() || {};
+
+  useTelegramMock(); // Initialize the Telegram mock data
 
   useEffect(() => {
-    const init = async () => {
+    if (themeParams) {
+      const bgColor = themeParams.bg_color || "#ffffff";
+      const textColor = themeParams.text_color || "#333333";
+      document.documentElement.style.setProperty("--bg-color", bgColor);
+      document.documentElement.style.setProperty("--text-color", textColor);
+    }
+  }, []);
+
+  useEffect(() => {
+    const initializeWeb3Auth = async () => {
       try {
-        await web3authSfa.init();
-        if (web3authSfa.status === "connected") {
-          setLoggedIn(true);
-          setProvider(web3authSfa.provider);
-        }
+        console.log("Fetching TON Testnet RPC endpoint...");
+        const testnetRpc = await getHttpEndpoint({
+          network: "testnet",
+          protocol: "json-rpc",
+        });
+
+        console.log("TON Testnet RPC endpoint: ", testnetRpc);
+
+        const chainConfig = {
+          chainNamespace: CHAIN_NAMESPACES.OTHER,
+          chainId: "testnet",
+          rpcTarget: testnetRpc,
+          displayName: "TON Testnet",
+          blockExplorerUrl: "https://testnet.tonscan.org",
+          ticker: "TON",
+          tickerName: "Toncoin",
+        };
+
+        const privateKeyProvider = new CommonPrivateKeyProvider({
+          config: { chainConfig },
+        });
+
+        const web3authInstance = new Web3Auth({
+          clientId,
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+          usePnPKey: false,
+          privateKeyProvider,
+        });
+
+        setWeb3authSfa(web3authInstance);
+
+        console.log("Initializing Web3Auth...");
+        await web3authInstance.init(); // Ensure Web3Auth is initialized
+        console.log("Web3Auth initialized.");
+
+        setWeb3AuthInitialized(true);
       } catch (error) {
-        console.error("Error during Web3Auth initialization:", error);
+        console.error("Error fetching TON Testnet RPC endpoint: ", error);
       }
     };
 
-    init();
+    initializeWeb3Auth();
   }, []);
 
   useEffect(() => {
     const connectWeb3Auth = async () => {
-      if (isAuthenticated && !loggedIn && web3authSfa.status === "ready") {
+      if (web3authSfa && web3AuthInitialized && initDataRaw) {
+        setIsLoggingIn(true);
         try {
-          setIsLoggingIn(true);
-          const idToken = (await getIdTokenClaims())?.__raw;
+          console.log("Checking Web3Auth connection status...");
+
+          if (web3authSfa.status === "connected") {
+            await web3authSfa.logout();
+            console.log("Logged out successfully.");
+          }
+
+          if (web3authSfa.status === "not_ready") {
+            await web3authSfa.init();
+            console.log("Web3Auth initialized.");
+          }
+          console.log("initData: ", initData);
+          console.log("initData.user: ", initData.user);
+          console.log("initData.user.photoUrl: ", initData.user.photoUrl);
+
+          const idToken = await getIdTokenFromServer(initDataRaw, initData.user.photoUrl); // Pass photoUrl
           if (!idToken) {
-            console.error("No ID token found");
+            console.error("No ID token found.");
+            setIsLoggingIn(false);
             return;
           }
+
           const { payload } = decodeToken(idToken);
+          console.log("Decoded idToken payload: ", payload);
+
           await web3authSfa.connect({
             verifier,
             verifierId: (payload as any).sub,
             idToken: idToken,
           });
+
+          console.log("Successfully logged in.");
+          setUserData(payload);
+          setIsLoggedIn(true);
+
+          // Initialize TonRPC and fetch the account address
+          const tonRpc = new TonRPC(web3authSfa.provider);
+          const tonAddress = await tonRpc.getAccounts();
+          setTonAccountAddress(tonAddress); // Set the TON address dynamically
+
+          // Sign a message and set it
+          const messageToSign = "Hello, TON!";
+          const signedMsg = await tonRpc.signMessage(messageToSign);
+          setSignedMessage(signedMsg); // Set the signed message
+        } catch (error) {
+          console.error("Error during Web3Auth connection:", error);
+        } finally {
           setIsLoggingIn(false);
-          setLoggedIn(true);
-          setProvider(web3authSfa.provider);
-        } catch (err) {
-          setIsLoggingIn(false);
-          console.error("Error during Web3Auth connection:", err);
         }
       }
     };
 
-    connectWeb3Auth();
-  }, [isAuthenticated, loggedIn, getIdTokenClaims]);
+    if (web3AuthInitialized && initDataRaw) {
+      connectWeb3Auth();
+    }
+  }, [initDataRaw, web3authSfa, web3AuthInitialized]);
 
-  const login = async () => {
-    if (!web3authSfa) {
-      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-      return;
-    }
-    if (web3authSfa.status === "not_ready") {
-      await web3authSfa.init();
-    }
-    await loginWithRedirect();
+  const getIdTokenFromServer = async (initDataRaw: string, photoUrl: string | undefined) => {
+    const isMocked = !!sessionStorage.getItem("____mocked");
+
+    const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/telegram`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ initDataRaw, isMocked, photoUrl }), // Send photoUrl as an additional field
+    });
+
+    const data = await response.json();
+    console.log("Received ID token from server:", data.token);
+    return data.token;
   };
 
-  const getUserInfo = async () => {
-    if (!provider) {
-      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-      return;
-    }
-    const userInfo = await web3authSfa.getUserInfo();
-    uiConsole(userInfo);
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
   };
 
-  const logout = async () => {
-    if (!provider) {
-      uiConsole("Web3Auth Single Factor Auth SDK not initialized yet");
-      return;
-    }
-    await web3authSfa.logout();
-    setLoggedIn(false);
-    setProvider(null);
-    auth0Logout({ logoutParams: { returnTo: window.location.origin } });
-  };
-
-  const getAccounts = async () => {
-    if (!provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const userAccount = await rpc.getAccounts();
-    uiConsole(userAccount);
-  };
-
-  const getBalance = async () => {
-    if (!provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const balance = await rpc.getBalance();
-    uiConsole(balance);
-  };
-
-  const signMessage = async () => {
-    if (!provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const result = await rpc.signMessage("Hello, TON!");
-    uiConsole(`Message signed. Signature: ${result}`);
-  };
-
-  const sendTransaction = async () => {
-    if (!provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const result = await rpc.sendTransaction();
-    uiConsole(result);
-  };
-
-  const authenticateUser = async () => {
-    if (!provider) {
-      uiConsole("No provider found");
-      return;
-    }
-    const userCredential = await web3authSfa.authenticateUser();
-    uiConsole(userCredential);
-  };
-
-  const getPrivateKey = async () => {
-    if (!web3authSfa.provider) {
-      uiConsole("No provider found");
-      return "";
-    }
-    const rpc = new TonRPC(web3authSfa.provider);
-    const privateKey = await rpc.getPrivateKey();
-    return privateKey;
-  };
-
-  function uiConsole(...args: any[]): void {
-    const el = document.querySelector("#console>p");
-    if (el) {
-      el.innerHTML = JSON.stringify(args || {}, null, 2);
-    }
-  }
-
-  const loginView = (
-    <>
-      <div className="flex-container">
-        <div>
-          <button onClick={getUserInfo} className="card">
-            Get User Info
-          </button>
+  const userInfoBox = (
+    <div className="user-info-box">
+      <img src={userData?.avatar_url} alt="User avatar" className="user-avatar" />
+      <div className="user-info">
+        <div className="id-with-logo">
+          <p>
+            <strong>ID:</strong> {userData?.telegram_id}
+          </p>
+          <img src={TelegramLogo} alt="Telegram Logo" className="telegram-logo" />
         </div>
-        <div>
-          <button onClick={authenticateUser} className="card">
-            Authenticate User
-          </button>
-        </div>
-        <div>
-          <button onClick={getAccounts} className="card">
-            Get Accounts
-          </button>
-        </div>
-        <div>
-          <button onClick={getBalance} className="card">
-            Get Balance
-          </button>
-        </div>
-        <div>
-          <button onClick={signMessage} className="card">
-            Sign Message
-          </button>
-        </div>
-        <div>
-          <button onClick={sendTransaction} className="card">
-            Send Transaction
-          </button>
-        </div>
-        <div>
-          <button onClick={getPrivateKey} className="card">
-            Get Private Key
-          </button>
-        </div>
-        <div>
-          <button onClick={logout} className="card">
-            Log Out
-          </button>
-        </div>
+        <p>
+          <strong>Username:</strong> {userData?.username}
+        </p>
+        <p>
+          <strong>Name:</strong> {userData?.name}
+        </p>
       </div>
+    </div>
+  );
 
-      <div id="console" style={{ whiteSpace: "pre-line" }}>
-        <p style={{ whiteSpace: "pre-line" }}></p>
-      </div>
-    </>
+  const tonAccountBox = (
+    <div className="info-box" onClick={() => copyToClipboard(tonAccountAddress || "")}>
+      <p>
+        <strong>TON Account:</strong> {tonAccountAddress}
+      </p>
+    </div>
+  );
+
+  const signedMessageBox = (
+    <div className="info-box" onClick={() => copyToClipboard(signedMessage || "")}>
+      <p>
+        <strong>Signed Message:</strong> {signedMessage}
+      </p>
+    </div>
   );
 
   const logoutView = (
-    <button onClick={login} className="card">
-      Login
-    </button>
+    <div className="loader-container">
+      <Loading />
+    </div>
   );
 
   return (
     <div className="container">
-      <h1 className="title">
-        <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/sfa-web" rel="noreferrer">
-          Web3Auth
-        </a>{" "}
-        SFA React Ton GitHub Example
-      </h1>
-
-      {isLoading || isLoggingIn ? <Loading /> : <div className="grid">{web3authSfa ? (loggedIn ? loginView : logoutView) : null}</div>}
-
+      <h1 className="title">Web3Auth TON Telegram MiniApp</h1>
+      {isLoggingIn ? (
+        <Loading />
+      ) : (
+        <div className="grid">
+          {isLoggedIn ? (
+            <>
+              {userInfoBox}
+              {tonAccountBox}
+              {signedMessageBox}
+            </>
+          ) : (
+            logoutView
+          )}
+        </div>
+      )}
       <footer className="footer">
-        <a
-          href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-web/sfa-web-ton-telegram-example"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://github.com/Web3Auth" target="_blank" rel="noopener noreferrer">
           Source code
         </a>
       </footer>
