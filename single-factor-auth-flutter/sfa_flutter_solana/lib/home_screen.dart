@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final Ed25519HDKeyPair keyPair;
   late final SolanaProvider provider;
   late double balance;
-  late final TorusKey torusKey;
+  late final SFAKey torusKey;
 
   @override
   void initState() {
