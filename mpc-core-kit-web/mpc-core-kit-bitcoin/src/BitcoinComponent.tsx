@@ -6,8 +6,10 @@ import ECPairFactory from "ecpair";
 import { networks, Psbt, payments, SignerAsync } from "bitcoinjs-lib";
 import * as bitcoinjs from "bitcoinjs-lib";
 import { createBitcoinJsSigner } from "./BitcoinSigner";
+import axios from "axios";
 
 const ECPair = ECPairFactory(ecc);
+bitcoinjs.initEccLib(ecc);
 
 export const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => {
   return ECPair.fromPublicKey(pubkey).verify(msghash, signature);
@@ -23,12 +25,15 @@ function uiConsole(...args: any): void {
 
 function getAddress(signer: SignerAsync, mode: string, network: networks.Network): string | undefined {
   let bufPubKey = signer.publicKey;
+  const xOnlyPubKey = bufPubKey.subarray(1, 33);
+  const keyPair = ECPair.fromPublicKey(bufPubKey);
+  const tweakedChildNode = keyPair.tweak(bitcoinjs.crypto.taggedHash("TapTweak", xOnlyPubKey));
   if (mode === "btc") {
     return payments.p2pkh({ pubkey: bufPubKey, network }).address;
   } else if (mode === "segwit") {
     return payments.p2wpkh({ pubkey: bufPubKey, network }).address;
-    // } else if (mode === 'tapRoot') {
-    //     return payments.p2tr({ pubkey: bufPubKey, network: networks.testnet }).address!;
+  } else if (mode === "tapRoot") {
+    return payments.p2tr({ pubkey: Buffer.from(tweakedChildNode.publicKey.subarray(1, 33)), network: networks.testnet }).address!;
   } else {
     return undefined;
   }
@@ -50,6 +55,7 @@ async function handleSendTransaction(signedTransaction: string) {
   console.log(respText);
   uiConsole(respText);
 }
+
 export const BitcoinComponent = (props: BitcoinComponentParams) => {
   const [signer, setSigner] = useState<SignerAsync | null>(null);
   const [receiverAddr, setReceiverAddr] = useState<string | null>(null);
@@ -68,6 +74,16 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
       setSigner(localSigner);
     }
   }, [props.coreKitInstance, bitcoinNetwork]);
+
+  const fetchUtxos = async (address: string) => {
+    try {
+      const response = await axios.get(`https://blockstream.info/testnet/api/address/${address}/utxo`);
+      return response.data.filter((utxo: { status: { confirmed: boolean } }) => utxo.status.confirmed);
+    } catch (error) {
+      console.error("Error fetching UTXOs:", error);
+      return [];
+    }
+  };
 
   const signTransaction = async (send?: boolean) => {
     if (!signer) {
@@ -127,6 +143,7 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
 
     psbt.validateSignaturesOfInput(0, BTCValidator);
     const validation = psbt.validateSignaturesOfInput(0, BTCValidator);
+    console.log("validation", validation);
     const signedTransaction = psbt.finalizeAllInputs().extractTransaction().toHex();
     uiConsole("Signed Transaction: ", signedTransaction, "Copy the above into https://blockstream.info/testnet/tx/push");
     console.log(validation ? "Validated" : "failed");
@@ -159,7 +176,8 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
     const value = amount ? Number(amount) : 20;
     const miner = Number(minerFee);
 
-    const selfAddr = await getAddress(signer, "segwitAddress", bitcoinNetwork);
+    const selfAddr = await getAddress(signer, "segwit", bitcoinNetwork);
+    console.log("TESTTTTTTTT");
     console.log(selfAddr, typeof selfAddr);
     console.log("receiverAddr", receiverAddr);
     const psbt = new Psbt({ network: bitcoinNetwork })
@@ -300,8 +318,9 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
 
     const address = getAddress(signer, "btc", bitcoinNetwork);
     const segwitAddress = getAddress(signer, "segwit", bitcoinNetwork);
+    // const taprootAddress = getAddress(signer, "tapRoot", bitcoinNetwork);
     if (address) {
-      uiConsole("Address: ", address, "Segwit Address: ", segwitAddress);
+      uiConsole({ Address: address, SegwitAddress: segwitAddress });
     } else {
       uiConsole("Invalid address");
     }

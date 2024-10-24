@@ -524,11 +524,13 @@ function App() {
         <div className="left-panel">
           <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
         </div>
-        <div className="right-panel">
-          <div id="console" style={{ whiteSpace: "pre-line" }}>
-            <p style={{ whiteSpace: "pre-line" }}></p>
+        {coreKitStatus === COREKIT_STATUS.LOGGED_IN && (
+          <div className="right-panel">
+            <div id="console" style={{ whiteSpace: "pre-line" }}>
+              <p style={{ whiteSpace: "pre-line" }}></p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <footer className="footer">

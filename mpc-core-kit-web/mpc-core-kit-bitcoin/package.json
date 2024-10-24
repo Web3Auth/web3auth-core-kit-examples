@@ -17,6 +17,7 @@
     "@web3auth/ethereum-mpc-provider": "^9.3.0",
     "@web3auth/mpc-core-kit": "^3.2.4",
     "@web3auth/single-factor-auth": "^9.0.0",
+    "axios": "^1.7.7",
     "bitcoinjs-lib": "^6.1.5",
     "bn.js": "^5.2.1",
     "ecpair": "^2.1.0",
