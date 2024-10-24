@@ -9,7 +9,7 @@ import Foundation
 import SingleFactorAuth
 import web3
 
-extension SFAKey: EthereumSingleKeyStorageProtocol {
+extension SessionData: EthereumSingleKeyStorageProtocol {
     public func storePrivateKey(key: Data) throws {
         
     }

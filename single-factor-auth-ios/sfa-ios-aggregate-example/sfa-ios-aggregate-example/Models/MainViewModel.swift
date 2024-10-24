@@ -21,20 +21,20 @@ class MainViewModel: ObservableObject {
     var publicAddress: String!
     
     
-    private var mpcCoreKit: SingleFactorAuth!
+    private var singleFactorAuth: SingleFactorAuth!
     private var ethereumClient: EthereumClient!
     private var ethereumAccount: EthereumAccount!
-    private var sfaKey: SFAKey!
+    private var sessionData: SessionData!
     private var webAuth: WebAuth!
     var userInfo: [String: Any]!
     var alertContent: String = ""
     var loaderContent: String = ""
     
     func initialize() {
-        mpcCoreKit = try! SingleFactorAuth(
+        singleFactorAuth = try! SingleFactorAuth(
             params: .init(
-                web3AuthClientId:  "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-                network: .sapphire(.SAPPHIRE_MAINNET)
+                clientId:  "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+                web3AuthNetwork: .SAPPHIRE_MAINNET
             )
         )
         webAuth = Auth0.webAuth(clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O", domain: "web3auth.au.auth0.com")
@@ -54,10 +54,10 @@ class MainViewModel: ObservableObject {
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
                 guard let sub = jwt.body["email"] as? String else {
-                    throw "Email not found in JWT"
+                    throw AggergateSampleError.runtimeError("Email not found in JWT")
                 }
                 
-                sfaKey = try await mpcCoreKit.connect(loginParams: .init(
+                sessionData = try await singleFactorAuth.connect(loginParams: .init(
                     verifier: "sfa-mobile-aggregate-verifier",
                     verifierId: sub,
                     idToken: auth0Creds.idToken,
@@ -108,10 +108,10 @@ class MainViewModel: ObservableObject {
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
                 guard let sub = jwt.body["email"] as? String else {
-                    throw "Email not found in JWT"
+                    throw AggergateSampleError.runtimeError("Email not found in JWT")
                 }
                 
-                sfaKey = try await mpcCoreKit.connect(loginParams: .init(
+                sessionData = try await singleFactorAuth.connect(loginParams: .init(
                     verifier: "sfa-mobile-aggregate-verifier",
                     verifierId: sub,
                     idToken: auth0Creds.idToken,
@@ -134,8 +134,11 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Checking Session")
-                sfaKey = try await mpcCoreKit.initialize()
-                try await login()
+                try await singleFactorAuth.initialize()
+                sessionData = singleFactorAuth.getSessionData()
+                if(sessionData != nil) {
+                    try await login()
+                }
                 hideLoader()
             } catch let error {
                 hideLoader()
@@ -227,9 +230,24 @@ class MainViewModel: ObservableObject {
     
     
     private func login() async throws {
-        ethereumAccount = try EthereumAccount(keyStorage: sfaKey as EthereumSingleKeyStorageProtocol)
+        ethereumAccount = try EthereumAccount(keyStorage: sessionData as EthereumSingleKeyStorageProtocol)
         publicAddress = ethereumAccount.address.toChecksumAddress()
         toggleIsLoggedIn()
+    }
+    
+    func logout()  {
+        Task {
+            do {
+                showLoader("Logging out")
+                try await singleFactorAuth.logout()
+                toggleIsLoggedIn()
+                hideLoader()
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                showAlert(message: error.localizedDescription)
+            }
+        }
     }
     
     func showAlert(message: String) {

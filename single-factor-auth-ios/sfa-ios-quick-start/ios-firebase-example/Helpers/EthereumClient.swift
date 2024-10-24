@@ -24,7 +24,7 @@ struct EthereumClient {
     let ethereumAccount: EthereumAccount!
     var networkId: String = "11155111"
     
-    init(user: SFAKey) {
+    init(sessionData: SessionData) {
         self.web3Client = EthereumHttpClient(
             url: URL(string: "https://1rpc.io/sepolia")!,
             network: .fromString(networkId)
@@ -32,7 +32,7 @@ struct EthereumClient {
         
         let keyStorage = EthereumKeyLocalStorage()
         
-        self.ethereumAccount = try! EthereumAccount(keyStorage: user as EthereumSingleKeyStorageProtocol)
+        self.ethereumAccount = try! EthereumAccount(keyStorage: sessionData as EthereumSingleKeyStorageProtocol)
     }
     
     func getBalance() async throws -> String {
@@ -58,7 +58,7 @@ struct EthereumClient {
 
 }
 
-extension SFAKey: EthereumSingleKeyStorageProtocol {
+extension SessionData: EthereumSingleKeyStorageProtocol {
     public func storePrivateKey(key: Data) throws {
         
     }

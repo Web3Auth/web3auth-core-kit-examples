@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2826683A2CCA96E80099D899 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 282668392CCA96E80099D899 /* Errors.swift */; };
 		28D682972CA3AAAE00872DED /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 28D682962CA3AAAE00872DED /* SingleFactorAuth */; };
 		28D6829A2CA3AB0A00872DED /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 28D682992CA3AB0A00872DED /* web3.swift */; };
 		28D6829D2CA3AB2000872DED /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 28D6829C2CA3AB2000872DED /* Auth0 */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		282668392CCA96E80099D899 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		28D682A12CA3B20D00872DED /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		28D682A42CA3BF7800872DED /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		28D682A62CA3BFCA00872DED /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 			children = (
 				28DDAC532CA3271000D5C31A /* EthereumClient.swift */,
 				28D682A12CA3B20D00872DED /* Extensions.swift */,
+				282668392CCA96E80099D899 /* Errors.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -206,6 +209,7 @@
 				28DDAC542CA3271000D5C31A /* EthereumClient.swift in Sources */,
 				28D682A92CA3C03D00872DED /* HomeView.swift in Sources */,
 				28D682A72CA3BFCA00872DED /* LoadingView.swift in Sources */,
+				2826683A2CCA96E80099D899 /* Errors.swift in Sources */,
 				28DDAC602CA3A52000D5C31A /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -419,7 +423,7 @@
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
+				minimumVersion = 9.0.0;
 			};
 		};
 		28D682982CA3AB0A00872DED /* XCRemoteSwiftPackageReference "web3" */ = {

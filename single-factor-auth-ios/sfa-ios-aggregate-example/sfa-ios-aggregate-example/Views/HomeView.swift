@@ -80,8 +80,14 @@ struct HomeView: View {
                         }
                         
                         Text("The sample uses Eth Sepolia, you can choose any EVM network of your choice. Send 0.001 ETH will perform self transfer of ETH. You'll need to have Sepolia faucet to perform transaction.").font(.caption)
-                                       
+                        
                     }
+                    Button(
+                        role: .destructive, action: {
+                            viewModel.logout()
+                        }, label: {
+                            Text("Logout")
+                        })
                 }
             }).onAppear {
                 viewModel.loadBalance()

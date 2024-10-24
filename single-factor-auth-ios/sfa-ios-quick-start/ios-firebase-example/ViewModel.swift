@@ -10,7 +10,7 @@ import FirebaseAuth
 class ViewModel: ObservableObject {
     // IMP START - Installation
     var singleFactorAuth: SingleFactorAuth!
-    var sfaParams: SFAParams!
+    var web3AuthOptions: Web3AuthOptions!
     var ethereumClient: EthereumClient!
     var userBalance: String!
     
@@ -30,10 +30,28 @@ class ViewModel: ObservableObject {
         })
         
         // IMP START - Initialize Web3Auth SFA
-        sfaParams = SFAParams(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", network: .sapphire(.SAPPHIRE_MAINNET))
-        singleFactorAuth = try! SingleFactorAuth(params: sfaParams)
+        web3AuthOptions = Web3AuthOptions(
+            clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+            web3AuthNetwork: .SAPPHIRE_MAINNET
+        )
         
-        // IMP END - Initialize Web3Auth SFA
+        singleFactorAuth = try! SingleFactorAuth(params: web3AuthOptions)
+        
+        try! await singleFactorAuth.initialize()
+        
+        // Check for existing session
+        if(singleFactorAuth.getSessionData() != nil) {
+            let sessionData = singleFactorAuth.getSessionData()!
+            ethereumClient = EthereumClient(sessionData: sessionData)
+            getBalance()
+            
+            await MainActor.run(body: {
+                user = sessionData.getPrivateKey()
+                loggedIn = true
+                navigationTitle = "UserInfo"
+            })
+        }
+        
         await MainActor.run(body: {
             isLoading = false
             navigationTitle = loggedIn ? "UserInfo" : "iOS SFA QuickStart"
@@ -47,7 +65,7 @@ class ViewModel: ObservableObject {
                 let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
                 let id_token = try await res.user.getIDToken()
                 // IMP END - Auth Provider Login
-                print(id_token)
+                
                 // IMP START - Verifier Creation
                 let verifierName = "w3a-firebase-demo"
                 // IMP END - Verifier Creation
@@ -61,7 +79,7 @@ class ViewModel: ObservableObject {
                 )
                 // IMP END - Get Key
                 print(result)
-                ethereumClient = EthereumClient(user: result)
+                ethereumClient = EthereumClient(sessionData: result)
                 getBalance()
                 
                 await MainActor.run(body: {
@@ -92,6 +110,19 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func logout() {
+        Task {
+            do  {
+                try await singleFactorAuth.logout()
+                await MainActor.run(body: {
+                    self.loggedIn = false
+                })
+            } catch let error {
+                print(error)
+            }
+        }
+    }
+    
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
@@ -107,7 +138,7 @@ class ViewModel: ObservableObject {
 }
 
 extension ViewModel {
-    func showResult(result: SFAKey) {
+    func showResult(result: SessionData) {
         print("""
         Signed in successfully!
             Private key: \(result.getPrivateKey())
