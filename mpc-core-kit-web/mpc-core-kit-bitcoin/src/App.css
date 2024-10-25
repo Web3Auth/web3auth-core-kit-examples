@@ -67,7 +67,6 @@
 	border-top: 1px solid #eaeaea;
 	justify-content: center;
 	align-items: center;
-	margin-top: 10rem;
 }
 
 .footer a {
@@ -295,4 +294,27 @@
 .taproot-color {
 	background-color: #a01ae7;
 	color: white;
+}
+
+.loader {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

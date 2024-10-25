@@ -33,6 +33,7 @@ import { useEffect, useState } from "react";
 // import RPC from "./ethersRPC";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
+import Loading from "./Loading";
 // IMP END - Blockchain Calls
 
 // IMP START - Dashboard Registration
@@ -94,6 +95,7 @@ function App() {
   const [backupFactorKey, setBackupFactorKey] = useState<string>("");
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
   const [showRecoveryOptions, setShowRecoveryOptions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
@@ -130,6 +132,7 @@ function App() {
         throw new Error("initiated to login");
       }
       // IMP START - Auth Provider Login
+      setIsLoading(true);
       const loginRes = await signInWithGoogle();
       const idToken = await loginRes.user.getIdToken(true);
       const parsedToken = parseToken(idToken);
@@ -147,6 +150,7 @@ function App() {
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
       // IMP END - Login
+      setIsLoading(false);
 
       // IMP START - Recover MFA Enabled Account
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
@@ -341,26 +345,26 @@ function App() {
 
   // IMP START - Blockchain Calls
   // Check the RPC file for the implementation
-  const getAccounts = async () => {
-    const address = await RPC.getAccounts(evmProvider);
-    uiConsole(address);
-  };
+  // const getAccounts = async () => {
+  //   const address = await RPC.getAccounts(evmProvider);
+  //   uiConsole(address);
+  // };
 
-  const getBalance = async () => {
-    const balance = await RPC.getBalance(evmProvider);
-    uiConsole(balance);
-  };
+  // const getBalance = async () => {
+  //   const balance = await RPC.getBalance(evmProvider);
+  //   uiConsole(balance);
+  // };
 
-  const signMessage = async () => {
-    const signedMessage = await RPC.signMessage(evmProvider);
-    uiConsole(signedMessage);
-  };
+  // const signMessage = async () => {
+  //   const signedMessage = await RPC.signMessage(evmProvider);
+  //   uiConsole(signedMessage);
+  // };
 
-  const sendTransaction = async () => {
-    uiConsole("Sending Transaction...");
-    const transactionReceipt = await RPC.sendTransaction(evmProvider);
-    uiConsole(transactionReceipt);
-  };
+  // const sendTransaction = async () => {
+  //   uiConsole("Sending Transaction...");
+  //   const transactionReceipt = await RPC.sendTransaction(evmProvider);
+  //   uiConsole(transactionReceipt);
+  // };
   // IMP END - Blockchain Calls
 
   const criticalResetAccount = async (): Promise<void> => {
@@ -520,18 +524,22 @@ function App() {
         Bitcoin Example
       </h1>
 
-      <div className="two-panel-layout">
-        <div className="left-panel">
-          <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
-        </div>
-        {coreKitStatus === COREKIT_STATUS.LOGGED_IN && (
-          <div className="right-panel">
-            <div id="console" style={{ whiteSpace: "pre-line" }}>
-              <p style={{ whiteSpace: "pre-line" }}></p>
-            </div>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="two-panel-layout">
+          <div className="left-panel">
+            <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
           </div>
-        )}
-      </div>
+          {coreKitStatus === COREKIT_STATUS.LOGGED_IN && (
+            <div className="right-panel">
+              <div id="console" style={{ whiteSpace: "pre-line" }}>
+                <p style={{ whiteSpace: "pre-line" }}></p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <footer className="footer">
         <a
