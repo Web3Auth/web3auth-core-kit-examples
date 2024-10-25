@@ -541,6 +541,9 @@ function App() {
         >
           Source code
         </a>
+        <a href="https://coinfaucet.eu/en/btc-testnet/" target="_blank" rel="noopener noreferrer">
+          Faucet
+        </a>
       </footer>
     </div>
   );

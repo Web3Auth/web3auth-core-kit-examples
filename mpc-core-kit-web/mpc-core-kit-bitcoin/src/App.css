@@ -271,3 +271,13 @@
 	flex-wrap: wrap;
 	gap: 10px;
 }
+
+.btn-balance {
+	background-color: #e4f61a;
+	color: black;
+}
+
+.btn-balance:hover {
+	background-color: #c2d30e;
+	box-shadow: 0 0 5px rgba(228, 246, 26, 0.8);
+}
