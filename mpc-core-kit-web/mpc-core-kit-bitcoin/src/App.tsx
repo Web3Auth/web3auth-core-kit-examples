@@ -1,6 +1,6 @@
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { Point, secp256k1 } from "@tkey/common-types";
@@ -23,8 +23,7 @@ import { BN } from "bn.js";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
-import RPC from "./web3RPC";
-import Loading from "./Loading";
+import { Loading, BlurredLoading } from "./Loading";
 
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
 const verifier = "w3a-firebase-demo";
@@ -71,13 +70,16 @@ function App() {
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
   const [showRecoveryOptions, setShowRecoveryOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(false);
 
   const app = initializeApp(firebaseConfig);
 
   useEffect(() => {
     const init = async () => {
+      setIsLoading(true);
       await coreKitInstance.init();
       setCoreKitStatus(coreKitInstance.status);
+      setIsLoading(false);
     };
     init();
   }, []);
@@ -193,23 +195,26 @@ function App() {
       throw new Error("coreKitInstance is not set");
     }
     try {
+      setIsBlurred(true);
       const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
-      uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
+      console.log("Using the Social Factor Key to Enable MFA, please wait...");
       await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
       }
-
+      setIsBlurred(false);
       uiConsole(
         "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
       );
     } catch (e) {
+      setIsBlurred(false);
       uiConsole(e);
     }
   };
 
   const deleteFactor = async () => {
+    setIsBlurred(true);
     let factorPub: string | undefined;
     for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
       if (value.length > 0) {
@@ -228,6 +233,7 @@ function App() {
     } else {
       uiConsole("No social factor found to delete");
     }
+    setIsBlurred(false);
   };
 
   const keyDetails = async () => {
@@ -251,6 +257,7 @@ function App() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
+    setIsBlurred(true);
     uiConsole("export share type: ", TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
@@ -263,6 +270,7 @@ function App() {
       await coreKitInstance.commitChanges();
     }
     uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
+    setIsBlurred(false);
   };
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
@@ -294,6 +302,7 @@ function App() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
+    setIsBlurred(true);
     await coreKitInstance.tKey.storageLayer.setMetadata({
       privKey: new BN(coreKitInstance.state.postBoxKey! as string, "hex"),
       input: { message: "KEY_NOT_FOUND" },
@@ -303,6 +312,7 @@ function App() {
     }
     uiConsole("reset");
     logout();
+    setIsBlurred(false);
   };
 
   function uiConsole(...args: any): void {
@@ -350,7 +360,7 @@ function App() {
           Log Out
         </button>
       </div>
-      <BitcoinComponent coreKitInstance={coreKitInstance} />
+      {isBlurred ? <BlurredLoading /> : <BitcoinComponent coreKitInstance={coreKitInstance} />}
     </div>
   );
 
