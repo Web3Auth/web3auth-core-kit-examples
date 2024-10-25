@@ -6,6 +6,7 @@ import { networks, Psbt, payments, SignerAsync } from "bitcoinjs-lib";
 import * as bitcoinjs from "bitcoinjs-lib";
 import { createBitcoinJsSigner } from "./BitcoinSigner";
 import axios from "axios";
+import { BlurredLoading } from "./Loading";
 
 const ECPair = ECPairFactory(ecc);
 bitcoinjs.initEccLib(ecc);
@@ -63,7 +64,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
   const [signer, setSigner] = useState<SignerAsync | null>(null);
   const [receiverAddr, setReceiverAddr] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [loading, setLoading] = useState<{ [key: string]: boolean }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const bitcoinNetwork = networks.testnet;
 
@@ -98,7 +99,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       return;
     }
 
-    setLoading({ ...loading, [transactionType]: true });
+    setIsLoading(true);
 
     try {
       const account =
@@ -173,7 +174,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       console.error(`Error in sign${transactionType}Transaction:`, error);
       uiConsole("Error:", (error as Error).message);
     } finally {
-      setLoading({ ...loading, [transactionType]: false });
+      setIsLoading(false);
     }
   };
 
@@ -183,7 +184,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       return;
     }
 
-    setLoading({ ...loading, [type]: true });
+    setIsLoading(true);
 
     try {
       const address = getAddress(signer, type, bitcoinNetwork);
@@ -193,7 +194,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         uiConsole("Invalid address");
       }
     } finally {
-      setLoading({ ...loading, [type]: false });
+      setIsLoading(false);
     }
   };
 
@@ -203,7 +204,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       return;
     }
 
-    setLoading({ ...loading, [type]: true });
+    setIsLoading(true);
 
     try {
       const address = getAddress(signer, type, bitcoinNetwork);
@@ -219,7 +220,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       console.error(`Error fetching balance for ${type} address:`, error);
       uiConsole(`Error fetching balance for ${type} address:`, (error as Error).message);
     } finally {
-      setLoading({ ...loading, [type]: false });
+      setIsLoading(false);
     }
   };
 
@@ -233,62 +234,38 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       </div>
 
       <div className="flex-container">
-        <button onClick={() => showAddress("PSBT")} className="card psbt-color" disabled={loading["PSBT"]}>
-          <span className="button-content">
-            Show PSBT Address
-            {loading["PSBT"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => showAddress("PSBT")} className="card psbt-color">
+          Show PSBT Address
         </button>
-        <button onClick={() => showAddress("Segwit")} className="card segwit-color" disabled={loading["Segwit"]}>
-          <span className="button-content">
-            Show Segwit Address
-            {loading["Segwit"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => showAddress("Segwit")} className="card segwit-color">
+          Show Segwit Address
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => showBalance("PSBT")} className="card psbt-color" disabled={loading["PSBT"]}>
-          <span className="button-content">
-            Show PSBT Balance
-            {loading["PSBT"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => showBalance("PSBT")} className="card psbt-color">
+          Show PSBT Balance
         </button>
-        <button onClick={() => showBalance("Segwit")} className="card segwit-color" disabled={loading["Segwit"]}>
-          <span className="button-content">
-            Show Segwit Balance
-            {loading["Segwit"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => showBalance("Segwit")} className="card segwit-color">
+          Show Segwit Balance
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => signAndSendTransaction("PSBT")} className="card psbt-color" disabled={loading["PSBT"]}>
-          <span className="button-content">
-            Sign PSBT Transaction
-            {loading["PSBT"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => signAndSendTransaction("PSBT")} className="card psbt-color">
+          Sign PSBT Transaction
         </button>
-        <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color" disabled={loading["Segwit"]}>
-          <span className="button-content">
-            Sign Segwit Transaction
-            {loading["Segwit"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color">
+          Sign Segwit Transaction
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => signAndSendTransaction("PSBT", true)} className="card psbt-color" disabled={loading["PSBT"]}>
-          <span className="button-content">
-            Send PSBT Transaction
-            {loading["PSBT"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => signAndSendTransaction("PSBT", true)} className="card psbt-color">
+          Send PSBT Transaction
         </button>
-        <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color" disabled={loading["Segwit"]}>
-          <span className="button-content">
-            Send Segwit Transaction
-            {loading["Segwit"] && <span className="loader"></span>}
-          </span>
+        <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color">
+          Send Segwit Transaction
         </button>
       </div>
 
@@ -306,6 +283,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <p>This implementation sends transactions via a centralized server (BlockStream).</p>
         <p>In a production environment, transactions should be relayed directly to Bitcoin nodes.</p>
       </div>
+
+      {isLoading && <BlurredLoading />}
     </div>
   );
 };
