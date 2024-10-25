@@ -71,7 +71,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       const localSigner: SignerAsync = createBitcoinJsSigner({ coreKitInstance, network: bitcoinNetwork });
       setSigner(localSigner);
     }
-  }, [coreKitInstance]);
+  }, []);
 
   const fetchUtxos = async (address: string) => {
     try {
@@ -160,8 +160,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
 
       const signedTransaction = psbt.finalizeAllInputs().extractTransaction().toHex();
 
-      uiConsole("Signed Transaction:", signedTransaction);
-      uiConsole("Copy the above into https://blockstream.info/testnet/tx/push");
+      uiConsole("Signed Transaction:", signedTransaction, "Copy the above into https://blockstream.info/testnet/tx/push");
 
       if (send) {
         const txid = await handleSendTransaction(signedTransaction);
@@ -225,9 +224,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => showAddress("Segwit")} className="card segwit-color">
           Show Segwit Address
         </button>
-        <button onClick={() => showAddress("Taproot")} className="card taproot-color">
+        {/* <button onClick={() => showAddress("Taproot")} className="card taproot-color">
           Show Taproot Address
-        </button>
+        </button> */}
       </div>
 
       <div className="flex-container">
@@ -237,9 +236,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => showBalance("Segwit")} className="card segwit-color">
           Show Segwit Balance
         </button>
-        <button onClick={() => showBalance("Taproot")} className="card taproot-color">
+        {/* <button onClick={() => showBalance("Taproot")} className="card taproot-color">
           Show Taproot Balance
-        </button>
+        </button> */}
       </div>
 
       <div className="flex-container">
@@ -249,7 +248,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color">
           Sign Segwit Transaction
         </button>
-        <button className="card taproot-color disabledDiv">Sign Taproot Transaction</button>
+        {/* <button className="card taproot-color disabledDiv">Sign Taproot Transaction</button> */}
       </div>
 
       <div className="flex-container">
@@ -259,7 +258,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color">
           Send Segwit Transaction
         </button>
-        <button className="card taproot-color disabledDiv">Send Taproot Transaction</button>
+        {/* <button className="card taproot-color disabledDiv">Send Taproot Transaction</button> */}
       </div>
 
       <div className="warning-box">
@@ -271,7 +270,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
           <a href="https://coinfaucet.eu/en/btc-testnet/" target="_blank" rel="noopener noreferrer">
             faucet
           </a>{" "}
-          to get testnet BTC to PSBT, Segwit, and Taproot Addresses.
+          to get testnet BTC to PSBT and Segwit Addresses.
         </p>
         <p>This implementation sends transactions via a centralized server (BlockStream).</p>
         <p>In a production environment, transactions should be relayed directly to Bitcoin nodes.</p>
