@@ -366,9 +366,11 @@ function App() {
 
   const unloggedInView = (
     <div className="flex-container">
-      <button onClick={login} className="card">
-        Login
-      </button>
+      {coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE && (
+        <button onClick={login} className="card">
+          Login
+        </button>
+      )}
       <div
         className={`recovery-options ${showRecoveryOptions ? "" : "hidden"} ${coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}`}
       >
