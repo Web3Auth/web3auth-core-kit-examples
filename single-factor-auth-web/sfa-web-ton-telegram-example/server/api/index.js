@@ -1,107 +1,117 @@
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken"); 
 const fs = require("fs");
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
-const { AuthDataValidator } = require("@telegram-auth/server");
-const { objectToAuthDataMap } = require("@telegram-auth/server/utils");
+const { validate } = require("@telegram-apps/init-data-node");
 const RateLimit = require("express-rate-limit");
 
 dotenv.config();
 
 const app = express();
+app.use(express.json()); // Middleware to parse JSON requests
 
-// Rate limiter configuration: limit to 100 requests per 15 minutes
-const limiter = RateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later."
-});
-
-// Apply the rate limiter to specific routes
-app.use(limiter);
-
-const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, SERVER_URL, CLIENT_URL, JWT_KEY_ID } = process.env;
-const TELEGRAM_BOT_CALLBACK = `${SERVER_URL}/callback`;
+const { TELEGRAM_BOT_TOKEN, JWT_KEY_ID, APP_URL } = process.env;
 const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "utf8");
 
-// A helper function to generate JWT token using the Telegram user data
+// Define allowed origins
+const allowedOrigins = [APP_URL];
+
+// CORS configuration
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept");
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+// Rate limiter configuration
+const limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
+});
+
+app.use(limiter);
+
+// Helper function to generate JWT token
 const generateJwtToken = (userData) => {
   const payload = {
     telegram_id: userData.id,
     username: userData.username,
-    avatar_url: userData.photo_url,
+    avatar_url: userData.photo_url || "https://www.gravatar.com/avatar",
     sub: userData.id.toString(),
     name: userData.first_name,
     iss: "https://api.telegram.org",
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour expiration
+    exp: Math.floor(Date.now() / 1000) + 60 * 60, // Token valid for 1 hour
   };
-
   return jwt.sign(payload, privateKey, { algorithm: "RS256", keyid: JWT_KEY_ID });
 };
 
-app.get("/", (req, res) => res.send("Express on Vercel for Telegram Login to be used with Web3Auth"));
-
-app.get("/.well-known/jwks.json", limiter, (req, res) => {
-  const jwks = fs.readFileSync(path.resolve(__dirname, "jwks.json"), "utf8");
-  res.send(JSON.parse(jwks));
+// Route 1: Test route to check if the server is running
+app.get("/test", (req, res) => {
+  res.json({ message: "Connection successful. Server is running!" });
 });
 
-// Endpoint to serve the login page
-app.get("/login", (req, res) => {
-  let htmlContent = `
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <title>Telegram OAuth App with Web3Auth</title>
-      <style>
-        body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          margin: 0;
-        }
-      </style>
-    </head>
-    <body>
-      <script>
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = "https://telegram.org/js/telegram-widget.js?22";
-        script.setAttribute("data-telegram-login", "${TELEGRAM_BOT_NAME}");
-        script.setAttribute("data-size", "large");
-        script.setAttribute("data-userpic", "false");
-        script.setAttribute("data-auth-url", "${SERVER_URL}/callback");
+// Route 2: Telegram authentication route
+app.post("/auth/telegram", async (req, res) => {
+  const { initDataRaw, isMocked, photoUrl } = req.body; // Extract photoUrl from request body
 
-        document.body.appendChild(script);
-      </script>
-      <noscript>You need to enable JavaScript to run this app.</noscript>
-    </body>
-  </html>
-  `;
+  console.log("Received initDataRaw:", initDataRaw);
+  console.log("isMocked:", isMocked);
+  console.log("photoUrl:", photoUrl); // Log the photoUrl for debugging
 
-  res.send(htmlContent);
-});
+  if (!initDataRaw) {
+    return res.status(400).json({ error: "initDataRaw is required" });
+  }
 
-// Endpoint to handle the Telegram callback
-app.get("/callback", limiter, async (req, res) => {
-  const validator = new AuthDataValidator({ botToken: TELEGRAM_BOT_TOKEN });
-  const data = objectToAuthDataMap(req.query || {});
+  if (isMocked) {
+    // Handle mock data parsing
+    const data = new URLSearchParams(initDataRaw);
+    const user = JSON.parse(decodeURIComponent(data.get("user")));
+
+    const mockUser = {
+      id: user.id,
+      username: user.username,
+      photo_url: photoUrl || user.photo_url || "https://www.gravatar.com/avatar", // Use photoUrl passed or fallback to user.photo_url
+      first_name: user.first_name,
+    };
+
+    const JWTtoken = generateJwtToken(mockUser);
+    return res.json({ token: JWTtoken });
+  }
 
   try {
-    const user = await validator.validate(data);
-    const JWTtoken = generateJwtToken(user);
+    // Validate the real initDataRaw using @telegram-apps/init-data-node
+    validate(initDataRaw, TELEGRAM_BOT_TOKEN); // If validation fails, this will throw an error
 
-    const redirectUrl = `${CLIENT_URL}?token=${JWTtoken}`; // Redirect back to frontend with token
-    res.redirect(redirectUrl);
+    // If validation is successful, parse the data
+    const data = new URLSearchParams(initDataRaw);
+    const user = JSON.parse(decodeURIComponent(data.get("user")));
+
+    const validatedUser = {
+      ...user,
+      photo_url: photoUrl || user.photo_url || "https://www.gravatar.com/avatar", // Use photoUrl passed or fallback to user.photo_url
+    };
+
+    // Generate the JWT token
+    const JWTtoken = generateJwtToken(validatedUser);
+    res.json({ token: JWTtoken });
   } catch (error) {
     console.error("Error validating Telegram data:", error);
-    res.status(400).send("Invalid Telegram data");
+    res.status(400).json({ error: "Invalid Telegram data" });
   }
 });
 
+// Start the server
 app.listen(3000, () => console.log("Server ready on port 3000."));
-
-module.exports = app;

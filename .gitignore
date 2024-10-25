@@ -101,3 +101,5 @@ tests/cases/user/prettier/prettier
 .eslintcache
 .expo
 build
+single-factor-auth-web/sfa-web-ton-telegram-example/src/.env
+single-factor-auth-web/sfa-web-ton-telegram-example/src/.env
