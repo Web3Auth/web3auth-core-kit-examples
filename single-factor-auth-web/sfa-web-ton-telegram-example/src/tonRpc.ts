@@ -2,10 +2,7 @@ import type { IProvider } from "@web3auth/base";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonWeb from "tonweb";
 
-const rpc = await getHttpEndpoint({
-    network: "testnet",
-    protocol: "json-rpc",
-}); 
+const rpc = await getHttpEndpoint(); 
 
 export default class TonRPC {
     private provider: IProvider;
@@ -32,7 +29,7 @@ export default class TonRPC {
         }
     }
 
-     getChainId(): string {
+    getChainId(): string {
         return "testnet"; 
     }
 
@@ -77,7 +74,6 @@ export default class TonRPC {
             const result = await transfer.send();
             
             console.log(result);
-            // Return the full result for display in uiConsole
             return result;
         } catch (error) {
             console.error("Error sending transaction:", error);
@@ -101,23 +97,19 @@ export default class TonRPC {
         }
     }
 
-    public getKeyPairFromPrivateKey(privateKey: string): { publicKey: Uint8Array; secretKey: Uint8Array } {
-        // Convert the hex string to a Uint8Array
+    private getKeyPairFromPrivateKey(privateKey: string): { publicKey: Uint8Array; secretKey: Uint8Array } {
         const privateKeyBytes = new Uint8Array(privateKey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 
-        // Ensure the private key is 32 bytes (256 bits)
         if (privateKeyBytes.length !== 32) {
-            // If it's shorter, pad it. If it's longer, truncate it.
             const adjustedPrivateKey = new Uint8Array(32);
             adjustedPrivateKey.set(privateKeyBytes.slice(0, 32));
             return TonWeb.utils.nacl.sign.keyPair.fromSeed(adjustedPrivateKey);
         }
 
-        // If it's already 32 bytes, use it directly
         return TonWeb.utils.nacl.sign.keyPair.fromSeed(privateKeyBytes);
     }
 
-    async getPrivateKey(): Promise<string> {
+    private async getPrivateKey(): Promise<string> {
         try {
             return await this.provider.request({
                 method: "private_key",
@@ -127,5 +119,4 @@ export default class TonRPC {
             throw error;
         }
     }
-
 }

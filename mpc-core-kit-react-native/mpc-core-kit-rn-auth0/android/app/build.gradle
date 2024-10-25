@@ -103,6 +103,11 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/libcrypto.so' // Exclude the conflicting file
+        pickFirst 'lib/x86_64/libcrypto.so' // If needed, exclude other architectures
+    }
 }
 
 dependencies {

@@ -58,15 +58,16 @@ class MainActivity : AppCompatActivity() {
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut() }
 
-        if (singleFactorAuth.isSessionIdExists()) {
-           try {
-               torusKey = singleFactorAuth.initialize(this.applicationContext)
-               publicAddress = torusKey!!.getPublicAddress()
-               println("""Private Key: ${torusKey!!.getPrivateKey()}""".trimIndent())
-               reRender()
-           } catch (e: Exception) {
-               Log.e("Initalizae Error", e.toString())
-           }
+        val torusKeyCF = singleFactorAuth.initialize(this.applicationContext)
+        torusKeyCF.whenComplete { key, error ->
+            if (error != null) {
+                Log.e("Initialize Error", error.toString())
+            } else {
+                torusKey = key
+                publicAddress = torusKey!!.getPublicAddress()
+                println("""Private Key: ${torusKey!!.getPrivateKey()}""".trimIndent())
+                reRender()
+            }
         }
 
         reRender()
