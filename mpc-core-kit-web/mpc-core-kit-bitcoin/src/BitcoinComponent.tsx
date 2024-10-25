@@ -249,6 +249,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color">
           Sign Segwit Transaction
         </button>
+        <button className="card taproot-color disabledDiv">Sign Taproot Transaction</button>
       </div>
 
       <div className="flex-container">
@@ -258,6 +259,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color">
           Send Segwit Transaction
         </button>
+        <button className="card taproot-color disabledDiv">Send Taproot Transaction</button>
       </div>
 
       <div className="warning-box">

@@ -179,7 +179,7 @@
 }
 
 .danger {
-	background-color: #dc3545;
+	background-color: #df0b20;
 }
 
 .danger:hover {
@@ -288,6 +288,11 @@
 }
 
 .segwit-color {
-	background-color: #f31f69;
+	background-color: #1cb9d1;
+	color: black;
+}
+
+.taproot-color {
+	background-color: #a01ae7;
 	color: white;
 }
