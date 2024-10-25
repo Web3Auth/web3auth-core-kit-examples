@@ -44,16 +44,16 @@ interface BitcoinComponentParams {
 }
 
 async function handleSendTransaction(signedTransaction: string) {
-  const response = await fetch("https://blockstream.info/testnet/api/tx", {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain",
-    },
-    body: signedTransaction,
-  });
-  const respText = await response.text();
-  console.log(respText);
-  uiConsole(respText);
+  try {
+    const response = await axios.post(`https://blockstream.info/testnet/api/tx`, signedTransaction);
+    console.log("Transaction sent successfully:", response.data);
+    uiConsole("Transaction sent successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending transaction:", error);
+    uiConsole("Error sending transaction", error);
+    throw error;
+  }
 }
 
 export const BitcoinComponent = (props: BitcoinComponentParams) => {
@@ -90,51 +90,54 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
       uiConsole("signer not initialized yet");
       return;
     }
-    if (bitcoinUTXID?.length !== 64) {
+    const account = payments.p2pkh({ pubkey: signer.publicKey, network: bitcoinNetwork });
+    console.log("account", account);
+
+    const utxos = await fetchUtxos(account.address!);
+    console.log("utxos", utxos);
+
+    const balance = utxos.reduce((acc: any, utxo: { value: any }) => acc + utxo.value, 0);
+    console.log("balance", balance);
+
+    setBitcoinUTXID(utxos[0].txid);
+    setFundingTxIndex(utxos[0].vout.toString());
+    setLatestBalance(balance.toString());
+
+    if (utxos[0].txid.length !== 64) {
       uiConsole("invalid bitcoin utxid");
       return;
     }
 
-    try {
-      parseInt(fundingTxIndex as string);
-    } catch (e) {
-      uiConsole("invalid funding tx index");
-      return;
+    const utxo = utxos[0];
+    const amount = utxo.value;
+    const feeResponse = await axios.get("https://blockstream.info/testnet/api/fee-estimates");
+    const maxFee = Math.max(...(Object.values(feeResponse.data) as number[]));
+    const fee = maxFee * 1.2;
+    console.log("fee", fee);
+    if (amount <= fee) {
+      const errorMsg = `Insufficient funds: ${amount} <= ${fee}`;
+      uiConsole(errorMsg);
+      throw new Error(errorMsg);
     }
 
     // unspent transaction
     const txId = bitcoinUTXID; // looks like this "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6"
-    const total = Number(latestBalance); // 1321953; // 0.0000017
-
-    const value = amount ? Number(amount) : 20;
-    const miner = Number(minerFee);
 
     // fetch transaction from testnet
     const txHex = await (await fetch(`https://blockstream.info/testnet/api/tx/${txId}/hex`)).text();
     console.log("txHex", txHex);
 
-    console.log("receiverAddr", receiverAddr);
+    const sendAmount = amount - Math.floor(fee);
 
-    const selfAddr = getAddress(signer, "btc", bitcoinNetwork);
-    if (!selfAddr) {
-      uiConsole("invalid address");
-      return;
-    }
-
-    console.log(selfAddr, typeof selfAddr);
     const psbt = new Psbt({ network: bitcoinNetwork })
       .addInput({
-        hash: txId,
-        index: parseInt(fundingTxIndex as string),
+        hash: utxo.txid,
+        index: utxo.vout,
         nonWitnessUtxo: Buffer.from(txHex, "hex"),
       })
       .addOutput({
-        address: receiverAddr ? receiverAddr : selfAddr!,
-        value: value,
-      })
-      .addOutput({
-        address: selfAddr,
-        value: total - value - miner,
+        address: receiverAddr ? receiverAddr : account.address!,
+        value: sendAmount,
       });
 
     uiConsole("Signing transaction...");
@@ -173,23 +176,9 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
       uiConsole("invalid bitcoin utxid");
       return;
     }
-    // try {
-    //   parseInt(fundingTxIndex as string);
-    // } catch (e) {
-    //   uiConsole("invalid funding tx index");
-    //   return;
-    // }
-
-    // unspent transaction
-    // const txId = bitcoinUTXID; // looks like this "bb072aa6a43af31642b635e82bd94237774f8240b3e6d99a1b659482dce013c6"
-    // const total = Number(balance); // 1321953; // 0.0000017
-
-    // const value = amount ? Number(amount) : 20;
-    // const miner = Number(minerFee);
 
     const utxo = utxos[0];
     const amount = utxo.value;
-    console.log("amount", amount, typeof amount);
     const feeResponse = await axios.get("https://blockstream.info/testnet/api/fee-estimates");
     const maxFee = Math.max(...(Object.values(feeResponse.data) as number[]));
     const fee = maxFee * 1.2;
@@ -201,15 +190,7 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
     }
 
     const sendAmount = amount - Math.floor(fee);
-    console.log("sendAmount", sendAmount);
 
-    // const selfAddr = account.address!;
-    // console.log("TESTTTTTTTT");
-    // console.log(selfAddr, typeof selfAddr);
-    // console.log("receiverAddr", receiverAddr);
-    // console.log("BUFFER", Buffer.from("76a9148bbc95d2709c71607c60ee3f097c1217482f518d88ac", "hex"));
-    // console.log("BUFFER from Output", account.output);
-    // console.log("BUFFER from CW", Buffer.from("0014" + account.hash?.toString("hex"), "hex"));
     const psbt = new Psbt({ network: bitcoinNetwork })
       .addInput({
         hash: utxo.txid,
@@ -220,43 +201,18 @@ export const BitcoinComponent = (props: BitcoinComponentParams) => {
         },
       })
       .addOutput({
-        address: "tb1qtxscrxxaukyjf2hrwwe08q88c623fxd72rk6c3",
+        address: receiverAddr ? receiverAddr : account.address!,
         value: sendAmount,
       });
 
     uiConsole("Signing transaction...");
     await psbt.signAllInputsAsync(signer);
 
-    // psbt.finalizeAllInputs();
-    // const txHex = psbt.extractTransaction().toHex();
-    // console.log("txHex", txHex);
-
-    // try {
-    //   const response = await axios.post(`https://blockstream.info/testnet/api/tx`, txHex);
-    //   console.log("Transaction sent successfully:", response.data);
-    //   uiConsole("Transaction sent successfully:", response.data);
-    //   return response.data;
-    // } catch (error) {
-    //   console.error("Error sending transaction:", error);
-    //   uiConsole("Error sending transaction", error);
-    //   throw error;
-    // }
-
-    // psbt.validateSignaturesOfInput(0, BTCValidator);
     const validation = psbt.validateSignaturesOfInput(0, BTCValidator);
-    console.log("validation", validation);
     const signedTransaction = psbt.finalizeAllInputs().extractTransaction().toHex();
-    console.log("signedTransaction", signedTransaction);
+    uiConsole("validation", validation, "signedTransaction", signedTransaction);
 
-    // console.log("psbt");
-    // console.log("psbt", psbt.extractTransaction());
-
-    // uiConsole("Signed Transaction: ", signedTransaction, "Copy the above into https://blockstream.info/testnet/tx/push");
-    // if (!validation) uiConsole("validation failed");
-    // console.log(validation ? "Validated" : "failed");
-    // console.log("signedTransaction: ", signedTransaction);
-
-    // if (send) await handleSendTransaction(signedTransaction);
+    if (send) await handleSendTransaction(signedTransaction);
   };
 
   const signTransactionSegwitMultipleSigs = async (send?: boolean) => {
