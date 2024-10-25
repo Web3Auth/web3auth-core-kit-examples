@@ -374,10 +374,23 @@ function App() {
       >
         <h3>Account Recovery Options</h3>
         <div className="recovery-section">
-          <h4>Device Factor</h4>
+          <h4>Device / Social MFA Factor</h4>
           <button onClick={() => getDeviceFactor()} className="card">
             Get Device Factor
           </button>
+          <button onClick={() => getSocialMFAFactorKey()} className="card">
+            Get Social MFA Factor
+          </button>
+        </div>
+
+        <div className="recovery-section">
+          <h4>Device / Social MFA Factor</h4>
+          <div className="input-group">
+            <input value={backupFactorKey} readOnly placeholder="Your backup factor will appear here" />
+            <button onClick={() => inputBackupFactorKey()} className="card">
+              Use Backup Factor to Login
+            </button>
+          </div>
         </div>
 
         <div className="recovery-section">
@@ -386,23 +399,6 @@ function App() {
             <input value={mnemonicFactor} onChange={(e) => setMnemonicFactor(e.target.value)} placeholder="Enter your mnemonic phrase" />
             <button onClick={() => MnemonicToFactorKeyHex(mnemonicFactor)} className="card">
               Recover Using Mnemonic
-            </button>
-          </div>
-        </div>
-
-        <div className="recovery-section">
-          <h4>Social MFA Factor</h4>
-          <button onClick={() => getSocialMFAFactorKey()} className="card">
-            Get Social MFA Factor
-          </button>
-        </div>
-
-        <div className="recovery-section">
-          <h4>Backup / Device Factor</h4>
-          <div className="input-group">
-            <input value={backupFactorKey} readOnly placeholder="Your backup factor will appear here" />
-            <button onClick={() => inputBackupFactorKey()} className="card">
-              Use Backup Factor
             </button>
           </div>
         </div>
