@@ -1,12 +1,10 @@
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { Point, secp256k1 } from "@tkey/common-types";
 import { BitcoinComponent } from "./BitcoinComponent";
-// IMP START - Quick Start
 import {
   COREKIT_STATUS,
   FactorKeyTypeShareDescription,
@@ -20,46 +18,28 @@ import {
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
-// Optional, only for social second factor recovery
 import { Web3Auth as Web3AuthSingleFactorAuth } from "@web3auth/single-factor-auth";
 import { BN } from "bn.js";
-// Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
-
-// IMP END - Quick Start
-// IMP START - Blockchain Calls
-// import RPC from "./ethersRPC";
-// import RPC from "./viemRPC";
 import RPC from "./web3RPC";
 import Loading from "./Loading";
-// IMP END - Blockchain Calls
 
-// IMP START - Dashboard Registration
-const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
-// IMP END - Dashboard Registration
-
-// IMP START - Verifier Creation
+const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
 const verifier = "w3a-firebase-demo";
-// IMP END - Verifier Creation
 
-// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7",
   rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-  // Avoid using public rpcTarget in production.
-  // Use services like Infura, Quicknode etc
   displayName: "Ethereum Sepolia Testnet",
   blockExplorerUrl: "https://sepolia.etherscan.io",
   ticker: "ETH",
   tickerName: "Ethereum",
   logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
-// IMP END - Chain Config
 
-// IMP START - SDK Initialization
 let coreKitInstance: Web3AuthMPCCoreKit;
 let evmProvider: EthereumSigningProvider;
 
@@ -68,18 +48,14 @@ if (typeof window !== "undefined") {
     web3AuthClientId,
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
-    manualSync: true, // This is the recommended approach
+    manualSync: true,
     tssLib,
   });
 
-  // Setup provider for EVM Chain
   evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
   evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 }
-// IMP END - SDK Initialization
 
-// IMP START - Auth Provider Login
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
   authDomain: "web3auth-oauth-logins.firebaseapp.com",
@@ -88,7 +64,6 @@ const firebaseConfig = {
   messagingSenderId: "461819774167",
   appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
 };
-// IMP END - Auth Provider Login
 
 function App() {
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
@@ -97,21 +72,16 @@ function App() {
   const [showRecoveryOptions, setShowRecoveryOptions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
 
   useEffect(() => {
     const init = async () => {
-      // IMP START - SDK Initialization
       await coreKitInstance.init();
-      // IMP END - SDK Initialization
-
       setCoreKitStatus(coreKitInstance.status);
     };
     init();
   }, []);
 
-  // IMP START - Auth Provider Login
   const signInWithGoogle = async (): Promise<UserCredential> => {
     try {
       const auth = getAuth(app);
@@ -124,21 +94,17 @@ function App() {
       throw err;
     }
   };
-  // IMP END - Auth Provider Login
 
   const login = async () => {
     try {
       if (!coreKitInstance) {
         throw new Error("initiated to login");
       }
-      // IMP START - Auth Provider Login
       setIsLoading(true);
       const loginRes = await signInWithGoogle();
       const idToken = await loginRes.user.getIdToken(true);
       const parsedToken = parseToken(idToken);
-      // IMP END - Auth Provider Login
 
-      // IMP START - Login
       const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
@@ -147,26 +113,23 @@ function App() {
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        await coreKitInstance.commitChanges(); // Needed for new accounts
+        await coreKitInstance.commitChanges();
       }
-      // IMP END - Login
       setIsLoading(false);
 
-      // IMP START - Recover MFA Enabled Account
       if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
         setShowRecoveryOptions(true);
         uiConsole(
           "required more shares, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
         );
       }
-      // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
     }
   };
-  // IMP START - Recover MFA Enabled Account
+
   const inputBackupFactorKey = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance not found");
@@ -185,32 +148,26 @@ function App() {
       );
     }
   };
-  // IMP END - Recover MFA Enabled Account
 
-  // IMP START - Export Social Account Factor
   const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
-      // Initialise the Web3Auth SFA SDK
-      // You can do this on the constructor as well for faster experience
       const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
 
       const web3authSfa = new Web3AuthSingleFactorAuth({
-        clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+        clientId: web3AuthClientId,
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
         usePnPKey: false,
-        privateKeyProvider, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        privateKeyProvider,
       });
       await web3authSfa.init();
 
       if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
-        // Login using Firebase Email Password
         const auth = getAuth(app);
         const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
         console.log(res);
         const idToken = await res.user.getIdToken(true);
         const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
         await web3authSfa.connect({
           verifier,
           verifierId: userInfo.sub,
@@ -218,7 +175,6 @@ function App() {
         });
       }
 
-      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await web3authSfa!.provider!.request({
         method: "private_key",
       });
@@ -231,9 +187,7 @@ function App() {
       return "";
     }
   };
-  // IMP END - Export Social Account Factor
 
-  // IMP START - Enable Multi Factor Authentication
   const enableMFA = async () => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
@@ -254,9 +208,7 @@ function App() {
       uiConsole(e);
     }
   };
-  // IMP END - Enable Multi Factor Authentication
 
-  // IMP START - Delete Factor
   const deleteFactor = async () => {
     let factorPub: string | undefined;
     for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
@@ -277,7 +229,6 @@ function App() {
       uiConsole("No social factor found to delete");
     }
   };
-  // IMP END - Delete Factor
 
   const keyDetails = async () => {
     if (!coreKitInstance) {
@@ -328,55 +279,21 @@ function App() {
   };
 
   const getUserInfo = async () => {
-    // IMP START - Get User Information
     const user = coreKitInstance.getUserInfo();
-    // IMP END - Get User Information
     uiConsole(user);
   };
 
   const logout = async () => {
-    // IMP START - Logout
     await coreKitInstance.logout();
-    // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
     setShowRecoveryOptions(false);
     uiConsole("logged out");
   };
 
-  // IMP START - Blockchain Calls
-  // Check the RPC file for the implementation
-  // const getAccounts = async () => {
-  //   const address = await RPC.getAccounts(evmProvider);
-  //   uiConsole(address);
-  // };
-
-  // const getBalance = async () => {
-  //   const balance = await RPC.getBalance(evmProvider);
-  //   uiConsole(balance);
-  // };
-
-  // const signMessage = async () => {
-  //   const signedMessage = await RPC.signMessage(evmProvider);
-  //   uiConsole(signedMessage);
-  // };
-
-  // const sendTransaction = async () => {
-  //   uiConsole("Sending Transaction...");
-  //   const transactionReceipt = await RPC.sendTransaction(evmProvider);
-  //   uiConsole(transactionReceipt);
-  // };
-  // IMP END - Blockchain Calls
-
   const criticalResetAccount = async (): Promise<void> => {
-    // This is a critical function that should only be used for testing purposes
-    // Resetting your account means clearing all the metadata associated with it from the metadata server
-    // The key details will be deleted from our server and you will not be able to recover your account
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
     await coreKitInstance.tKey.storageLayer.setMetadata({
       privKey: new BN(coreKitInstance.state.postBoxKey! as string, "hex"),
       input: { message: "KEY_NOT_FOUND" },
@@ -388,7 +305,6 @@ function App() {
     logout();
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function uiConsole(...args: any): void {
     const el = document.querySelector("#console>p");
     if (el) {
@@ -414,28 +330,6 @@ function App() {
           Enable MFA
         </button>
       </div>
-
-      {/* <div>
-        <button onClick={getAccounts} className="card">
-          Get Accounts
-        </button>
-      </div>
-      <div>
-        <button onClick={getBalance} className="card">
-          Get Balance
-        </button>
-      </div>
-      <div>
-        <button onClick={signMessage} className="card">
-          Sign Message
-        </button>
-      </div>
-      <div>
-        <button onClick={sendTransaction} className="card">
-          Send Transaction
-        </button>
-      </div> */}
-
       <div>
         <button onClick={createMnemonicFactor} className="card">
           Generate Backup (Mnemonic)
@@ -456,7 +350,6 @@ function App() {
           Log Out
         </button>
       </div>
-
       <BitcoinComponent coreKitInstance={coreKitInstance} />
     </div>
   );
@@ -470,7 +363,6 @@ function App() {
         className={`recovery-options ${showRecoveryOptions ? "" : "hidden"} ${coreKitStatus === COREKIT_STATUS.REQUIRED_SHARE ? "" : "disabledDiv"}`}
       >
         <h3>Account Recovery Options</h3>
-
         <div className="recovery-section">
           <h4>Device Factor</h4>
           <button onClick={() => getDeviceFactor()} className="card">
