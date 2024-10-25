@@ -281,3 +281,13 @@
 	background-color: #c2d30e;
 	box-shadow: 0 0 5px rgba(228, 246, 26, 0.8);
 }
+
+.psbt-color {
+	background-color: #fda80a;
+	color: black;
+}
+
+.segwit-color {
+	background-color: #f31f69;
+	color: white;
+}
