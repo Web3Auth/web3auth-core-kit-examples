@@ -19,7 +19,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": false,
-    "target": "es2020"
+    "target": "esnext"
   },
   "include": [
     "src"

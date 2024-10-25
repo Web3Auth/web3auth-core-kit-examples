@@ -31,8 +31,7 @@ import {
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
-import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
+import {tssLib, Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // Use for social factor (optional)
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
@@ -62,14 +61,14 @@ const chainConfig = {
 };
 
 // // setup async storage for react native
-// const asyncStorageKey = {
-//   getItem: async (key: string) => {
-//     return EncryptedStorage.getItem(key);
-//   },
-//   setItem: async (key: string, value: string) => {
-//     return EncryptedStorage.setItem(key, value);
-//   },
-// };
+const asyncStorageKey = {
+  getItem: async (key: string) => {
+    return EncryptedStorage.getItem(key);
+  },
+  setItem: async (key: string, value: string) => {
+    return EncryptedStorage.setItem(key, value);
+  },
+};
 
 const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
@@ -77,6 +76,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   uxMode: 'react-native',
   tssLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
+  storage: asyncStorageKey, // Add the storage property
 } as Web3AuthOptions);
 
 // Setup provider for EVM Chain
@@ -152,13 +152,13 @@ export default function App() {
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken);
 
-      const idTokenLoginParams = {
+      const LoginParams = {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
       } as JWTLoginParams;
 
-      await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      await coreKitInstance.loginWithJWT(LoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
@@ -471,12 +471,14 @@ export default function App() {
   const loginScreen = (
     <View style={styles.buttonArea}>
       <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+      <Text style={styles.subHeading}>This is a test example, you can enter a random email & password to create a new account</Text>
       <View style={styles.section}>
         <Text>Enter your Email</Text>
         <TextInput
           style={styles.input}
           onChangeText={setEmail}
           value={email}
+          secureTextEntry={false}
           autoCapitalize="none"
         />
       </View>
@@ -533,7 +535,7 @@ export default function App() {
   );
 
   const loggedInView = (
-    <View style={styles.buttonArea}>
+    <View style={styles.compressedButtons}>
       <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
@@ -594,9 +596,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   subHeading: {
-    fontSize: 15,
+    fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   consoleArea: {
     margin: 20,
@@ -627,7 +630,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     margin: 20,
-    gap: 40,
+  },
+  compressedButtons: {
+    flex: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
   },
   disabledSection: {
     opacity: 0.5,

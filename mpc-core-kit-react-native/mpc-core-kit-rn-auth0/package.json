@@ -12,10 +12,11 @@
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
-    "@toruslabs/react-native-tss-lib-bridge": "^0.1.0",
+    "@toruslabs/eccrypto": "^5.0.4",
+    "@toruslabs/react-native-tss-lib-bridge": "^2.1.0",
     "@web3auth/base": "^8.6.2",
     "@web3auth/ethereum-mpc-provider": "^8.6.1",
-    "@web3auth/mpc-core-kit": "3.0.0-alpha.2",
+    "@web3auth/mpc-core-kit": "3.1.1",
     "@web3auth/wallet-services-plugin": "^8.6.1",
     "ethers": "^6.12.0",
     "metro-react-native-babel-transformer": "^0.77.0",
@@ -24,9 +25,10 @@
     "react-native": "0.73.6",
     "react-native-auth0": "^3.1.0",
     "react-native-encrypted-storage": "^4.0.3",
+    "react-native-quick-crypto": "^0.7.3",
     "react-native-react-bridge": "^0.11.2",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-webview": "^13.8.6"
+    "react-native-webview": "^13.12.1"
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
