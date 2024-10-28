@@ -1,191 +1,172 @@
-/* Main Container */
-.container {
-  width: 60%;
-  margin: auto;
+/* Importing the Inter font with specified weights */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color, #ffffff);
+  color: var(--text-color, #333333); /* Default text color */
+  margin: 0;
   padding: 0;
 }
 
-body {
-  background-color: var(--bg-color, #ffffff); /* Fallback to white if not set */
-  color: var(--text-color, #333333);          /* Fallback to black text */
+/* Main Container */
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
 }
 
-.user-info-box, .info-box {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-.main {
-  min-height: 100vh;
-  padding: 4rem 0;
-  flex: 1;
+/* Header with Logo and Title */
+.header {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  text-align: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.web3auth-logo {
+  width: 150px;
+  height: auto;
 }
 
 .title {
-  line-height: 1.15;
-  font-size: 3rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.description {
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 10px 0;
   text-align: center;
-  margin: 50px;
+  color: var(--text-color);
 }
 
-.title a {
-  color: #0070f3;
-  text-decoration: none;
-}
-
-.grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.card {
-  margin: 0.5rem;
-  padding: 0.7rem;
+/* How It Works Section */
+.how-it-works {
+  margin: 20px 0;
   text-align: center;
-  color: #0070f3;
-  background-color: #fafafa;
-  text-decoration: none;
-  border: 1px solid #0070f3;
-  border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  width: 100%;
+  color: var(--text-color);
 }
 
-.card:hover,
-.card:focus,
-.card:active {
-  cursor: pointer;
-  background-color: #f1f1f1;
+.how-it-works h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
-.footer {
-  display: flex;
-  flex: 1;
-  padding: 2rem 0;
-  border-top: 1px solid #eaeaea;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10rem;
+.how-it-works ul {
+  list-style-type: none;
+  padding: 0;
+  font-weight: 400;
 }
 
-.footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+.how-it-works li {
+  margin: 5px 0;
+  color: var(--text-color);
 }
 
-.logo {
-  height: 1.5rem;
-  margin-left: 0.5rem;
-}
-
-@media (max-width: 1200px) {
-  .container {
-    width: 100%;
-  }
-}
-
-.flex-container {
-  display: flex;
-  flex-flow: row wrap;
-}
-
-.flex-container > div {
-  width: 100px;
-  margin: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 30px;
-}
-
-#console {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  word-wrap: break-word;
-  font-size: 16px;
-  font-family: monospace;
-}
-
-/* Updated box sizes */
+/* Info Boxes for User and TON Account */
 .user-info-box, .info-box {
   padding: 15px;
-  margin: 15px 0;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 10px;
   background-color: #f9f9f9;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
   text-align: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  color: var(--text-color);
 }
 
 .info-box:hover {
   background-color: #eef;
 }
 
-.loader-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-/* Ellipsis for long strings */
-p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%; /* Ensure ellipsis kicks in at full box width */
-}
-
-/* Adjust alignment and spacing of ID and Logo */
-.id-with-logo {
-  display: inline-flex;
-  align-items: center; /* Vertically align the text and logo */
-  gap: 4px; /* Reduce the gap between the ID and the logo */
-  margin-bottom: 0; /* Remove unnecessary margin below the ID */
-  max-width: fit-content; /* Adjust width to fit content only */
-}
-
-/* Style the logo */
-.telegram-logo {
-  width: 20px;
-  height: 20px;
-  margin-left: 4px; /* Minimal space between the ID and logo */
-}
-
-/* Adjust overall spacing for user-info-box */
-.user-info-box {
-  padding: 15px;
-  margin: 10px 0; /* Adjust the margin for better spacing */
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
+/* Avatar and Telegram Logo */
 .user-avatar {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   margin-right: 10px;
+}
+
+.id-with-logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: fit-content;
+  margin: 0 auto;
+  color: var(--text-color);
+}
+
+.telegram-logo {
+  width: 20px;
+  height: 20px;
+}
+
+/* Ellipsis for Long Text */
+.ellipsed-text {
+  display: inline-block;
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  color: var(--text-color);
+}
+
+/* Footer Button */
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  border-top: 1px solid #eaeaea;
+  margin-top: 30px;
+  color: var(--text-color);
+}
+
+.learn-more-button {
+  padding: 10px 20px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.light-mode {
+  background-color: #0063F5;
+  color: #ffffff;
+}
+
+.dark-mode {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .web3auth-logo {
+    width: 150px;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 8px;
+  }
 }
