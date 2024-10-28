@@ -30,6 +30,7 @@
     "@web3auth/base": "^9.3.0",
     "@web3auth/base-provider": "^9.3.0",
     "@web3auth/single-factor-auth": "^9.2.0",
+    "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "source-map-loader": "^4.0.1",
