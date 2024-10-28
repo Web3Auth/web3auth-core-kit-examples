@@ -4,8 +4,9 @@ import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
 import TonRPC from "./tonRpc";
-import { useLaunchParams, miniApp } from "@telegram-apps/sdk-react";
+import { useLaunchParams } from "@telegram-apps/sdk-react";
 import { useTelegramMock } from "./hooks/useMockTelegramInitData";
+import { Sun, Moon, Copy, Check } from "lucide-react";
 import Loading from "./components/Loading";
 import TelegramLogo from "./assets/TelegramLogo.svg";
 import web3AuthLogoLight from "./assets/web3AuthLogoLight.svg";
@@ -23,25 +24,27 @@ function App() {
   const [tonAccountAddress, setTonAccountAddress] = useState<string | null>(null);
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({
+    account: false,
+    message: false,
+  });
 
-  const { initDataRaw, initData, themeParams } = useLaunchParams() || {};
+  const { initDataRaw, initData } = useLaunchParams() || {};
 
   useTelegramMock();
 
-  console.log("isDark:", miniApp.isDark()); // Log the isDark value to verify
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   useEffect(() => {
-    if (themeParams) {
-      const bgColor = themeParams.bg_color || (miniApp.isDark() ? "#000000" : "#ffffff");
-      const textColor = themeParams.text_color || (miniApp.isDark() ? "#ffffff" : "#333333");
-      document.documentElement.style.setProperty("--bg-color", bgColor);
-      document.documentElement.style.setProperty("--text-color", textColor);
-    } else {
-      const isDarkMode = miniApp.isDark();
-      document.documentElement.style.setProperty("--bg-color", isDarkMode ? "#000000" : "#ffffff");
-      document.documentElement.style.setProperty("--text-color", isDarkMode ? "#ffffff" : "#333333");
-    }
-  }, [themeParams, miniApp.isDark()]);
+    const newBgColor = isDarkMode ? "#1a1a1a" : "#ffffff";
+    const newTextColor = isDarkMode ? "#ffffff" : "#333333";
+    document.documentElement.style.setProperty("--bg-color", newBgColor);
+    document.documentElement.style.setProperty("--text-color", newTextColor);
+    document.documentElement.classList.toggle("dark-mode", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     const initializeWeb3Auth = async () => {
@@ -89,7 +92,7 @@ function App() {
             await web3authSfa.logout();
           }
 
-          const idToken = await getIdTokenFromServer(initDataRaw, initData.user.photoUrl);
+          const idToken = await getIdTokenFromServer(initDataRaw, initData?.user.photoUrl);
           if (!idToken) return;
 
           const { payload } = decodeToken(idToken);
@@ -121,7 +124,7 @@ function App() {
     if (web3AuthInitialized && initDataRaw) {
       connectWeb3Auth();
     }
-  }, [initDataRaw, web3authSfa, web3AuthInitialized]);
+  }, [initDataRaw, web3authSfa, web3AuthInitialized, initData?.user.photoUrl]);
 
   const getIdTokenFromServer = async (initDataRaw: string, photoUrl: string | undefined) => {
     const isMocked = !!sessionStorage.getItem("____mocked");
@@ -136,27 +139,41 @@ function App() {
     return data.token;
   };
 
-  const [logo, setLogo] = useState(miniApp.isDark() ? web3AuthLogoDark : web3AuthLogoLight);
+  const copyToClipboard = async (text: string, type: "account" | "message") => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates((prev) => ({
+        ...prev,
+        [type]: true,
+      }));
 
-  useEffect(() => {
-    setLogo(miniApp.isDark() ? web3AuthLogoDark : web3AuthLogoLight);
-  }, [miniApp.isDark()]);
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedStates((prev) => ({
+          ...prev,
+          [type]: false,
+        }));
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
   };
 
   return (
     <div className="container">
       <div className="header">
-        <img src={logo} alt="Web3Auth Logo" className="web3auth-logo" />
+        <div className="logo-container">
+          <img src={isDarkMode ? web3AuthLogoDark : web3AuthLogoLight} alt="Web3Auth Logo" className="web3auth-logo" />
+          <button onClick={toggleDarkMode} className="theme-toggle" aria-label="Toggle dark mode">
+            {isDarkMode ? <Sun className="text-yellow-500" /> : <Moon className="text-gray-700" />}
+          </button>
+        </div>
         <h4 className="title">Telegram MiniApp Demo</h4>
       </div>
 
       <div className="description">
         <p>
-          Seamlessly generate a blockchain wallet with Web3Auth right inside Telegram. This demo shows a wallet for the TON blockchain, but it’s fully
+          Seamlessly generate a blockchain wallet with Web3Auth right inside Telegram. This demo shows a wallet for the TON blockchain, but it's fully
           adaptable for any other chain. No extra steps—just connect and go!
         </p>
       </div>
@@ -193,15 +210,23 @@ function App() {
                   </p>
                 </div>
               </div>
-              <div className="info-box" onClick={() => copyToClipboard(tonAccountAddress || "")}>
-                <p>
-                  <strong>TON Account:</strong> <span className="ellipsed-text">{tonAccountAddress}</span>
-                </p>
+              <div className="info-box" onClick={() => copyToClipboard(tonAccountAddress || "", "account")}>
+                <div className="info-box-content">
+                  <p>
+                    <strong>TON Account:</strong>
+                    <span className="ellipsed-text">{tonAccountAddress}</span>
+                  </p>
+                  {copiedStates.account ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />}
+                </div>
               </div>
-              <div className="info-box" onClick={() => copyToClipboard(signedMessage || "")}>
-                <p>
-                  <strong>Signed Message:</strong> <span className="ellipsed-text">{signedMessage}</span>
-                </p>
+              <div className="info-box" onClick={() => copyToClipboard(signedMessage || "", "message")}>
+                <div className="info-box-content">
+                  <p>
+                    <strong>Signed Message:</strong>
+                    <span className="ellipsed-text">{signedMessage}</span>
+                  </p>
+                  {copiedStates.message ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />}
+                </div>
               </div>
             </>
           )}
@@ -213,7 +238,7 @@ function App() {
           href="https://web3auth.io/community/t/build-powerful-telegram-mini-apps-with-web3auth/9244"
           target="_blank"
           rel="noopener noreferrer"
-          className={`learn-more-button ${miniApp.isDark() ? "dark-mode" : "light-mode"}`}
+          className="learn-more-button"
         >
           Wanna learn how to create this bot?
         </a>
