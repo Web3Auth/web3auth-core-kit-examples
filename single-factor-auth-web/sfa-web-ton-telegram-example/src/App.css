@@ -91,7 +91,7 @@ body {
 }
 
 .info-box:hover {
-  background-color: var(--text-color); /* Slight color change on hover */
+  background-color: var(--text-color);
   color: var(--bg-color);
 }
 

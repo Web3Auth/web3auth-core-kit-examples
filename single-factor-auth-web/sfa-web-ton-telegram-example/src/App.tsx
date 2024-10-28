@@ -37,7 +37,6 @@ function App() {
       document.documentElement.style.setProperty("--bg-color", bgColor);
       document.documentElement.style.setProperty("--text-color", textColor);
     } else {
-      // Apply dark mode if miniApp.isDark() is true
       const isDarkMode = miniApp.isDark();
       document.documentElement.style.setProperty("--bg-color", isDarkMode ? "#000000" : "#ffffff");
       document.documentElement.style.setProperty("--text-color", isDarkMode ? "#ffffff" : "#333333");
@@ -79,12 +78,6 @@ function App() {
     };
 
     initializeWeb3Auth();
-  }, []);
-
-  useEffect(() => {
-    const isDarkMode = miniApp.isDark();
-    document.documentElement.style.setProperty("--bg-color", isDarkMode ? "#000000" : "#ffffff");
-    document.documentElement.style.setProperty("--text-color", isDarkMode ? "#ffffff" : "#333333");
   }, []);
 
   useEffect(() => {
@@ -143,7 +136,11 @@ function App() {
     return data.token;
   };
 
-  const logo = miniApp.isDark() ? web3AuthLogoDark : web3AuthLogoLight;
+  const [logo, setLogo] = useState(miniApp.isDark() ? web3AuthLogoDark : web3AuthLogoLight);
+
+  useEffect(() => {
+    setLogo(miniApp.isDark() ? web3AuthLogoDark : web3AuthLogoLight);
+  }, [miniApp.isDark()]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
