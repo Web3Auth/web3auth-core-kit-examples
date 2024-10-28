@@ -7,7 +7,7 @@ import TonRPC from "./tonRpc"; // Import the TonRPC class
 import { useLaunchParams, mainButton } from "@telegram-apps/sdk-react";
 import { useTelegramMock } from "./hooks/useMockTelegramInitData";
 import Loading from "./components/Loading";
-import TelegramLogo from "./assets/TelegramLogo.svg"; // Assuming the logo is in the assets folder
+// import TelegramLogo from "./assets/TelegramLogo.svg"; // Assuming the logo is in the assets folder
 import "./App.css";
 
 const verifier = "w3a-telegram-demo";
