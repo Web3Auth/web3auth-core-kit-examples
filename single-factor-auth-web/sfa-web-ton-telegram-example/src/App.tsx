@@ -32,12 +32,17 @@ function App() {
 
   useEffect(() => {
     if (themeParams) {
-      const bgColor = themeParams.bg_color || "#ffffff";
-      const textColor = themeParams.text_color || "#333333";
+      const bgColor = themeParams.bg_color || (miniApp.isDark() ? "#000000" : "#ffffff");
+      const textColor = themeParams.text_color || (miniApp.isDark() ? "#ffffff" : "#333333");
       document.documentElement.style.setProperty("--bg-color", bgColor);
       document.documentElement.style.setProperty("--text-color", textColor);
+    } else {
+      // Apply dark mode if miniApp.isDark() is true
+      const isDarkMode = miniApp.isDark();
+      document.documentElement.style.setProperty("--bg-color", isDarkMode ? "#000000" : "#ffffff");
+      document.documentElement.style.setProperty("--text-color", isDarkMode ? "#ffffff" : "#333333");
     }
-  }, []);
+  }, [themeParams, miniApp.isDark()]);
 
   useEffect(() => {
     const initializeWeb3Auth = async () => {
@@ -80,7 +85,7 @@ function App() {
     const isDarkMode = miniApp.isDark();
     document.documentElement.style.setProperty("--bg-color", isDarkMode ? "#000000" : "#ffffff");
     document.documentElement.style.setProperty("--text-color", isDarkMode ? "#ffffff" : "#333333");
-  }, []);  
+  }, []);
 
   useEffect(() => {
     const connectWeb3Auth = async () => {

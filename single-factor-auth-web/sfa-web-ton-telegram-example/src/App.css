@@ -7,6 +7,7 @@ body {
   color: var(--text-color, #333333); /* Default text color */
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Main Container */
@@ -15,6 +16,8 @@ body {
   max-width: 600px;
   margin: auto;
   padding: 20px;
+  background-color: var(--bg-color); /* Ensures background changes with theme */
+  color: var(--text-color);
 }
 
 /* Header with Logo and Title */
@@ -64,6 +67,7 @@ body {
   list-style-type: none;
   padding: 0;
   font-weight: 400;
+  color: var(--text-color);
 }
 
 .how-it-works li {
@@ -77,17 +81,18 @@ body {
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 10px;
-  background-color: #f9f9f9;
+  background-color: var(--bg-color); /* Uses theme variable */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   text-align: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   color: var(--text-color);
 }
 
 .info-box:hover {
-  background-color: #eef;
+  background-color: var(--text-color); /* Slight color change on hover */
+  color: var(--bg-color);
 }
 
 /* Avatar and Telegram Logo */
@@ -130,6 +135,7 @@ body {
   padding: 2rem 0;
   border-top: 1px solid #eaeaea;
   margin-top: 30px;
+  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -142,15 +148,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Light and Dark Mode Styles for Button */
 .light-mode {
-  background-color: #0063F5;
-  color: #ffffff;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .dark-mode {
-  background-color: #ffffff;
-  color: #000000;
-  border: 1px solid #000000;
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border: 1px solid var(--text-color);
 }
 
 /* Responsive Design */
