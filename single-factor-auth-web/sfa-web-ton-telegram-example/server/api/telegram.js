@@ -9,20 +9,28 @@ export default async function handler(req, res) {
   
   // Command handler
   bot.command('start', async (ctx) => {
-    try {
-      await ctx.reply('Welcome to Web3 Wallet! Click below to get started:', {
+    await ctx.reply(
+      `Welcome to Web3Auth MiniApp! 🌟
+   
+   Experience blockchain wallets reimagined inside Telegram! Our demo showcases integration with the TON blockchain, but that's just the beginning - the same seamless experience can be adapted for any blockchain network.
+   
+   How does it work? It's brilliantly simple:
+   - Your Telegram identity securely powers your Web3 wallet creation
+   - Access your wallet seamlessly across all your Telegram devices
+   - No repeated setups - your wallet is always ready when you are
+   
+   Ready to experience the future of Web3 authentication?`,
+      {
         reply_markup: {
           inline_keyboard: [[
             {
-              text: "Open Web3 Wallet 🚀",
+              text: "Launch Web3Auth MiniApp 🚀",
               web_app: { url: process.env.APP_URL }
             }
           ]]
         }
-      });
-    } catch (error) {
-      console.error('Error in start command:', error);
-    }
+      }
+    );
   });
 
   try {
