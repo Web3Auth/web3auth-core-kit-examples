@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,6 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import '@ethersproject/shims';
 // IMP START - Auth Provider Login
@@ -27,6 +27,7 @@ import {
   mnemonicToKey,
   makeEthereumSigner,
   Web3AuthOptions,
+  FactorKeyTypeShareDescription,
   // asyncStoreFactor,
 } from '@web3auth/mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
@@ -36,11 +37,11 @@ import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // Use for social factor (optional)
 import Web3Auth from '@web3auth/single-factor-auth-react-native';
 import {CommonPrivateKeyProvider} from '@web3auth/base-provider';
+import { Point, secp256k1 } from '@tkey/common-types';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
 
-// IMP START - SDK Initialization
 // IMP START - Dashboard Registration
 const web3AuthClientId =
   'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
@@ -50,6 +51,7 @@ const web3AuthClientId =
 const verifier = 'w3a-firebase-demo';
 // IMP END - Verifier Creation
 
+// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: '0xaa36a7', // Please use 0x1 for Mainnet
@@ -59,8 +61,10 @@ const chainConfig = {
   ticker: 'ETH',
   tickerName: 'Ethereum',
 };
+// IMP END - Chain Config
 
-// // setup async storage for react native
+// IMP START - SDK Initialization
+// setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
     return EncryptedStorage.getItem(key);
@@ -84,6 +88,8 @@ const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
 evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 // IMP END - SDK Initialization
 
+const password = 'Testing@123';
+
 export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [consoleUI, setConsoleUI] = useState<string>('');
@@ -92,8 +98,7 @@ export default function App() {
   );
   const [backupFactorKey, setBackupFactorKey] = useState<string>('');
   const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>(`user${Math.floor(Math.random() * 10000)}@example.com`);
 
   useEffect(() => {
     const init = async () => {
@@ -147,11 +152,11 @@ export default function App() {
         throw new Error('Error in login');
       }
 
-      // IMP START - Login
       const idToken = await loginRes!.user.getIdToken(true);
       uiConsole('idToken', idToken);
       const parsedToken = parseToken(idToken);
 
+      // IMP START - Login
       const LoginParams = {
         verifier,
         verifierId: parsedToken.sub,
@@ -159,9 +164,6 @@ export default function App() {
       } as JWTLoginParams;
 
       await coreKitInstance.loginWithJWT(LoginParams);
-      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-        await coreKitInstance.commitChanges(); // Needed for new accounts
-      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -209,8 +211,9 @@ export default function App() {
     try {
       uiConsole('Enabling MFA, please wait');
 
-      const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      await coreKitInstance.enableMFA({factorKey});
+      // const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
+      const factorKey = generateFactorKey();
+      await coreKitInstance.enableMFA({ factorKey: factorKey.private });
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
@@ -243,20 +246,24 @@ export default function App() {
     }
   };
 
-  // const storeDeviceFactor = async () => {
-  //   try {
-  //     const factorKey = await generateFactorKey();
-  //     await asyncStoreFactor(
-  //       factorKey.private,
-  //       coreKitInstance!,
-  //       asyncStorageKey,
-  //     );
-  //     uiConsole('Stored factor: ', factorKey);
-  //   } catch (error: any) {
-  //     uiConsole(error.message);
-  //   }
-  // };
-
+  // IMP START - Store Device Factor
+  const storeDeviceFactor = async () => {
+    try {
+      const factorKey = await generateFactorKey();
+      await coreKitInstance.createFactor({
+        shareType: TssShareType.DEVICE,
+        factorKey: factorKey.private,
+      });
+      await coreKitInstance.setDeviceFactor(
+        factorKey.private,
+        true,
+      );
+      uiConsole('Stored factor: ', factorKey);
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
+  // IMP END - Store Device Factor
   // IMP START - Export Social Account Factor
   const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
@@ -337,6 +344,30 @@ export default function App() {
     }
   };
 
+
+  // IMP START - Delete Factor
+  const deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      uiConsole('Deleting Social Factor, please wait...', 'Factor Pub:', factorPub);
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      uiConsole('Social Factor deleted');
+    } else {
+      uiConsole('No social factor found to delete');
+    }
+  };
+  // IMP END - Delete Factor
+
   const getUserInfo = async () => {
     // IMP START - Get User Information
     const user = coreKitInstance.getUserInfo();
@@ -350,13 +381,7 @@ export default function App() {
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
-    // Log out from Auth0
     setLoading(false);
-    try {
-      uiConsole('logged out from auth0');
-    } catch (error: any) {
-      uiConsole(error.message);
-    }
     uiConsole('logged out from web3auth');
   };
 
@@ -464,16 +489,19 @@ export default function App() {
   };
 
   const uiConsole = (...args: any) => {
-    setConsoleUI('[LOG]' + JSON.stringify(args) + '\n' + consoleUI);
-    console.log(...args);
+    setConsoleUI(
+      JSON.stringify(args, null, 2) +
+      '\n\n' +
+      consoleUI
+    );
+    console.log(JSON.stringify(args, null, 2));
   };
 
   const loginScreen = (
     <View style={styles.buttonArea}>
-      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
-      <Text style={styles.subHeading}>This is a test example, you can enter a random email & password to create a new account</Text>
+      <Text style={styles.subHeading}>This is a test example, you can enter a random email to create a new account, the constant password is "Testing@123"</Text>
       <View style={styles.section}>
-        <Text>Enter your Email</Text>
+        <Text style={styles.subHeading}>Enter your Email</Text>
         <TextInput
           style={styles.input}
           onChangeText={setEmail}
@@ -482,76 +510,106 @@ export default function App() {
           autoCapitalize="none"
         />
       </View>
-      <View style={styles.section}>
-        <Text>Enter your Password</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setPassword}
-          value={password}
-          secureTextEntry={true}
-          autoCapitalize="none"
-        />
-      </View>
-      <Button title="Register/Login with Web3Auth" onPress={login} />
+      <TouchableOpacity onPress={login} style={styles.button}>
+        <Text style={styles.buttonText}>Register/Login with Web3Auth</Text>
+      </TouchableOpacity>
     </View>
   );
   const recoveryScreen = (
-    <View>
-      <View style={styles.section}>
-        <Button
+    <View style={styles.buttonArea}>
+      <View style={styles.compressedButtons}>
+        <View style={styles.buttonRow}>
+        <TouchableOpacity
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Get Device Factor"
           onPress={() => getDeviceFactor()}
-        />
-        <Button
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Get Device Factor</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Get Social Backup Factor"
           onPress={() => getSocialMFAFactorKey()}
-        />
-      </View>
-      <View style={styles.section}>
-        <Text>Recover Using Mnemonic Factor Key:</Text>
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Get Social Backup Factor</Text>
+        </TouchableOpacity>
+        </View>
+        <View style={styles.buttonRow}>
+        <Text style={styles.subHeading}>Recover Using Mnemonic Factor Key:</Text>
         <TextInput
           style={styles.input}
           onChangeText={setMnemonicFactor}
           value={mnemonicFactor}
         />
-        <Button
+        <TouchableOpacity
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Get Recovery Factor Key using Mnemonic"
           onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
-        />
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Get Mnemonic Factor Key </Text>
+        </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.section}>
-        <Text>Backup/ Device Factor: {backupFactorKey}</Text>
-        <Button
+      <View style={backupFactorKey ?  styles.section : styles.disabledSection}>
+      {backupFactorKey && <Text style={styles.subHeading}>Factor Key: {backupFactorKey}</Text>}
+        <TouchableOpacity
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          title="Input Backup Factor Key"
           onPress={() => inputBackupFactorKey()}
-        />
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Input Backup Factor Key</Text>
+        </TouchableOpacity>
       </View>
-      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+
+
+      <TouchableOpacity onPress={criticalResetAccount} style={styles.button}>
+        <Text style={styles.buttonText}>[CRITICAL] Reset Account</Text>
+      </TouchableOpacity>
     </View>
   );
 
   const loggedInView = (
     <View style={styles.compressedButtons}>
-      <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
-      <Button title="Get User Info" onPress={getUserInfo} />
-      <Button title="Key Details" onPress={keyDetails} />
-      <Button title="Get Accounts" onPress={getAccounts} />
-      <Button title="Get Balance" onPress={getBalance} />
-      <Button title="Sign Message" onPress={signMessage} />
-
-      <Button title="Enable MFA" onPress={enableMFA} />
-      <Button
-        title="Generate Backup (Mnemonic) - CreateFactor"
-        onPress={createMnemonicFactor}
-      />
-      <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
-      {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
-      <Button title="Log Out" onPress={logout} />
-      <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
+      <View style={styles.buttonRow}>
+        <TouchableOpacity onPress={getUserInfo} style={styles.button}>
+          <Text style={styles.buttonText} >Get User Info</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={keyDetails} style={styles.button}>
+          <Text style={styles.buttonText}>Key Details</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={getAccounts} style={styles.button}>
+          <Text style={styles.buttonText}>Get Accounts</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={getBalance} style={styles.button}>
+          <Text style={styles.buttonText}>Get Balance</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={signMessage} style={styles.button}>
+            <Text style={styles.buttonText}>Sign Message</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={logout} style={styles.button}>
+          <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={criticalResetAccount} style={styles.button}>
+          <Text style={styles.buttonText}>[CRITICAL] Reset Account</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity onPress={enableMFA} style={styles.button}>
+          <Text style={styles.buttonText}>Enable MFA</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={createMnemonicFactor} style={styles.button}>
+          <Text style={styles.buttonText}>Generate Backup (Mnemonic) - CreateFactor</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => getDeviceFactor()} style={styles.button}>
+          <Text style={styles.buttonText}>Get Device Factor</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => storeDeviceFactor()} style={styles.button}>
+          <Text style={styles.buttonText}>Store New Device Factor</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => deleteFactor()} style={styles.button}>
+          <Text style={styles.buttonText}>Delete Social Factor</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -565,12 +623,17 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.headingArea}>
+          <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+          {loading && <ActivityIndicator />}
+      </View>
+      <View style={styles.buttonArea}>
       {coreKitStatus === COREKIT_STATUS.LOGGED_IN
         ? loggedInView
-        : unloggedInView}
+          : unloggedInView}
+      </View>
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
-        {loading && <ActivityIndicator />}
         <ScrollView style={styles.consoleUI}>
           <Text>{consoleUI}</Text>
         </ScrollView>
@@ -589,23 +652,21 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 30,
     gap: 10,
+    paddingHorizontal: 10,
   },
   heading: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
   subHeading: {
-    fontSize: 10,
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
   consoleArea: {
-    margin: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    flex: 3,
   },
   consoleUI: {
     flex: 1,
@@ -615,42 +676,82 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width - 60,
   },
   consoleText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
     padding: 10,
   },
   input: {
     padding: 10,
-    width: Dimensions.get('window').width - 60,
+    width: '100%',
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 10,
     margin: 5,
   },
-  buttonArea: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    margin: 20,
-  },
-  compressedButtons: {
-    flex: 3,
+  headingArea: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 20,
+    gap: 10,
+    width: '100%',
+  },
+  buttonArea: {
+    flex: 7,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 10,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  compressedButtons: {
+    alignItems: 'stretch',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    width: '100%',
   },
   disabledSection: {
     opacity: 0.5,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#EEEEEE',
-    padding: 20,
+    margin: 5,
+    padding: 5,
     borderRadius: 10,
+    width:' 100%',
   },
   section: {
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: '#EEEEEE',
-    padding: 10,
     margin: 5,
+    padding: 5,
     borderRadius: 10,
+    width: '100%',
+    gap: 1,
+  },
+  buttonRow: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: 10,
+    flex: 1,
+    backgroundColor: '#EEEEEE',
+    margin: 5,
+    padding: 5,
+    borderRadius: 10,
+  },
+  button: {
+    width: '100%',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    backgroundColor: '#007bff',
+  },
+  buttonText: {
+    fontSize: 15,
+    color: '#fff',
+    textAlign: 'center',
   },
 });
