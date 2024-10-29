@@ -39,11 +39,13 @@ function App() {
   };
 
   useEffect(() => {
-    const newBgColor = isDarkMode ? "#1a1a1a" : "#ffffff";
-    const newTextColor = isDarkMode ? "#ffffff" : "#333333";
-    document.documentElement.style.setProperty("--bg-color", newBgColor);
-    document.documentElement.style.setProperty("--text-color", newTextColor);
-    document.documentElement.classList.toggle("dark-mode", isDarkMode);
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark-mode");
+      document.body.classList.add("dark-mode");
+    } else {
+      document.documentElement.classList.remove("dark-mode");
+      document.body.classList.remove("dark-mode");
+    }
   }, [isDarkMode]);
 
   useEffect(() => {
@@ -168,25 +170,14 @@ function App() {
             {isDarkMode ? <Sun className="text-yellow-500" /> : <Moon className="text-gray-700" />}
           </button>
         </div>
-        <h4 className="title">Telegram MiniApp Demo</h4>
-      </div>
+        <div className="title">
+          <h4>Web3Auth Telegram MiniApp</h4>
+        </div>
 
-      <div className="description">
-        <p>
-          Seamlessly generate a blockchain wallet with Web3Auth right inside Telegram. This demo shows a wallet for the TON blockchain, but it's fully
-          adaptable for any other chain. No extra steps—just connect and go!
-        </p>
+        <div className="description">
+          <p>Seamless wallet access on any chain with Telegram. Just one click, and you're in!</p>
+        </div>
       </div>
-
-      <div className="how-it-works">
-        <h3>How It Works</h3>
-        <ul>
-          <li>Your Telegram account authenticates you securely, creating an embedded wallet.</li>
-          <li>The wallet is available across both desktop and mobile Telegram clients.</li>
-          <li>Your wallet stays accessible whenever you log in with Telegram—no setup needed each time.</li>
-        </ul>
-      </div>
-
       {isLoggingIn ? (
         <Loading />
       ) : (
