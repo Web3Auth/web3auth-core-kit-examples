@@ -1,28 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-color: #ffffff;
-  --text-color: #333333;
+  --bg-color: #f8faff;
+  --text-color: #1a1b25;
   --border-color: #e0e0e0;
   --hover-bg: rgba(0, 0, 0, 0.05);
-  --box-shadow: rgba(0, 0, 0, 0.1);
+  --box-shadow: rgba(0, 0, 0, 0.08);
+  --card-bg: #ffffff;
 }
 
-.dark-mode {
-  --bg-color: #1a1a1a;
+:root.dark-mode {
+  --bg-color: #0F1221;
   --text-color: #ffffff;
-  --border-color: #333333;
+  --border-color: #2a2d3d;
   --hover-bg: rgba(255, 255, 255, 0.1);
-  --box-shadow: rgba(0, 0, 0, 0.2);
+  --box-shadow: rgba(0, 0, 0, 0.3);
+  --card-bg: #1A1F35;
 }
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
   margin: 0;
   padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+body:not(.dark-mode) {
+  background: linear-gradient(135deg, #f5f7ff 0%, #eef1ff 100%);
+}
+
+body.dark-mode {
+  background: #0F1221;
 }
 
 .container {
@@ -30,7 +41,6 @@ body {
   max-width: 600px;
   margin: auto;
   padding: 20px;
-  background-color: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -39,24 +49,27 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 12px;
+  margin-bottom: 40px;
   position: relative;
   width: 100%;
+  padding-top: 10px;
 }
 
 .logo-container {
   position: relative;
   width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
 }
 
 .web3auth-logo {
-  width: 150px;
+  width: 180px;
   height: auto;
   margin: 0 auto;
+  filter: drop-shadow(0 2px 4px var(--box-shadow));
 }
 
 .theme-toggle {
@@ -66,13 +79,14 @@ body {
   transform: translateY(-50%);
   padding: 8px;
   border-radius: 50%;
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
-  background-color: var(--bg-color);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  margin-right: 10px;
 }
 
 .theme-toggle:hover {
@@ -86,18 +100,28 @@ body {
 }
 
 .title {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   margin: 0;
-  color: var(--text-color);
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, #66D4F6, #4D92FF, #BB65FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .description {
-  font-size: 1rem;
-  font-weight: 400;
-  margin: 10px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 16px 0 24px 0;
   text-align: center;
   color: var(--text-color);
+  opacity: 0.9;
+  max-width: 500px;
+  padding: 0 20px;
 }
 
 .how-it-works {
@@ -133,9 +157,9 @@ body {
   padding: 20px;
   margin: 0;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background-color: var(--bg-color);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px var(--box-shadow);
   width: 100%;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -154,6 +178,19 @@ body {
   background-color: var(--hover-bg);
   border-color: var(--text-color);
   transform: translateY(-2px);
+}
+
+.dark-mode .user-info-box,
+.dark-mode .info-box {
+  background: #1A1F35;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .info-box:hover,
+.dark-mode .learn-more-button:hover,
+.dark-mode .theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .user-info {
@@ -253,14 +290,21 @@ body {
   border-radius: 8px;
   text-decoration: none;
   transition: all 0.3s ease;
-  background-color: var(--bg-color);
   color: var(--text-color);
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--box-shadow);
 }
 
 .learn-more-button:hover {
   background-color: var(--hover-bg);
   border-color: var(--text-color);
+}
+
+.dark-mode .learn-more-button,
+.dark-mode .theme-toggle {
+  background: #1A1F35;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
@@ -274,7 +318,10 @@ body {
   }
 
   .web3auth-logo {
-    width: 120px;
+    width: 180px;
+    height: auto;
+    margin: 0 auto;
+    filter: drop-shadow(0 2px 4px var(--box-shadow));
   }
 
   .user-info-box {
