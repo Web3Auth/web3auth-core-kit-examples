@@ -9,7 +9,7 @@ export default async function handler(req, res) {
  
  bot.command('start', async (ctx) => {
    await ctx.reply(
-`Welcome to Web3Auth MiniApp! 🌟
+`Welcome to Web3Auth Telegram MiniApp! 🌟  
 
 Experience blockchain wallets reimagined inside Telegram! Our demo showcases integration with the TON blockchain, but that's just the beginning - the same seamless experience can be adapted for any blockchain network.
 
@@ -23,7 +23,7 @@ Ready to experience the future of Web3 authentication?`,
        reply_markup: {
          inline_keyboard: [[
            {
-             text: "Launch Web3Auth MiniApp 🚀",
+             text: "Launch Web3Auth Telegram MiniApp 🚀",
              web_app: { url: process.env.APP_URL }
            }
          ]]
