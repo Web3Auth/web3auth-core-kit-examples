@@ -240,7 +240,7 @@ function App() {
           rel="noopener noreferrer"
           className="learn-more-button"
         >
-          Wanna learn how to create this bot?
+          Telegram MiniApp Setup Guide
         </a>
       </footer>
     </div>
