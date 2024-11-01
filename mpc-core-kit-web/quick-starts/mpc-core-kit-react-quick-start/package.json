@@ -8,7 +8,7 @@
     "@react-oauth/google": "^0.12.1",
     "@tkey/common-types": "^15.0.2",
     "@toruslabs/tss-dkls-lib": "^4.0.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^22.8.6",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
