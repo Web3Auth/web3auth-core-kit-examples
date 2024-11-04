@@ -50,11 +50,7 @@ struct UserDetailView: View {
                     
                     Section {
                         Button {
-                            Task.detached {
-                                await MainActor.run(body: {
-                                    loggedIn.toggle()
-                                })
-                            }
+                            viewModel.logout()
                         } label: {
                             Label("Logout", systemImage: "arrow.left.square.fill")
                                 .foregroundColor(.red)

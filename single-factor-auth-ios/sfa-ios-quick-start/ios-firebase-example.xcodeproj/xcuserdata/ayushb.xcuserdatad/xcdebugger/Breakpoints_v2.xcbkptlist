@@ -78,8 +78,8 @@
             filePath = "ios-firebase-example/ViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "getBalance()"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,72 +94,10 @@
             filePath = "ios-firebase-example/ViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
             landmarkName = "getBalance()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "11A581EC-7342-4083-BDBF-4518CF1F3714 - 8c89ff134483e103"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async -&gt; () in ios_firebase_example.ViewModel.getBalance() -&gt; ()"
-                  moduleName = "ios-firebase-example"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/single-factor-auth-ios/sfa-ios-quick-start/ios-firebase-example/ViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "86"
-                  endingLineNumber = "86"
-                  offsetFromSymbolStart = "180">
-               </Location>
-               <Location
-                  uuid = "11A581EC-7342-4083-BDBF-4518CF1F3714 - d10c938ffe7cb84d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for closure #1 @Sendable () async -&gt; () in ios_firebase_example.ViewModel.getBalance() -&gt; ()"
-                  moduleName = "ios-firebase-example"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/single-factor-auth-ios/sfa-ios-quick-start/ios-firebase-example/ViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "86"
-                  endingLineNumber = "86"
-                  offsetFromSymbolStart = "36">
-               </Location>
-               <Location
-                  uuid = "11A581EC-7342-4083-BDBF-4518CF1F3714 - df3bf7da8f306907"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for closure #1 @Sendable () async -&gt; () in ios_firebase_example.ViewModel.getBalance() -&gt; ()"
-                  moduleName = "ios-firebase-example"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/single-factor-auth-ios/sfa-ios-quick-start/ios-firebase-example/ViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "86"
-                  endingLineNumber = "86"
-                  offsetFromSymbolStart = "28">
-               </Location>
-               <Location
-                  uuid = "11A581EC-7342-4083-BDBF-4518CF1F3714 - a31b615feaca41ab"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #1 @Sendable () async -&gt; () in ios_firebase_example.ViewModel.getBalance() -&gt; ()"
-                  moduleName = "ios-firebase-example"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/single-factor-auth-ios/sfa-ios-quick-start/ios-firebase-example/ViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "86"
-                  endingLineNumber = "86"
-                  offsetFromSymbolStart = "40">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
