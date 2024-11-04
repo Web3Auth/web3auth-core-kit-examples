@@ -3,11 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
-		"@toruslabs/tss-dkls-lib": "^4.0.0",
+		"@toruslabs/tss-dkls-lib": "^4.1.0",
 		"@vitejs/plugin-react": "^4.3.2",
-		"@web3auth/ethereum-mpc-provider": "^9.0.2",
-		"@web3auth/mpc-core-kit": "3.2.3",
-		"@web3auth/single-factor-auth": "^9.0.0",
+		"@web3auth/base": "^9.3.0",
+		"@web3auth/ethereum-mpc-provider": "^9.3.0",
+		"@web3auth/mpc-core-kit": "3.2.4",
 		"bn.js": "^5.2.1",
 		"eccrypto": "^1.1.6",
 		"firebase": "^10.14.0",
@@ -20,10 +20,10 @@
 		"web3": "^4.13.0"
 	},
 	"scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "serve": "vite preview"
-  },
+		"start": "vite",
+		"build": "tsc && vite build",
+		"serve": "vite preview"
+	},
 	"eslintConfig": {
 		"extends": [
 			"react-app",

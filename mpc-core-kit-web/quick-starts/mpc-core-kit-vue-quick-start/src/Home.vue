@@ -86,12 +86,9 @@ import {
   FactorKeyTypeShareDescription,
 } from "@web3auth/mpc-core-kit";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Point, secp256k1 } from "@tkey/common-types";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
-// Optional, only for social second factor recovery
-import {Web3Auth as Web3AuthSingleFactorAuth} from "@web3auth/single-factor-auth";
-import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 // IMP END - Quick Start
 import Web3 from "web3";
 import { BN } from "bn.js";
@@ -249,51 +246,46 @@ export default {
     };
     // IMP END - Recover MFA Enabled Account
 
-    // IMP START - Export Social Account Factor
-    const getSocialMFAFactorKey = async (): Promise<string> => {
-      try {
-        // Initialise the Web3Auth SFA SDK
-        // You can do this on the constructor as well for faster experience
-        const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
+  // IMP START - Export Social Account Factor
+  const getSocialMFAFactorKey = async (): Promise<string> => {
+    try {
+      // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
+      const tempCoreKitInstance = new Web3AuthMPCCoreKit({
+        web3AuthClientId,
+        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+        storage: window.localStorage,
+        tssLib,
+      });
 
-        const web3authSfa = new Web3AuthSingleFactorAuth({
-          clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
-          web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-          privateKeyProvider,
-          usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
-        });
-        
-        await web3authSfa.init();
+      await tempCoreKitInstance.init();
 
-        if (web3authSfa.status !== ADAPTER_EVENTS.CONNECTED) {
         // Login using Firebase Email Password
         const auth = getAuth(app);
         const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        console.log(res);
+        uiConsole(res);
         const idToken = await res.user.getIdToken(true);
         const userInfo = parseToken(idToken);
 
         // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await web3authSfa.connect({
+        await tempCoreKitInstance.loginWithJWT({
           verifier,
           verifierId: userInfo.sub,
           idToken,
         });
-      }
+      
 
-        // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-        const factorKey = await web3authSfa!.provider!.request({
-          method: "private_key",
-        });
-        uiConsole("Social Factor Key: ", factorKey);
-        backupFactorKey.value = factorKey! as string;
-        return factorKey as string;
-      } catch (err) {
-        uiConsole(err);
-        return "";
-      }
-    };
-    // IMP END - Export Social Account Factor
+      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+      const factorKey = await tempCoreKitInstance.state.postBoxKey;
+      uiConsole("Social Factor Key: ", factorKey);
+      backupFactorKey.value = factorKey! as string;
+      tempCoreKitInstance.logout();
+      return factorKey as string;
+    } catch (err) {
+      uiConsole(err);
+      return "";
+    }
+  };
+  // IMP END - Export Social Account Factor
 
     // IMP START - Enable Multi Factor Authentication
     const enableMFA = async () => {

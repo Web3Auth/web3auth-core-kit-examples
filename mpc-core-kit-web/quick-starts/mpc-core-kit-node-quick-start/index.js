@@ -12,8 +12,6 @@ const {
   FactorKeyTypeShareDescription,
 } = require("@web3auth/mpc-core-kit");
 const { CHAIN_NAMESPACES } = require("@web3auth/base");
-const { CommonPrivateKeyProvider } = require("@web3auth/base-provider");
-const { Web3Auth } = require("@web3auth/node-sdk");
 const { Point, secp256k1 } = require("@tkey/common-types");
 // IMP END - Quick Start
 
@@ -194,13 +192,21 @@ const signMessage = async (message) => {
 // IMP START - Export Social Account Factor
 const getSocialMFAFactorKey = async () => {
   try {
-    const web3auth = new Web3Auth({
-      clientId: web3AuthClientId,
-      web3AuthNetwork: "sapphire_mainnet", // Get your Network ID from Web3Auth Dashboard
+    // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
+    const tempCoreKitInstance = new Web3AuthMPCCoreKit({
+      web3AuthClientId,
+      web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+      storage: {
+        getItem: async (key) => getItem(key),
+        setItem: async (key, value) => setItem(key, value),
+        removeItem: async (key) => removeItem(key),
+      },
+      tssLib,
+      baseUrl: "http://localhost",
+      uxMode: "nodejs",
     });
-    const privateKeyProvider = new CommonPrivateKeyProvider({ config: { chainConfig } });
 
-    web3auth.init({ provider: privateKeyProvider });
+    await tempCoreKitInstance.init();
 
     const app = initializeApp({
       apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
@@ -211,24 +217,28 @@ const getSocialMFAFactorKey = async () => {
       appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
     });
 
-    const auth = getAuth(app);
-    const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-    const idToken = await res.user.getIdToken(true);
-    const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      console.log(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-    const web3authProvider = await web3auth.connect({
-      verifier: "w3a-firebase-demo",
-      verifierId: userInfo.sub,
-      idToken,
-    });
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier: "w3a-firebase-demo",
+        verifierId: userInfo.sub,
+        idToken,
+      });
+    
 
-    const factorKey = await web3authProvider.request({
-      method: "private_key",
-    });
-
+    // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+    const factorKey = await tempCoreKitInstance.state.postBoxKey;
+    console.log("Social Factor Key: ", factorKey);
+    tempCoreKitInstance.logout();
     return factorKey;
   } catch (err) {
-    console.error(err);
+    console.log(err);
     return "";
   }
 };
@@ -313,7 +323,7 @@ const initAndLogin = async () => {
 
     const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
 
-    console.log("\x1b[33m%s\x1b[0m", "Social Factor Key:", socialFactorKey.toString("hex"));
+    console.log("\x1b[33m%s\x1b[0m", "Social Factor Key:", factorKey.toString("hex"));
 
     await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
     await coreKitInstance.commitChanges();
