@@ -5,8 +5,11 @@ const dotenv = require("dotenv");
 const path = require("path");
 const { AuthDataValidator } = require("@telegram-auth/server");
 const { objectToAuthDataMap } = require("@telegram-auth/server/utils");
-const { Web3Auth } = require("@web3auth/node-sdk");
+// IMP START - Quick Start
+const {Web3Auth, SDK_MODE} = require('@web3auth/single-factor-auth');
+const {CHAIN_NAMESPACES, WEB3AUTH_NETWORK} = require('@web3auth/base');
 const { EthereumPrivateKeyProvider } = require("@web3auth/ethereum-provider");
+// IMP END - Quick Start
 
 dotenv.config();
 
@@ -16,36 +19,46 @@ const { TELEGRAM_BOT_NAME, TELEGRAM_BOT_TOKEN, SERVER_URL, CLIENT_URL, JWT_KEY_I
 const TELEGRAM_BOT_CALLBACK = `${SERVER_URL}/callback`;
 const privateKey = fs.readFileSync(path.resolve(__dirname, "privateKey.pem"), "utf8");
 
+// IMP START - Dashboard Registration
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // Get your Client ID from Web3Auth Dashboard
+// IMP END - Dashboard Registration
+
+// IMP START - SDK Initialization
+const chainConfig = {
+  chainId: '0x1',
+  displayName: 'Ethereum Mainnet',
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  tickerName: 'Ethereum',
+  ticker: 'ETH',
+  decimals: 18,
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  blockExplorerUrl: 'https://etherscan.io',
+  logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+};
+
 const privateKeyProvider = new EthereumPrivateKeyProvider({
-    config: {
-        chainConfig: {
-            chainId: "0xaa36a7",
-            rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-            displayName: "Sepolia",
-            blockExplorer: "https://sepolia.etherscan.io/",
-            ticker: "ETH",
-            tickerName: "Ethereum",
-        },
-    },
+  config: {chainConfig},
 });
 
 const web3auth = new Web3Auth({
-    clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ", // Get your Client ID from the Web3Auth Dashboard
-    web3AuthNetwork: "sapphire_mainnet",
-    usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+  mode: SDK_MODE.NODE,
 });
-web3auth.init({ provider: privateKeyProvider });
+// IMP END - SDK Initialization
 
 const getPrivateKey = async (idToken, verifierId) => {
-    const web3authNodeprovider = await web3auth.connect({
+  await web3auth.init();
+  await web3auth.connect({
         verifier: W3A_VERIFIER_NAME || "w3a-telegram-demo",
         verifierId,
         idToken,
     });
 
     // The private key returned here is the CoreKitKey
-    const ethPrivateKey = await web3authNodeprovider.request({ method: "eth_private_key" });
-    const ethPublicAddress = await web3authNodeprovider.request({ method: "eth_accounts" });
+    const ethPrivateKey = await web3auth.provider.request({ method: "eth_private_key" });
+    const ethPublicAddress = await web3auth.provider.request({ method: "eth_accounts" });
     const ethData = {
         ethPrivateKey,
         ethPublicAddress,

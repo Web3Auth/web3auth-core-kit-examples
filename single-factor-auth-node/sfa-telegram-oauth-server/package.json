@@ -2,6 +2,10 @@
   "author": "",
   "dependencies": {
     "@telegram-auth/server": "^1.0.3",
+    "@web3auth/base": "^9.3.0",
+    "@web3auth/ethereum-provider": "^9.3.0",
+    "@web3auth/single-factor-auth": "^9.2.0",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^8.5.1"
   },
