@@ -16,8 +16,8 @@ module.exports = (async () => {
         os: require.resolve('empty-module'), // os-browserify can be polyfilled here if needed
         url: require.resolve('empty-module'), // url can be polyfilled here if needed
         zlib: require.resolve('empty-module'), // browserify-zlib can be polyfilled here if needed
-        process: require.resolve('process'),
-        crypto: require.resolve('crypto-browserify'),
+        process: require.resolve('empty-module'),
+        crypto: require.resolve('empty-module'),
         stream: require.resolve('stream-browserify'),
       },
 

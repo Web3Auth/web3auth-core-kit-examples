@@ -34,9 +34,6 @@ import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {tssLib, Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
-// Use for social factor (optional)
-import Web3Auth from '@web3auth/single-factor-auth-react-native';
-import {CommonPrivateKeyProvider} from '@web3auth/base-provider';
 import { Point, secp256k1 } from '@tkey/common-types';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
@@ -211,9 +208,8 @@ export default function App() {
     try {
       uiConsole('Enabling MFA, please wait');
 
-      // const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      const factorKey = generateFactorKey();
-      await coreKitInstance.enableMFA({ factorKey: factorKey.private });
+      const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
+      await coreKitInstance.enableMFA({ factorKey });
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
@@ -264,20 +260,21 @@ export default function App() {
     }
   };
   // IMP END - Store Device Factor
+
   // IMP START - Export Social Account Factor
   const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
-      // Initialise the Web3Auth SFA SDK
-      // You can do this on the constructor as well for faster experience
-      const web3authSfa = new Web3Auth(EncryptedStorage, {
-        clientId: web3AuthClientId, // Get your Client ID from Web3Auth Dashboard
+      // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
+      const tempCoreKitInstance = new Web3AuthMPCCoreKit({
+        web3AuthClientId,
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-        usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
+        uxMode: 'react-native',
+        tssLib, // tss lib bridge for react native
+        manualSync: true, // This is the recommended approach
+        storage: asyncStorageKey, // Add the storage property
       });
-      const privateKeyProvider = new CommonPrivateKeyProvider({
-        config: {chainConfig},
-      });
-      await web3authSfa.init(privateKeyProvider);
+
+      await tempCoreKitInstance.init();
 
       // Login using Firebase Email Password
       const res = await auth().signInWithEmailAndPassword(
@@ -287,20 +284,18 @@ export default function App() {
       console.log(res);
       const idToken = await res.user.getIdToken(true);
       const userInfo = parseToken(idToken);
-
-      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-      const web3authProvider = await web3authSfa.connect({
-        verifier,
-        verifierId: userInfo.sub,
-        idToken,
-      });
+        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+        await tempCoreKitInstance.loginWithJWT({
+          verifier,
+          verifierId: userInfo.sub,
+          idToken,
+        });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await web3authProvider!.request({
-        method: 'private_key',
-      });
+      const factorKey = await tempCoreKitInstance.state.postBoxKey;
       uiConsole('Social Factor Key: ', factorKey);
       setBackupFactorKey(factorKey as string);
+      tempCoreKitInstance.logout();
       return factorKey as string;
     } catch (err) {
       uiConsole(err);

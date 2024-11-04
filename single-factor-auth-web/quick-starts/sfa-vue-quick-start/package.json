@@ -9,9 +9,9 @@
   },
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
-    "@web3auth/base": "^9.0.2",
-    "@web3auth/ethereum-provider": "^9.0.2",
-    "@web3auth/single-factor-auth": "^9.0.0",
+    "@web3auth/base": "^9.3.0",
+    "@web3auth/ethereum-provider": "^9.3.0",
+    "@web3auth/single-factor-auth": "^9.2.0",
     "@babel/plugin-transform-private-methods": "^7.24.7",
     "core-js": "^3.38.1",
     "ethers": "^6.13.2",
