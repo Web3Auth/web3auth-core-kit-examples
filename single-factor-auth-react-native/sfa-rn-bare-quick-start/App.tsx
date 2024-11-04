@@ -44,7 +44,7 @@ async function signInWithEmailPassword() {
 }
 // IMP END - Auth Provider Login
 
-// IMP START - SDK Initialization
+// IMP START - Chain Config
 const chainConfig = {
   chainId: '0x1',
   displayName: 'Ethereum Mainnet',
@@ -56,7 +56,9 @@ const chainConfig = {
   blockExplorerUrl: 'https://etherscan.io',
   logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 };
+// IMP END - Chain Config
 
+// IMP START - SDK Initialization
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: {chainConfig},
 });
