@@ -1,5 +1,9 @@
 global.Buffer = require('buffer').Buffer;
 
+import { install } from "react-native-quick-crypto";
+
+install();
+
 // Needed so that 'stream-http' chooses the right default protocol.
 global.location = {
   protocol: 'file:',

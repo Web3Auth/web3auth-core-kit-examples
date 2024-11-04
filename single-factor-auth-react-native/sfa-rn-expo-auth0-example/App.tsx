@@ -1,5 +1,4 @@
 import '@ethersproject/shims';
-import { decode as atob } from "base-64";
 import React, {useEffect, useState} from 'react';
 import {
   Button,
@@ -10,9 +9,9 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import {IProvider} from '@web3auth/base';
+import {CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK} from '@web3auth/base';
 
-import Web3Auth from '@web3auth/single-factor-auth-react-native';
+import {Web3Auth, SDK_MODE, decodeToken} from '@web3auth/single-factor-auth';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 import * as SecureStore from "expo-secure-store";
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
@@ -24,22 +23,26 @@ const clientId =
 const verifier = 'w3a-auth0-demo';
 
 const chainConfig = {
-  chainId: '0x1', // Please use 0x1 for Mainnet
-  rpcTarget: 'https://rpc.ankr.com/eth',
+  chainId: '0x1',
   displayName: 'Ethereum Mainnet',
-  blockExplorer: 'https://etherscan.io/',
-  ticker: 'ETH',
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
   tickerName: 'Ethereum',
+  ticker: 'ETH',
+  decimals: 18,
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  blockExplorerUrl: 'https://etherscan.io',
+  logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 };
-
-const web3auth = new Web3Auth(SecureStore, {
-  clientId,
-  web3AuthNetwork: 'sapphire_mainnet',
-  usePnPKey: false, // By default, this sdk returns CoreKitKey
-});
-
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: {chainConfig},
+});
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+  storage: SecureStore,
+  mode: SDK_MODE.REACT_NATIVE,
 });
 
 const Home = () => {
@@ -52,12 +55,12 @@ const Home = () => {
   useEffect(() => {
     async function init() {
       try {
-        await web3auth.init(privateKeyProvider);
+        await web3auth.init();
 
-        if (web3auth.sessionId) {
+        if (web3auth.connected) {
           setProvider(web3auth.provider);
           setLoggedIn(true);
-          uiConsole('Logged In', web3auth.sessionId);
+          uiConsole('Logged In');
         }
       } catch (error) {
         uiConsole(error, 'mounted caught');
@@ -90,17 +93,6 @@ const Home = () => {
     }
   };
 
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace('-', '+').replace('_', '/');
-      return JSON.parse(atob(base64 || ''));
-    } catch (err) {
-      uiConsole(err);
-      return null;
-    }
-  };
-
   const login = async () => {
     try {
       setConsoleUI("Logging in");
@@ -108,11 +100,11 @@ const Home = () => {
       const idToken = await signInWithAuth0();
       uiConsole("idToken", idToken);
 
-      const parsedToken = parseToken(idToken);
+      const parsedToken = decodeToken(idToken);
       setUserInfo(parsedToken);
 
-      const verifierId = parsedToken.sub;
-      const provider = await web3auth!.connect({
+      const verifierId = parsedToken.payload.sub;
+      await web3auth!.connect({
         verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
         verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
         idToken,
@@ -121,6 +113,7 @@ const Home = () => {
       setLoading(false);
       if (web3auth.connected) {
         setLoggedIn(true);
+        setProvider(web3auth.provider);
         uiConsole('Logged In');
       }
     } catch (e) {
