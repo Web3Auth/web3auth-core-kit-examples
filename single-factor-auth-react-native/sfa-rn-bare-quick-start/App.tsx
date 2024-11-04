@@ -13,11 +13,10 @@ import '@ethersproject/shims';
 import auth from '@react-native-firebase/auth';
 // IMP END - Auth Provider Login
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {decode as atob} from 'base-64';
-import {IProvider} from '@web3auth/base';
+import {CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK} from '@web3auth/base';
 
 // IMP START - Quick Start
-import Web3Auth from '@web3auth/single-factor-auth-react-native';
+import {Web3Auth, SDK_MODE, decodeToken} from '@web3auth/single-factor-auth';
 import {EthereumPrivateKeyProvider} from '@web3auth/ethereum-provider';
 // IMP END - Quick Start
 import {ethers} from 'ethers';
@@ -47,21 +46,27 @@ async function signInWithEmailPassword() {
 
 // IMP START - SDK Initialization
 const chainConfig = {
-  chainId: '0x1', // Please use 0x1 for Mainnet
-  rpcTarget: 'https://rpc.ankr.com/eth',
+  chainId: '0x1',
   displayName: 'Ethereum Mainnet',
-  blockExplorer: 'https://etherscan.io/',
-  ticker: 'ETH',
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
   tickerName: 'Ethereum',
+  ticker: 'ETH',
+  decimals: 18,
+  rpcTarget: 'https://rpc.ankr.com/eth',
+  blockExplorerUrl: 'https://etherscan.io',
+  logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 };
-
-const web3auth = new Web3Auth(EncryptedStorage, {
-  clientId, // Get your Client ID from Web3Auth Dashboard
-  web3AuthNetwork: 'sapphire_mainnet',
-});
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
   config: {chainConfig},
+});
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+  storage: EncryptedStorage,
+  mode: SDK_MODE.REACT_NATIVE,
 });
 // IMP END - SDK Initialization
 
@@ -76,7 +81,7 @@ export default function App() {
     const init = async () => {
       try {
         // IMP START - SDK Initialization
-        await web3auth.init(privateKeyProvider);
+        await web3auth.init();
         setProvider(web3auth.provider);
         // IMP END - SDK Initialization
 
@@ -91,20 +96,8 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const parseToken = (token: any) => {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace('-', '+').replace('_', '/');
-      return JSON.parse(atob(base64 || ''));
-    } catch (err) {
-      uiConsole(err);
-      return null;
-    }
-  };
-
   const login = async () => {
     try {
-      setConsoleUI('Logging in');
       setLoading(true);
       // IMP START - Auth Provider Login
       const loginRes = await signInWithEmailPassword();
@@ -114,11 +107,12 @@ export default function App() {
       const idToken = await loginRes!.user.getIdToken(true);
       // IMP END - Login
       uiConsole('idToken', idToken);
-      const parsedToken = parseToken(idToken);
+      const parsedToken = decodeToken(idToken);
+      uiConsole('parsed token', parsedToken);
       setUserInfo(parsedToken);
 
       // IMP START - Login
-      const verifierId = parsedToken.sub;
+      const verifierId = parsedToken.payload.sub;
       await web3auth!.connect({
         verifier, // e.g. `web3auth-sfa-verifier` replace with your verifier name, and it has to be on the same network passed in init().
         verifierId, // e.g. `Yux1873xnibdui` or `name@email.com` replace with your verifier id(sub or email)'s value.
