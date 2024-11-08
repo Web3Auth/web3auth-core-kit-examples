@@ -3,6 +3,7 @@
 package com.example.androidsfaexample
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -20,18 +21,18 @@ import com.google.gson.Gson
 // IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
 import com.web3auth.singlefactorauth.types.LoginParams
-import com.web3auth.singlefactorauth.types.SFAParams
-import com.web3auth.singlefactorauth.types.SFAKey
+import com.web3auth.singlefactorauth.types.SessionData
+import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
 // IMP END - Quick Start
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var singleFactorAuth: SingleFactorAuth
-    private lateinit var singleFactorAuthArgs: SFAParams
+    private lateinit var web3AuthOptions: Web3AuthOptions
     private lateinit var loginParams: LoginParams
-    private var torusKey: SFAKey? = null
+    private var torusKey: String? = null
+    private var sessionData: SessionData? = null
     // IMP START - Auth Provider Login
     private lateinit var auth: FirebaseAuth
     // IMP END - Auth Provider Login
@@ -43,11 +44,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
-        singleFactorAuthArgs = SFAParams(
+        web3AuthOptions = Web3AuthOptions(
+            "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
             Web3AuthNetwork.MAINNET,
-            "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA"
+            40
         )
-        singleFactorAuth = SingleFactorAuth(singleFactorAuthArgs, this.applicationContext)
+
+        val context: Context = this.applicationContext
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
         // IMP END - Initialize Web3Auth SFA
 
 
@@ -56,16 +60,21 @@ class MainActivity : AppCompatActivity() {
         signInButton.setOnClickListener { signIn() }
 
         val signOutButton = findViewById<Button>(R.id.signOut)
-        signOutButton.setOnClickListener { signOut() }
-
+        signOutButton.setOnClickListener { signOut(this.applicationContext) }
+        singleFactorAuth.getSessionData()
         val torusKeyCF = singleFactorAuth.initialize(this.applicationContext)
-        torusKeyCF.whenComplete { key, error ->
+        Log.i("Is connected",singleFactorAuth.isConnected().toString())
+        torusKeyCF.whenComplete { sessionData, error ->
             if (error != null) {
                 Log.e("Initialize Error", error.toString())
-            } else {
-                torusKey = key
-                publicAddress = torusKey!!.getPublicAddress()
-                println("""Private Key: ${torusKey!!.getPrivateKey()}""".trimIndent())
+            } else if (sessionData == null) {
+                Log.e("Initialize", "No active session found")
+            } else  {
+                this.sessionData = sessionData
+                torusKey = sessionData.privateKey
+                publicAddress = sessionData.publicAddress
+                Log.i("Private Key", torusKey!!.trimIndent())
+                Log.i("User Info", sessionData.userInfo.toString())
                 reRender()
             }
         }
@@ -100,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                             // IMP END - Verifier Creation
                             try {
                                 // IMP START - Get Key
-                                torusKey = singleFactorAuth.connect(
+                                sessionData = singleFactorAuth.connect(
                                     loginParams,
                                     this.applicationContext,
                                 )
@@ -110,11 +119,14 @@ class MainActivity : AppCompatActivity() {
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
-                            publicAddress = torusKey!!.getPublicAddress()
-                            println("""Private Key: ${torusKey?.getPrivateKey()}""".trimIndent())
-                            println("""Public Address: $publicAddress""".trimIndent())
+                            torusKey = sessionData!!.privateKey
+                            publicAddress = sessionData!!.publicAddress
+                            Log.i("Private Key:", torusKey!!.trimIndent())
+                            Log.i("Public Address:", publicAddress.trimIndent())
+                            Log.i("User Info", sessionData!!.userInfo.toString())
+                            println(sessionData!!.signatures!!.sessionAuthKey)
                             reRender()
-                        };
+                        }
                     }
                 } else {
                     // If sign in fails, display a message to the user.
@@ -127,9 +139,10 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun signOut() {
+    private fun signOut(context: Context) {
         publicAddress = ""
         Firebase.auth.signOut()
+        singleFactorAuth.logout(context)
         reRender()
     }
 
