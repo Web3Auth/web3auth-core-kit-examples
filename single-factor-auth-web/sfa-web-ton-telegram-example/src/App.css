@@ -300,3 +300,18 @@ body {
    margin-top: 12px;
  }
 }
+
+.breathing-outline {
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  animation: breathing 1.5s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+}
