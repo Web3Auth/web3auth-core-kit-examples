@@ -13,7 +13,7 @@
     "@types/axios": "^0.14.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.11.6",
+    "@types/node": "^22.9.0",
     "@web3auth/base": "^9.3.0",
     "@web3auth/ethereum-provider": "^9.3.0",
     "@web3auth/single-factor-auth": "^9.2.0",
