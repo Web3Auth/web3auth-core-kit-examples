@@ -301,17 +301,89 @@ body {
  }
 }
 
+/* Add these styles at the end of your App.css */
+
 .breathing-outline {
-  border: 2px dashed rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  animation: breathing 1.5s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--card-bg);
 }
 
-@keyframes breathing {
-  0%, 100% {
-    border-color: rgba(0, 0, 0, 0.2);
+.breathing-outline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(102, 212, 246, 0.1) 25%,
+    rgba(77, 146, 255, 0.1) 50%,
+    rgba(187, 101, 255, 0.1) 75%,
+    transparent 100%
+  );
+  animation: shimmer 2s infinite linear;
+}
+
+.dark-mode .breathing-outline::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(102, 212, 246, 0.05) 25%,
+    rgba(77, 146, 255, 0.05) 50%,
+    rgba(187, 101, 255, 0.05) 75%,
+    transparent 100%
+  );
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(0);
   }
-  50% {
-    border-color: rgba(0, 0, 0, 0.5);
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.breathing-outline .ellipsed-text,
+.breathing-outline .user-info p {
+  position: relative;
+  overflow: hidden;
+}
+
+.breathing-outline .ellipsed-text::after,
+.breathing-outline .user-info p::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card-bg);
+  border-radius: 4px;
+}
+
+/* Loading text placeholder styles */
+.loading-placeholder {
+  height: 1em;
+  background: linear-gradient(
+    90deg,
+    var(--border-color) 0%,
+    var(--hover-bg) 50%,
+    var(--border-color) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading 2s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

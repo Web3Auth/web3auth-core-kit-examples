@@ -201,32 +201,38 @@ function App() {
               </div>
             </>
           ) : (
-            <p>Loading user info...</p>
+            <div className="user-info" style={{ width: "100%" }}>
+              <div className="loading-placeholder" style={{ width: "60%", marginBottom: "8px" }}></div>
+              <div className="loading-placeholder" style={{ width: "80%", marginBottom: "8px" }}></div>
+              <div className="loading-placeholder" style={{ width: "70%" }}></div>
+            </div>
           )}
         </div>
 
-        <div
-          className={`info-box ${tonAccountAddress ? "" : "breathing-outline"}`}
-          onClick={() => tonAccountAddress && copyToClipboard(tonAccountAddress, "account")}
-        >
+        <div className={`info-box ${tonAccountAddress ? "" : "breathing-outline"}`}>
           <div className="info-box-content">
             <p>
               <strong>TON Account:</strong>
-              <span className="ellipsed-text">{tonAccountAddress || "Loading..."}</span>
+              {tonAccountAddress ? (
+                <span className="ellipsed-text">{tonAccountAddress}</span>
+              ) : (
+                <div className="loading-placeholder" style={{ marginTop: "8px" }}></div>
+              )}
             </p>
             {tonAccountAddress &&
               (copiedStates.account ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />)}
           </div>
         </div>
 
-        <div
-          className={`info-box ${signedMessage ? "" : "breathing-outline"}`}
-          onClick={() => signedMessage && copyToClipboard(signedMessage, "message")}
-        >
+        <div className={`info-box ${signedMessage ? "" : "breathing-outline"}`}>
           <div className="info-box-content">
             <p>
               <strong>Signed Message:</strong>
-              <span className="ellipsed-text">{signedMessage || "Loading..."}</span>
+              {signedMessage ? (
+                <span className="ellipsed-text">{signedMessage}</span>
+              ) : (
+                <div className="loading-placeholder" style={{ marginTop: "8px" }}></div>
+              )}
             </p>
             {signedMessage && (copiedStates.message ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />)}
           </div>
