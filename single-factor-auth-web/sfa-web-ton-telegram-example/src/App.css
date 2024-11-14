@@ -387,3 +387,64 @@ body {
     background-position: -200% 0;
   }
 }
+
+.chain-selector {
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.chain-selector-button {
+  width: 100%;
+  padding: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chain-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 4px;
+  overflow: hidden;
+  z-index: 10;
+  box-shadow: 0 4px 12px var(--box-shadow);
+}
+
+.chain-option {
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.chain-option:hover {
+  background-color: var(--hover-bg);
+}
+
+.chain-option.selected {
+  background-color: var(--hover-bg);
+  font-weight: 600;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
