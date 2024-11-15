@@ -5,7 +5,7 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import TonRPC from "./RPC/tonRpc";
 import EthereumRPC from "./RPC/ethRPC-web3";
 import SolanaRPC from "./RPC/solanaRPC";
-import type { IRPC } from "./RPC/IRPC";
+import type { IRPC, RPCResponse } from "./RPC/IRPC";
 import { useLaunchParams, User } from "@telegram-apps/sdk-react";
 import { useTelegramMock } from "./hooks/useMockTelegramInitData";
 import { Sun, Moon, Copy, Check, ChevronDown } from "lucide-react";
@@ -450,7 +450,8 @@ function App() {
         // Add timeout to RPC calls
         const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), ms));
 
-        const [addressResponse, messageResponse, balanceResponse] = await Promise.all([
+        const [addressResponse, messageResponse, balanceResponse]: [RPCResponse<string>, RPCResponse<string>, RPCResponse<string>] =
+        await Promise.all([
           Promise.race([rpc.getAccounts(), timeout(10000)]),
           Promise.race([rpc.signMessage(`Hello from ${selectedChain}!`), timeout(10000)]),
           Promise.race([rpc.getBalance(), timeout(10000)]),
