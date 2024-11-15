@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK, CustomChainConfig } from "@web3auth/base";
+import { CHAIN_NAMESPACES, CustomChainConfig, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import TonRPC from "./RPC/tonRpc";
 import EthereumRPC from "./RPC/ethRPC-web3";
@@ -31,7 +31,7 @@ const CHAINS = {
       blockExplorerUrl: "https://sepolia.etherscan.io",
       ticker: "ETH",
       tickerName: "Ethereum",
-    },
+    } as CustomChainConfig,
   },
   TON: {
     name: "TON",
