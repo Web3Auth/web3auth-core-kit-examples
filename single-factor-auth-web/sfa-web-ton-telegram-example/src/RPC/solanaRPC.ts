@@ -1,5 +1,5 @@
 import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
-import { CHAIN_NAMESPACES, CustomChainConfig, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 import { getED25519Key } from "@web3auth/auth-adapter";
 import { RPCResponse } from "./IRPC";
 import { BaseRPC } from "./IRPC";
@@ -7,6 +7,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 export default class SolanaRPC extends BaseRPC {
   private solanaWallet: SolanaWallet | null = null;
   private static instance: SolanaRPC | null = null;
+  private solanaProvider: SolanaPrivateKeyProvider;
 
   private constructor(provider: IProvider) {
     super(provider);
@@ -25,7 +26,7 @@ export default class SolanaRPC extends BaseRPC {
       const privateKey = await this.provider.request({ method: "private_key" }) as string;
       if (!privateKey) throw new Error('Private key not found');
 
-      const solanaProvider = new SolanaPrivateKeyProvider({
+      this.solanaProvider = new SolanaPrivateKeyProvider({
         config: {
           chainConfig: {
             chainNamespace: CHAIN_NAMESPACES.SOLANA,
@@ -40,8 +41,8 @@ export default class SolanaRPC extends BaseRPC {
       });
 
       const ed25519key = getED25519Key(privateKey).sk.toString("hex");
-      await solanaProvider.setupProvider(ed25519key);
-      this.solanaWallet = new SolanaWallet(solanaProvider);
+      await this.solanaProvider.setupProvider(ed25519key);
+      this.solanaWallet = new SolanaWallet(this.solanaProvider);
     } catch (error) {
       console.error("Error initializing Solana wallet:", error);
       throw error;
@@ -68,15 +69,12 @@ export default class SolanaRPC extends BaseRPC {
 
   async getBalance(): Promise<RPCResponse<string>> {
     return this.handleRPCCall(async () => {
-      const solanaWallet = new SolanaWallet(this.provider);
-      const connectionConfig = await solanaWallet.request<string[], CustomChainConfig>({
-        method: "solana_provider_config",
-        params: [],
-      });
-      const conn = new Connection(connectionConfig.rpcTarget);
+      const address = (await this.getAccounts()).data;
+      
+      const connection = new Connection(this.solanaProvider.config.chainConfig.rpcTarget);
 
-      const accounts = await solanaWallet.requestAccounts();
-      const balance = await conn.getBalance(new PublicKey(accounts[0]));
+      const balance = await connection.getBalance(new PublicKey(address));
+
       return balance.toString();
     });
   }

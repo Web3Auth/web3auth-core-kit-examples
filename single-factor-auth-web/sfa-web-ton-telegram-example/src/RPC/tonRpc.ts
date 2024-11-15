@@ -74,7 +74,9 @@ export default class TonRPC extends BaseRPC {
 
   async getBalance(): Promise<RPCResponse<string>> {
     return this.handleRPCCall(async () => {
-      const balance = await this.tonweb?.getBalance((await this.getAccounts())[0]);
+      const address = (await this.getAccounts()).data;
+      if (!address) throw new Error('No account found');
+      const balance = await this.tonweb?.getBalance(address);
       return balance.toString();
     });
   }
