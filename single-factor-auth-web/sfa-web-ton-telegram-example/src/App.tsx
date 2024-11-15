@@ -12,11 +12,12 @@ import { Sun, Moon, Copy, Check, ChevronDown } from "lucide-react";
 import TelegramLogo from "./assets/TelegramLogo.svg";
 import web3AuthLogoLight from "./assets/web3AuthLogoLight.svg";
 import web3AuthLogoDark from "./assets/web3AuthLogoDark.svg";
-import md5 from "md5";
 import "./App.css";
 
 const VERIFIER = "w3a-telegram-demo";
 const CLIENT_ID = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
+
+const generateGenericAvatarUrl = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
 const CHAINS = {
   ETH: {
@@ -49,18 +50,9 @@ interface CachedChainData {
   } | null;
 }
 
-const getGravatarUrl = (email: string) => {
-  const hash = md5(email.toLowerCase().trim());
-  return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=200`;
-};
-
 const getFallbackAvatar = (user: User) => {
-  // Try generating gravatar from username if available
-  if (user.username) {
-    return getGravatarUrl(`${user.username}@telegram.org`);
-  }
-  // Generate from user ID and name if username is not available
-  return getGravatarUrl(`${user.id}-${user.firstName}@telegram.org`);
+  const name = `${user.firstName} ${user.lastName || ""}`.trim();
+  return user.photoUrl || generateGenericAvatarUrl(name);
 };
 
 function App() {
@@ -392,18 +384,12 @@ function App() {
           {userData ? (
             <>
               <img
-                src={userData.photoUrl || getFallbackAvatar(userData)}
+                src={getFallbackAvatar(userData)}
                 alt="User avatar"
                 className="user-avatar"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  // If the main photo URL fails, try gravatar
-                  if (target.src === userData.photoUrl) {
-                    target.src = getFallbackAvatar(userData);
-                  } else {
-                    // If gravatar also fails, use ui-avatars as final fallback
-                    target.src = `https://ui-avatars.com/api/?name=${userData.firstName}&background=random`;
-                  }
+                  target.src = generateGenericAvatarUrl("User");
                 }}
               />
               <div className="user-info">
