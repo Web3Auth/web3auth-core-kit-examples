@@ -33,4 +33,11 @@ export default class EthereumRPC extends BaseRPC {
       return this.web3.eth.personal.sign(message, accounts[0], 'test password!');
     });
   }
+
+  async getBalance(): Promise<RPCResponse<string>> {
+    return this.handleRPCCall(async () => {
+      const balance = await this.web3.eth.getBalance((await this.getAccounts())[0]);
+      return balance.toString();
+    });
+  }
 }

@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Web3Auth } from "@web3auth/single-factor-auth";
-import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK, CustomChainConfig } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import TonRPC from "./RPC/tonRpc";
 import EthereumRPC from "./RPC/ethRPC-web3";
@@ -22,24 +22,34 @@ const generateGenericAvatarUrl = (name: string) => `https://ui-avatars.com/api/?
 const CHAINS = {
   ETH: {
     name: "Ethereum",
+    networkName: "Sepolia",
     config: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
       chainId: "0xaa36a7",
       rpcTarget: "https://rpc.ankr.com/eth_sepolia",
       displayName: "Sepolia Testnet",
+      blockExplorerUrl: "https://sepolia.etherscan.io",
       ticker: "ETH",
       tickerName: "Ethereum",
     },
   },
-  TON: { name: "TON" },
-  SOLANA: { name: "Solana" },
+  TON: {
+    name: "TON",
+    networkName: "Testnet",
+  },
+  SOLANA: {
+    name: "Solana",
+    networkName: "Devnet",
+  },
 } as const;
 
 interface ChainData {
   address: string | null;
   signedMessage: string | null;
+  balance: string | null;
   isLoadingAddress: boolean;
   isLoadingMessage: boolean;
+  isLoadingBalance: boolean;
   error?: string;
 }
 
@@ -47,6 +57,7 @@ interface CachedChainData {
   [chain: string]: {
     address: string | null;
     signedMessage: string | null;
+    balance: string | null;
   } | null;
 }
 
@@ -55,26 +66,291 @@ const getFallbackAvatar = (user: User) => {
   return user.photoUrl || generateGenericAvatarUrl(name);
 };
 
+// CopyableContent Component
+const CopyableContent = ({ content, type, isTouchDevice }: { content: string; type: "address" | "message"; isTouchDevice: boolean }) => {
+  const [isLongPressing, setIsLongPressing] = useState(false);
+  const [showCopiedFeedback, setShowCopiedFeedback] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout>();
+  const feedbackTimer = useRef<NodeJS.Timeout>();
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+
+      if (isTouchDevice && "vibrate" in navigator) {
+        navigator.vibrate([50]);
+      }
+
+      setShowCopiedFeedback(true);
+
+      if (feedbackTimer.current) {
+        clearTimeout(feedbackTimer.current);
+      }
+
+      feedbackTimer.current = setTimeout(() => {
+        setShowCopiedFeedback(false);
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  }, [content, isTouchDevice]);
+
+  const handleTouchStart = useCallback(() => {
+    if (!isTouchDevice) return;
+
+    setIsLongPressing(true);
+    longPressTimer.current = setTimeout(() => {
+      handleCopy();
+    }, 500);
+  }, [isTouchDevice, handleCopy]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+    setIsLongPressing(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      if (feedbackTimer.current) clearTimeout(feedbackTimer.current);
+    };
+  }, []);
+
+  return (
+    <div className="copyable-content-container">
+      <div
+        className={`copyable-content ${isLongPressing ? "long-pressing" : ""} ${showCopiedFeedback ? "copied" : ""}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        onClick={isTouchDevice ? undefined : handleCopy}
+      >
+        <div className="content">
+          <span className="ellipsed-text">{content}</span>
+        </div>
+
+        <button className={`copy-button ${showCopiedFeedback ? "copied" : ""}`} onClick={handleCopy}>
+          {showCopiedFeedback ? (
+            <Check className="copy-icon success" size={isTouchDevice ? 24 : 18} />
+          ) : (
+            <Copy className="copy-icon" size={isTouchDevice ? 24 : 18} />
+          )}
+        </button>
+
+        {showCopiedFeedback && (
+          <div className="copy-feedback">
+            <div className="feedback-content">
+              <Check size={20} />
+              <span>Copied!</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Chain Switcher Component
+const ChainSwitcher = ({
+  selectedChain,
+  onChainSelect,
+}: {
+  selectedChain: keyof typeof CHAINS;
+  onChainSelect: (chain: keyof typeof CHAINS) => void;
+}) => {
+  const { platform } = useLaunchParams() || {};
+  const isTouchDevice = ["android", "android_x", "ios", "weba"].includes(platform || "");
+
+  return isTouchDevice ? (
+    <TouchChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} />
+  ) : (
+    <DesktopChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} />
+  );
+};
+
+// Touch-optimized Chain Switcher
+const TouchChainSwitcher = ({
+  selectedChain,
+  onChainSelect,
+}: {
+  selectedChain: keyof typeof CHAINS;
+  onChainSelect: (chain: keyof typeof CHAINS) => void;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const minSwipeDistance = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    const chains = Object.keys(CHAINS);
+    const currentIndex = chains.indexOf(selectedChain);
+
+    if (isLeftSwipe && currentIndex < chains.length - 1) {
+      handleChainChange(chains[currentIndex + 1]);
+    } else if (isRightSwipe && currentIndex > 0) {
+      handleChainChange(chains[currentIndex - 1]);
+    }
+  };
+
+  const handleChainChange = (chain: string) => {
+    if ("vibrate" in navigator) {
+      navigator.vibrate(50);
+    }
+    onChainSelect(chain as keyof typeof CHAINS);
+  };
+
+  return (
+    <div className="touch-chain-switcher">
+      <div
+        ref={containerRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="chain-buttons-container"
+      >
+        {Object.entries(CHAINS).map(([key, value]) => (
+          <div key={key} onClick={() => handleChainChange(key)} className={`chain-button ${selectedChain === key ? "selected" : ""}`}>
+            {value.name}
+            <div className="network-label">{value.networkName}</div>
+          </div>
+        ))}
+      </div>
+      <div className="swipe-indicator">
+        {Object.keys(CHAINS).map((key) => (
+          <div key={key} className={`indicator-dot ${selectedChain === key ? "active" : ""}`} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Desktop Chain Switcher
+const DesktopChainSwitcher = ({
+  selectedChain,
+  onChainSelect,
+}: {
+  selectedChain: keyof typeof CHAINS;
+  onChainSelect: (chain: keyof typeof CHAINS) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (chain: keyof typeof CHAINS) => {
+    onChainSelect(chain);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="chain-selector">
+      <button onClick={() => setIsOpen(!isOpen)} className="chain-selector-button">
+        <span>
+          {CHAINS[selectedChain].name}
+          <div className="network-label">{CHAINS[selectedChain].networkName}</div>
+        </span>
+        <ChevronDown />
+      </button>
+
+      {isOpen && (
+        <div className="chain-dropdown">
+          {Object.entries(CHAINS).map(([key, value]) => (
+            <button
+              key={key}
+              onClick={() => handleSelect(key as keyof typeof CHAINS)}
+              className={`chain-option ${selectedChain === key ? "selected" : ""}`}
+            >
+              <span>
+                {value.name}
+                <div className="network-label">{value.networkName}</div>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// InfoBox Component with Network & Balance
+const InfoBox = ({
+  chainData,
+  selectedChain,
+  isTouchDevice,
+  type,
+}: {
+  chainData: ChainData;
+  selectedChain: keyof typeof CHAINS;
+  isTouchDevice: boolean;
+  type: "address" | "message";
+}) => {
+  const content = type === "address" ? chainData.address : chainData.signedMessage;
+  const isLoading = type === "address" ? chainData.isLoadingAddress : chainData.isLoadingMessage;
+  const label = type === "address" ? `${CHAINS[selectedChain].name} Account` : "Signed Message";
+
+  return (
+    <div className={`info-box ${isLoading ? "breathing-outline" : ""}`}>
+      <div className="network-info">
+        <strong>Network:</strong> {CHAINS[selectedChain].networkName}
+      </div>
+
+      {type === "address" && (
+        <div className="balance-info">
+          <strong>Balance: </strong>
+          {chainData.isLoadingBalance ? (
+            <div className="loading-placeholder"></div>
+          ) : (
+            <span>
+              {chainData.balance || "0"} {CHAINS[selectedChain].name}
+            </span>
+          )}
+        </div>
+      )}
+
+      <div className="info-box-content">
+        <div>
+          <strong>{label}:</strong>
+          {isLoading ? (
+            <div className="loading-placeholder"></div>
+          ) : (
+            content && <CopyableContent content={content} type={type} isTouchDevice={isTouchDevice} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [selectedChain, setSelectedChain] = useState<keyof typeof CHAINS>("ETH");
   const [web3authSfa, setWeb3authSfa] = useState<Web3Auth | null>(null);
   const [web3AuthInitialized, setWeb3AuthInitialized] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [chainData, setChainData] = useState<ChainData>({
     address: null,
     signedMessage: null,
+    balance: null,
     isLoadingAddress: true,
     isLoadingMessage: true,
+    isLoadingBalance: true,
+    error: undefined,
   });
   const [chainDataCache, setChainDataCache] = useState<CachedChainData>({});
-  const [copiedStates, setCopiedStates] = useState({
-    address: false,
-    message: false,
-  });
 
-  const { initDataRaw, initData } = useLaunchParams() || {};
+  const { platform, initDataRaw, initData } = useLaunchParams() || {};
+  const isTouchDevice = ["android", "android_x", "ios", "weba"].includes(platform || "");
 
   useTelegramMock();
 
@@ -102,18 +378,6 @@ function App() {
     setIsDarkMode((prev) => !prev);
   }, []);
 
-  const copyToClipboard = useCallback(async (text: string, type: "address" | "message") => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedStates((prev) => ({ ...prev, [type]: true }));
-      setTimeout(() => {
-        setCopiedStates((prev) => ({ ...prev, [type]: false }));
-      }, 2000);
-    } catch (err) {
-      console.error("Failed to copy text:", err);
-    }
-  }, []);
-
   const getIdTokenFromServer = useCallback(async (initDataRaw: string, photoUrl?: string) => {
     const isMocked = !!sessionStorage.getItem("____mocked");
     const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/telegram`, {
@@ -133,31 +397,34 @@ function App() {
           error: "Provider not initialized",
           isLoadingAddress: false,
           isLoadingMessage: false,
+          isLoadingBalance: false,
         }));
         return;
       }
-
+  
       // Check cache first unless force refresh is requested
       if (!forceRefresh && chainDataCache[selectedChain]) {
         setChainData({
           ...chainDataCache[selectedChain]!,
           isLoadingAddress: false,
           isLoadingMessage: false,
+          isLoadingBalance: false,
           error: undefined,
         });
         return;
       }
-
+  
       setChainData((prev) => ({
         ...prev,
         isLoadingAddress: true,
         isLoadingMessage: true,
+        isLoadingBalance: true,
         error: undefined,
       }));
-
+  
       try {
         let rpc: IRPC;
-
+  
         switch (selectedChain) {
           case "TON": {
             rpc = await TonRPC.getInstance(web3authSfa.provider);
@@ -174,39 +441,49 @@ function App() {
           default:
             throw new Error(`Unsupported chain: ${selectedChain}`);
         }
-
-        const [addressResponse, messageResponse] = await Promise.all([rpc.getAccounts(), rpc.signMessage(`Hello from ${selectedChain}!`)]);
-
-        if (addressResponse.error || messageResponse.error) {
-          throw new Error(addressResponse.error || messageResponse.error);
+  
+        const [addressResponse, messageResponse, balanceResponse] = await Promise.all([
+          rpc.getAccounts(),
+          rpc.signMessage(`Hello from ${selectedChain}!`),
+          rpc.getBalance()  // Now this is properly typed as Promise<RPCResponse<string>>
+        ]);
+  
+        // Since all responses are now properly typed as RPCResponse<string>
+        if (addressResponse.error || messageResponse.error || balanceResponse.error) {
+          throw new Error(addressResponse.error || messageResponse.error || balanceResponse.error);
         }
-
+  
+        // Using non-null assertion since we've checked for errors
         const newData = {
           address: addressResponse.data!,
           signedMessage: messageResponse.data!,
+          balance: balanceResponse.data!,
         };
-
+  
         // Update cache
         setChainDataCache((prev) => ({
           ...prev,
           [selectedChain]: newData,
         }));
-
+  
         setChainData({
           ...newData,
           isLoadingAddress: false,
           isLoadingMessage: false,
+          isLoadingBalance: false,
         });
       } catch (error) {
         console.error("Error getting chain data:", error);
         setChainData({
           address: null,
           signedMessage: null,
+          balance: null,
           isLoadingAddress: false,
           isLoadingMessage: false,
+          isLoadingBalance: false,
           error: error instanceof Error ? error.message : "An error occurred while fetching chain data",
         });
-
+  
         // Clear cache for this chain on error
         setChainDataCache((prev) => ({
           ...prev,
@@ -265,6 +542,7 @@ function App() {
                 ...chainDataCache[selectedChain]!,
                 isLoadingAddress: false,
                 isLoadingMessage: false,
+                isLoadingBalance: false,
                 error: undefined,
               });
             } else {
@@ -294,13 +572,13 @@ function App() {
   const switchChain = useCallback(
     async (chain: keyof typeof CHAINS) => {
       setSelectedChain(chain);
-      setIsDropdownOpen(false);
 
       if (chainDataCache[chain]) {
         setChainData({
           ...chainDataCache[chain]!,
           isLoadingAddress: false,
           isLoadingMessage: false,
+          isLoadingBalance: false,
           error: undefined,
         });
         return;
@@ -310,6 +588,7 @@ function App() {
         ...prev,
         isLoadingAddress: true,
         isLoadingMessage: true,
+        isLoadingBalance: true,
         error: undefined,
       }));
 
@@ -322,23 +601,6 @@ function App() {
       }
     },
     [web3authSfa, web3AuthInitialized, getChainData, chainDataCache]
-  );
-
-  const renderContent = useCallback(
-    (type: "address" | "message") => {
-      const { error, isLoadingAddress, isLoadingMessage, address, signedMessage } = chainData;
-      const isLoading = type === "address" ? isLoadingAddress : isLoadingMessage;
-      const content = type === "address" ? address : signedMessage;
-
-      if (error) {
-        return <span className="error-text">{error}</span>;
-      }
-      if (isLoading) {
-        return <div className="loading-placeholder"></div>;
-      }
-      return <span className="ellipsed-text">{content || `No ${type} available`}</span>;
-    },
-    [chainData]
   );
 
   return (
@@ -359,26 +621,7 @@ function App() {
       </div>
 
       <div className="grid">
-        <div className="chain-selector">
-          <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="chain-selector-button">
-            {CHAINS[selectedChain].name}
-            <ChevronDown />
-          </button>
-
-          {isDropdownOpen && (
-            <div className="chain-dropdown">
-              {Object.entries(CHAINS).map(([key, value]) => (
-                <button
-                  key={key}
-                  onClick={() => switchChain(key as keyof typeof CHAINS)}
-                  className={`chain-option ${selectedChain === key ? "selected" : ""}`}
-                >
-                  {value.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <ChainSwitcher selectedChain={selectedChain} onChainSelect={switchChain} />
 
         <div className="user-info-box">
           {userData ? (
@@ -414,33 +657,9 @@ function App() {
           )}
         </div>
 
-        <div className={`info-box ${chainData.isLoadingAddress ? "breathing-outline" : ""}`}>
-          <div className="info-box-content">
-            <div>
-              <strong>{CHAINS[selectedChain].name} Account:</strong>
-              {renderContent("address")}
-            </div>
-            {chainData.address && !chainData.error && !chainData.isLoadingAddress && (
-              <div onClick={() => copyToClipboard(chainData.address!, "address")}>
-                {copiedStates.address ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />}
-              </div>
-            )}
-          </div>
-        </div>
+        <InfoBox chainData={chainData} selectedChain={selectedChain} isTouchDevice={isTouchDevice} type="address" />
 
-        <div className={`info-box ${chainData.isLoadingMessage ? "breathing-outline" : ""}`}>
-          <div className="info-box-content">
-            <div>
-              <strong>Signed Message:</strong>
-              {renderContent("message")}
-            </div>
-            {chainData.signedMessage && !chainData.error && !chainData.isLoadingMessage && (
-              <div onClick={() => copyToClipboard(chainData.signedMessage!, "message")}>
-                {copiedStates.message ? <Check className="copy-icon success" size={18} /> : <Copy className="copy-icon" size={18} />}
-              </div>
-            )}
-          </div>
-        </div>
+        <InfoBox chainData={chainData} selectedChain={selectedChain} isTouchDevice={isTouchDevice} type="message" />
       </div>
 
       <footer className="footer">

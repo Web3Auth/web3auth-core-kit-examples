@@ -8,6 +8,7 @@ export interface RPCResponse<T> {
 export interface IRPC {
   getAccounts(): Promise<RPCResponse<string>>;
   signMessage(message: string): Promise<RPCResponse<string>>;
+  getBalance(): Promise<RPCResponse<string>>;
 }
 
 export abstract class BaseRPC implements IRPC {
@@ -31,4 +32,5 @@ export abstract class BaseRPC implements IRPC {
 
   abstract getAccounts(): Promise<RPCResponse<string>>;
   abstract signMessage(message: string): Promise<RPCResponse<string>>;
+  abstract getBalance(): Promise<RPCResponse<string>>;
 }

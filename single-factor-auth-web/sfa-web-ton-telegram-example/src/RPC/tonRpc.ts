@@ -71,4 +71,11 @@ export default class TonRPC extends BaseRPC {
       return Buffer.from(signature).toString('hex');
     });
   }
+
+  async getBalance(): Promise<RPCResponse<string>> {
+    return this.handleRPCCall(async () => {
+      const balance = await this.tonweb?.getBalance((await this.getAccounts())[0]);
+      return balance.toString();
+    });
+  }
 }

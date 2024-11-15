@@ -1,9 +1,9 @@
 import { SolanaPrivateKeyProvider, SolanaWallet } from "@web3auth/solana-provider";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES, CustomChainConfig, IProvider } from "@web3auth/base";
 import { getED25519Key } from "@web3auth/auth-adapter";
 import { RPCResponse } from "./IRPC";
 import { BaseRPC } from "./IRPC";
-
+import { Connection, PublicKey } from "@solana/web3.js";
 export default class SolanaRPC extends BaseRPC {
   private solanaWallet: SolanaWallet | null = null;
   private static instance: SolanaRPC | null = null;
@@ -63,6 +63,21 @@ export default class SolanaRPC extends BaseRPC {
       const messageBuffer = Buffer.from(message, "utf8");
       const signature = await this.solanaWallet.signMessage(messageBuffer);
       return signature.toString();
+    });
+  }
+
+  async getBalance(): Promise<RPCResponse<string>> {
+    return this.handleRPCCall(async () => {
+      const solanaWallet = new SolanaWallet(this.provider);
+      const connectionConfig = await solanaWallet.request<string[], CustomChainConfig>({
+        method: "solana_provider_config",
+        params: [],
+      });
+      const conn = new Connection(connectionConfig.rpcTarget);
+
+      const accounts = await solanaWallet.requestAccounts();
+      const balance = await conn.getBalance(new PublicKey(accounts[0]));
+      return balance.toString();
     });
   }
 }
