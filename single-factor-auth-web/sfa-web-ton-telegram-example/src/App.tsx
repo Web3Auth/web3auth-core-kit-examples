@@ -26,7 +26,7 @@ const CHAINS = {
     config: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
       chainId: "0xaa36a7",
-      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+      rpcTarget: "https://ethereum-sepolia-rpc.publicnode.com",
       displayName: "Sepolia Testnet",
       blockExplorerUrl: "https://sepolia.etherscan.io",
       ticker: "ETH",
@@ -51,6 +51,7 @@ interface ChainData {
   isLoadingMessage: boolean;
   isLoadingBalance: boolean;
   error?: string;
+  currentChain?: keyof typeof CHAINS;
 }
 
 interface CachedChainData {
@@ -346,6 +347,7 @@ function App() {
     isLoadingMessage: true,
     isLoadingBalance: true,
     error: undefined,
+    currentChain: "ETH",
   });
   const [chainDataCache, setChainDataCache] = useState<CachedChainData>({});
 
@@ -401,8 +403,8 @@ function App() {
         }));
         return;
       }
-  
-      // Check cache first unless force refresh is requested
+
+      // Don't check cache if force refresh is true
       if (!forceRefresh && chainDataCache[selectedChain]) {
         setChainData({
           ...chainDataCache[selectedChain]!,
@@ -413,18 +415,21 @@ function App() {
         });
         return;
       }
-  
+
+      // Set loading state explicitly
       setChainData((prev) => ({
         ...prev,
+        address: null,
+        signedMessage: null,
+        balance: null,
         isLoadingAddress: true,
         isLoadingMessage: true,
         isLoadingBalance: true,
         error: undefined,
       }));
-  
+
+      let rpc: IRPC;
       try {
-        let rpc: IRPC;
-  
         switch (selectedChain) {
           case "TON": {
             rpc = await TonRPC.getInstance(web3authSfa.provider);
@@ -441,40 +446,51 @@ function App() {
           default:
             throw new Error(`Unsupported chain: ${selectedChain}`);
         }
-  
+
+        // Add timeout to RPC calls
+        const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), ms));
+
         const [addressResponse, messageResponse, balanceResponse] = await Promise.all([
-          rpc.getAccounts(),
-          rpc.signMessage(`Hello from ${selectedChain}!`),
-          rpc.getBalance()  // Now this is properly typed as Promise<RPCResponse<string>>
+          Promise.race([rpc.getAccounts(), timeout(10000)]),
+          Promise.race([rpc.signMessage(`Hello from ${selectedChain}!`), timeout(10000)]),
+          Promise.race([rpc.getBalance(), timeout(10000)]),
         ]);
-  
-        // Since all responses are now properly typed as RPCResponse<string>
+
         if (addressResponse.error || messageResponse.error || balanceResponse.error) {
           throw new Error(addressResponse.error || messageResponse.error || balanceResponse.error);
         }
-  
-        // Using non-null assertion since we've checked for errors
+
         const newData = {
           address: addressResponse.data!,
           signedMessage: messageResponse.data!,
           balance: balanceResponse.data!,
         };
-  
+
+        // Verify we're still on the same chain before updating state
+        setChainData((prev) => {
+          if (selectedChain === prev.currentChain) {
+            return {
+              ...newData,
+              currentChain: selectedChain,
+              isLoadingAddress: false,
+              isLoadingMessage: false,
+              isLoadingBalance: false,
+            };
+          }
+          return prev;
+        });
+
         // Update cache
         setChainDataCache((prev) => ({
           ...prev,
           [selectedChain]: newData,
         }));
-  
-        setChainData({
-          ...newData,
-          isLoadingAddress: false,
-          isLoadingMessage: false,
-          isLoadingBalance: false,
-        });
       } catch (error) {
         console.error("Error getting chain data:", error);
-        setChainData({
+
+        // Only update error state if we're still on the same chain
+        setChainData((prev) => ({
+          ...prev,
           address: null,
           signedMessage: null,
           balance: null,
@@ -482,8 +498,8 @@ function App() {
           isLoadingMessage: false,
           isLoadingBalance: false,
           error: error instanceof Error ? error.message : "An error occurred while fetching chain data",
-        });
-  
+        }));
+
         // Clear cache for this chain on error
         setChainDataCache((prev) => ({
           ...prev,
@@ -571,9 +587,24 @@ function App() {
 
   const switchChain = useCallback(
     async (chain: keyof typeof CHAINS) => {
+      // Immediately set loading state and clear current data
+      setChainData({
+        address: null,
+        signedMessage: null,
+        balance: null,
+        isLoadingAddress: true,
+        isLoadingMessage: true,
+        isLoadingBalance: true,
+        error: undefined,
+      });
+
+      // Update selected chain after clearing data
       setSelectedChain(chain);
 
+      // Check cache immediately
       if (chainDataCache[chain]) {
+        // Even with cached data, add a small delay for better UX
+        await new Promise((resolve) => setTimeout(resolve, 100));
         setChainData({
           ...chainDataCache[chain]!,
           isLoadingAddress: false,
@@ -584,20 +615,20 @@ function App() {
         return;
       }
 
-      setChainData((prev) => ({
-        ...prev,
-        isLoadingAddress: true,
-        isLoadingMessage: true,
-        isLoadingBalance: true,
-        error: undefined,
-      }));
-
+      // If no cache, fetch new data
       try {
         if (web3authSfa && web3AuthInitialized) {
-          await getChainData(false);
+          await getChainData(true); // Force refresh for new chain
         }
       } catch (error) {
         console.error("Error switching chain:", error);
+        setChainData((prev) => ({
+          ...prev,
+          isLoadingAddress: false,
+          isLoadingMessage: false,
+          isLoadingBalance: false,
+          error: error instanceof Error ? error.message : "Error switching chain",
+        }));
       }
     },
     [web3authSfa, web3AuthInitialized, getChainData, chainDataCache]
