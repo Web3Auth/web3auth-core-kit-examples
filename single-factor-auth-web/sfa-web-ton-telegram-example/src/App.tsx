@@ -157,17 +157,19 @@ const CopyableContent = ({ content, type, isTouchDevice }: { content: string; ty
 const ChainSwitcher = ({
   selectedChain,
   onChainSelect,
+  isLoading,
 }: {
   selectedChain: keyof typeof CHAINS;
   onChainSelect: (chain: keyof typeof CHAINS) => void;
+  isLoading: boolean;
 }) => {
   const { platform } = useLaunchParams() || {};
   const isTouchDevice = ["android", "android_x", "ios", "weba"].includes(platform || "");
 
   return isTouchDevice ? (
-    <TouchChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} />
+    <TouchChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} isLoading={isLoading} />
   ) : (
-    <DesktopChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} />
+    <DesktopChainSwitcher selectedChain={selectedChain} onChainSelect={onChainSelect} isLoading={isLoading} />
   );
 };
 
@@ -175,9 +177,11 @@ const ChainSwitcher = ({
 const TouchChainSwitcher = ({
   selectedChain,
   onChainSelect,
+  isLoading,
 }: {
   selectedChain: keyof typeof CHAINS;
   onChainSelect: (chain: keyof typeof CHAINS) => void;
+  isLoading: boolean;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState(0);
@@ -211,11 +215,14 @@ const TouchChainSwitcher = ({
     if ("vibrate" in navigator) {
       navigator.vibrate(50);
     }
-    onChainSelect(chain as keyof typeof CHAINS);
+    if (!isLoading) {
+      onChainSelect(chain as keyof typeof CHAINS);
+    }
   };
 
   return (
     <div className="touch-chain-switcher">
+      <p className="swipe-instructions">Swipe to switch chains</p>
       <div
         ref={containerRef}
         onTouchStart={handleTouchStart}
@@ -243,20 +250,25 @@ const TouchChainSwitcher = ({
 const DesktopChainSwitcher = ({
   selectedChain,
   onChainSelect,
+  isLoading,
 }: {
   selectedChain: keyof typeof CHAINS;
   onChainSelect: (chain: keyof typeof CHAINS) => void;
+  isLoading: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (chain: keyof typeof CHAINS) => {
-    onChainSelect(chain);
-    setIsOpen(false);
+    if (!isLoading) {
+      onChainSelect(chain);
+      setIsOpen(false);
+    }
   };
 
   return (
     <div className="chain-selector">
-      <button onClick={() => setIsOpen(!isOpen)} className="chain-selector-button">
+      <p className="swipe-instructions">Select another chain</p>
+      <button onClick={() => setIsOpen(!isOpen)} className={`chain-selector-button ${isLoading ? "disabled" : ""}`}>
         <span>
           {CHAINS[selectedChain].name}
           <div className="network-label">{CHAINS[selectedChain].networkName}</div>
@@ -356,25 +368,31 @@ function App() {
 
   useTelegramMock();
 
-  // Load cache from sessionStorage on mount
+  // Load cache from localStorage on mount
   useEffect(() => {
-    const cachedData = sessionStorage.getItem("chainDataCache");
+    const storageKey = getStorageKey(userData?.id?.toString());
+    const cachedData = localStorage.getItem(storageKey);
     if (cachedData) {
       try {
         const parsed = JSON.parse(cachedData);
+        console.log(`[LocalStorage] Loaded cache for key: ${storageKey}`, parsed);
         setChainDataCache(parsed);
       } catch (error) {
-        console.error("Error parsing cached chain data:", error);
+        console.error(`[LocalStorage] Error parsing data for key: ${storageKey}`, error);
       }
+    } else {
+      console.log(`[LocalStorage] No cache found for key: ${storageKey}`);
     }
-  }, []);
+  }, [userData?.id]);
 
-  // Save cache to sessionStorage when it changes
+  // Save cache to localStorage when it changes
   useEffect(() => {
     if (Object.keys(chainDataCache).length > 0) {
-      sessionStorage.setItem("chainDataCache", JSON.stringify(chainDataCache));
+      const storageKey = getStorageKey(userData?.id?.toString());
+      console.log(`[LocalStorage] Saving cache for key: ${storageKey}`, chainDataCache);
+      localStorage.setItem(storageKey, JSON.stringify(chainDataCache));
     }
-  }, [chainDataCache]);
+  }, [chainDataCache, userData?.id]);
 
   const toggleDarkMode = useCallback(() => {
     setIsDarkMode((prev) => !prev);
@@ -391,124 +409,65 @@ function App() {
     return data.token;
   }, []);
 
+  const getStorageKey = (telegramId: string | null | undefined): string => {
+    return `chainDataCache_${telegramId || "default"}`;
+  };
+
   const getChainData = useCallback(
     async (forceRefresh = false) => {
-      if (!web3authSfa?.provider) {
-        setChainData((prev) => ({
-          ...prev,
-          error: "Provider not initialized",
-          isLoadingAddress: false,
-          isLoadingMessage: false,
-          isLoadingBalance: false,
-        }));
-        return;
-      }
-
-      // Don't check cache if force refresh is true
-      if (!forceRefresh && chainDataCache[selectedChain]) {
-        setChainData({
-          ...chainDataCache[selectedChain]!,
-          isLoadingAddress: false,
-          isLoadingMessage: false,
-          isLoadingBalance: false,
-          error: undefined,
-        });
-        return;
-      }
-
-      // Set loading state explicitly
-      setChainData((prev) => ({
-        ...prev,
-        address: null,
-        signedMessage: null,
-        balance: null,
-        isLoadingAddress: true,
-        isLoadingMessage: true,
-        isLoadingBalance: true,
-        error: undefined,
-      }));
-
-      let rpc: IRPC;
       try {
+        console.log(`[getChainData] Invoked for chain: ${selectedChain}, forceRefresh: ${forceRefresh}`);
+        let rpc: IRPC;
+
         switch (selectedChain) {
-          case "TON": {
+          case "TON":
             rpc = await TonRPC.getInstance(web3authSfa.provider);
             break;
-          }
-          case "ETH": {
+          case "ETH":
             rpc = EthereumRPC.getInstance(web3authSfa.provider);
             break;
-          }
-          case "SOLANA": {
+          case "SOLANA":
             rpc = await SolanaRPC.getInstance(web3authSfa.provider);
             break;
-          }
           default:
             throw new Error(`Unsupported chain: ${selectedChain}`);
         }
 
-        // Add timeout to RPC calls
-        const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error("Request timeout")), ms));
-
-        const [addressResponse, messageResponse, balanceResponse]: [RPCResponse<string>, RPCResponse<string>, RPCResponse<string>] =
-        await Promise.all([
-          Promise.race([rpc.getAccounts(), timeout(10000)]),
-          Promise.race([rpc.signMessage(`Hello from ${selectedChain}!`), timeout(10000)]),
-          Promise.race([rpc.getBalance(), timeout(10000)]),
+        const [addressResponse, messageResponse, balanceResponse] = await Promise.all([
+          rpc.getAccounts(),
+          rpc.signMessage(`Hello from ${selectedChain}`),
+          rpc.getBalance(),
         ]);
 
-        if (addressResponse.error || messageResponse.error || balanceResponse.error) {
-          throw new Error(addressResponse.error || messageResponse.error || balanceResponse.error);
-        }
-
-        const newData = {
-          address: addressResponse.data!,
-          signedMessage: messageResponse.data!,
-          balance: balanceResponse.data!,
-        };
-
-        // Verify we're still on the same chain before updating state
-        setChainData((prev) => {
-          if (selectedChain === prev.currentChain) {
-            return {
-              ...newData,
-              currentChain: selectedChain,
-              isLoadingAddress: false,
-              isLoadingMessage: false,
-              isLoadingBalance: false,
-            };
-          }
-          return prev;
-        });
-
-        // Update cache
-        setChainDataCache((prev) => ({
-          ...prev,
-          [selectedChain]: newData,
-        }));
-      } catch (error) {
-        console.error("Error getting chain data:", error);
-
-        // Only update error state if we're still on the same chain
-        setChainData((prev) => ({
-          ...prev,
-          address: null,
-          signedMessage: null,
-          balance: null,
+        setChainData({
+          address: addressResponse.data || null,
+          signedMessage: messageResponse.data || null,
+          balance: balanceResponse.data || null,
           isLoadingAddress: false,
           isLoadingMessage: false,
           isLoadingBalance: false,
-          error: error instanceof Error ? error.message : "An error occurred while fetching chain data",
-        }));
+        });
 
-        // Clear cache for this chain on error
         setChainDataCache((prev) => ({
           ...prev,
-          [selectedChain]: null,
+          [selectedChain]: {
+            address: addressResponse.data,
+            signedMessage: messageResponse.data,
+            balance: balanceResponse.data,
+          },
+        }));
+      } catch (error) {
+        console.error(`[getChainData] Error fetching data for chain ${selectedChain}:`, error);
+        setChainData((prev) => ({
+          ...prev,
+          error: error.message || "An error occurred",
+          isLoadingAddress: false,
+          isLoadingMessage: false,
+          isLoadingBalance: false,
         }));
       }
     },
-    [web3authSfa, selectedChain, chainDataCache]
+    [selectedChain, web3authSfa, setChainDataCache]
   );
 
   useEffect(() => {
@@ -588,6 +547,7 @@ function App() {
 
   const switchChain = useCallback(
     async (chain: keyof typeof CHAINS) => {
+      console.log(`[switchChain] Switching to chain: ${chain}`);
       // Immediately set loading state and clear current data
       setChainData({
         address: null,
@@ -604,8 +564,7 @@ function App() {
 
       // Check cache immediately
       if (chainDataCache[chain]) {
-        // Even with cached data, add a small delay for better UX
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        console.log(`[switchChain] Using cached data for chain: ${chain}`);
         setChainData({
           ...chainDataCache[chain]!,
           isLoadingAddress: false,
@@ -614,22 +573,11 @@ function App() {
           error: undefined,
         });
         return;
-      }
-
-      // If no cache, fetch new data
-      try {
+      } else {
+        console.log(`[switchChain] No cache found for chain: ${chain}, fetching new data`);
         if (web3authSfa && web3AuthInitialized) {
           await getChainData(true); // Force refresh for new chain
         }
-      } catch (error) {
-        console.error("Error switching chain:", error);
-        setChainData((prev) => ({
-          ...prev,
-          isLoadingAddress: false,
-          isLoadingMessage: false,
-          isLoadingBalance: false,
-          error: error instanceof Error ? error.message : "Error switching chain",
-        }));
       }
     },
     [web3authSfa, web3AuthInitialized, getChainData, chainDataCache]
@@ -653,7 +601,11 @@ function App() {
       </div>
 
       <div className="grid">
-        <ChainSwitcher selectedChain={selectedChain} onChainSelect={switchChain} />
+        <ChainSwitcher
+          selectedChain={selectedChain}
+          onChainSelect={switchChain}
+          isLoading={chainData.isLoadingAddress || chainData.isLoadingMessage || chainData.isLoadingBalance}
+        />
 
         <div className="user-info-box">
           {userData ? (

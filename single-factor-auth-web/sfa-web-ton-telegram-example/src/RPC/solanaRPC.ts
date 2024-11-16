@@ -18,14 +18,20 @@ export default class SolanaRPC extends BaseRPC {
       SolanaRPC.instance = new SolanaRPC(provider);
       await SolanaRPC.instance.initialize();
     }
+    if (!SolanaRPC.instance.solanaWallet) {
+      throw new Error("Solana wallet failed to initialize");
+    }
     return SolanaRPC.instance;
   }
 
   private async initialize(): Promise<void> {
     try {
-      const privateKey = await this.provider.request({ method: "private_key" }) as string;
-      if (!privateKey) throw new Error('Private key not found');
-
+      const privateKey = (await this.provider.request({ method: "private_key" })) as string;
+      if (!privateKey) throw new Error("Private key not found");
+  
+      const ed25519key = getED25519Key(privateKey).sk.toString("hex");
+      if (!ed25519key) throw new Error("Invalid ED25519 key generated");
+  
       this.solanaProvider = new SolanaPrivateKeyProvider({
         config: {
           chainConfig: {
@@ -39,8 +45,7 @@ export default class SolanaRPC extends BaseRPC {
           },
         },
       });
-
-      const ed25519key = getED25519Key(privateKey).sk.toString("hex");
+  
       await this.solanaProvider.setupProvider(ed25519key);
       this.solanaWallet = new SolanaWallet(this.solanaProvider);
     } catch (error) {
@@ -70,11 +75,13 @@ export default class SolanaRPC extends BaseRPC {
   async getBalance(): Promise<RPCResponse<string>> {
     return this.handleRPCCall(async () => {
       const address = (await this.getAccounts()).data;
-      
+  
+      if (!address) throw new Error("Failed to retrieve Solana address");
+      const publicKey = new PublicKey(address); // Ensure address is valid
+  
       const connection = new Connection(this.solanaProvider.config.chainConfig.rpcTarget);
-
-      const balance = await connection.getBalance(new PublicKey(address));
-
+  
+      const balance = await connection.getBalance(publicKey);
       return balance.toString();
     });
   }
