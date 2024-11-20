@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      crypto: "empty-module",
+      // crypto: "empty-module",
     },
   },
   define: {

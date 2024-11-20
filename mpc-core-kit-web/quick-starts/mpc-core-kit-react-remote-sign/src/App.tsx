@@ -1,7 +1,8 @@
 
 
 import "./App.css";
-import { tssLib } from "@toruslabs/tss-dkls-lib";
+import { tssLib as dklsLib } from "@toruslabs/tss-dkls-lib";
+import { tssLib as frostLib } from "@toruslabs/tss-frost-lib";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
@@ -11,20 +12,14 @@ import {QRCodeSVG} from 'qrcode.react'
 
 // IMP START - Quick Start
 import {
-  AuthenticatorService,
   COREKIT_STATUS,
   FactorKeyTypeShareDescription,
   generateFactorKey,
-  generateSecretKey,
-  getFactorDetailsAndDescriptions,
   JWTLoginParams,
   keyToMnemonic,
   makeEthereumSigner,
   mnemonicToKey,
   parseToken,
-  RemoteFactorDescription,
-  RemoteFactorType,
-  SmsService,
   TssShareType,
   WEB3AUTH_NETWORK,
   Web3AuthMPCCoreKit,
@@ -42,6 +37,7 @@ import { useEffect, useState } from "react";
 // import RPC from "./ethersRPC";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
+import { AuthenticatorService, generateSecretKey, getFactorDetailsAndDescriptions, RemoteFactorDescription } from "@web3auth/mpc-remote-signer-plugin";
 
 
 // Remote Sign
@@ -83,12 +79,13 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true, // This is the recommended approach
-    tssLib,
+    tssLib: dklsLib,
   });
 
+  
   // Setup provider for EVM Chain
-  evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-  evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
+  // evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+  // evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 }
 // IMP END - SDK Initialization
 
@@ -114,24 +111,34 @@ function App() {
   const [otpValue, setOtpValue] = useState<string>("");
   const [otpValue2, setOtpValue2] = useState<string>("");
 
-  const [authenticatorService, setAuthenticatorService] = useState<AuthenticatorService>(new AuthenticatorService({
-    backendUrl : "http://localhost:3021",
-    web3authNetwork: WEB3AUTH_NETWORK.MAINNET
-  }));
+  const [authenticatorService, setAuthenticatorService] = useState<AuthenticatorService<Web3AuthMPCCoreKit>>();
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
 
   useEffect(() => {
     const init = async () => {
+      //028fd23521363d1ec06161fbfb8237045b49c4f0864b040e0ded296de19d623e7c
+      //030fd23521363d1ec06161fbfb8237045b49c4f0864b040e0ded296de19d623e8f
+      const point = Point.fromScalar(new BN("86e2703b0b4bb8d771b5ad06ff8318a40889e4e72a38e94156f9774bbd34a93c", "hex"), secp256k1);
+      console.log("point", point.toSEC1(secp256k1, true).toString("hex"));
       // IMP START - SDK Initialization
       await coreKitInstance.init();
       // IMP END - SDK Initialization
 
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        const authenticatorService = new AuthenticatorService({
+          backendUrl : "http://localhost:3021",
+          web3authNetwork: WEB3AUTH_NETWORK.MAINNET,
+          remoteSignerInstance: coreKitInstance,
+        })
+        setAuthenticatorService(authenticatorService) 
+      }
       setCoreKitStatus(coreKitInstance.status);
     };
     init();
   }, []);
+
 
   // IMP START - Auth Provider Login
   const signInWithGoogle = async (): Promise<UserCredential> => {
@@ -179,7 +186,12 @@ function App() {
         );
       }
       // IMP END - Recover MFA Enabled Account
-
+      const authenticatorService = new AuthenticatorService({
+        backendUrl : "http://localhost:3021",
+        web3authNetwork: WEB3AUTH_NETWORK.MAINNET,
+        remoteSignerInstance: coreKitInstance,
+      })
+      setAuthenticatorService(authenticatorService)
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
@@ -189,15 +201,14 @@ function App() {
 
   // Remote Sign
   const registerAuthenticatorSecret = async () => {
-    if (!coreKitInstance) {
+    if (!coreKitInstance || !authenticatorService) {
       throw new Error("coreKitInstance not found");
     }
     const mfaSecret = generateSecretKey();
-
-
     const factorkey = generateFactorKey();
-    await authenticatorService.register( mfaSecret, factorkey.private.toString("hex") )
+    const result = await authenticatorService.registerFactor( mfaSecret, factorkey.private.toString("hex") )
 
+    console.log(result);
     // qrcode
     
     setQrCodeSVG(mfaSecret);
@@ -206,22 +217,16 @@ function App() {
 
 
   const registerAuthenticatorFactorkey = async ( code : string) => {
-    if (!coreKitInstance) {
+    if (!coreKitInstance || !authenticatorService) {
       throw new Error("coreKitInstance not found");
     }
     const factorKey = authenticatorService.factorKey;
     if (!factorKey) {
       throw new Error("factorKey not found");
     }
-    await authenticatorService.verifyRegistration( code )
-    const descriptionMetadata : RemoteFactorDescription = {
-      tssShareIndex: TssShareType.RECOVERY,
-      module : FactorKeyTypeShareDescription.Other,
-      authenticator: RemoteFactorType.Authenticator,
-      description: "Authenticator",
-    }
-    // create factor
-    await coreKitInstance.createFactor({ factorKey, shareType: descriptionMetadata.tssShareIndex, shareDescription: descriptionMetadata.module, additionalMetadata: JSON.parse(JSON.stringify(descriptionMetadata)) });
+
+    await authenticatorService.verifyRegistration( code );
+    await coreKitInstance.commitChanges();
     setShowQrCode(false);
   }
 
@@ -231,10 +236,9 @@ function App() {
     }
 
     const details = coreKitInstance.getKeyDetails();
-    const {factorPub} = getFactorDetailsAndDescriptions( details.shareDescriptions, RemoteFactorType.Authenticator)
+    const {factorPub} = getFactorDetailsAndDescriptions( details.shareDescriptions, "authenticator")
     // to do add more security measure
-    const remoteData = await authenticatorService.verifyRemoteSetup(factorPub, code )
-    await coreKitInstance.setupRemoteSigning(remoteData)
+    const updated = await authenticatorService?.setupRemoteSignerUsingAuthenticatorCode( code )
 
     setCoreKitStatus(coreKitInstance.status);
   }
@@ -423,13 +427,20 @@ function App() {
     uiConsole(address);
   };
 
+  const setAccountIndex = async ( index: number) => {
+    const result = await coreKitInstance.setTssWalletIndex(index);
+  }
+
   const getBalance = async () => {
     const balance = await RPC.getBalance(evmProvider);
     uiConsole(balance);
   };
 
   const signMessage = async () => {
-    const signedMessage = await RPC.signMessage(evmProvider);
+    // const signedMessage = await RPC.signMessage(evmProvider);
+
+    const originalMessage = "YOUR_MESSAGE";
+    const signedMessage = await coreKitInstance.sign(Buffer.from(originalMessage))
     uiConsole(signedMessage);
   };
 
@@ -470,6 +481,8 @@ function App() {
     console.log(...args);
   }
 
+
+
   const loggedInView = (
     <div className="flex-container">
       <div>
@@ -492,6 +505,28 @@ function App() {
           Get Accounts
         </button>
       </div>
+
+      <div>
+        <button onClick={()=>setAccountIndex(0)} className="card">
+          setAccountIndex 0
+        </button>
+      </div> 
+      <div>
+        <button onClick={()=>setAccountIndex(1)} className="card">
+          setAccountIndex 1
+        </button>
+      </div> 
+      <div>
+        <button onClick={()=>setAccountIndex(2)} className="card">
+          setAccountIndex 2
+        </button>
+      </div> 
+
+      <div>
+        <button onClick={()=>setAccountIndex(3)} className="card">
+          setAccountIndex 3
+        </button>
+      </div> 
       <div>
         <button onClick={getBalance} className="card">
           Get Balance
