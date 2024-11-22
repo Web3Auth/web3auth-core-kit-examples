@@ -260,14 +260,11 @@ function App() {
         return;
       }
       const result = shouldSupportPasskey();
-      console.log("result", result);
       if (!result.isBrowserSupported) {
         uiConsole("Browser not supported");
         return;
       }
-      console.log("shouldSupportPasskey", result);
       const userInfo = await web3authSFAuth?.getUserInfo();
-      console.log("userInfo", userInfo);
       const res = await pkPlugin.registerPasskey({
         username: `google|${userInfo?.email || userInfo?.name} - ${new Date().toLocaleDateString("en-GB")}`,
       });
