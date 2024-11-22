@@ -40,8 +40,8 @@ function App() {
   const [pkPlugin, setPkPlugin] = useState<PasskeysPlugin | null>(null);
   const [wsPlugin, setWsPlugin] = useState<WalletServicesPlugin | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [rpID, setRpID] = useState<string>("localhost");
-  const [rpName, setRpName] = useState<string>("localhost");
+  const [rpID, setRpID] = useState<string>("");
+  const [rpName, setRpName] = useState<string>("");
 
   useEffect(() => {
     const init = async () => {
