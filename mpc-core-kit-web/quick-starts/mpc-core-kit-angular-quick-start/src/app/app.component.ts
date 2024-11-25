@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { Point, secp256k1 } from "@tkey/common-types";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
 // IMP START - Quick Start
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
@@ -21,7 +22,6 @@ import { BN } from "bn.js";
 // IMP START - Auth Provider Login
 // Firebase libraries for custom authentication
 import { initializeApp } from "firebase/app";
-import { Point, secp256k1 } from "@tkey/common-types";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 
 // IMP END - Auth Provider Login
@@ -110,7 +110,9 @@ export class AppComponent {
     const init = async () => {
       try {
         // IMP START - SDK Initialization
-        await coreKitInstance.init();
+        if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+          await coreKitInstance.init();
+        }
         // IMP END - SDK Initialization
 
         this.coreKitStatus = coreKitInstance.status;
@@ -197,7 +199,7 @@ export class AppComponent {
   // IMP END - Recover MFA Enabled Account
 
   // IMP START - Export Social Account Factor
-   getSocialMFAFactorKey = async (): Promise<string> => {
+  getSocialMFAFactorKey = async (): Promise<string> => {
     try {
       // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
       const tempCoreKitInstance = new Web3AuthMPCCoreKit({
@@ -209,20 +211,19 @@ export class AppComponent {
 
       await tempCoreKitInstance.init();
 
-        // Login using Firebase Email Password
-        const auth = getAuth(this.app);
-        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        this.uiConsole(res);
-        const idToken = await res.user.getIdToken(true);
-        const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(this.app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      this.uiConsole(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier,
-          verifierId: userInfo.sub,
-          idToken,
-        });
-      
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
@@ -245,7 +246,7 @@ export class AppComponent {
     try {
       const factorKey = new BN(await this.getSocialMFAFactorKey(), "hex");
       this.uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
-      await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
+      await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
