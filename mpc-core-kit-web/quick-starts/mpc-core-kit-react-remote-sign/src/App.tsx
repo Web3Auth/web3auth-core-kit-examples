@@ -78,7 +78,7 @@ if (typeof window !== "undefined") {
     web3AuthClientId,
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
-    manualSync: true, // This is the recommended approach
+    // manualSync: true, // This is the recommended approach
     tssLib: dklsLib,
   });
 
@@ -204,28 +204,29 @@ function App() {
     if (!coreKitInstance || !authenticatorService) {
       throw new Error("coreKitInstance not found");
     }
-    const mfaSecret = generateSecretKey();
-    const factorkey = generateFactorKey();
-    const result = await authenticatorService.registerFactor( mfaSecret, factorkey.private.toString("hex") )
+    const result = await authenticatorService.startRegisterFactor()
 
     console.log(result);
     // qrcode
     
-    setQrCodeSVG(mfaSecret);
+    setQrCodeSVG(result.secretKey);
     setShowQrCode(true);
   };
 
+  const deleteAuthenticator = async () => {
+    if (!coreKitInstance || !authenticatorService) {
+      throw new Error("coreKitInstance not found");
+    }
+    await authenticatorService.unregisterFactor();
+  }
 
   const registerAuthenticatorFactorkey = async ( code : string) => {
     if (!coreKitInstance || !authenticatorService) {
       throw new Error("coreKitInstance not found");
     }
-    const factorKey = authenticatorService.factorKey;
-    if (!factorKey) {
-      throw new Error("factorKey not found");
-    }
 
-    await authenticatorService.verifyRegistration( code );
+    const factorkey = generateFactorKey();
+    await authenticatorService.verifyRegistration( code, factorkey.private.toString("hex") );
     await coreKitInstance.commitChanges();
     setShowQrCode(false);
   }
@@ -570,6 +571,10 @@ function App() {
       <div>
         <button onClick={registerAuthenticatorSecret} className="card">
           Register Authenticator
+        </button>
+        <input value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
+        <button onClick={deleteAuthenticator} className="card">
+          Delete Authenticator
         </button>
       </div>
     </div>
