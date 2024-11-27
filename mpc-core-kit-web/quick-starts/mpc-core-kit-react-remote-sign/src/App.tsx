@@ -8,7 +8,6 @@ import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { CommonPrivateKeyProvider } from "@web3auth/base-provider";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { Point, secp256k1 } from "@tkey/common-types";
-import {QRCodeSVG} from 'qrcode.react'
 
 // IMP START - Quick Start
 import {
@@ -37,7 +36,9 @@ import { useEffect, useState } from "react";
 // import RPC from "./ethersRPC";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
-import { AuthenticatorService, generateSecretKey, getFactorDetailsAndDescriptions, RemoteFactorDescription } from "@web3auth/mpc-remote-signer-plugin";
+import { AuthenticatorService, SmsService } from "@web3auth/mpc-remote-signer-plugin";
+import { RemoteSignerFeature, RemoteSignerLoginView } from "./RemoteSigner";
+import { SMSRemoteSignerFeature, SMSRemoteSignerLoginView } from "./RemoteSignerSMS";
 
 
 // Remote Sign
@@ -72,11 +73,12 @@ const chainConfig = {
 // IMP START - SDK Initialization
 let coreKitInstance: Web3AuthMPCCoreKit;
 let evmProvider: EthereumSigningProvider;
+const network = WEB3AUTH_NETWORK.DEVNET;
 
 if (typeof window !== "undefined") {
   coreKitInstance = new Web3AuthMPCCoreKit({
     web3AuthClientId,
-    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+    web3AuthNetwork: network,
     storage: window.localStorage,
     // manualSync: true, // This is the recommended approach
     tssLib: dklsLib,
@@ -106,13 +108,9 @@ function App() {
   const [backupFactorKey, setBackupFactorKey] = useState<string>("");
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
 
-  const [showQrCode, setShowQrCode] = useState(false);
-  const [qrCodeSVG, setQrCodeSVG] = useState<string>("");
-  const [otpValue, setOtpValue] = useState<string>("");
-  const [otpValue2, setOtpValue2] = useState<string>("");
 
   const [authenticatorService, setAuthenticatorService] = useState<AuthenticatorService<Web3AuthMPCCoreKit>>();
-
+  const [smsService, setSmsService] = useState<SmsService<Web3AuthMPCCoreKit>>();
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
 
@@ -129,10 +127,14 @@ function App() {
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         const authenticatorService = new AuthenticatorService({
           backendUrl : "http://localhost:3021",
-          web3authNetwork: WEB3AUTH_NETWORK.MAINNET,
+          remoteSignerInstance: coreKitInstance,
+        })
+        const smsService = new SmsService({
+          backendUrl : "http://localhost:3021",
           remoteSignerInstance: coreKitInstance,
         })
         setAuthenticatorService(authenticatorService) 
+        setSmsService(smsService)
       }
       setCoreKitStatus(coreKitInstance.status);
     };
@@ -188,61 +190,19 @@ function App() {
       // IMP END - Recover MFA Enabled Account
       const authenticatorService = new AuthenticatorService({
         backendUrl : "http://localhost:3021",
-        web3authNetwork: WEB3AUTH_NETWORK.MAINNET,
+        remoteSignerInstance: coreKitInstance,
+      })
+      const smsService = new SmsService({
+        backendUrl : "http://localhost:3021",
         remoteSignerInstance: coreKitInstance,
       })
       setAuthenticatorService(authenticatorService)
+      setSmsService(smsService)
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
       uiConsole(err);
     }
   };
-
-
-  // Remote Sign
-  const registerAuthenticatorSecret = async () => {
-    if (!coreKitInstance || !authenticatorService) {
-      throw new Error("coreKitInstance not found");
-    }
-    const result = await authenticatorService.startRegisterFactor()
-
-    console.log(result);
-    // qrcode
-    
-    setQrCodeSVG(result.secretKey);
-    setShowQrCode(true);
-  };
-
-  const deleteAuthenticator = async () => {
-    if (!coreKitInstance || !authenticatorService) {
-      throw new Error("coreKitInstance not found");
-    }
-    await authenticatorService.unregisterFactor();
-  }
-
-  const registerAuthenticatorFactorkey = async ( code : string) => {
-    if (!coreKitInstance || !authenticatorService) {
-      throw new Error("coreKitInstance not found");
-    }
-
-    const factorkey = generateFactorKey();
-    await authenticatorService.verifyRegistration( code, factorkey.private.toString("hex") );
-    await coreKitInstance.commitChanges();
-    setShowQrCode(false);
-  }
-
-  const remoteSetup = async (code : string) => {
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance not found");
-    }
-
-    const details = coreKitInstance.getKeyDetails();
-    const {factorPub} = getFactorDetailsAndDescriptions( details.shareDescriptions, "authenticator")
-    // to do add more security measure
-    const updated = await authenticatorService?.setupRemoteSignerUsingAuthenticatorCode( code )
-
-    setCoreKitStatus(coreKitInstance.status);
-  }
 
 
   // IMP START - Recover MFA Enabled Account
@@ -568,15 +528,9 @@ function App() {
           Generate Backup (Mnemonic) Share Index 3 (Recovery)
         </button>
       </div>
-      <div>
-        <button onClick={registerAuthenticatorSecret} className="card">
-          Register Authenticator
-        </button>
-        <input value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
-        <button onClick={deleteAuthenticator} className="card">
-          Delete Authenticator
-        </button>
-      </div>
+      <RemoteSignerFeature coreKitInstance={coreKitInstance} authenticatorService={authenticatorService} />
+      <SMSRemoteSignerFeature coreKitInstance={coreKitInstance} authenticatorService={smsService} />
+
     </div>
   );
 
@@ -602,30 +556,19 @@ function App() {
           Input Backup Factor Key
         </button>
 
-        <input value={otpValue2} onChange={(e) => setOtpValue2(e.target.value)} />
+        <RemoteSignerLoginView coreKitInstance={coreKitInstance} authenticatorService={authenticatorService} successCallback={(status) => setCoreKitStatus(status)} />
+        <SMSRemoteSignerLoginView coreKitInstance={coreKitInstance} authenticatorService={smsService} successCallback={(status) => setCoreKitStatus(status)} />
 
-        <button onClick={()=>remoteSetup(otpValue2)} className="card"> Verify Otp and setup Remote Signer </button>
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
       </div>
     </div>
   );
-
-
-  const QRCodeRegisterView = () => {
-    return <div id="qrcode" style={{ textAlign: "center" , position:"absolute" }} >
-      <QRCodeSVG value={qrCodeSVG} size={300} />
-      <span>{qrCodeSVG}</span>
-      <input value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
-      <button onClick={() => registerAuthenticatorFactorkey(otpValue)} >Verify</button>
-    </div>;
-  };
-
   return (
     <div className="container">
 
-      { showQrCode && <QRCodeRegisterView />}
+      {/* { showQrCode && <QRCodeRegisterView />} */}
       <h1 className="title">
         <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer">
           Web3Auth MPC Core Kit
