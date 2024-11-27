@@ -12,7 +12,7 @@ import {
   mnemonicToKey,
   makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
-import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
+import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 // Optional, only for social second factor recovery
 
@@ -46,7 +46,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   manualSync: true, // This is the recommended approach
-  uxMode: 'redirect',
+  uxMode: "redirect",
   storage: window.localStorage,
   tssLib,
 });
@@ -78,9 +78,9 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
-      // IMP START - SDK Initialization
-      await coreKitInstance.init();
-      // IMP END - SDK Initialization
+      if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+        await coreKitInstance.init();
+      }
 
       setCoreKitStatus(coreKitInstance.status);
     };
@@ -96,11 +96,10 @@ function App() {
       // IMP START - Login
       const verifierConfig = {
         subVerifierDetails: {
-          typeOfLogin: 'google',
-          verifier: 'w3a-google-demo',
-          clientId:
-            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
-        }
+          typeOfLogin: "google",
+          verifier: "w3a-google-demo",
+          clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
+        },
       } as SubVerifierDetailsParams;
 
       await coreKitInstance.loginWithOAuth(verifierConfig);
@@ -156,20 +155,19 @@ function App() {
 
       await tempCoreKitInstance.init();
 
-        // Login using Firebase Email Password
-        const auth = getAuth(app);
-        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        uiConsole(res);
-        const idToken = await res.user.getIdToken(true);
-        const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      uiConsole(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier: "w3a-firebase-demo",
-          verifierId: userInfo.sub,
-          idToken,
-        });
-      
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier: "w3a-firebase-demo",
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
@@ -201,7 +199,9 @@ function App() {
         await coreKitInstance.commitChanges();
       }
 
-      uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app");
+      uiConsole(
+        "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
+      );
     } catch (e) {
       uiConsole(e);
     }
@@ -430,7 +430,6 @@ function App() {
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-
       </div>
     </>
   );

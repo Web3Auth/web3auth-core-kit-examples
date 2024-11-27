@@ -2,8 +2,7 @@
 <template>
   <div id="app">
     <h2>
-      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer"> Web3Auth MPC Core
-        Kit </a>
+      <a target="_blank" href="https://web3auth.io/docs/sdk/core-kit/mpc-core-kit/" rel="noreferrer"> Web3Auth MPC Core Kit </a>
       Vue.js Quick Start
     </h2>
 
@@ -61,8 +60,11 @@
     </div>
 
     <footer class="footer">
-      <a href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
-        target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/mpc-core-kit-web/quick-starts/mpc-core-kit-vue-quick-start"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Source code
       </a>
     </footer>
@@ -160,7 +162,9 @@ export default {
       const init = async () => {
         try {
           // IMP START - SDK Initialization
-          await coreKitInstance.init();
+          if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+            await coreKitInstance.init();
+          }
           // IMP END - SDK Initialization
 
           coreKitStatus.value = coreKitInstance.status;
@@ -246,18 +250,18 @@ export default {
     };
     // IMP END - Recover MFA Enabled Account
 
-  // IMP START - Export Social Account Factor
-  const getSocialMFAFactorKey = async (): Promise<string> => {
-    try {
-      // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
-      const tempCoreKitInstance = new Web3AuthMPCCoreKit({
-        web3AuthClientId,
-        web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-        storage: window.localStorage,
-        tssLib,
-      });
+    // IMP START - Export Social Account Factor
+    const getSocialMFAFactorKey = async (): Promise<string> => {
+      try {
+        // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
+        const tempCoreKitInstance = new Web3AuthMPCCoreKit({
+          web3AuthClientId,
+          web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+          storage: window.localStorage,
+          tssLib,
+        });
 
-      await tempCoreKitInstance.init();
+        await tempCoreKitInstance.init();
 
         // Login using Firebase Email Password
         const auth = getAuth(app);
@@ -272,20 +276,19 @@ export default {
           verifierId: userInfo.sub,
           idToken,
         });
-      
 
-      // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
-      const factorKey = await tempCoreKitInstance.state.postBoxKey;
-      uiConsole("Social Factor Key: ", factorKey);
-      backupFactorKey.value = factorKey! as string;
-      tempCoreKitInstance.logout();
-      return factorKey as string;
-    } catch (err) {
-      uiConsole(err);
-      return "";
-    }
-  };
-  // IMP END - Export Social Account Factor
+        // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
+        const factorKey = await tempCoreKitInstance.state.postBoxKey;
+        uiConsole("Social Factor Key: ", factorKey);
+        backupFactorKey.value = factorKey! as string;
+        tempCoreKitInstance.logout();
+        return factorKey as string;
+      } catch (err) {
+        uiConsole(err);
+        return "";
+      }
+    };
+    // IMP END - Export Social Account Factor
 
     // IMP START - Enable Multi Factor Authentication
     const enableMFA = async () => {
@@ -295,7 +298,7 @@ export default {
       try {
         const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
         uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
-        await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
+        await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
         if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
           await coreKitInstance.commitChanges();
@@ -309,7 +312,6 @@ export default {
       }
     };
     // IMP END - Enable Multi Factor Authentication
-
 
     // IMP START - Delete Factor
     const deleteFactor = async () => {
@@ -557,7 +559,7 @@ a {
   flex-flow: row wrap;
 }
 
-.flex-container>div {
+.flex-container > div {
   width: 100px;
   margin: 10px;
   text-align: center;
