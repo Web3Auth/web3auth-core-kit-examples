@@ -6,7 +6,7 @@
     "@scure/base": "^1.1.9",
     "@solana/web3.js": "^1.95.3",
     "@toruslabs/tss-frost-lib": "^1.0.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^22.10.1",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
