@@ -47,7 +47,7 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true,
-    tssLib: tssLibDkls, // tssLibDkls | tssLibFrostBip340 - Taproot only
+    tssLib: tssLibFrostBip340, // tssLibDkls | tssLibFrostBip340 - Taproot only
   });
 
   evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
@@ -79,6 +79,7 @@ function App() {
       await coreKitInstance.init();
       setCoreKitStatus(coreKitInstance.status);
       setIsLoading(false);
+      console.log("coreKitInstance sigType: ", coreKitInstance.sigType);
     };
     init();
   }, []);

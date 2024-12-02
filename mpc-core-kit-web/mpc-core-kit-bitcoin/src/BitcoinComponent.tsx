@@ -115,7 +115,6 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
           ? payments.p2wpkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
           : payments.p2tr({ pubkey: Buffer.from(tweakedChildNode.publicKey.subarray(1, 33)), network: bitcoinNetwork });
 
-      console.log("account.address", account.address);
       const utxos = await fetchUtxos(account.address!);
 
       if (!utxos.length) {
