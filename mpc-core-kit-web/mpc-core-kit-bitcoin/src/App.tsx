@@ -47,7 +47,7 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true,
-    tssLib: tssLibFrostBip340, // tssLibDkls | tssLibFrostBip340 - Taproot only
+    tssLib: tssLibDkls, // tssLibDkls | tssLibFrostBip340 - Taproot only
   });
 
   evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
@@ -157,7 +157,7 @@ function App() {
         web3AuthClientId,
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
         storage: window.localStorage,
-        tssLib,
+        tssLib: tssLibFrostBip340,
       });
 
       await tempCoreKitInstance.init();

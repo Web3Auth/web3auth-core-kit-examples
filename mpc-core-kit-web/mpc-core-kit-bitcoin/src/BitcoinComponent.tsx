@@ -102,6 +102,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     setIsLoading(true);
 
     try {
+      console.log("sigType", coreKitInstance.sigType);
       const bufPubKey = signer.publicKey;
       const xOnlyPubKey = bufPubKey.subarray(1, 33);
       const keyPair = ECPair.fromPublicKey(bufPubKey);
@@ -254,48 +255,48 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       </div>
 
       <div className="flex-container">
-        <button onClick={() => showAddress("PSBT")} className="card psbt-color">
+        {/* <button onClick={() => showAddress("PSBT")} className="card psbt-color">
           Show PSBT Address
         </button>
         <button onClick={() => showAddress("Segwit")} className="card segwit-color">
           Show Segwit Address
-        </button>
+        </button> */}
         <button onClick={() => showAddress("Taproot")} className="card taproot-color">
           Show Taproot Address
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => showBalance("PSBT")} className="card psbt-color">
+        {/* <button onClick={() => showBalance("PSBT")} className="card psbt-color">
           Show PSBT Balance
         </button>
         <button onClick={() => showBalance("Segwit")} className="card segwit-color">
           Show Segwit Balance
-        </button>
+        </button> */}
         <button onClick={() => showBalance("Taproot")} className="card taproot-color">
           Show Taproot Balance
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => signAndSendTransaction("PSBT")} className="card psbt-color">
+        {/* <button onClick={() => signAndSendTransaction("PSBT")} className="card psbt-color">
           Sign PSBT Transaction
         </button>
         <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color">
           Sign Segwit Transaction
-        </button>
+        </button> */}
         <button onClick={() => signAndSendTransaction("Taproot")} className="card taproot-color">
           Sign Taproot Transaction
         </button>
       </div>
 
       <div className="flex-container">
-        <button onClick={() => signAndSendTransaction("PSBT", true)} className="card psbt-color">
+        {/* <button onClick={() => signAndSendTransaction("PSBT", true)} className="card psbt-color">
           Send PSBT Transaction
         </button>
         <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color">
           Send Segwit Transaction
-        </button>
+        </button> */}
         <button onClick={() => signAndSendTransaction("Taproot", true)} className="card taproot-color">
           Send Taproot Transaction
         </button>

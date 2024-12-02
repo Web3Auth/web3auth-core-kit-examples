@@ -5,6 +5,8 @@ import { networks, SignerAsync } from "bitcoinjs-lib";
 export function createBitcoinJsSigner(props: { coreKitInstance: Web3AuthMPCCoreKit; network: networks.Network }): SignerAsync {
   return {
     sign: async (hash: Buffer, lowR?: boolean) => {
+      console.log("hash", hash);
+      console.log("sigType", props.coreKitInstance.sigType);
       let sig = await props.coreKitInstance.sign(hash, true);
       const { r, s } = sigToRSV(sig);
       const sigBuffer = Buffer.concat([r, s]);
