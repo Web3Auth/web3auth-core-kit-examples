@@ -93,7 +93,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     return await response.text();
   };
 
-  const signAndSendTransaction = async (transactionType: "PSBT" | "Segwit", send: boolean = false) => {
+  const signAndSendTransaction = async (transactionType: "PSBT" | "Segwit" | "Taproot", send: boolean = false) => {
     if (!signer) {
       uiConsole("Signer not initialized yet");
       return;
@@ -102,11 +102,19 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     setIsLoading(true);
 
     try {
+      const bufPubKey = signer.publicKey;
+      const xOnlyPubKey = bufPubKey.subarray(1, 33);
+      const keyPair = ECPair.fromPublicKey(bufPubKey);
+      const tweakedChildNode = keyPair.tweak(bitcoinjs.crypto.taggedHash("TapTweak", xOnlyPubKey));
+
       const account =
         transactionType === "PSBT"
           ? payments.p2pkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
-          : payments.p2wpkh({ pubkey: signer.publicKey, network: bitcoinNetwork });
+          : transactionType === "Segwit"
+          ? payments.p2wpkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
+          : payments.p2tr({ pubkey: Buffer.from(tweakedChildNode.publicKey.subarray(1, 33)), network: bitcoinNetwork });
 
+      console.log("account.address", account.address);
       const utxos = await fetchUtxos(account.address!);
 
       if (!utxos.length) {
@@ -133,7 +141,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
           index: utxo.vout,
           nonWitnessUtxo: Buffer.from(txHex, "hex"),
         });
-      } else {
+      } else if (transactionType === "Segwit") {
         psbt.addInput({
           hash: utxo.txid,
           index: utxo.vout,
@@ -141,6 +149,16 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
             script: account.output!,
             value: utxo.value,
           },
+        });
+      } else if (transactionType === "Taproot") {
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          witnessUtxo: {
+            script: account.output!,
+            value: utxo.value,
+          },
+          tapInternalKey: xOnlyPubKey,
         });
       }
 
@@ -153,8 +171,10 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
 
       if (transactionType === "PSBT") {
         await psbt.signInputAsync(0, signer);
-      } else {
+      } else if (transactionType === "Segwit") {
         await psbt.signAllInputsAsync(signer);
+      } else if (transactionType === "Taproot") {
+        await psbt.signInputAsync(0, signer);
       }
 
       const isValid = psbt.validateSignaturesOfInput(0, BTCValidator);
@@ -240,6 +260,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => showAddress("Segwit")} className="card segwit-color">
           Show Segwit Address
         </button>
+        <button onClick={() => showAddress("Taproot")} className="card taproot-color">
+          Show Taproot Address
+        </button>
       </div>
 
       <div className="flex-container">
@@ -248,6 +271,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         </button>
         <button onClick={() => showBalance("Segwit")} className="card segwit-color">
           Show Segwit Balance
+        </button>
+        <button onClick={() => showBalance("Taproot")} className="card taproot-color">
+          Show Taproot Balance
         </button>
       </div>
 
@@ -258,6 +284,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         <button onClick={() => signAndSendTransaction("Segwit")} className="card segwit-color">
           Sign Segwit Transaction
         </button>
+        <button onClick={() => signAndSendTransaction("Taproot")} className="card taproot-color">
+          Sign Taproot Transaction
+        </button>
       </div>
 
       <div className="flex-container">
@@ -266,6 +295,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         </button>
         <button onClick={() => signAndSendTransaction("Segwit", true)} className="card segwit-color">
           Send Segwit Transaction
+        </button>
+        <button onClick={() => signAndSendTransaction("Taproot", true)} className="card taproot-color">
+          Send Taproot Transaction
         </button>
       </div>
 

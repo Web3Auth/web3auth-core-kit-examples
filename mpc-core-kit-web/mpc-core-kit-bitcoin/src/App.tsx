@@ -1,5 +1,6 @@
 import "./App.css";
-import { tssLib } from "@toruslabs/tss-dkls-lib";
+import { tssLib as tssLibDkls } from "@toruslabs/tss-dkls-lib";
+import { tssLib as tssLibFrostBip340 } from "@toruslabs/tss-frost-lib-bip340";
 import { ADAPTER_EVENTS, CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { Point, secp256k1 } from "@tkey/common-types";
@@ -46,7 +47,7 @@ if (typeof window !== "undefined") {
     web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
     storage: window.localStorage,
     manualSync: true,
-    tssLib,
+    tssLib: tssLibFrostBip340, // tssLibDkls | tssLibFrostBip340 - Taproot only
   });
 
   evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
@@ -161,20 +162,19 @@ function App() {
 
       await tempCoreKitInstance.init();
 
-        // Login using Firebase Email Password
-        const auth = getAuth(app);
-        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        uiConsole(res);
-        const idToken = await res.user.getIdToken(true);
-        const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      uiConsole(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier,
-          verifierId: userInfo.sub,
-          idToken,
-        });
-      
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
