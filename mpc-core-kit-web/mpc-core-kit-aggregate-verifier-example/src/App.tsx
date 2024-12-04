@@ -11,7 +11,7 @@ import {
   mnemonicToKey,
   makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
-import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
+import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
 // IMP END - Quick Start
 import { BN } from "bn.js";
@@ -45,7 +45,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   storage: window.localStorage,
   manualSync: true, // This is the recommended approach
-  tssLib: tssLib
+  tssLib: tssLib,
 });
 
 // Setup evmProvider for EVM Chain
@@ -61,7 +61,9 @@ function App() {
   useEffect(() => {
     const init = async () => {
       // IMP START - SDK Initialization
-      await coreKitInstance.init();
+      if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+        await coreKitInstance.init();
+      }
       // IMP END - SDK Initialization
 
       setCoreKitStatus(coreKitInstance.status);
@@ -72,7 +74,7 @@ function App() {
   const loginWithGoogle = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
 
       // IMP START - Login
@@ -85,7 +87,7 @@ function App() {
             clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
             jwtParams: {
               verifierIdField: "email",
-            }
+            },
           },
         ],
       } as AggregateVerifierLoginParams;
@@ -105,16 +107,15 @@ function App() {
       // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
+  };
 
   const loginWithAuth0GitHub = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
 
       // IMP START - Login
@@ -129,7 +130,7 @@ function App() {
               connection: "github",
               domain: "https://web3auth.au.auth0.com",
               verifierIdField: "email",
-            }
+            },
           },
         ],
       } as AggregateVerifierLoginParams;
@@ -149,16 +150,15 @@ function App() {
       // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
+  };
 
   const loginWithAuth0EmailPasswordless = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
 
       // IMP START - Login
@@ -173,7 +173,7 @@ function App() {
               // connection: "passwordless",
               domain: "https://web3auth.au.auth0.com",
               verifierIdField: "email",
-            }
+            },
           },
         ],
       } as AggregateVerifierLoginParams;
@@ -193,11 +193,10 @@ function App() {
       // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
+  };
 
   // IMP START - Recover MFA Enabled Account
   const inputBackupFactorKey = async () => {
@@ -239,7 +238,9 @@ function App() {
         await coreKitInstance.commitChanges();
       }
 
-      uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app");
+      uiConsole(
+        "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
+      );
     } catch (e) {
       uiConsole(e);
     }
@@ -514,7 +515,6 @@ function App() {
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-
       </div>
     </>
   );
