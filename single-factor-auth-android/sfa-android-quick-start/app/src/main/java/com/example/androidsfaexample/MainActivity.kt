@@ -61,21 +61,23 @@ class MainActivity : AppCompatActivity() {
 
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut(this.applicationContext) }
-        singleFactorAuth.getSessionData()
         val torusKeyCF = singleFactorAuth.initialize(this.applicationContext)
         Log.i("Is connected",singleFactorAuth.isConnected().toString())
-        torusKeyCF.whenComplete { sessionData, error ->
+        torusKeyCF.whenComplete { _, error ->
             if (error != null) {
                 Log.e("Initialize Error", error.toString())
-            } else if (sessionData == null) {
-                Log.e("Initialize", "No active session found")
             } else  {
-                this.sessionData = sessionData
-                torusKey = sessionData.privateKey
-                publicAddress = sessionData.publicAddress
-                Log.i("Private Key", torusKey!!.trimIndent())
-                Log.i("User Info", sessionData.userInfo.toString())
-                reRender()
+                this.sessionData = singleFactorAuth.getSessionData()
+                if(this.sessionData == null) {
+                    Log.i("Session", "No active session found")
+                } else {
+                    torusKey = sessionData!!.privateKey
+                    publicAddress = sessionData!!.publicAddress
+                    Log.i("Private Key", torusKey!!.trimIndent())
+                    Log.i("User Info", sessionData!!.userInfo.toString())
+                    reRender()
+                }
+
             }
         }
 
@@ -142,8 +144,13 @@ class MainActivity : AppCompatActivity() {
     private fun signOut(context: Context) {
         publicAddress = ""
         Firebase.auth.signOut()
-        singleFactorAuth.logout(context)
-        reRender()
+        try {
+            val logoutCF = singleFactorAuth.logout(context)
+            logoutCF.get()
+            reRender()
+        } catch (error: Exception) {
+            Log.e("Logout Error", error.toString());
+        }
     }
 
     private fun reRender() {

@@ -40,8 +40,7 @@ android {
 
 dependencies {
     // IMP START - Installation
-    implementation 'com.github.web3auth:single-factor-auth-android:2.1.0'
-    implementation 'org.torusresearch:torus-utils-java:4.0.3'
+    implementation 'com.github.web3auth:single-factor-auth-android:3.0.0'
     // IMP END - Installation
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
     implementation 'com.google.firebase:firebase-auth-ktx'
