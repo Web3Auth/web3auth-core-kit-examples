@@ -8,6 +8,10 @@ export function createBitcoinJsSigner(props: { coreKitInstance: Web3AuthMPCCoreK
       let sig = await props.coreKitInstance.sign(msg);
       return sig;
     },
+    signSchnorr: async (msg: Buffer) => {
+      let sig = await props.coreKitInstance.sign(msg);
+      return sig;
+    },
     publicKey: props.coreKitInstance.getPubKeyPoint().toSEC1(secp256k1, true),
     network: props.network,
   };
