@@ -4,7 +4,7 @@ import ecc from "@bitcoinerlab/secp256k1";
 import ECPairFactory from "ecpair";
 import { networks, Psbt, payments, SignerAsync } from "bitcoinjs-lib";
 import * as bitcoinjs from "bitcoinjs-lib";
-import { createBitcoinJsSigner } from "./BitcoinSigner";
+import { createBitcoinJsSigner, createBitcoinJsSignerBip340 } from "./BitcoinSigner";
 import axios from "axios";
 import { BlurredLoading } from "./Loading";
 
@@ -62,7 +62,7 @@ const handleSendTransaction = async (signedTransaction: string) => {
 
 export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInstance }) => {
   const [signer, setSigner] = useState<SignerAsync | null>(null);
-  const [receiverAddr, setReceiverAddr] = useState<string>("");
+  const [receiverAddr, setReceiverAddr] = useState<string>("tb1ph9cxmts2r8z56mfzyhem74pep0kfz2k0pc56uhujzx0c3v2rrgssx8zc5q");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -108,6 +108,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       const keyPair = ECPair.fromPublicKey(bufPubKey);
       const tweakedChildNode = keyPair.tweak(bitcoinjs.crypto.taggedHash("TapTweak", xOnlyPubKey));
 
+      console.log("tweakedChildNode.publicKey", tweakedChildNode.publicKey);
+      console.log("bip340", coreKitInstance.getPubKeyBip340());
       const account =
         transactionType === "PSBT"
           ? payments.p2pkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
@@ -162,6 +164,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
         });
       }
 
+      console.log("psbt.txInputs[0]", psbt.data.inputs);
+
       psbt.addOutput({
         address: receiverAddr || account.address!,
         value: sendAmount,
@@ -174,7 +178,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       } else if (transactionType === "Segwit") {
         await psbt.signAllInputsAsync(signer);
       } else if (transactionType === "Taproot") {
-        await psbt.signInputAsync(0, signer);
+        const signerBip340 = createBitcoinJsSignerBip340({ coreKitInstance, network: bitcoinNetwork });
+        await psbt.signInputAsync(0, signerBip340);
       }
 
       const isValid = psbt.validateSignaturesOfInput(0, BTCValidator);
