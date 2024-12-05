@@ -1,3 +1,4 @@
+// Custom Webhook for Telegram Bot for replying to /start command
 import { Telegraf } from "telegraf";
 
 export default async function handler(req, res) {
