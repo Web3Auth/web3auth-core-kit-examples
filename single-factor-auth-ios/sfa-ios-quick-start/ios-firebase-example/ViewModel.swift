@@ -32,12 +32,18 @@ class ViewModel: ObservableObject {
         // IMP START - Initialize Web3Auth SFA
         web3AuthOptions = Web3AuthOptions(
             clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET
+            web3AuthNetwork: .SAPPHIRE_MAINNET,
+            sessionTime: 20
         )
         
         singleFactorAuth = try! SingleFactorAuth(params: web3AuthOptions)
         
-        try! await singleFactorAuth.initialize()
+        do {
+            try await singleFactorAuth.initialize()
+        } catch {
+            print(error.localizedDescription)
+            // Error
+        }
         
         // Check for existing session
         if(singleFactorAuth.getSessionData() != nil) {

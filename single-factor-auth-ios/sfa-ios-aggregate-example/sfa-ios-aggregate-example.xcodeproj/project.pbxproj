@@ -423,7 +423,7 @@
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
+				minimumVersion = 9.0.3;
 			};
 		};
 		28D682982CA3AB0A00872DED /* XCRemoteSwiftPackageReference "web3" */ = {
