@@ -12,7 +12,7 @@ const ECPair = ECPairFactory(ecc);
 bitcoinjs.initEccLib(ecc);
 
 const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => {
-  return ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+  return ecc.verifySchnorr(Uint8Array.from(msghash), Uint8Array.from(pubkey), Uint8Array.from(signature));
 };
 
 const uiConsole = (...args: any): void => {
@@ -77,7 +77,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
 
   const fetchUtxos = async (address: string) => {
     try {
-      const response = await axios.get(`https://blockstream.info/testnet/api/address/${address}/utxo`);
+      const url = `https://blockstream.info/testnet/api/address/${address}/utxo`;
+      console.log(url);
+      const response = await axios.get(url);
       return response.data.filter((utxo: { status: { confirmed: boolean } }) => utxo.status.confirmed);
     } catch (error) {
       console.error("Error fetching UTXOs:", error);
@@ -128,9 +130,9 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       const maxFee = Math.max(...Object.values(feeResponse.data as Record<string, number>));
       const fee = Math.ceil(maxFee * 1.2); // Adding 20% buffer to the fee
 
-      if (utxo.value <= fee) {
-        throw new Error(`Insufficient funds: ${utxo.value} satoshis <= ${fee} satoshis (estimated fee)`);
-      }
+      // if (utxo.value <= fee) {
+      //   throw new Error(`Insufficient funds: ${utxo.value} satoshis <= ${fee} satoshis (estimated fee)`);
+      // }
 
       const sendAmount = amount ? parseInt(amount) : utxo.value - fee;
 
