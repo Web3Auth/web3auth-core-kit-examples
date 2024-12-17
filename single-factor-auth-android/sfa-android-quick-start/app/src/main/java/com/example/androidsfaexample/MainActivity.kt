@@ -4,12 +4,14 @@ package com.example.androidsfaexample
 
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
 // IMP START - Auth Provider Login
@@ -18,12 +20,17 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 // IMP END - Auth Provider Login
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 // IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
+import com.web3auth.singlefactorauth.types.BuildEnv
+import com.web3auth.singlefactorauth.types.ChainConfig
+import com.web3auth.singlefactorauth.types.ChainNamespace
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SessionData
 import com.web3auth.singlefactorauth.types.Web3AuthOptions
 import org.torusresearch.fetchnodedetails.types.Web3AuthNetwork
+import org.web3j.crypto.Credentials
 // IMP END - Quick Start
 import java.util.concurrent.ExecutionException
 
@@ -39,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private var publicAddress: String = ""
     private val gson = Gson()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,11 +53,13 @@ class MainActivity : AppCompatActivity() {
         web3AuthOptions = Web3AuthOptions(
             "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
             Web3AuthNetwork.MAINNET,
-            40
+            86400,
+            buildEnv = BuildEnv.TESTING,
+            redirectUrl = Uri.parse(packageName)
         )
 
         val context: Context = this.applicationContext
-        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, this)
         // IMP END - Initialize Web3Auth SFA
 
 
@@ -71,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 if(this.sessionData == null) {
                     Log.i("Session", "No active session found")
                 } else {
-                    torusKey = sessionData!!.privateKey
+                    torusKey = sessionData!!.privKey
                     publicAddress = sessionData!!.publicAddress
                     Log.i("Private Key", torusKey!!.trimIndent())
                     Log.i("User Info", sessionData!!.userInfo.toString())
@@ -82,6 +90,49 @@ class MainActivity : AppCompatActivity() {
         }
 
         reRender()
+
+        val showWalletUI = findViewById<Button>(R.id.showWalletUI)
+        showWalletUI.setOnClickListener {
+            val launchWalletCompletableFuture = singleFactorAuth.showWalletUI(
+                chainConfig = ChainConfig(
+                    chainId = "0x89",
+                    rpcTarget = "https://1rpc.io/matic",
+                    chainNamespace = ChainNamespace.EIP155
+                )
+            )
+            launchWalletCompletableFuture.whenComplete { _, error ->
+                if (error == null) {
+                    Log.d("MainActivity_Web3Auth", "Wallet launched successfully")
+                } else {
+                    Log.d("MainActivity_Web3Auth", error.message ?: "Something went wrong")
+                }
+            }
+        }
+
+        val signMsgButton = findViewById<Button>(R.id.signMsgButton)
+        signMsgButton.setOnClickListener {
+            val credentials: Credentials =
+                Credentials.create(singleFactorAuth.getSessionData()?.privKey)
+            val params = JsonArray().apply {
+                add("Hello, World!")
+                add(credentials.address)
+                add("Android")
+            }
+            val signMsgCompletableFuture = singleFactorAuth.request(
+                chainConfig = ChainConfig(
+                    chainId = "0x89",
+                    rpcTarget = "https://polygon-rpc.com/",
+                    chainNamespace = ChainNamespace.EIP155
+                ), "personal_sign", requestParams = params, appState = "web3Auth"
+            )
+            signMsgCompletableFuture.whenComplete { signResult, error ->
+                if (error == null) {
+                    showAlertDialog("Sign Result", signResult.toString())
+                } else {
+                    Log.d("MainActivity_Web3Auth", error.message ?: "Something went wrong")
+                }
+            }
+        }
     }
 
     private fun signIn(){
@@ -121,12 +172,12 @@ class MainActivity : AppCompatActivity() {
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
-                            torusKey = sessionData!!.privateKey
+                            torusKey = sessionData!!.privKey
                             publicAddress = sessionData!!.publicAddress
                             Log.i("Private Key:", torusKey!!.trimIndent())
                             Log.i("Public Address:", publicAddress.trimIndent())
                             Log.i("User Info", sessionData!!.userInfo.toString())
-                            println(sessionData!!.signatures!!.sessionAuthKey)
+                            println(sessionData!!.signatures!!.toString())
                             reRender()
                         }
                     }
@@ -168,5 +219,15 @@ class MainActivity : AppCompatActivity() {
             signInButton.visibility = View.VISIBLE
             signOutButton.visibility = View.GONE
         }
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this@MainActivity)
+        builder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }
