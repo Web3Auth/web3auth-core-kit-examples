@@ -44,7 +44,7 @@ let evmProvider: EthereumSigningProvider;
 if (typeof window !== "undefined") {
   coreKitInstance = new Web3AuthMPCCoreKit({
     web3AuthClientId,
-    web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+    web3AuthNetwork: WEB3AUTH_NETWORK.DEVNET,
     storage: window.localStorage,
     manualSync: true,
     tssLib: tssLibFrostBip340, // tssLibDkls | tssLibFrostBip340 - Taproot only

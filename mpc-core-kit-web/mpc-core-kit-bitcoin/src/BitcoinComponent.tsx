@@ -12,7 +12,7 @@ const ECPair = ECPairFactory(ecc);
 bitcoinjs.initEccLib(ecc);
 
 const BTCValidator = (pubkey: Buffer, msghash: Buffer, signature: Buffer): boolean => {
-  return ECPair.fromPublicKey(pubkey).verify(msghash, signature);
+  return ecc.verifySchnorr(Uint8Array.from(msghash), Uint8Array.from(pubkey), Uint8Array.from(signature));
 };
 
 const uiConsole = (...args: any): void => {
