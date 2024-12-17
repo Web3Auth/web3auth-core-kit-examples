@@ -73,8 +73,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     if (coreKitInstance) {
       const localSigner: SignerAsync = createBitcoinJsSigner({ coreKitInstance, network: bitcoinNetwork });
       setSigner(localSigner);
-      const bip340Signer: SignerAsync = createBitcoinJsSignerBip340({ coreKitInstance, network: bitcoinNetwork });
-      setBip340Signer(bip340Signer);
+      const localbip340Signer: SignerAsync = createBitcoinJsSignerBip340({ coreKitInstance, network: bitcoinNetwork });
+      setBip340Signer(localbip340Signer);
     }
   }, []);
 
@@ -117,7 +117,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
           ? payments.p2pkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
           : transactionType === "Segwit"
           ? payments.p2wpkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
-          : payments.p2tr({ pubkey: bip340Signer.publicKey, network: bitcoinNetwork });
+          : payments.p2tr({ pubkey: bip340Signer.publicKey.subarray(1, 33), network: bitcoinNetwork });
 
       const utxos = await fetchUtxos(account.address!);
 
