@@ -62,6 +62,7 @@ const handleSendTransaction = async (signedTransaction: string) => {
 
 export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInstance }) => {
   const [signer, setSigner] = useState<SignerAsync | null>(null);
+  const [bip340Signer, setBip340Signer] = useState<SignerAsync | null>(null);
   const [receiverAddr, setReceiverAddr] = useState<string>("tb1ph9cxmts2r8z56mfzyhem74pep0kfz2k0pc56uhujzx0c3v2rrgssx8zc5q");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -72,6 +73,8 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     if (coreKitInstance) {
       const localSigner: SignerAsync = createBitcoinJsSigner({ coreKitInstance, network: bitcoinNetwork });
       setSigner(localSigner);
+      const bip340Signer: SignerAsync = createBitcoinJsSignerBip340({ coreKitInstance, network: bitcoinNetwork });
+      setBip340Signer(bip340Signer);
     }
   }, []);
 
@@ -98,24 +101,23 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       uiConsole("Signer not initialized yet");
       return;
     }
+    if (!bip340Signer) {
+      uiConsole("BIP340 Signer not initialized yet");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
-      console.log("sigType", coreKitInstance.sigType);
       const bufPubKey = signer.publicKey;
       const xOnlyPubKey = bufPubKey.subarray(1, 33);
-      const keyPair = ECPair.fromPublicKey(bufPubKey);
-      const tweakedChildNode = keyPair.tweak(bitcoinjs.crypto.taggedHash("TapTweak", xOnlyPubKey));
 
-      console.log("tweakedChildNode.publicKey", tweakedChildNode.publicKey);
-      console.log("bip340", coreKitInstance.getPubKeyBip340());
       const account =
         transactionType === "PSBT"
           ? payments.p2pkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
           : transactionType === "Segwit"
           ? payments.p2wpkh({ pubkey: signer.publicKey, network: bitcoinNetwork })
-          : payments.p2tr({ pubkey: Buffer.from(tweakedChildNode.publicKey.subarray(1, 33)), network: bitcoinNetwork });
+          : payments.p2tr({ pubkey: bip340Signer.publicKey, network: bitcoinNetwork });
 
       const utxos = await fetchUtxos(account.address!);
 
@@ -178,8 +180,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
       } else if (transactionType === "Segwit") {
         await psbt.signAllInputsAsync(signer);
       } else if (transactionType === "Taproot") {
-        const signerBip340 = createBitcoinJsSignerBip340({ coreKitInstance, network: bitcoinNetwork });
-        await psbt.signInputAsync(0, signerBip340);
+        await psbt.signInputAsync(0, bip340Signer);
       }
 
       const isValid = psbt.validateSignaturesOfInput(0, BTCValidator);
