@@ -3,9 +3,6 @@ import {QRCodeSVG} from "qrcode.react";
 import { COREKIT_STATUS, generateFactorKey, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
 import { AuthenticatorService, getFactorDetailsAndDescriptions } from "@web3auth/mpc-remote-signer-plugin";
 
-
-
-
 export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: AuthenticatorService<Web3AuthMPCCoreKit>}) => {
     const {coreKitInstance, authenticatorService} = params;
     const [showQrCode, setShowQrCode] = useState(false);
@@ -26,11 +23,11 @@ export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit,
         setShowQrCode(true);
     };
 
-    const removeAuthenticator = async () => {
+    const removeAuthenticator = async (force: boolean = false) => {
         if (!coreKitInstance || !authenticatorService) {
         throw new Error("coreKitInstance not found");
         }
-        await authenticatorService.unregisterFactor();
+        await authenticatorService.unregisterFactor(force);
     }
 
     const verifyRegistration = async ( code : string) => {
@@ -60,8 +57,12 @@ export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit,
           Register Authenticator
         </button>
         <input value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
-        <button onClick={removeAuthenticator} className="card">
+        <button onClick={()=>removeAuthenticator(false)} className="card">
           Delete Authenticator
+        </button>
+
+        <button onClick={()=>removeAuthenticator(true)} className="card">
+          Force Delete Authenticator
         </button>
     </div>
 }

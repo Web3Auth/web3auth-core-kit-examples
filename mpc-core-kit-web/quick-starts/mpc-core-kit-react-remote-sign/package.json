@@ -6,9 +6,11 @@
   "dependencies": {
     "@ethereumjs/util": "^9.1.0",
     "@react-oauth/google": "^0.12.1",
-    "@tkey/common-types": "^15.0.2",
-    "@toruslabs/tss-dkls-lib": "^4.0.0",
-    "@toruslabs/tss-frost-lib": "^1.0.0",
+    "@tkey/common-types": "15.2.1-alpha.0",
+
+    "@toruslabs/tss-dkls-lib": "^5.0.0-alpha.0",
+    "@toruslabs/tss-frost-lib": "^2.0.0-alpha.0",
+    "@toruslabs/tss-frost-lib-bip340": "^0.1.0-alpha.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",

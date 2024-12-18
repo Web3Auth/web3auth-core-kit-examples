@@ -86,8 +86,8 @@ if (typeof window !== "undefined") {
 
   
   // Setup provider for EVM Chain
-  // evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
-  // evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
+  evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+  evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 }
 // IMP END - SDK Initialization
 
@@ -124,15 +124,19 @@ function App() {
       await coreKitInstance.init();
       // IMP END - SDK Initialization
 
-      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+      if (coreKitInstance.status !== COREKIT_STATUS.NOT_INITIALIZED) {
         const authenticatorService = new AuthenticatorService({
           backendUrl : "http://localhost:3021",
           remoteSignerInstance: coreKitInstance,
+          storage: window.localStorage,
         })
+        await authenticatorService.init();
         const smsService = new SmsService({
           backendUrl : "http://localhost:3021",
           remoteSignerInstance: coreKitInstance,
+          storage: window.localStorage,
         })
+        await smsService.init();
         setAuthenticatorService(authenticatorService) 
         setSmsService(smsService)
       }
@@ -191,11 +195,16 @@ function App() {
       const authenticatorService = new AuthenticatorService({
         backendUrl : "http://localhost:3021",
         remoteSignerInstance: coreKitInstance,
+        storage: window.localStorage,
       })
+      await authenticatorService.init();
+
       const smsService = new SmsService({
         backendUrl : "http://localhost:3021",
         remoteSignerInstance: coreKitInstance,
+        storage: window.localStorage,
       })
+      await smsService.init();
       setAuthenticatorService(authenticatorService)
       setSmsService(smsService)
       setCoreKitStatus(coreKitInstance.status);
