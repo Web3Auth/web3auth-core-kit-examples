@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 if(this.sessionData == null) {
                     Log.i("Session", "No active session found")
                 } else {
-                    torusKey = sessionData!!.privKey
+                    torusKey = sessionData!!.privateKey
                     publicAddress = sessionData!!.publicAddress
                     Log.i("Private Key", torusKey!!.trimIndent())
                     Log.i("User Info", sessionData!!.userInfo.toString())
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         val signMsgButton = findViewById<Button>(R.id.signMsgButton)
         signMsgButton.setOnClickListener {
             val credentials: Credentials =
-                Credentials.create(singleFactorAuth.getSessionData()?.privKey)
+                Credentials.create(singleFactorAuth.getSessionData()?.privateKey)
             val params = JsonArray().apply {
                 add("Hello, World!")
                 add(credentials.address)
@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
                             } catch (e: InterruptedException) {
                                 e.printStackTrace()
                             }
-                            torusKey = sessionData!!.privKey
+                            torusKey = sessionData!!.privateKey
                             publicAddress = sessionData!!.publicAddress
                             Log.i("Private Key:", torusKey!!.trimIndent())
                             Log.i("Public Address:", publicAddress.trimIndent())
