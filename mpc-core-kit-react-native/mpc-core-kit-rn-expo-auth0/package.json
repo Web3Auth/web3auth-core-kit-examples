@@ -32,6 +32,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
+    "@craftzdog/react-native-buffer": "^6.0.5",
     "@types/react": "^18.3.9",
     "@types/react-native": "^0.72.8",
     "empty-module": "^0.0.2",
