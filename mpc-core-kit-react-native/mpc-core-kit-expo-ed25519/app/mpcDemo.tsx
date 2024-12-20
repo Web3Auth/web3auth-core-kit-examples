@@ -13,7 +13,7 @@ import {
 } from "@web3auth/mpc-core-kit";
 import { Bridge, mpclib, TssFrostLib } from "@web3auth/react-native-mpc-core-kit";
 import BN from "bn.js";
-import { getItem, setItem } from "expo-secure-store";
+import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Button, ScrollView, Text, TextInput, View } from "react-native";
 
@@ -33,10 +33,10 @@ const verifier = "torus-test-health";
 // // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
-    return getItem(key);
+    return SecureStore.getItemAsync(key);
   },
   setItem: async (key: string, value: string) => {
-    return setItem(key, value);
+    return SecureStore.setItemAsync(key, value);
   },
 };
 
