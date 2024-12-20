@@ -13,10 +13,11 @@ import {
 } from "@web3auth/mpc-core-kit";
 import { Bridge, mpclib, TssFrostLib } from "@web3auth/react-native-mpc-core-kit";
 import BN from "bn.js";
+import { getItem, setItem } from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Button, ScrollView, Text, TextInput, View } from "react-native";
-import EncryptedStorage from "react-native-encrypted-storage";
 
+// import EncryptedStorage from "react-native-encrypted-storage";
 import { mpcViewStyles as styles } from "./styles";
 // IMP END - Auth Provider Login
 
@@ -32,10 +33,10 @@ const verifier = "torus-test-health";
 // // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
-    return EncryptedStorage.getItem(key);
+    return getItem(key);
   },
   setItem: async (key: string, value: string) => {
-    return EncryptedStorage.setItem(key, value);
+    return setItem(key, value);
   },
 };
 
@@ -44,7 +45,7 @@ const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   uxMode: "react-native",
   tssLib: TssFrostLib, // tss lib bridge for react native
-  manualSync: true, // This is the recommended approach
+  manualSync: false, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
 } as Web3AuthOptions);
 
