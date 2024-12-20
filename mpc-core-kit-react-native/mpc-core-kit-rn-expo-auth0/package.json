@@ -26,14 +26,12 @@
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
     "react-native-auth0": "^3.2.1",
-    "react-native-quick-crypto": "^0.7.5",
     "react-native-react-bridge": "^0.12.3",
     "react-native-webview": "^13.12.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
-    "@craftzdog/react-native-buffer": "^6.0.5",
     "@types/react": "^18.3.9",
     "@types/react-native": "^0.72.8",
     "empty-module": "^0.0.2",
