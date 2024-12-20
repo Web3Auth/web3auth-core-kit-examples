@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
-    "@toruslabs/react-native-tss-lib-bridge": "^2.2.0",
     "@toruslabs/tss-dkls-lib": "^4.0.0",
     "@web3auth/base": "^9.0.2",
     "@web3auth/base-provider": "^9.0.2",
@@ -28,7 +27,7 @@
     "react-native-auth0": "^3.2.1",
     "react-native-quick-crypto": "^0.7.5",
     "react-native-webview": "13.8.6",
-    "react-native-react-bridge": "^0.12.1",
+    "react-native-react-bridge": "^0.12.3",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
