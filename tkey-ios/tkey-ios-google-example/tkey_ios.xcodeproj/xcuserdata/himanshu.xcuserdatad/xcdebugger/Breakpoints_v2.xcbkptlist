@@ -1,0 +1,1557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "FA1DCDA0-5B29-4DA8-99F5-21CCA2316C16"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2622D912-4231-413D-B474-330355673A21"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Shared/LoginModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "loginWithCustomAuth()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 534f0e843e6dd825"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "120">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 7dae5ecb774eb812"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 22e68e729f6f9c63"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 6dc3705695bc1c21"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 84378915dd5317e7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "544">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - e73f7d8ca29257e4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 534f0e843e6dd825"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 89aacfba4fef7e82"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 89aacfba4fef7e82"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - e89e4a630b38feaa"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "544">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - 9975b56f16bc32eb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - e943e147310342a8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "76">
+               </Location>
+               <Location
+                  uuid = "2622D912-4231-413D-B474-330355673A21 - eb26488f7ccccaa4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "34"
+                  endingLineNumber = "34"
+                  offsetFromSymbolStart = "100">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8402C601-0B6C-4265-BFFD-CCF8AE9163CF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "handleSingleLogins(controller:modalPresentationStyle:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7F6C3AE9-BBE5-4E04-9C92-FE89C43F2E04"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
+            landmarkName = "handleSingleIdVerifier(controller:modalPresentationStyle:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7F6C3AE9-BBE5-4E04-9C92-FE89C43F2E04 - 72c8fa4d5f37614e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "152">
+               </Location>
+               <Location
+                  uuid = "7F6C3AE9-BBE5-4E04-9C92-FE89C43F2E04 - 72c8fa4d5f37614e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "188">
+               </Location>
+               <Location
+                  uuid = "7F6C3AE9-BBE5-4E04-9C92-FE89C43F2E04 - 6bc72ad688e88c4d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "264">
+               </Location>
+               <Location
+                  uuid = "7F6C3AE9-BBE5-4E04-9C92-FE89C43F2E04 - 6bc72ad688e88c4d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "159"
+                  endingLineNumber = "159"
+                  offsetFromSymbolStart = "300">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EABDD887-E87B-4E7F-BAB8-D4D83A553335"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "124"
+            endingLineNumber = "124"
+            landmarkName = "handleSingleLogins(controller:modalPresentationStyle:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F0FDB23C-22B4-4996-B15D-5AE5B21C8F99"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
+            landmarkName = "triggerLogin(controller:browserType:modalPresentationStyle:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "F0FDB23C-22B4-4996-B15D-5AE5B21C8F99 - 684dcc4114a3d93"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for CustomAuth.CustomAuth.triggerLogin(controller: Swift.Optional&lt;__C.UIViewController&gt;, browserType: CustomAuth.URLOpenerTypes, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "584">
+               </Location>
+               <Location
+                  uuid = "F0FDB23C-22B4-4996-B15D-5AE5B21C8F99 - 71a3b991f5fa3b66"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for CustomAuth.CustomAuth.triggerLogin(controller: Swift.Optional&lt;__C.UIViewController&gt;, browserType: CustomAuth.URLOpenerTypes, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "52">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Shared/LoginModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "loginWithCustomAuth()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - 534f0e843e6dd8c4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "120">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - 7dae5ecb774eb8f3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - 22e68e729f6f9c82"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - 6dc3705695bc1c02"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #1 @Sendable () async throws -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - e943e14731034249"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "120">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - 3b0e2d729c877608"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "36">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - ea749dab56e58647"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "35"
+                  endingLineNumber = "35"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "C46DCA7F-942B-4BF0-9F84-18BDEC53A6C9 - a516e0a1f56270c6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #1 @Sendable () async -&gt; () in tkey_ios.LoginModel.loginWithCustomAuth() -&gt; ()"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/torus/web3auth-core-kit-examples/tkey-ios/tkey-ios-google-example/Shared/LoginModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "36"
+                  endingLineNumber = "36"
+                  offsetFromSymbolStart = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "56AE7521-93E2-4E0D-8648-354B0F35AB25"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "56AE7521-93E2-4E0D-8648-354B0F35AB25 - 18f0117d0fac9ad3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.retrieveDecryptAndReconstruct(endpoints: Swift.Array&lt;Swift.String&gt;, extraParams: Foundation.Data, verifier: Swift.String, tokenCommitment: Swift.String, nodeSignatures: Swift.Array&lt;TorusUtils.CommitmentRequestResponseModel&gt;, verifierId: Swift.String, lookupPubkeyX: Swift.String, lookupPubkeyY: Swift.String, privateKey: Swift.String) async throws -&gt; (Swift.String, Swift.String, Swift.String)"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "130"
+                  endingLineNumber = "130"
+                  offsetFromSymbolStart = "1024">
+               </Location>
+               <Location
+                  uuid = "56AE7521-93E2-4E0D-8648-354B0F35AB25 - 18f0117d0fac9ad3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.retrieveDecryptAndReconstruct(endpoints: Swift.Array&lt;Swift.String&gt;, extraParams: Foundation.Data, verifier: Swift.String, tokenCommitment: Swift.String, nodeSignatures: Swift.Array&lt;TorusUtils.CommitmentRequestResponseModel&gt;, verifierId: Swift.String, lookupPubkeyX: Swift.String, lookupPubkeyY: Swift.String, privateKey: Swift.String) async throws -&gt; (Swift.String, Swift.String, Swift.String)"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "130"
+                  endingLineNumber = "130"
+                  offsetFromSymbolStart = "2248">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AC9AB59E-B2D1-4A75-95C8-C4F758749C5B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "35B9DA51-64A4-4794-A968-9C8F3FE7667A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
+            landmarkName = "handleSingleIdVerifier(controller:modalPresentationStyle:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "35B9DA51-64A4-4794-A968-9C8F3FE7667A - 3cbb415460c3d721"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "1392">
+               </Location>
+               <Location
+                  uuid = "35B9DA51-64A4-4794-A968-9C8F3FE7667A - 33ed00b8694882db"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(8) await resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  uuid = "35B9DA51-64A4-4794-A968-9C8F3FE7667A - 28ab9a7ef49323"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "184">
+               </Location>
+               <Location
+                  uuid = "35B9DA51-64A4-4794-A968-9C8F3FE7667A - 6bc72ad688e88c8b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) suspend resume partial function for CustomAuth.CustomAuth.handleSingleIdVerifier(controller: Swift.Optional&lt;__C.UIViewController&gt;, modalPresentationStyle: __C.UIModalPresentationStyle) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "136">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "81304AFB-B010-45CB-99F1-316D7AC64830"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "214"
+            endingLineNumber = "214"
+            landmarkName = "getAggregateTorusKey(verifier:verifierId:idToken:subVerifierDetails:userData:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "81304AFB-B010-45CB-99F1-316D7AC64830 - 4aa3f9e776447a96"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "214"
+                  endingLineNumber = "214"
+                  offsetFromSymbolStart = "148">
+               </Location>
+               <Location
+                  uuid = "81304AFB-B010-45CB-99F1-316D7AC64830 - c5e429058e2631b7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "214"
+                  endingLineNumber = "214"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "81304AFB-B010-45CB-99F1-316D7AC64830 - 2a338857806f3e90"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "214"
+                  endingLineNumber = "214"
+                  offsetFromSymbolStart = "128">
+               </Location>
+               <Location
+                  uuid = "81304AFB-B010-45CB-99F1-316D7AC64830 - b4258c6d392e292"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "214"
+                  endingLineNumber = "214"
+                  offsetFromSymbolStart = "152">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D0B46A46-AC62-4B9D-A698-33D533E5F0CE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "getAggregateTorusKey(verifier:verifierId:idToken:subVerifierDetails:userData:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "D0B46A46-AC62-4B9D-A698-33D533E5F0CE - 651329682412b675"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "213"
+                  endingLineNumber = "213"
+                  offsetFromSymbolStart = "1364">
+               </Location>
+               <Location
+                  uuid = "D0B46A46-AC62-4B9D-A698-33D533E5F0CE - 620293cb56fe4d54"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "213"
+                  endingLineNumber = "213"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "D0B46A46-AC62-4B9D-A698-33D533E5F0CE - 4aa3f9e776447a77"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "213"
+                  endingLineNumber = "213"
+                  offsetFromSymbolStart = "124">
+               </Location>
+               <Location
+                  uuid = "D0B46A46-AC62-4B9D-A698-33D533E5F0CE - 1bfa708e2a845c70"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for CustomAuth.CustomAuth.getAggregateTorusKey(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, subVerifierDetails: CustomAuth.SubVerifierDetails, userData: Swift.Dictionary&lt;Swift.String, Any&gt;) async throws -&gt; Swift.Dictionary&lt;Swift.String, Any&gt;"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/customauth-swift-sdk/Sources/CustomAuth/CustomAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "213"
+                  endingLineNumber = "213"
+                  offsetFromSymbolStart = "144">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B96E9988-0FC4-49C7-8DFF-67EFCE25F6CE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/TorusUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
+            landmarkName = "handleRetrieveShares(torusNodePubs:endpoints:verifier:verifierId:idToken:extraParams:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B96E9988-0FC4-49C7-8DFF-67EFCE25F6CE - 2605539fbf5bd58b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.handleRetrieveShares(torusNodePubs: Swift.Array&lt;FetchNodeDetails.TorusNodePubModel&gt;, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, extraParams: Foundation.Data) async throws -&gt; TorusUtils.RetrieveSharesResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/TorusUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "152"
+                  endingLineNumber = "152"
+                  offsetFromSymbolStart = "232">
+               </Location>
+               <Location
+                  uuid = "B96E9988-0FC4-49C7-8DFF-67EFCE25F6CE - 2605539fbf5bd58b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.handleRetrieveShares(torusNodePubs: Swift.Array&lt;FetchNodeDetails.TorusNodePubModel&gt;, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String, extraParams: Foundation.Data) async throws -&gt; TorusUtils.RetrieveSharesResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/TorusUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "152"
+                  endingLineNumber = "152"
+                  offsetFromSymbolStart = "340">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9AF56FE6-826D-44E7-AEF5-95EDB7833084"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "503"
+            endingLineNumber = "503"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "511"
+            endingLineNumber = "511"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - 254a8bc63436ea87"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "1648">
+               </Location>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - e523b5eafcda85f7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - 46bada77e61c2e85"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "284">
+               </Location>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - 662b6ae4d0c96283"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "96">
+               </Location>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - 97e352dc3bdc0080"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "168">
+               </Location>
+               <Location
+                  uuid = "F1DAB597-594C-48F2-A146-9E944B60DBFC - 879bb91582b6a681"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "92">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BAE4ED21-1CAE-4A22-A875-E08D35E9BAD1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "535"
+            endingLineNumber = "535"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BAE4ED21-1CAE-4A22-A875-E08D35E9BAD1 - 187ead6b01079d29"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Sendable () async -&gt; Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt; in closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "535"
+                  endingLineNumber = "535"
+                  offsetFromSymbolStart = "132">
+               </Location>
+               <Location
+                  uuid = "BAE4ED21-1CAE-4A22-A875-E08D35E9BAD1 - ea0634d6e8d8feb6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) await resume partial function for closure #1 @Sendable () async -&gt; Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt; in closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "535"
+                  endingLineNumber = "535"
+                  offsetFromSymbolStart = "48">
+               </Location>
+               <Location
+                  uuid = "BAE4ED21-1CAE-4A22-A875-E08D35E9BAD1 - 8ec635d280c4acb1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) suspend resume partial function for closure #1 @Sendable () async -&gt; Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt; in closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "535"
+                  endingLineNumber = "535"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "BAE4ED21-1CAE-4A22-A875-E08D35E9BAD1 - 8a140ebe27a14abe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async -&gt; Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt; in closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "535"
+                  endingLineNumber = "535"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "066BA81A-031C-4100-9EC6-29869ABA5C69"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "538"
+            endingLineNumber = "538"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "68574BD3-8626-4601-8A03-54CEA72E10E5"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "549"
+            endingLineNumber = "549"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5C9C84CC-BA0D-43E7-A158-47E1B2DFE891"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "560"
+            endingLineNumber = "560"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5C9C84CC-BA0D-43E7-A158-47E1B2DFE891 - 7bac75fc32047d6f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "560"
+                  endingLineNumber = "560"
+                  offsetFromSymbolStart = "3276">
+               </Location>
+               <Location
+                  uuid = "5C9C84CC-BA0D-43E7-A158-47E1B2DFE891 - 7bac75fc32047d6f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 (inout Swift.ThrowingTaskGroup&lt;Swift.Result&lt;TorusUtils.TaskGroupResponse, Swift.Error&gt;, Swift.Error&gt;) async throws -&gt; TorusUtils.KeyLookupResponseModel in TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "560"
+                  endingLineNumber = "560"
+                  offsetFromSymbolStart = "3668">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "28453D4D-8A5E-49B1-9897-EE46B2119D0F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "575"
+            endingLineNumber = "575"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3E301CA0-B1E9-4141-B2C3-04731F7C9080"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "583"
+            endingLineNumber = "583"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DED78E8A-8E14-46BA-A18F-11A74D089A79"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "587"
+            endingLineNumber = "587"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5A7C269B-C67C-4973-B720-96F1E8C6E62B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "527"
+            endingLineNumber = "527"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BC6AC74E-46CE-4DA3-B442-CFA324F5B2CD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "567"
+            endingLineNumber = "567"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0AD1C369-D561-478A-A2D5-82CFC6D4C485"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "580"
+            endingLineNumber = "580"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5500AA8B-2DE6-4C88-A359-5D12EA6DC171"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "556"
+            endingLineNumber = "556"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "782EEA52-E8C0-43AB-B769-B32C7C135C1E"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "514"
+            endingLineNumber = "514"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6D1E87B8-BE56-4CF7-B60F-1737B1C00104"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CEE28183-6E7B-444A-AA04-0DC6B7F702CA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "36DFEA5C-A5E7-42C2-9E08-FB6D636A6710"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "22DCB3C2-B879-4E92-97F9-54EAD6E34F1E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "28DC43F5-217E-422F-9B70-FCC8D4F3FC90"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "47071F8F-0A04-416A-B914-8BC25F62969C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D9734B97-7208-4CF7-B007-C1ED76134020"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "77EABDE0-0495-4199-B84C-D44DD0E7F179"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9FA68BD4-90ED-43FF-A46E-7ADC83DCBC38"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "224"
+            endingLineNumber = "224"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "729279A0-5855-44E9-8CA2-7A089693AC85"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "510"
+            endingLineNumber = "510"
+            landmarkName = "keyLookup(endpoints:verifier:verifierId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - 254a8bc63436ea87"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "1648">
+               </Location>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - e523b5eafcda85f7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - 46bada77e61c2e85"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "284">
+               </Location>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - 662b6ae4d0c96283"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "96">
+               </Location>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - 97e352dc3bdc0080"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "168">
+               </Location>
+               <Location
+                  uuid = "D1CFB1CA-CB98-4FB1-8628-CFA83DB2635D - 879bb91582b6a681"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for TorusUtils.TorusUtils.keyLookup(endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierId: Swift.String) async throws -&gt; TorusUtils.KeyLookupResponseModel"
+                  moduleName = "tkey_ios"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/himanshu/Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "511"
+                  endingLineNumber = "511"
+                  offsetFromSymbolStart = "92">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C6F2DA99-8C68-4D70-A6A0-707089E40CF3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Library/Developer/Xcode/DerivedData/tkey_ios-eglqpnifqwcezrgcypfzgcmcrxsc/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Extensions/TorusUtils+extension.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
+            landmarkName = "retrieveDecryptAndReconstruct(endpoints:extraParams:verifier:tokenCommitment:nodeSignatures:verifierId:lookupPubkeyX:lookupPubkeyY:privateKey:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

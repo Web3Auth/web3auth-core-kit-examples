@@ -6,6 +6,7 @@ import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
 import {
   COREKIT_STATUS,
+  FactorKeyTypeShareDescription,
   generateFactorKey,
   JWTLoginParams,
   keyToMnemonic,
@@ -28,11 +29,10 @@ import { Auth0Provider, useAuth0 } from "react-native-auth0";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
-const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
-// IMP END - Dashboard Registration
+const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";// IMP END - Dashboard Registration
 
 // IMP START - Verifier Creation
-const verifier = "w3a-auth0-demo";
+const verifier = "torus-test-health";
 // IMP END - Verifier Creation
 
 const chainConfig = {
@@ -62,7 +62,7 @@ const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   // setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: "react-native",
   tssLib: TssDklsLib, // tss lib bridge for react native
-  manualSync: true, // This is the recommended approach
+  manualSync: false, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
 });
 
@@ -87,7 +87,7 @@ function Home() {
           await coreKitInstance.init();
           // IMP END - SDK Initialization
         } catch (error: any) {
-          uiConsole(error.message, "mounted caught");
+          uiConsole(error, "mounted caught");
         }
         setCoreKitStatus(coreKitInstance.status);
       };
@@ -104,7 +104,7 @@ function Home() {
       await authorize(
         {
           scope: "openid profile email",
-          // connection: 'google-oauth2',
+          connection: 'google-oauth2',
         }
         // {
         //   customScheme: 'com.mpccorekitrnauth0',
@@ -114,13 +114,34 @@ function Home() {
         // },
         // com.mpccorekitrnauth0.auth0://web3auth.au.auth0.com/android/com.mpccorekitrnauth0/callback
       );
+      console.log("authorize");
       const credentials = await getCredentials();
-
+      console.log("credentials");
       return credentials?.idToken;
     } catch (error) {
-      console.error(error);
+      console.error("error from auth0", error);
+      throw error;
     }
   };
+
+
+  // IMP START - Auth Provider Login
+  const mockLogin2 = async (emailID: string) => {
+    const req = new Request("https://li6lnimoyrwgn2iuqtgdwlrwvq0upwtr.lambda-url.eu-west-1.on.aws/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ verifier: "torus-key-test", scope: "email", extraPayload: { email: emailID }, alg: "ES256" }),
+    });
+
+    const resp = await fetch(req);
+    const bodyJson = (await resp.json()) as { token: string };
+    const idToken = bodyJson.token;
+    const parsedToken = parseToken(idToken);
+    return { idToken, parsedToken };
+  }; // IMP END - Auth Provider Login
+
 
   const login = async () => {
     try {
@@ -129,23 +150,23 @@ function Home() {
       }
       setConsoleUI("Logging in");
       setLoading(true);
-      // IMP START - Auth Provider Login
-      const idToken = await signInWithAuth0();
-      // IMP END - Auth Provider Login
-      uiConsole("idToken", idToken);
-
-      // IMP START - Login
-      uiConsole("idToken", idToken);
+       // IMP START - Auth Provider Login
+       const loginRes = await mockLogin2("xyz@gmaaaila");
+       // IMP END - Auth Provider Login
+ 
+       // IMP START - Login
+       const idToken = loginRes.idToken;
       const parsedToken = parseToken(idToken!);
 
       const idTokenLoginParams: JWTLoginParams = {
         verifier,
-        verifierId: parsedToken.sub,
+        verifierId: parsedToken.email,
         idToken: idToken!,
       };
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        uiConsole("Login success", loginRes);
         await coreKitInstance.commitChanges(); // Needed for new accounts
       }
       // IMP END - Login
@@ -161,6 +182,7 @@ function Home() {
 
       setCoreKitStatus(coreKitInstance.status);
     } catch (err) {
+      setLoading(false);
       uiConsole(err);
     }
   };
@@ -194,18 +216,22 @@ function Home() {
     setLoading(true);
     try {
       setConsoleUI("Enabling MFA, please wait");
+      // const randomFactorKey = generateFactorKey();
 
-      const factorKey = await coreKitInstance.enableMFA({});
+      const factorKey = await coreKitInstance.enableMFA({
+      }, true);
+      console.log("factorKey", factorKey);
       const factorKeyMnemonic = keyToMnemonic(factorKey);
 
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
     } catch (error: any) {
-      uiConsole(error.message);
+      console.log("error", error);
+      uiConsole(error);
     }
     setLoading(false);
 
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await coreKitInstance.commitChanges();
+      // await coreKitInstance.commitChanges();
     }
   };
   // IMP END - Enable Multi Factor Authentication
@@ -466,7 +492,7 @@ function Home() {
       <View style={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE ? styles.disabledSection : styles.section}>
         <Text style={styles.heading}>Account Recovery</Text>
         <Button disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE} title="Get Device Factor" onPress={() => getDeviceFactor()} />
-        <Text>Recover Using Mnemonic Factor Key:</Text>
+        <Text>Recover Using Mnemonic Factor ?:</Text>
         <TextInput style={styles.input} onChangeText={setMnemonicFactor} value={mnemonicFactor} />
         <Button
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
@@ -483,7 +509,7 @@ function Home() {
   return (
     <View style={styles.container}>
       {coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}
-      {loading && <ActivityIndicator />}
+      {/* {loading && <ActivityIndicator size="large" color="#0000ff" />} */}
       <View style={styles.consoleArea}>
         <Text style={styles.consoleText}>Console:</Text>
         <ScrollView style={styles.consoleUI}>
