@@ -200,7 +200,7 @@ function Home() {
 
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
     } catch (error: any) {
-      uiConsole(error.message);
+      uiConsole("Error", error.message);
     }
     setLoading(false);
 
@@ -214,7 +214,7 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance not found");
     }
-    uiConsole(coreKitInstance.getKeyDetails());
+    uiConsole(await coreKitInstance.getKeyDetails());
   };
 
   const getDeviceFactor = async () => {
