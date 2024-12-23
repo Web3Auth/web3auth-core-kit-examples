@@ -1,7 +1,6 @@
 import "./globals";
 import "@ethersproject/shims";
 
-import { Bridge, tssLib } from "@toruslabs/react-native-tss-lib-bridge";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
@@ -15,8 +14,8 @@ import {
   parseToken,
   TssShareType,
   WEB3AUTH_NETWORK,
-  Web3AuthMPCCoreKit,
 } from "@web3auth/mpc-core-kit";
+import { Bridge, mpclib, TssDklsLib } from "@web3auth/react-native-mpc-core-kit";
 // IMP END - Quick Start
 import { BN } from "bn.js";
 import { ethers } from "ethers";
@@ -47,7 +46,6 @@ const chainConfig = {
   tickerName: "Ethereum",
 };
 
-const tsslibInstance = tssLib;
 // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
@@ -58,12 +56,12 @@ const asyncStorageKey = {
   },
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
+const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   // setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: "react-native",
-  tssLib: tsslibInstance, // tss lib bridge for react native
+  tssLib: TssDklsLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
 });
@@ -75,25 +73,28 @@ evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 
 function Home() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [bridgeReady, setBridgeReady] = useState<boolean>(false);
   const [consoleUI, setConsoleUI] = useState<string>("");
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(COREKIT_STATUS.NOT_INITIALIZED);
   const [backupFactorKey, setBackupFactorKey] = useState<string>("");
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        // IMP START - SDK Initialization
-        await coreKitInstance.init();
-        // IMP END - SDK Initialization
-      } catch (error: any) {
-        uiConsole(error.message, "mounted caught");
-      }
-      setCoreKitStatus(coreKitInstance.status);
-    };
-    init();
+    if (bridgeReady) {
+      const init = async () => {
+        try {
+          // IMP START - SDK Initialization
+          await coreKitInstance.init();
+          // IMP END - SDK Initialization
+        } catch (error: any) {
+          uiConsole(error.message, "mounted caught");
+        }
+        setCoreKitStatus(coreKitInstance.status);
+      };
+      init();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bridgeReady]);
 
   const { authorize, getCredentials } = useAuth0();
 
@@ -194,12 +195,12 @@ function Home() {
     try {
       setConsoleUI("Enabling MFA, please wait");
 
-      const factorKey = await coreKitInstance.enableMFA({});
+      const factorKey = await coreKitInstance.enableMFA({}, false);
       const factorKeyMnemonic = keyToMnemonic(factorKey);
 
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
     } catch (error: any) {
-      uiConsole(error.message);
+      uiConsole("Error", error);
     }
     setLoading(false);
 
@@ -213,7 +214,7 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance not found");
     }
-    uiConsole(coreKitInstance.getKeyDetails());
+    uiConsole(await coreKitInstance.getKeyDetails());
   };
 
   const getDeviceFactor = async () => {
@@ -420,10 +421,7 @@ function Home() {
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
-      input: { message: "KEY_NOT_FOUND" },
-    });
+    await coreKitInstance._UNSAFE_resetAccount();
     uiConsole("reset");
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
@@ -489,6 +487,12 @@ function Home() {
           <Text>{consoleUI}</Text>
         </ScrollView>
       </View>
+      <Bridge
+        logLevel={"DEBUG"}
+        resolveReady={(ready) => {
+          setBridgeReady(ready);
+        }}
+      />
     </View>
   );
 }
@@ -499,7 +503,6 @@ export default function App() {
       <Auth0Provider domain={"https://web3auth.au.auth0.com"} clientId={"hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O"}>
         <Home />
       </Auth0Provider>
-      <Bridge logLevel={"debug"} />
     </>
   );
 }
