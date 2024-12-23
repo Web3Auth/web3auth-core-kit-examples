@@ -421,10 +421,7 @@ function Home() {
     // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
     //   throw new Error("reset account is not recommended on mainnet");
     // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey!, "hex"),
-      input: { message: "KEY_NOT_FOUND" },
-    });
+    await coreKitInstance._UNSAFE_resetAccount();
     uiConsole("reset");
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
