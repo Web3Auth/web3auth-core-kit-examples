@@ -195,12 +195,12 @@ function Home() {
     try {
       setConsoleUI("Enabling MFA, please wait");
 
-      const factorKey = await coreKitInstance.enableMFA({});
+      const factorKey = await coreKitInstance.enableMFA({}, false);
       const factorKeyMnemonic = keyToMnemonic(factorKey);
 
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
     } catch (error: any) {
-      uiConsole("Error", error.message);
+      uiConsole("Error", error);
     }
     setLoading(false);
 
