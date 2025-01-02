@@ -13,7 +13,7 @@ import {
 } from "@web3auth/mpc-core-kit";
 import { Bridge, mpclib, TssFrostLib } from "@web3auth/react-native-mpc-core-kit";
 import BN from "bn.js";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Button, ScrollView, Text, TextInput, View } from "react-native";
 
@@ -282,6 +282,12 @@ export default function MPCDemo() {
       uiConsole(e);
     }
   };
+
+  const getNodeSignatures = async () => {
+    const { signatures } = coreKitInstance;
+    uiConsole("Node signatures: ", signatures);
+  };
+
   const storeDeviceFactor = async () => {
     try {
       const currentFactor = coreKitInstance.getCurrentFactorKey();
@@ -388,6 +394,8 @@ export default function MPCDemo() {
 
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button title="Generate Backup (Mnemonic) - CreateFactor" onPress={exportMnemonicFactor} />
+
+      <Button title="Get node Signatures" onPress={() => getNodeSignatures()} />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="store Device Factor" onPress={() => storeDeviceFactor()} />
       {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
