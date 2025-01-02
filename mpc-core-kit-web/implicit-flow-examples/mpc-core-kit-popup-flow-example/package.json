@@ -10,6 +10,7 @@
 		"@web3auth/mpc-core-kit": "3.2.4",
 		"bn.js": "^5.2.1",
 		"eccrypto": "^1.1.6",
+		"ethers": "^6.13.4",
 		"firebase": "^10.14.0",
 		"jsrsasign": "^10.8.6",
 		"react": "^18.3.1",
