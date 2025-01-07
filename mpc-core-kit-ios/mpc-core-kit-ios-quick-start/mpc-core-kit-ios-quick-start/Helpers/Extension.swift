@@ -22,7 +22,7 @@ extension MpcCoreKit : EvmSigner {
             address: self.getTssPubKey().hexString
         ).getPublicKey(format: .FullAddress)
 
-       return Data(hex: fullAddress).suffix(64)
+        return Data(hex: fullAddress)?.suffix(64) ?? Data()
     }
 
 }

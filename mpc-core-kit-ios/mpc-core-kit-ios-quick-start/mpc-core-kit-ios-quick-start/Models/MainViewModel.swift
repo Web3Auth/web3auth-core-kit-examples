@@ -23,11 +23,11 @@ class MainViewModel: ObservableObject {
     private var ethereumClient: EthereumClient!
     private var mpcEthereumProvider: MPCEthereumProvider!
     
-    func initialize() {
-        mpcCoreKit = MpcCoreKit(
-            web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+    func initialize() throws {
+        mpcCoreKit = try MpcCoreKit(
+            options: .init(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+                  web3AuthNetwork: .SAPPHIRE_MAINNET, storage: UserStorage()
+                 )
         )
         
         ethereumClient = EthereumClient()
@@ -57,10 +57,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let result = try await mpcCoreKit.loginWithOAuth(
-                    loginProvider: .google,
-                    clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
-                    verifier: "w3a-google-demo"
-                    
+                    singleLoginParams: .init(typeOfLogin: .google, verifier: "w3a-google-demo", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
                 )
                 
                 DispatchQueue.main.async {
@@ -122,7 +119,7 @@ class MainViewModel: ObservableObject {
                 )
                 let transaction = EthereumTransaction.init(
                     to: address,
-                    data: Data.init(hex: "0x")
+                    data: Data.init(hex: "0x") ?? Data()
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
@@ -164,17 +161,14 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
-                    factorKey: factor,
-                    format: "mnemonic"
-                ) else {
-                    return
-                }
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
+                    factorKey: factor
+                )
                 
                 print(seedPhrase)
                 
@@ -187,12 +181,9 @@ class MainViewModel: ObservableObject {
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
-                    shareMnemonic: seedPhrase,
-                    format: "mnemonic"
-                ) else {
-                    return
-                }
+                let factorKey = try mpcCoreKit.mnemonicToKey(
+                    shareMnemonic: seedPhrase
+                )
                 
                 print(factorKey.count)
                 

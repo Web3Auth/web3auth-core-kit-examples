@@ -26,7 +26,7 @@ struct LoginView: View {
             ).buttonStyle(.bordered)
             Spacer()
         }.onAppear {
-            viewModel.initialize()
+            try? viewModel.initialize()
         }
         
     }
