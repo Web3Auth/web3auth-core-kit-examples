@@ -13,7 +13,7 @@ import web3
 
 extension MpcCoreKit : EvmSigner {
     public func sign(message: Data) throws -> Data {
-        let data =  try self.tssSign(message: message)
+        let data =  try self.tssSignSync(message: message)
         return data
     }
 
