@@ -279,6 +279,7 @@ export default function MPCDemo() {
       setBackupFactorKey(factorKey);
       uiConsole("Device share: ", factorKey);
     } catch (e) {
+      console.log("catch error");
       uiConsole(e);
     }
   };
@@ -290,6 +291,7 @@ export default function MPCDemo() {
 
   const storeDeviceFactor = async () => {
     try {
+      console.log(1000000n);
       const currentFactor = coreKitInstance.getCurrentFactorKey();
       uiConsole("current factor: ", currentFactor);
       await coreKitInstance.setDeviceFactor(currentFactor.factorKey, true);
