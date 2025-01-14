@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CustomAuth
 
 struct HomeView: View {
     @StateObject var viewModel: MainViewModel
@@ -30,7 +31,7 @@ struct HomeView: View {
                         
                         Button(
                             action: {
-                                viewModel.showAlert(message: viewModel.userInfo.debugDescription)
+                                viewModel.showAlert(message: (viewModel.userInfo as! UserInfo).name)
                             }, label: {
                                 Text("View User info")
                             })
