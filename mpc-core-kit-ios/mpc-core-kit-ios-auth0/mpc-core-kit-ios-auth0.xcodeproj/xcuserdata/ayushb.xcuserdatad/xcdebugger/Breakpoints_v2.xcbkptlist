@@ -190,8 +190,8 @@
             filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
+            startingLineNumber = "348"
+            endingLineNumber = "348"
             landmarkName = "refreshFactorPubs()"
             landmarkType = "7">
          </BreakpointContent>
@@ -200,6 +200,22 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "32CF8D46-9CC2-4846-AA6C-0C3497CDEF2C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "240"
+            endingLineNumber = "240"
+            landmarkName = "recoverUsingSeedPhrase(seedPhrase:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EE41D5AD-8FA0-4781-93B9-A6E5C6BEDD68"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -215,22 +231,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EE41D5AD-8FA0-4781-93B9-A6E5C6BEDD68"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "238"
-            endingLineNumber = "238"
-            landmarkName = "recoverUsingSeedPhrase(seedPhrase:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "5B4B184D-667B-46CF-BF10-9E8ACEB7651D"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -238,8 +238,8 @@
             filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "MainViewModel"
             landmarkType = "3">
          </BreakpointContent>
@@ -258,78 +258,6 @@
             endingLineNumber = "64"
             landmarkName = "tssSign(message:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "EDF2EC48-9A03-4B44-8B75-D69D4B4D55E9 - d2b41bd7860b494b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-               <Location
-                  uuid = "EDF2EC48-9A03-4B44-8B75-D69D4B4D55E9 - 338884b154233b95"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-               <Location
-                  uuid = "EDF2EC48-9A03-4B44-8B75-D69D4B4D55E9 - 677d0da03b8f8e49"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-               <Location
-                  uuid = "EDF2EC48-9A03-4B44-8B75-D69D4B4D55E9 - 5dc18488e2c22df7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "57"
-                  endingLineNumber = "57">
-               </Location>
-               <Location
-                  uuid = "EDF2EC48-9A03-4B44-8B75-D69D4B4D55E9 - 5dc18488e2c22cce"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.tssSign(message: Foundation.Data) async throws -&gt; Foundation.Data"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -360,78 +288,6 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "318"
             endingLineNumber = "318">
-            <Locations>
-               <Location
-                  uuid = "EEB8DA83-ACDF-47A6-8522-7FBBDFD0388C - e3c5cabe3bf9fd43"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.bootstrapTssClient(selected_tag: Swift.String) async throws -&gt; (tss_client_swift.TSSClient, Swift.Dictionary&lt;Swift.String, Swift.String&gt;)"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318">
-               </Location>
-               <Location
-                  uuid = "EEB8DA83-ACDF-47A6-8522-7FBBDFD0388C - b05f469c15823e53"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for mpc_core_kit_swift.MpcCoreKit.bootstrapTssClient(selected_tag: Swift.String) async throws -&gt; (tss_client_swift.TSSClient, Swift.Dictionary&lt;Swift.String, Swift.String&gt;)"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318">
-               </Location>
-               <Location
-                  uuid = "EEB8DA83-ACDF-47A6-8522-7FBBDFD0388C - 5a3f63f563d18145"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.bootstrapTssClient(selected_tag: Swift.String) async throws -&gt; (tss_client_swift.TSSClient, Swift.Dictionary&lt;Swift.String, Swift.String&gt;)"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318">
-               </Location>
-               <Location
-                  uuid = "EEB8DA83-ACDF-47A6-8522-7FBBDFD0388C - 30983823ab894411"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.bootstrapTssClient(selected_tag: Swift.String) async throws -&gt; (tss_client_swift.TSSClient, Swift.Dictionary&lt;Swift.String, Swift.String&gt;)"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "308"
-                  endingLineNumber = "308">
-               </Location>
-               <Location
-                  uuid = "EEB8DA83-ACDF-47A6-8522-7FBBDFD0388C - 30983823ab894547"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.bootstrapTssClient(selected_tag: Swift.String) async throws -&gt; (tss_client_swift.TSSClient, Swift.Dictionary&lt;Swift.String, Swift.String&gt;)"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/tss.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -548,132 +404,120 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "3C861AA1-E6B2-465D-B8A8-5D121B0506B7"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
+            startingLineNumber = "236"
+            endingLineNumber = "236"
             landmarkName = "recoverUsingSeedPhrase(seedPhrase:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3C861AA1-E6B2-465D-B8A8-5D121B0506B7 - 85b48c2dca97dd4c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.recoverUsingSeedPhrase(seedPhrase: Swift.String) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "235"
-                  endingLineNumber = "235">
-               </Location>
-               <Location
-                  uuid = "3C861AA1-E6B2-465D-B8A8-5D121B0506B7 - 4a9332ad694c5955"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.recoverUsingSeedPhrase(seedPhrase: Swift.String) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "235"
-                  endingLineNumber = "235">
-               </Location>
-               <Location
-                  uuid = "3C861AA1-E6B2-465D-B8A8-5D121B0506B7 - ed39fb4624f9a540"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for closure #1 @Sendable () async -&gt; () in mpc_core_kit_ios_auth0.MainViewModel.recoverUsingSeedPhrase(seedPhrase: Swift.String) -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-auth0"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "235"
-                  endingLineNumber = "235">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "AEA5C8DF-EF79-4A03-A9C2-C6DDEEEE5C4C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "346"
+            endingLineNumber = "346"
+            landmarkName = "refreshFactorPubs()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1E131D23-2DAF-41E2-9F09-C4C26B99591F"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "311"
-            endingLineNumber = "311"
-            landmarkName = "refreshFactorPubs()"
+            startingLineNumber = "262"
+            endingLineNumber = "262"
+            landmarkName = "setDeviceFactor()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "71969094-4316-4766-8D5C-AD214BAFFF02"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/DeviceFactorStorage.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "setFactor(metadataPubKey:factorKey:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "AEA5C8DF-EF79-4A03-A9C2-C6DDEEEE5C4C - dbeb2f46b6d9362"
+                  uuid = "71969094-4316-4766-8D5C-AD214BAFFF02 - 2d2fb29139a9c56c"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for mpc_core_kit_ios_auth0.MainViewModel.refreshFactorPubs() async -&gt; ()"
+                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.DeviceFactorStorage.setFactor(metadataPubKey: Swift.String, factorKey: Swift.String) async throws -&gt; ()"
                   moduleName = "mpc-core-kit-ios-auth0"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/DeviceFactorStorage.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311">
+                  startingLineNumber = "14"
+                  endingLineNumber = "14">
                </Location>
                <Location
-                  uuid = "AEA5C8DF-EF79-4A03-A9C2-C6DDEEEE5C4C - 9340445d8f960c72"
+                  uuid = "71969094-4316-4766-8D5C-AD214BAFFF02 - 7e2d07e909839694"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for mpc_core_kit_ios_auth0.MainViewModel.refreshFactorPubs() async -&gt; ()"
+                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.DeviceFactorStorage.setFactor(metadataPubKey: Swift.String, factorKey: Swift.String) async throws -&gt; ()"
                   moduleName = "mpc-core-kit-ios-auth0"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/DeviceFactorStorage.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311">
+                  startingLineNumber = "14"
+                  endingLineNumber = "14">
                </Location>
                <Location
-                  uuid = "AEA5C8DF-EF79-4A03-A9C2-C6DDEEEE5C4C - 55ab80bea116ff60"
+                  uuid = "71969094-4316-4766-8D5C-AD214BAFFF02 - 67ba41c1f468117a"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for mpc_core_kit_ios_auth0.MainViewModel.refreshFactorPubs() async -&gt; ()"
+                  symbolName = "(3) suspend resume partial function for mpc_core_kit_swift.DeviceFactorStorage.setFactor(metadataPubKey: Swift.String, factorKey: Swift.String) async throws -&gt; ()"
                   moduleName = "mpc-core-kit-ios-auth0"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/DeviceFactorStorage.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311">
+                  startingLineNumber = "14"
+                  endingLineNumber = "14">
                </Location>
                <Location
-                  uuid = "AEA5C8DF-EF79-4A03-A9C2-C6DDEEEE5C4C - 9da4de80e73fdb6e"
+                  uuid = "71969094-4316-4766-8D5C-AD214BAFFF02 - c34ccf9855cf4b7f"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "(7) suspend resume partial function for mpc_core_kit_ios_auth0.MainViewModel.refreshFactorPubs() async -&gt; ()"
+                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.DeviceFactorStorage.setFactor(metadataPubKey: Swift.String, factorKey: Swift.String) async throws -&gt; ()"
                   moduleName = "mpc-core-kit-ios-auth0"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ayushb/Work/web3auth/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-auth0/mpc-core-kit-ios-auth0/Models/MainViewModel.swift"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-auth0-foxiwcnhraxdotgyyildjpzxdjnk/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/DeviceFactorStorage.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311">
+                  startingLineNumber = "14"
+                  endingLineNumber = "14">
                </Location>
             </Locations>
          </BreakpointContent>

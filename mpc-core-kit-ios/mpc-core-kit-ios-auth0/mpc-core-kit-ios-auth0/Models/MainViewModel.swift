@@ -14,6 +14,7 @@ import tkey
 import Auth0
 import JWTDecode
 import CustomAuth
+import curveSecp256k1
 
 class MainViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
@@ -242,6 +243,40 @@ class MainViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isRecoveryRequired.toggle()
                 }
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                showAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
+    func setDeviceFactor() {
+        Task {
+            do {
+                showLoader("Setting Device Factor")
+                let deviceFactor = try curveSecp256k1.SecretKey().serialize()
+                try await mpcCoreKit.setDeviceFactor(factorKey: deviceFactor)
+                
+                showAlert(message: "Device Factor added successfully")
+                hideLoader()
+                await refreshFactorPubs()
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                showAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
+    func getDeviceFactor() {
+        Task {
+            do {
+                showLoader("Deleting Device Factor")
+                let deviceFactor = try await mpcCoreKit.getDeviceFactor()
+                
+                showAlert(message: "Device Factor: " + deviceFactor)
+                hideLoader()
             } catch let error {
                 hideLoader()
                 print(error.localizedDescription)

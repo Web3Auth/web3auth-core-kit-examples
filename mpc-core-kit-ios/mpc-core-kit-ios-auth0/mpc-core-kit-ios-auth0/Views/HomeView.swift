@@ -121,6 +121,22 @@ struct HomeView: View {
                         )
                         Button(
                             action: {
+                                viewModel.setDeviceFactor()
+                            },
+                            label: {
+                                Text("Set Device Factor")
+                            }
+                        )
+                        Button(
+                            action: {
+                                viewModel.getDeviceFactor()
+                            },
+                            label: {
+                                Text("Get Device Factor")
+                            }
+                        )
+                        Button(
+                            action: {
                                 viewModel.createNewTssFactor()
                             },
                             label: {
