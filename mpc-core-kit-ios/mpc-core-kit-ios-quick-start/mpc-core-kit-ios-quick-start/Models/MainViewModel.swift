@@ -16,6 +16,10 @@ class MainViewModel: ObservableObject {
     @Published var isRecoveryRequired: Bool = false
     @Published var factorPubs: [String] = []
     
+    @Published var showAlert: Bool = false
+    
+    @Published var isLoaderVisible: Bool = false
+    
     var publicAddress: String!
     
     
@@ -23,10 +27,14 @@ class MainViewModel: ObservableObject {
     private var ethereumClient: EthereumClient!
     private var mpcEthereumProvider: MPCEthereumProvider!
     
+    
+    var alertContent: String = ""
+    var loaderContent: String = ""
+    
     func initialize() throws {
         mpcCoreKit = try MpcCoreKit(
-            options: .init(web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-                  web3AuthNetwork: .SAPPHIRE_MAINNET, storage: UserStorage()
+            options: .init(web3AuthClientId: "BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw",
+                           web3AuthNetwork: .SAPPHIRE_DEVNET, storage: UserStorage()
                  )
         )
         
@@ -57,7 +65,7 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let result = try await mpcCoreKit.loginWithOAuth(
-                    singleLoginParams: .init(typeOfLogin: .google, verifier: "w3a-google-demo", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
+                    singleLoginParams: .init(typeOfLogin: .google, verifier: "w3a-sfa-web-google", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
                 )
                 
                 DispatchQueue.main.async {
@@ -78,7 +86,8 @@ class MainViewModel: ObservableObject {
             do {
                 try await mpcCoreKit.resetAccount()
                 DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
+                    self.isRecoveryRequired = false
+                    self.isLoggedIn = false
                 }
             } catch let error {
                 print(error.localizedDescription)
@@ -101,9 +110,10 @@ class MainViewModel: ObservableObject {
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
+                let signature = try mpcCoreKit.sign(message: "YOUR_MESSAGE".data(using: .ascii)!)
                 print(mpcCoreKit.debugDescription)
-                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
-                onSigned(signature, nil)
+//                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
+                onSigned(signature.hexString, nil)
             } catch let error  {
                 onSigned(nil, error.localizedDescription)
             }
@@ -213,6 +223,15 @@ class MainViewModel: ObservableObject {
         }
     }
     
+    func logout() {
+        Task {
+            do {
+                try await mpcCoreKit.logout()
+                toggleIsLoggedIn()
+            }
+        }
+    }
+    
     private func login() async throws {
         mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
         publicAddress = mpcEthereumProvider.address.toChecksumAddress()
@@ -231,6 +250,26 @@ class MainViewModel: ObservableObject {
     func toggleIsLoggedIn() {
         DispatchQueue.main.async {
             self.isLoggedIn.toggle()
+        }
+    }
+    
+    func showLoader(_ message: String) {
+        loaderContent = message
+        DispatchQueue.main.async {
+            self.isLoaderVisible = true
+        }
+    }
+    
+    func hideLoader() {
+        DispatchQueue.main.async {
+            self.isLoaderVisible = false
+        }
+    }
+    
+    func showAlert(message: String) {
+        alertContent = message
+        DispatchQueue.main.async {
+            self.showAlert = true
         }
     }
 }
