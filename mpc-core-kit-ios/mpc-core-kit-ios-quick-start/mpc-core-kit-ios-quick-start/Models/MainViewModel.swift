@@ -11,7 +11,7 @@ import MpcProviderSwift
 import web3
 import UIKit
 
-class MainViewModel: ObservableObject {
+@MainActor class MainViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isRecoveryRequired: Bool = false
     @Published var factorPubs: [String] = []
@@ -196,7 +196,7 @@ class MainViewModel: ObservableObject {
                 )
                 
                 try await login()
-    
+                
                 self.isRecoveryRequired.toggle()
             } catch let error {
                 print(error.localizedDescription)
