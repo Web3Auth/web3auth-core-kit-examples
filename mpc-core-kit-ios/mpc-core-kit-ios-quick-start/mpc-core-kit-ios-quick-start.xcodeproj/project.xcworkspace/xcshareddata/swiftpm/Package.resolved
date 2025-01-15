@@ -1,5 +1,5 @@
 {
-  "originHash" : "85823ce731e504f26e228ca4424bd5103974c9a0e33aa647daf561a6cc5a403d",
+  "originHash" : "24dbe6a6a12ff57d0f65bcadc8dc07e5c4c4d2f8da5daf9ba0042c506c57383a",
   "pins" : [
     {
       "identity" : "bigint",
@@ -58,10 +58,10 @@
     {
       "identity" : "mpc-core-kit-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/tkey/mpc-core-kit-swift",
+      "location" : "https://github.com/web3auth/mpc-core-kit-swift",
       "state" : {
         "branch" : "feat/signer",
-        "revision" : "31261336790df3227a34d365fd038e10b3c3c7f2"
+        "revision" : "4773dfc6808250dcd3b831214abcf5ec5a763585"
       }
     },
     {

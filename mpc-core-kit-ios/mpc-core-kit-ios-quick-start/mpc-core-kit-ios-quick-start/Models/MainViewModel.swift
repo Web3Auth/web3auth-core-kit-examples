@@ -50,9 +50,7 @@ class MainViewModel: ObservableObject {
                     idToken: "String"
                 )
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = result.requiredFactors > 0
-                }
+                self.isRecoveryRequired = result.requiredFactors > 0
                 
                 try await login()
             } catch let error {
@@ -68,9 +66,7 @@ class MainViewModel: ObservableObject {
                     singleLoginParams: .init(typeOfLogin: .google, verifier: "w3a-sfa-web-google", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
                 )
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = result.requiredFactors > 0
-                }
+                self.isRecoveryRequired = result.requiredFactors > 0
                 
                 try await login()
                 
@@ -84,11 +80,9 @@ class MainViewModel: ObservableObject {
     func resetAccount() {
         Task {
             do {
-                try await mpcCoreKit.resetAccount()
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = false
-                    self.isLoggedIn = false
-                }
+                try await mpc_core_kit_swift.resetAccount(coreKitInstance: mpcCoreKit)
+                self.isRecoveryRequired = false
+                self.isLoggedIn = false
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -176,8 +170,8 @@ class MainViewModel: ObservableObject {
                     factorDescription: .SeedPhrase
                 )
                 
-                let seedPhrase = try mpcCoreKit.keyToMnemonic(
-                    factorKey: factor
+                let seedPhrase = try FactorSerialization.keyToMnemonic(tkey: mpcCoreKit.tkey!,
+                                                                       shareHex: factor
                 )
                 
                 print(seedPhrase)
@@ -191,21 +185,19 @@ class MainViewModel: ObservableObject {
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                let factorKey = try mpcCoreKit.mnemonicToKey(
+                let factorKey = try FactorSerialization.mnemonicToKey(tkey: mpcCoreKit.tkey!,
                     shareMnemonic: seedPhrase
                 )
                 
                 print(factorKey.count)
                 
-                try await mpcCoreKit.inputFactor(
+                try await mpcCoreKit.inputFactorKey(
                     factorKey: factorKey
                 )
                 
                 try await login()
-                
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
-                }
+    
+                self.isRecoveryRequired.toggle()
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -242,9 +234,7 @@ class MainViewModel: ObservableObject {
     
     private func refreshFactorPubs() async throws {
         let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
-        DispatchQueue.main.async {
-            self.factorPubs = localFactorPubs
-        }
+        self.factorPubs = localFactorPubs
     }
     
     func toggleIsLoggedIn() {

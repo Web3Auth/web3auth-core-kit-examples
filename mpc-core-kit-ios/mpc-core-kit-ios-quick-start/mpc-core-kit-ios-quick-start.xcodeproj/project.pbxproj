@@ -672,7 +672,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		F0EB928C2D27B02B0024D038 /* XCRemoteSwiftPackageReference "mpc-core-kit-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tkey/mpc-core-kit-swift";
+			repositoryURL = "https://github.com/web3auth/mpc-core-kit-swift";
 			requirement = {
 				branch = feat/signer;
 				kind = branch;
