@@ -128,6 +128,41 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func showWalletUI() {
+        Task {
+            do {
+                try await singleFactorAuth.showWalletUI(chainConfig: ChainConfig(
+                    chainId: "0xaa36a7",
+                    rpcTarget: "https://eth-sepolia.public.blastapi.io"
+                ))
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func requestSignature() {
+        Task {
+            do {
+                var params = [Any]()
+                // Message to be signed
+                params.append("Hello, Web3Auth from iOS!")
+                // User's EOA address
+                params.append(ethereumClient.ethereumAccount.address.toChecksumAddress())
+                
+                let result = try await singleFactorAuth.request(chainConfig: ChainConfig(
+                    chainId: "0xaa36a7",
+                    rpcTarget: "https://eth-sepolia.public.blastapi.io"
+                ), method: "personal_sign", requestParams: params)
+                
+                print(result)
+                
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {

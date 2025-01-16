@@ -47,6 +47,18 @@ struct UserDetailView: View {
                     } header: {
                         Text("Private key")
                     }
+                    Section {
+                        Button {
+                            viewModel.showWalletUI()
+                        } label: {
+                            Text("Show Wallet UI")
+                        }
+                        Button {
+                            viewModel.requestSignature()
+                        } label: {
+                            Text("Request Signature")
+                        }
+                    }
                     
                     Section {
                         Button {

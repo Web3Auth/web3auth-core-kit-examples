@@ -100,5 +100,195 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "258"
+            endingLineNumber = "258"
+            landmarkName = "request(chainConfig:method:requestParams:path:appState:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE - cce4b10bd2ad241b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+               <Location
+                  uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE - a36329280560c880"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) await resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "257"
+                  endingLineNumber = "257">
+               </Location>
+               <Location
+                  uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE - a36329280560f763"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) await resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+               <Location
+                  uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE - 94d159a3a30a17fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "257"
+                  endingLineNumber = "257">
+               </Location>
+               <Location
+                  uuid = "9484E23F-7B96-4336-A6C0-A62DD9DEE7DE - 94d159a3a30a281d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "260"
+            endingLineNumber = "260"
+            landmarkName = "request(chainConfig:method:requestParams:path:appState:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - cce4b10bd2ad241b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - a36329280560c880"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) await resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "257"
+                  endingLineNumber = "257">
+               </Location>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - a36329280560f763"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) await resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - 94d159a3a30a17fe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "257"
+                  endingLineNumber = "257">
+               </Location>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - 94d159a3a30a281d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+               <Location
+                  uuid = "659939FF-6A5F-4963-B11E-9D0173306CD9 - 86069e18795174e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.CheckedContinuation&lt;SingleFactorAuth.SignResponse, Swift.Never&gt;) -&gt; () in SingleFactorAuth.SingleFactorAuth.request(chainConfig: SingleFactorAuth.ChainConfig, method: Swift.String, requestParams: Swift.Array&lt;Any&gt;, path: Swift.Optional&lt;Swift.String&gt;, appState: Swift.Optional&lt;Swift.String&gt;) async throws -&gt; SingleFactorAuth.SignResponse"
+                  moduleName = "ios-firebase-example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ayushb/Library/Developer/Xcode/DerivedData/ios-firebase-example-gbhtcokjgzzdmgbfypjxzxkmqdgm/SourcePackages/checkouts/single-factor-auth-swift/Sources/SingleFactorAuth/SingleFactorAuth.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "260"
+                  endingLineNumber = "260">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
