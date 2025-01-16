@@ -2,6 +2,7 @@
   "expo": {
     "name": "mpc-core-kit-expo-ed25519",
     "slug": "mpc-core-kit-expo-ed25519",
+    "entryPoint": "./App.tsx",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.expo.mpc-core-kit-expo-ed25519"
+      "bundleIdentifier": "com.torus.reactnativeexpo"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.expo.mpccorekitexpoed25519"
+      "package": "com.torus.mpccorekitexpoed25519"
     },
     "web": {
       "bundler": "metro",

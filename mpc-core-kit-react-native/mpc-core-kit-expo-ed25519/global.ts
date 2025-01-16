@@ -1,3 +1,5 @@
+// import "fast-text-encoding";
+
 import { install } from "react-native-quick-crypto";
 
 install();
@@ -18,13 +20,13 @@ process.browser = true;
 
 // global.Buffer = require("buffer").Buffer;
 
-// const TextEncodingPolyfill = require("text-encoding");
+const TextEncodingPolyfill = require("text-encoding");
 // const WebAssembly = require('react-native-webassembly');
 
 // const BigInt = require('big-integer')
-// Object.assign(global, {
-//   TextEncoder: TextEncodingPolyfill.TextEncoder,
-//   TextDecoder: TextEncodingPolyfill.TextDecoder,
-//   // WebAssembly: WebAssembly,
-//   // BigInt: BigInt,
-// });
+Object.assign(global, {
+  TextEncoder: TextEncodingPolyfill.TextEncoder,
+  TextDecoder: TextEncodingPolyfill.TextDecoder,
+  // WebAssembly: WebAssembly,
+  // BigInt: BigInt,
+});

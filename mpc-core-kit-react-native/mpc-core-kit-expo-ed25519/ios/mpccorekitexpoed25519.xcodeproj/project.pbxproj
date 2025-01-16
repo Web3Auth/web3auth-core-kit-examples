@@ -343,7 +343,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8QX3XBQUU6;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -362,7 +362,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.expo.mpc-core-kit-expo-ed25519";
+				PRODUCT_BUNDLE_IDENTIFIER = com.torus.reactnativeexpo;
 				PRODUCT_NAME = mpccorekitexpoed25519;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "mpccorekitexpoed25519/mpccorekitexpoed25519-Bridging-Header.h";
@@ -383,7 +383,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8QX3XBQUU6;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				INFOPLIST_FILE = mpccorekitexpoed25519/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -397,7 +397,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.expo.mpc-core-kit-expo-ed25519";
+				PRODUCT_BUNDLE_IDENTIFIER = com.torus.reactnativeexpo;
 				PRODUCT_NAME = mpccorekitexpoed25519;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "mpccorekitexpoed25519/mpccorekitexpoed25519-Bridging-Header.h";

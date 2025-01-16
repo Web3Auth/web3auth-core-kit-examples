@@ -33,6 +33,8 @@ export const mpcViewStyles = StyleSheet.create({
     color: "#ffffff",
     padding: 10,
     width: Dimensions.get("window").width - 60,
+    maxHeight: 200,
+    minHeight: 200,
   },
   consoleText: {
     padding: 10,
