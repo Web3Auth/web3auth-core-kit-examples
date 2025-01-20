@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "54A260A4-2944-4D5E-B70C-1C1FC7D9E146"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/tkey-mpc-swift/Sources/ThresholdKey/StorageLayer.swift"
@@ -56,7 +56,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "EF71FDF8-556D-4FE7-A253-B4B5F5C22B38"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/tkey-mpc-swift/Sources/ThresholdKey/RssComm.swift"
@@ -72,7 +72,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "999E35BB-7483-48F2-9717-E16699CB3B1A"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/tkey-mpc-swift/Sources/ThresholdKey/RssComm.swift"
@@ -312,7 +312,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "6E1EA975-35E2-4E70-ADCF-1692BC8C9B07"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/tkey-mpc-swift/Sources/ThresholdKey/Modules/TssModule.swift"
@@ -321,6 +321,776 @@
             startingLineNumber = "392"
             endingLineNumber = "392"
             landmarkName = "generate_tss_share(threshold_key:input_tss_share:tss_input_index:auth_signatures:new_factor_pub:new_tss_index:selected_servers:completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "56F56229-0C42-4156-8492-50D7A1B32665"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/tss-client-swift/Sources/tssClientSwift/TSSClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
+            landmarkName = "sign(message:hashOnly:original_message:precompute:signatures:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D4334810-AEC5-4E1E-91F4-B2B2AAC7D24A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8B019AAA-2958-47AD-BA60-8C5EE038ED7C"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8B019AAA-2958-47AD-BA60-8C5EE038ED7C - fb606aa4c298b00d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "231"
+                  endingLineNumber = "231">
+               </Location>
+               <Location
+                  uuid = "8B019AAA-2958-47AD-BA60-8C5EE038ED7C - 69fd53f448080ba1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "231"
+                  endingLineNumber = "231">
+               </Location>
+               <Location
+                  uuid = "8B019AAA-2958-47AD-BA60-8C5EE038ED7C - ac488a7446d6b7a0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(16) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "231"
+                  endingLineNumber = "231">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0627B9AC-D7AD-4F9C-8799-0644256FAF07"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "234"
+            endingLineNumber = "234"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "0627B9AC-D7AD-4F9C-8799-0644256FAF07 - 69fd53f448080bde"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "234"
+                  endingLineNumber = "234">
+               </Location>
+               <Location
+                  uuid = "0627B9AC-D7AD-4F9C-8799-0644256FAF07 - 1ea9dff91461b6c7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "234"
+                  endingLineNumber = "234">
+               </Location>
+               <Location
+                  uuid = "0627B9AC-D7AD-4F9C-8799-0644256FAF07 - 135643f274684a3c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(17) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "234"
+                  endingLineNumber = "234">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9E9A701A-448B-4E51-B5AB-47F6FE9FA318"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9E9A701A-448B-4E51-B5AB-47F6FE9FA318 - af9f79d93e50bfd7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(13) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "239"
+                  endingLineNumber = "239">
+               </Location>
+               <Location
+                  uuid = "9E9A701A-448B-4E51-B5AB-47F6FE9FA318 - d50f43811bad665d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(14) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "239"
+                  endingLineNumber = "239">
+               </Location>
+               <Location
+                  uuid = "9E9A701A-448B-4E51-B5AB-47F6FE9FA318 - f97af4ce9b54b599"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(15) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "239"
+                  endingLineNumber = "239">
+               </Location>
+               <Location
+                  uuid = "9E9A701A-448B-4E51-B5AB-47F6FE9FA318 - ad31dee7d16c411d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(19) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "239"
+                  endingLineNumber = "239">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B906725F-1781-48DE-97D9-B57FA686BE36"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "235"
+            endingLineNumber = "235"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B906725F-1781-48DE-97D9-B57FA686BE36 - 1ea9dff91461b724"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(11) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "235"
+                  endingLineNumber = "235">
+               </Location>
+               <Location
+                  uuid = "B906725F-1781-48DE-97D9-B57FA686BE36 - 7965befe0daf02f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(12) await resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "235"
+                  endingLineNumber = "235">
+               </Location>
+               <Location
+                  uuid = "B906725F-1781-48DE-97D9-B57FA686BE36 - af9f79d93e50bf53"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(13) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "235"
+                  endingLineNumber = "235">
+               </Location>
+               <Location
+                  uuid = "B906725F-1781-48DE-97D9-B57FA686BE36 - c624197823ea4cfe"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(18) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.enableMFA() async throws -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "235"
+                  endingLineNumber = "235">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FB20B0C9-1779-40B8-91A1-E99AD185A6DF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/Tss.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
+            landmarkName = "enableMFA()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "104"
+            endingLineNumber = "104"
+            landmarkName = "loginWithJWT()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6e3bd6b0c0ec972"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6186a2b94a7e2ccb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "91"
+                  endingLineNumber = "91">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6186a2b94a7e2d76"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) await resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - b1cb7bcc0b7874ed"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "91"
+                  endingLineNumber = "91">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - b1cb7bcc0b787550"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 1879861e02457f29"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "91"
+                  endingLineNumber = "91">
+               </Location>
+               <Location
+                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 1879861e02457e94"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "104"
+                  endingLineNumber = "104">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "06D0E54D-C4E3-413B-AB1F-EF524F74F8FF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
+            landmarkName = "loginWithJWT()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "ADA318EA-C82B-4EE3-86C6-6862D40B7ECC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "110"
+            endingLineNumber = "110"
+            landmarkName = "loginWithJWT()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "loginWithJwt(verifier:verifierId:idToken:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - 6046e145ec991a0e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+               <Location
+                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - 665258fe62dbc0f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+               <Location
+                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - f47a4b753e2f9aaf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+               <Location
+                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - ac0f78bf640546a9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(6) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "126"
+                  endingLineNumber = "126">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "124"
+            endingLineNumber = "124"
+            landmarkName = "loginWithJwt(verifier:verifierId:idToken:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - e06b7ccdd6c4636e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "124"
+                  endingLineNumber = "124">
+               </Location>
+               <Location
+                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - 6046e145ec9919cc"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "124"
+                  endingLineNumber = "124">
+               </Location>
+               <Location
+                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - 5071d05a431a2b6a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(5) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "124"
+                  endingLineNumber = "124">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DA43A33C-07B9-44A4-A6F2-5E919440D0BC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
+            landmarkName = "loginWithJWT()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BD3AAD08-9555-4ADA-9311-639EF00F0205"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
+            landmarkName = "loginWithJWT()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D9CA0896-CBF9-4170-A09D-9CF8C2210F85"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2AA40C23-0915-4B6B-9A22-04AD4EE3B546"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "08629310-41DD-4043-9857-0E6512509C81"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "216"
+            endingLineNumber = "216"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "761957CD-BD85-417D-858C-F5BAEADB47ED"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "340"
+            endingLineNumber = "340"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - 836e4b6e9cc3539c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "340"
+                  endingLineNumber = "340">
+               </Location>
+               <Location
+                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - 66fabdd96a9b8f9a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "340"
+                  endingLineNumber = "340">
+               </Location>
+               <Location
+                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - d4cccafe7f8e6999"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
+                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "340"
+                  endingLineNumber = "340">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "27242524-69CD-4DB6-A103-E02741A3EB3B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "338"
+            endingLineNumber = "338"
+            landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -24,6 +24,15 @@ struct LoginView: View {
                     Text("Sign in with Google")
                 }
             ).buttonStyle(.bordered)
+            Button(
+                action: {
+                    viewModel.loginWithJWT()
+                },
+                label: {
+                    Text("Sign in with Mock")
+                }
+            ).buttonStyle(.bordered)
+            
             Spacer()
         }.onAppear {
             try? viewModel.initialize()

@@ -111,6 +111,7 @@ struct HomeView: View {
                         )
                         Button(
                             action: {
+                                
                                 viewModel.showAlert(message: "creating factor...")
                                 viewModel.createNewTssFactor()
                                 viewModel.hideLoader()
@@ -119,6 +120,16 @@ struct HomeView: View {
                                 Text("Create new Factor")
                             }
                         )
+                        Button(
+                            action: {
+                                
+                                viewModel.getKeyDetails()
+                            },
+                            label: {
+                                Text("Get Key Details")
+                            }
+                        )
+                        
                         Button(
                             action: {
                                 viewModel.logout()

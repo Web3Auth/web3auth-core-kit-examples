@@ -41,13 +41,70 @@ import UIKit
         ethereumClient = EthereumClient()
     }
     
+    func mockLogin(email: String) async throws -> Data {
+        // Create URL
+        let url = URL(string: "https://li6lnimoyrwgn2iuqtgdwlrwvq0upwtr.lambda-url.eu-west-1.on.aws/")!
+
+        // Create URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Create JSON data to send in the request body
+        // verifier: "torus-key-test", scope: "email", extraPayload: { email }, alg: "ES256"
+        let jsonObject: [String: Any] = [
+            "verifier": "torus-test-health",
+            "iss" : "torus-key-test",
+            "aud" : "torus-key-test",
+            "emailVerified": true,
+            "email": email,
+            "scope": email,
+            "extraPayload": [
+                "email": email,
+            ],
+            "alg": "ES256",
+        ]
+        let jsonData = try JSONSerialization.data(withJSONObject: jsonObject)
+        request.httpBody = jsonData
+
+        // Perform the request asynchronously
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        return data
+    }
+    
+    
     func loginWithJWT() {
         Task {
             do {
+                let verifierId = "testiosEmail11mfa11-1"
+                let verifier = "torus-test-health"
+                let clientId = "torus-test-health"
+                let email = verifierId
+                
+                let mockResult = try await mockLogin(email: email)
+                
+                guard let mockResult = try JSONSerialization.jsonObject(with: mockResult) as? [String: Any] else {
+                    throw NSError(domain: "", code: 0, userInfo: nil)
+                    
+                }
+                guard let token = mockResult["token"] as? String else {
+                    throw NSError(domain: "", code: 0, userInfo: nil)
+                    
+                }
+                print(token)
+                
+                
+                mpcCoreKit = try MpcCoreKit(
+                    options: .init(web3AuthClientId: clientId,
+                                   web3AuthNetwork: .SAPPHIRE_DEVNET, storage: UserStorage()
+                         )
+                )
+                
                 let result = try await mpcCoreKit.loginWithJwt(
-                    verifier: "w3a-firebase-demo",
-                    verifierId: "",
-                    idToken: "String"
+                    verifier: verifier,
+                    verifierId: email,
+                    idToken: token
                 )
                 
                 self.isRecoveryRequired = result.requiredFactors > 0
@@ -104,10 +161,8 @@ import UIKit
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
-                let signature = try mpcCoreKit.sign(message: "YOUR_MESSAGE".data(using: .ascii)!)
-                print(mpcCoreKit.debugDescription)
-//                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
-                onSigned(signature.hexString, nil)
+                let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
+                onSigned(signature, nil)
             } catch let error  {
                 onSigned(nil, error.localizedDescription)
             }
@@ -200,6 +255,17 @@ import UIKit
                 self.isRecoveryRequired.toggle()
             } catch let error {
                 print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func getKeyDetails() {
+        Task {
+            do {
+                let keyDetails = try await mpcCoreKit.getKeyDetails()
+                print(keyDetails)
+            } catch let error {
+                print(error)
             }
         }
     }

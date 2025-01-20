@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift",
       "state" : {
-        "revision" : "52fb5efaa94e0fe3775913ab00964bcb51601c2a",
-        "version" : "8.0.0"
+        "revision" : "5b42dd1675f8a51ffe64feb688db7b1d764d5fc0",
+        "version" : "8.0.1"
       }
     },
     {
@@ -61,7 +61,7 @@
       "location" : "https://github.com/web3auth/mpc-core-kit-swift",
       "state" : {
         "branch" : "feat/signer",
-        "revision" : "4773dfc6808250dcd3b831214abcf5ec5a763585"
+        "revision" : "537891b6fcffe3ae8c90b0e864fac36a86d23da9"
       }
     },
     {
@@ -70,7 +70,7 @@
       "location" : "https://github.com/tkey/MpcProviderSwift",
       "state" : {
         "branch" : "feat/update-dependency",
-        "revision" : "1e8aa2e96cfea11488736b79ff29a81d0e1fbac2"
+        "revision" : "d9e9fb09ee98a01a2d46c65b4fa954affdca31cc"
       }
     },
     {
@@ -141,8 +141,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "dca6594f65308c761a9c409e09fbf35f48d50d34",
-        "version" : "2.77.0"
+        "revision" : "ba72f31e11275fc5bf060c966cf6c1f36842a291",
+        "version" : "2.79.0"
       }
     },
     {
@@ -202,10 +202,10 @@
     {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/torus-utils-swift",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "baa822fc67bdb208ed1a2dc5b3c10485cfca15df",
-        "version" : "10.0.0"
+        "revision" : "235a70839d3ff5723402df95d665b15b8c551ad8",
+        "version" : "10.0.1"
       }
     },
     {
