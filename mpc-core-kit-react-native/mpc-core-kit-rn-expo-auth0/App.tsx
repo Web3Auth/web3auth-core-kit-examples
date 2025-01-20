@@ -5,17 +5,18 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
 import {
+  Bridge,
   COREKIT_STATUS,
   generateFactorKey,
-  JWTLoginParams,
   keyToMnemonic,
   makeEthereumSigner,
   mnemonicToKey,
+  mpclib,
   parseToken,
+  TssDklsLib,
   TssShareType,
   WEB3AUTH_NETWORK,
-} from "@web3auth/mpc-core-kit";
-import { Bridge, mpclib, TssDklsLib } from "@web3auth/react-native-mpc-core-kit";
+} from "@web3auth/react-native-mpc-core-kit";
 // IMP END - Quick Start
 import { BN } from "bn.js";
 import { ethers } from "ethers";
@@ -122,6 +123,11 @@ function Home() {
     }
   };
 
+  const uiConsole = (...args: any) => {
+    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
+    console.log(...args);
+  };
+
   const login = async () => {
     try {
       if (!coreKitInstance) {
@@ -136,12 +142,17 @@ function Home() {
 
       // IMP START - Login
       uiConsole("idToken", idToken);
-      const parsedToken = parseToken(idToken!);
 
-      const idTokenLoginParams: JWTLoginParams = {
+      if (!idToken) {
+        throw new Error("idToken is null or undefined");
+      }
+
+      const parsedToken = parseToken(idToken);
+
+      const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
-        idToken: idToken!,
+        idToken,
       };
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
@@ -428,11 +439,6 @@ function Home() {
     }
     setLoading(false);
     logout();
-  };
-
-  const uiConsole = (...args: any) => {
-    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
-    console.log(...args);
   };
 
   const loggedInView = (
