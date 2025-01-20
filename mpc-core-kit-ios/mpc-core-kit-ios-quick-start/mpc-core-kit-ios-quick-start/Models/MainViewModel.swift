@@ -74,10 +74,10 @@ import UIKit
     }
     
     
-    func loginWithJWT() {
+    func loginWithJWT(verifierId: String) {
         Task {
             do {
-                let verifierId = "testiosEmail11mfa11-1"
+                let verifierId = verifierId
                 let verifier = "torus-test-health"
                 let clientId = "torus-test-health"
                 let email = verifierId
