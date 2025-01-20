@@ -109,6 +109,21 @@ export default function MPCAccoutFunction(props: {
     logout();
   };
 
+  const recoverKey = async () => {
+    try {
+      const fac1 = coreKitInstance.getCurrentFactorKey().factorKey.toString("hex");
+      uiConsole("current factor: ", fac1);
+      const fac2 = await coreKitInstance.createFactor({
+        shareType: TssShareType.RECOVERY,
+      });
+      const finalKey = await coreKitInstance._UNSAFE_recoverTssKey([fac1, fac2]);
+      uiConsole("final key: ", finalKey);
+      // uiConsole("key recovered");
+    } catch (error: any) {
+      uiConsole(error.message);
+    }
+  };
+
   const loggedInView = (
     <View style={styles.compressedButtons}>
       <Text style={styles.heading}>MPC Core Kit RN Account Function</Text>
@@ -121,6 +136,7 @@ export default function MPCAccoutFunction(props: {
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="store Device Factor" onPress={() => storeDeviceFactor()} />
       {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}
+      <Button title="Recover Tss Key" onPress={recoverKey} />
       <Button title="Log Out" onPress={logout} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>

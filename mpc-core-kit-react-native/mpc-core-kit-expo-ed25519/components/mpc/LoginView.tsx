@@ -16,7 +16,7 @@ export const LoginView = () => {
 
   const login = async () => {
     if (coreKitStatus !== COREKIT_STATUS.INITIALIZED) {
-      throw new Error("Corekit not initialized");
+      throw new Error(`Corekit not initialized - status:${coreKitStatus}`);
     }
     try {
       uiConsole("Logging in...");

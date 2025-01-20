@@ -1,18 +1,21 @@
 import { COREKIT_STATUS, mnemonicToKey } from "@web3auth/react-native-mpc-core-kit";
+import { Web3AuthMPCCoreKitRN } from "@web3auth/react-native-mpc-core-kit/dist/mpclib";
 import BN from "bn.js";
-import { router } from "expo-router";
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 
 import { useConsoleUI } from "@/hooks/useConsoleUI";
-import { useMPCCoreKitStore } from "@/hooks/useMPCCoreKit";
 
 import { ConsoleUI } from "./ConsoleUI";
 import { mpcViewStyles as styles } from "./styles";
 
-export const RecoveryView = () => {
+export const RecoveryView = (props: {
+  coreKitInstance: Web3AuthMPCCoreKitRN;
+  coreKitStatus: COREKIT_STATUS;
+  setCoreKitStatus: (status: COREKIT_STATUS) => void;
+}) => {
   const { consoleUI, loading, setLoading, uiConsole } = useConsoleUI();
-  const { coreKitInstance, coreKitStatus, setCoreKitStatus } = useMPCCoreKitStore();
+  const { coreKitInstance, coreKitStatus, setCoreKitStatus } = props;
 
   const [mnemonicFactor, setMnemonicFactor] = useState("");
   const [backupFactorKey, setBackupFactorKey] = useState("");
@@ -52,17 +55,13 @@ export const RecoveryView = () => {
     const factorKey = new BN(factorkey, "hex");
     await coreKitInstance.inputFactorKey(factorKey);
 
-    setCoreKitStatus(coreKitInstance.status);
     setLoading(false);
     if (coreKitInstance.status === COREKIT_STATUS.REQUIRED_SHARE) {
       uiConsole(
         "required more shares even after inputing backup factor key, please enter your backup/ device factor key, or reset account [unrecoverable once reset, please use it with caution]"
       );
     }
-
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      router.push({ pathname: "./mpc-demo" });
-    }
+    setCoreKitStatus(coreKitInstance.status);
   };
 
   const criticalResetAccount = async () => {
@@ -76,7 +75,7 @@ export const RecoveryView = () => {
     await coreKitInstance._UNSAFE_resetAccount();
     setLoading(false);
 
-    router.push("/");
+    setCoreKitStatus(coreKitInstance.status);
   };
 
   return (

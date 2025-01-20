@@ -1,14 +1,14 @@
 import "../global";
 
 import { CustomChainConfig, EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
-import { COREKIT_STATUS, makeEthereumSigner, parseToken, WEB3AUTH_NETWORK, Web3AuthOptions } from "@web3auth/mpc-core-kit";
+import { COREKIT_STATUS, IAsyncStorage, makeEthereumSigner, parseToken, WEB3AUTH_NETWORK, Web3AuthOptions } from "@web3auth/mpc-core-kit";
 import mpclib, { TssDklsLib, TssFrostLib } from "@web3auth/react-native-mpc-core-kit";
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 export const Verifier = "torus-test-health";
 
 // // setup async storage for react native
-const asyncStorageKey = {
+const asyncStorageKey: IAsyncStorage = {
   getItem: async (key: string) => {
     return SecureStore.getItemAsync(key);
   },
@@ -43,7 +43,7 @@ const chainConfig: CustomChainConfig = {
 };
 const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
 
-const asyncEd25519StorageKey = {
+const asyncEd25519StorageKey: IAsyncStorage = {
   getItem: async (key: string) => {
     return SecureStore.getItemAsync(`ed25519-${key}`);
   },

@@ -5,6 +5,7 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.torus.reactnativeexpo</string>
+		<string>$(AppIdentifierPrefix)com.torus.reactnativeexpo 1</string>
 	</array>
 </dict>
 </plist>
