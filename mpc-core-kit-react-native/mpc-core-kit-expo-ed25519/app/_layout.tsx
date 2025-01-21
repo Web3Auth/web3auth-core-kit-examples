@@ -3,15 +3,13 @@ import "../global";
 import { COREKIT_STATUS } from "@web3auth/mpc-core-kit";
 import { Bridge } from "@web3auth/react-native-mpc-core-kit";
 import { router, Stack, usePathname } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { useMPCCoreKitStore } from "@/hooks/useMPCCoreKit";
 
 export default function RootLayout() {
-  const { coreKitInstance, coreKitStatus, coreKitInit, coreKitEd25519Status, coreKitEd25519Init } = useMPCCoreKitStore();
+  const { coreKitInstance, coreKitStatus, coreKitInit, coreKitEd25519Status, coreKitEd25519Init, bridgeReady, setBridgeReady } = useMPCCoreKitStore();
   const pathname = usePathname();
-
-  const [bridgeReady, setBridgeReady] = useState(false);
 
   useEffect(() => {
     if (coreKitStatus === COREKIT_STATUS.NOT_INITIALIZED && bridgeReady) {
@@ -54,12 +52,7 @@ export default function RootLayout() {
         />
         <Stack.Screen name="index" />
       </Stack>
-      <Bridge
-        logLevel={"DEBUG"}
-        resolveReady={(ready) => {
-          setBridgeReady(ready);
-        }}
-      />
+      <Bridge logLevel={"DEBUG"} resolveReady={setBridgeReady} />
     </>
   );
 }

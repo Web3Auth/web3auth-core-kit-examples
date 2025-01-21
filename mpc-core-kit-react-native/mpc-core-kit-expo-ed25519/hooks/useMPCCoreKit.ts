@@ -1,7 +1,7 @@
 import "../global";
 
 import { CustomChainConfig, EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
-import { COREKIT_STATUS, IAsyncStorage, makeEthereumSigner, parseToken, WEB3AUTH_NETWORK, Web3AuthOptions } from "@web3auth/mpc-core-kit";
+import { COREKIT_STATUS, IAsyncStorage, log, makeEthereumSigner, parseToken, WEB3AUTH_NETWORK, Web3AuthOptions } from "@web3auth/mpc-core-kit";
 import mpclib, { TssDklsLib, TssFrostLib } from "@web3auth/react-native-mpc-core-kit";
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
@@ -73,9 +73,12 @@ interface IMPCCoreKitStore {
   coreKitEd25519Status: COREKIT_STATUS;
   setCoreKitEd25519Status: (status: COREKIT_STATUS) => void;
   coreKitEd25519Init: () => Promise<void>;
+
+  bridgeReady: boolean;
+  setBridgeReady: (ready: boolean) => void;
 }
 
-export const useMPCCoreKitStore = create<IMPCCoreKitStore>((set) => ({
+export const useMPCCoreKitStore = create<IMPCCoreKitStore>((set, get) => ({
   coreKitInstance,
   coreKitEd25519Instance,
   coreKitStatus: COREKIT_STATUS.NOT_INITIALIZED,
@@ -101,6 +104,16 @@ export const useMPCCoreKitStore = create<IMPCCoreKitStore>((set) => ({
   coreKitEd25519Init: async () => {
     await coreKitEd25519Instance.init();
     set({ coreKitEd25519Status: coreKitEd25519Instance.status });
+  },
+
+  bridgeReady: false,
+  setBridgeReady: (ready: boolean) => {
+    if (!ready) {
+      if (get().bridgeReady) {
+        log.warn("MPC Bridge is unmounted");
+      }
+    }
+    set({ bridgeReady: ready });
   },
 }));
 

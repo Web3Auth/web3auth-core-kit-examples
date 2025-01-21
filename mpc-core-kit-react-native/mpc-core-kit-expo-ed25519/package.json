@@ -20,7 +20,7 @@
     "@solana/web3.js": "^1.95.4",
     "@web3auth/ethereum-mpc-provider": "9.5.2",
     "@web3auth/mpc-core-kit": "^3.4.1",
-    "@web3auth/react-native-mpc-core-kit": "file:web3auth-react-native-mpc-core-kit-0.1.8-alpha.0.tgz",
+    "@web3auth/react-native-mpc-core-kit": "~0.4.0-alpha.0",
     "@zerodev/ecdsa-validator": "^5.4.1",
     "@zerodev/multi-chain-ecdsa-validator": "^5.4.2",
     "@zerodev/sdk": "^5.4.9",
