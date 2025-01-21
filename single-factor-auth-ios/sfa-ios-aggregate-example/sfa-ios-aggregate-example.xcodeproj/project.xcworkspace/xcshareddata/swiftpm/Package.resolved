@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "90afccc0e5e2ea8d671cdacb26899f60740b4e0b",
-        "version" : "6.0.0"
+        "revision" : "de18a6b3d98f67b3c77f84ebab73f7a51807a503",
+        "version" : "6.1.0"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "95e1ea418b87234f0aceb25205678ed98acfa4ab",
-        "version" : "9.0.0"
+        "revision" : "02f7d197cc6ad8292797ada2c307b7cfd60ad155",
+        "version" : "9.0.4"
       }
     },
     {
