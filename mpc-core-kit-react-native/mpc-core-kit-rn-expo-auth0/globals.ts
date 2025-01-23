@@ -1,2 +1,1 @@
-
-global.Buffer = require('buffer').Buffer;
+global.Buffer = require("buffer").Buffer;
