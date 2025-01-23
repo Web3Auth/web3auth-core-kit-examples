@@ -84,6 +84,11 @@ function Home() {
   const [backupFactorKey, setBackupFactorKey] = useState<string>("");
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
 
+  const uiConsole = (...args: any) => {
+    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
+    console.log(...args);
+  };
+
   useEffect(() => {
     if (bridgeReady) {
       const init = async () => {
@@ -126,11 +131,6 @@ function Home() {
     }
   };
   // IMP END - Auth Provider Login
-
-  const uiConsole = (...args: any) => {
-    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
-    console.log(...args);
-  };
 
   const login = async () => {
     try {
