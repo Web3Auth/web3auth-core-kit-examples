@@ -9,10 +9,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-// IMP START - Auth Provider Login
-import auth from '@react-native-firebase/auth';
-// IMP END - Auth Provider Login
-
+import {BN} from 'bn.js';
+import {ethers} from 'ethers';
 // IMP START - Quick Start
 import {
   Bridge,
@@ -33,8 +31,9 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 import { Point, secp256k1 } from '@tkey/common-types';
 // IMP END - Quick Start
-import {BN} from 'bn.js';
-import {ethers} from 'ethers';
+// IMP START - Auth Provider Login
+import auth from '@react-native-firebase/auth';
+// IMP END - Auth Provider Login
 
 // IMP START - Dashboard Registration
 const web3AuthClientId =
@@ -213,7 +212,7 @@ export default function App() {
       uiConsole('Enabling MFA, please wait');
 
       const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      await coreKitInstance.enableMFA({ factorKey });
+      await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
@@ -315,7 +314,7 @@ export default function App() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    uiConsole('export share type: ', TssShareType.RECOVERY);
+    uiConsole('share type: ', TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
@@ -326,7 +325,7 @@ export default function App() {
     );
     setLoading(false);
 
-    uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+    uiConsole('New factor key mnemonic: ', factorKeyMnemonic);
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
@@ -473,10 +472,7 @@ export default function App() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    //@ts-ignore
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
+
     await coreKitInstance._UNSAFE_resetAccount();
     uiConsole('reset');
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {

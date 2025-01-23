@@ -8,11 +8,13 @@
     "ios": "expo run:ios",
     "web": "expo start --web"
   },
+  "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
     "@web3auth/base": "^9.5.1",
     "@web3auth/ethereum-mpc-provider": "^9.5.1",
     "@web3auth/react-native-mpc-core-kit": "^0.3.0-alpha.0",
+    "@tkey/common-types": "^15.1.0",
     "bn.js": "^5.2.1",
     "ethers": "^6.13.4",
     "expo": "~51.0.28",
@@ -25,6 +27,7 @@
     "react-native-react-bridge": "^0.12.3",
     "react-native-webview": "^13.12.1"
   },
+  "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",

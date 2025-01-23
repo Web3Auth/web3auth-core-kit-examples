@@ -1,12 +1,14 @@
 import "./globals";
 import "@ethersproject/shims";
 
+import { Point, secp256k1 } from "@tkey/common-types";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
 import {
   Bridge,
   COREKIT_STATUS,
+  FactorKeyTypeShareDescription,
   generateFactorKey,
   keyToMnemonic,
   makeEthereumSigner,
@@ -20,14 +22,13 @@ import {
 // IMP END - Quick Start
 import { BN } from "bn.js";
 import { ethers } from "ethers";
-// IMP END - Auth Provider Login
 import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Button, Dimensions, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 // IMP START - Auth Provider Login
 import { Auth0Provider, useAuth0 } from "react-native-auth0";
+// IMP END - Auth Provider Login
 
-// IMP START - SDK Initialization
 // IMP START - Dashboard Registration
 const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
 // IMP END - Dashboard Registration
@@ -36,6 +37,7 @@ const web3AuthClientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZ
 const verifier = "w3a-auth0-demo";
 // IMP END - Verifier Creation
 
+// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7", // Please use 0x1 for Mainnet
@@ -46,7 +48,9 @@ const chainConfig = {
   ticker: "ETH",
   tickerName: "Ethereum",
 };
+// IMP END - Chain Config
 
+// IMP START - SDK Initialization
 // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
@@ -94,14 +98,13 @@ function Home() {
       };
       init();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bridgeReady]);
 
   const { authorize, getCredentials } = useAuth0();
 
+  // IMP START - Auth Provider Login
   const signInWithAuth0 = async () => {
     try {
-      // @ts-ignore
       await authorize(
         {
           scope: "openid profile email",
@@ -122,6 +125,7 @@ function Home() {
       console.error(error);
     }
   };
+  // IMP END - Auth Provider Login
 
   const uiConsole = (...args: any) => {
     setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
@@ -140,7 +144,6 @@ function Home() {
       // IMP END - Auth Provider Login
       uiConsole("idToken", idToken);
 
-      // IMP START - Login
       uiConsole("idToken", idToken);
 
       if (!idToken) {
@@ -149,6 +152,7 @@ function Home() {
 
       const parsedToken = parseToken(idToken);
 
+      // IMP START - Login
       const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
@@ -206,8 +210,10 @@ function Home() {
     try {
       setConsoleUI("Enabling MFA, please wait");
 
-      const factorKey = await coreKitInstance.enableMFA({}, false);
-      const factorKeyMnemonic = keyToMnemonic(factorKey);
+      const factorKey = generateFactorKey();
+
+      await coreKitInstance.enableMFA({ factorKey: factorKey.private, shareDescription: FactorKeyTypeShareDescription.SeedPhrase });
+      const factorKeyMnemonic = keyToMnemonic(factorKey.private.toString("hex"));
 
       uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ", factorKeyMnemonic);
     } catch (error: any) {
@@ -238,6 +244,7 @@ function Home() {
     }
   };
 
+  // IMP START - Store Device Factor
   const storeDeviceFactor = async () => {
     try {
       if (!coreKitInstance) {
@@ -255,26 +262,30 @@ function Home() {
       uiConsole(error.message);
     }
   };
+  // IMP END - Store Device Factor
 
-  const exportMnemonicFactor = async (): Promise<void> => {
+  // IMP START - Export Mnemonic Factor
+  const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error("coreKitInstance is not set");
     }
     setLoading(true);
-    uiConsole("export share type: ", TssShareType.RECOVERY);
+    uiConsole("share type: ", TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
+      shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
     });
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     setLoading(false);
 
-    uiConsole("Export factor key mnemonic: ", factorKeyMnemonic);
+    uiConsole("New factor key mnemonic: ", factorKeyMnemonic);
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
   };
+  // IMP END - Export Mnemonic Factor
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
     if (!coreKitInstance) {
@@ -288,6 +299,29 @@ function Home() {
       uiConsole(error.message);
     }
   };
+
+  // IMP START - Delete Factor
+  const deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries((await coreKitInstance.getKeyDetails()).shareDescriptions)) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SeedPhrase) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      uiConsole("Deleting Mnemonic Factor, please wait...", "Factor Pub:", factorPub);
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      uiConsole("Mnemonic Factor deleted");
+    } else {
+      uiConsole("No Mnemonic factor found to delete");
+    }
+  };
+  // IMP END - Delete Factor
 
   const getUserInfo = async () => {
     // IMP START - Get User Information
@@ -304,11 +338,6 @@ function Home() {
     setCoreKitStatus(coreKitInstance.status);
     // Log out from Auth0
     setLoading(false);
-    try {
-      uiConsole("logged out from auth0");
-    } catch (error: any) {
-      uiConsole(error.message);
-    }
     uiConsole("logged out from web3auth");
   };
 
@@ -389,7 +418,6 @@ function Home() {
     setLoading(false);
     uiConsole(signedMessage);
   };
-  // IMP END - Blockchain Calls
 
   const sendTransaction = async () => {
     if (!coreKitInstance) {
@@ -419,6 +447,7 @@ function Home() {
     setLoading(false);
     uiConsole(receipt);
   };
+  // IMP END - Blockchain Calls
 
   const criticalResetAccount = async (): Promise<void> => {
     // This is a critical function that should only be used for testing purposes
@@ -428,10 +457,7 @@ function Home() {
       throw new Error("coreKitInstance is not set");
     }
     setLoading(true);
-    // @ts-ignore
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
+
     await coreKitInstance._UNSAFE_resetAccount();
     uiConsole("reset");
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
@@ -453,9 +479,10 @@ function Home() {
       <Button title="Send Transaction" onPress={sendTransaction} />
       <Button title="Log Out" onPress={logout} />
       <Button title="Enable MFA" onPress={enableMFA} />
-      <Button title="Generate Backup (Mnemonic) - CreateFactor" onPress={exportMnemonicFactor} />
+      <Button title="Generate Backup (Mnemonic) - CreateFactor" onPress={createMnemonicFactor} />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
+      <Button title="Delete Mnemonic Factor" onPress={() => deleteFactor()} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
