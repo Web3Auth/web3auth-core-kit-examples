@@ -45,6 +45,7 @@ export default function MPCAccoutFunction(props: {
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
     });
+    uiConsole("Export Factor Key: ", factorKey);
     const factorKeyMnemonic = await keyToMnemonic(factorKey.private.toString("hex"));
     setLoading(false);
 
@@ -54,10 +55,17 @@ export default function MPCAccoutFunction(props: {
     // }
   };
 
+  const getCurrentFactorKey = async () => {
+    const currentFactor = coreKitInstance.getCurrentFactorKey();
+    uiConsole("current factor: ", currentFactor);
+    uiConsole("Device mnemonic: ", keyToMnemonic(currentFactor.factorKey.toString("hex")));
+  };
+
   const getDeviceFactor = async () => {
     try {
       const factorKey = await coreKitInstance.getDeviceFactor();
       uiConsole("Device share: ", factorKey);
+      uiConsole("Device mnemonic: ", keyToMnemonic(factorKey));
     } catch (e) {
       console.log("catch error");
       uiConsole(e);
@@ -133,6 +141,7 @@ export default function MPCAccoutFunction(props: {
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button title="Generate Backup (Mnemonic) - CreateFactor" onPress={exportMnemonicFactor} />
       <Button title="Get node Signatures" onPress={() => getNodeSignatures()} />
+      <Button title="Get Current Factor" onPress={() => getCurrentFactorKey()} />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="store Device Factor" onPress={() => storeDeviceFactor()} />
       {/* <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} /> */}

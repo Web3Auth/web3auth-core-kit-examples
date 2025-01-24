@@ -1,4 +1,5 @@
 import { COREKIT_STATUS, JWTLoginParams, makeEthereumSigner, parseToken } from "@web3auth/mpc-core-kit";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Button, Text, TextInput, View } from "react-native";
 
@@ -118,6 +119,10 @@ export const LoginView = () => {
         </View>
         <Button title="Register/Login with Web3Auth" onPress={login} />
         <Button title="Register/Login with ED25519 Web3Auth" onPress={loginEd25519} />
+        <View>
+          <Button title="Off Network Recovery Secp256k1" onPress={() => router.replace({ pathname: "/(off-network-recovery)/evm" })} />
+          <Button title="Off Network Recovery ED25519" onPress={() => router.replace({ pathname: "/(off-network-recovery)/solana" })} />
+        </View>
       </View>
       <ConsoleUI consoleUI={consoleUI} loading={loading} />
     </View>
