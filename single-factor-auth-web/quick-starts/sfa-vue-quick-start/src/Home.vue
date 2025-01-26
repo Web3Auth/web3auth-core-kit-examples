@@ -42,7 +42,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 // IMP START - Quick Start
 import { Web3Auth, decodeToken } from "@web3auth/single-factor-auth";
@@ -59,205 +59,183 @@ import RPC from "./ethersRPC";
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, UserCredential } from "firebase/auth";
 
-export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "Home",
-  props: {
-    msg: String,
-  },
-  setup() {
-    const loggedIn = ref<boolean>(false);
-    let provider = <IProvider | null>null;
+const loggedIn = ref<boolean>(false);
+let provider = <IProvider | null>null;
 
-    // IMP START - SDK Initialization
-    // IMP START - Dashboard Registration
-    const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
-    // IMP END - Dashboard Registration
+// IMP START - Dashboard Registration
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // get from https://dashboard.web3auth.io
+// IMP END - Dashboard Registration
 
-    // IMP START - Verifier Creation
-    const verifier = "w3a-firebase-demo";
-    // IMP END - Verifier Creation
+// IMP START - Verifier Creation
+const verifier = "w3a-firebase-demo";
+// IMP END - Verifier Creation
 
-    // IMP START - Chain Config
-    const chainConfig = {
-      chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: "0xaa36a7",
-      rpcTarget: "https://rpc.ankr.com/eth_sepolia",
-      // Avoid using public rpcTarget in production.
-      // Use services like Infura, Quicknode etc
-      displayName: "Ethereum Sepolia Testnet",
-      blockExplorerUrl: "https://sepolia.etherscan.io",
-      ticker: "ETH",
-      tickerName: "Ethereum",
-      logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
-    };
-    // IMP END - Chain Config
-
-    const privateKeyProvider = new EthereumPrivateKeyProvider({
-      config: { chainConfig },
-    });
-
-    const web3auth = new Web3Auth({
-      clientId, // Get your Client ID from Web3Auth Dashboard
-      web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-      privateKeyProvider,
-    });
-
-    // IMP END - SDK Initialization
-
-    // IMP START - Auth Provider Login
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
-      authDomain: "web3auth-oauth-logins.firebaseapp.com",
-      projectId: "web3auth-oauth-logins",
-      storageBucket: "web3auth-oauth-logins.appspot.com",
-      messagingSenderId: "461819774167",
-      appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
-    };
-
-    // Firebase Initialisation
-    const app = initializeApp(firebaseConfig);
-    // IMP END - Auth Provider Login
-
-    onMounted(async () => {
-      const init = async () => {
-        try {
-          // IMP START - SDK Initialization
-          await web3auth.init();
-          // IMP END - SDK Initialization
-          provider = web3auth.provider;
-          if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
-            loggedIn.value = true;
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      init();
-    });
-
-    // IMP START - Auth Provider Login
-    const signInWithGoogle = async (): Promise<UserCredential> => {
-      try {
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
-        const res = await signInWithPopup(auth, googleProvider);
-        console.log(res);
-        return res;
-      } catch (err) {
-        console.error(err);
-        throw err;
-      }
-    };
-
-    // IMP END - Auth Provider Login
-
-    const login = async () => {
-      if (!web3auth) {
-        uiConsole("web3auth initialised yet");
-        return;
-      }
-      // IMP START - Auth Provider Login
-      // login with firebase
-      const loginRes = await signInWithGoogle();
-      // get the id token from firebase
-      const idToken = await loginRes.user.getIdToken(true);
-      const { payload } = decodeToken(idToken);
-      // IMP END - Auth Provider Login
-
-      // IMP START - Login
-      const web3authProvider = await web3auth.connect({
-        verifier,
-        verifierId: (payload as any).sub,
-        idToken,
-      });
-      // IMP END - Login
-
-      if (web3authProvider) {
-        loggedIn.value = true;
-        provider = web3authProvider;
-      }
-    };
-
-    const getUserInfo = async () => {
-      // IMP START - Get User Information
-      const user = await web3auth.getUserInfo();
-      // IMP END - Get User Information
-      uiConsole(user);
-    };
-
-    const logout = async () => {
-      // IMP START - Logout
-      await web3auth.logout();
-      // IMP END - Logout
-      provider = null;
-      loggedIn.value = false;
-      uiConsole("logged out");
-    };
-
-    // IMP START - Blockchain Calls
-    const getAccounts = async () => {
-      if (!provider) {
-        uiConsole("provider not initialized yet");
-        return;
-      }
-      const address = await RPC.getAccounts(provider);
-      uiConsole(address);
-    };
-
-    const getBalance = async () => {
-      if (!provider) {
-        uiConsole("provider not initialized yet");
-        return;
-      }
-      const balance = await RPC.getBalance(provider);
-      uiConsole(balance);
-    };
-
-    const signMessage = async () => {
-      if (!provider) {
-        uiConsole("provider not initialized yet");
-        return;
-      }
-      const signedMessage = await RPC.signMessage(provider);
-      uiConsole(signedMessage);
-    };
-
-
-    const sendTransaction = async () => {
-      if (!provider) {
-        uiConsole("provider not initialized yet");
-        return;
-      }
-      uiConsole("Sending Transaction...");
-      const transactionReceipt = await RPC.sendTransaction(provider);
-      uiConsole(transactionReceipt);
-    };
-    // IMP END - Blockchain Calls
-
-    function uiConsole(...args: any[]): void {
-      const el = document.querySelector("#console>pre");
-      if (el) {
-        el.innerHTML = JSON.stringify(args || {}, null, 2);
-      }
-      console.log(...args);
-    }
-
-    return {
-      loggedIn,
-      provider,
-      web3auth,
-      login,
-      logout,
-      getUserInfo,
-      getAccounts,
-      getBalance,
-      signMessage,
-    };
-  },
+// IMP START - Chain Config
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0xaa36a7",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  // Avoid using public rpcTarget in production.
+  // Use services like Infura, Quicknode etc
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorerUrl: "https://sepolia.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
+// IMP END - Chain Config
+
+// IMP START - SDK Initialization
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
+
+const web3auth = new Web3Auth({
+  clientId, // Get your Client ID from Web3Auth Dashboard
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider,
+});
+
+// IMP END - SDK Initialization
+
+// IMP START - Auth Provider Login
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB0nd9YsPLu-tpdCrsXn8wgsWVAiYEpQ_E",
+  authDomain: "web3auth-oauth-logins.firebaseapp.com",
+  projectId: "web3auth-oauth-logins",
+  storageBucket: "web3auth-oauth-logins.appspot.com",
+  messagingSenderId: "461819774167",
+  appId: "1:461819774167:web:e74addfb6cc88f3b5b9c92",
+};
+
+// Firebase Initialisation
+const app = initializeApp(firebaseConfig);
+// IMP END - Auth Provider Login
+
+onMounted(async () => {
+  const init = async () => {
+    try {
+      // IMP START - SDK Initialization
+      await web3auth.init();
+      // IMP END - SDK Initialization
+      provider = web3auth.provider;
+      if (web3auth.status === ADAPTER_EVENTS.CONNECTED) {
+        loggedIn.value = true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  init();
+});
+
+// IMP START - Auth Provider Login
+const signInWithGoogle = async (): Promise<UserCredential> => {
+  try {
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+    const res = await signInWithPopup(auth, googleProvider);
+    console.log(res);
+    return res;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+// IMP END - Auth Provider Login
+
+const login = async () => {
+  if (!web3auth) {
+    uiConsole("web3auth initialised yet");
+    return;
+  }
+  // IMP START - Auth Provider Login
+  // login with firebase
+  const loginRes = await signInWithGoogle();
+  // get the id token from firebase
+  const idToken = await loginRes.user.getIdToken(true);
+  const { payload } = decodeToken(idToken);
+  // IMP END - Auth Provider Login
+
+  // IMP START - Login
+  const web3authProvider = await web3auth.connect({
+    verifier,
+    verifierId: (payload as any).sub,
+    idToken,
+  });
+  // IMP END - Login
+
+  if (web3authProvider) {
+    loggedIn.value = true;
+    provider = web3authProvider;
+  }
+};
+
+const getUserInfo = async () => {
+  // IMP START - Get User Information
+  const user = await web3auth.getUserInfo();
+  // IMP END - Get User Information
+  uiConsole(user);
+};
+
+const logout = async () => {
+  // IMP START - Logout
+  await web3auth.logout();
+  // IMP END - Logout
+  provider = null;
+  loggedIn.value = false;
+  uiConsole("logged out");
+};
+
+// IMP START - Blockchain Calls
+const getAccounts = async () => {
+  if (!provider) {
+    uiConsole("provider not initialized yet");
+    return;
+  }
+  const address = await RPC.getAccounts(provider);
+  uiConsole(address);
+};
+
+const getBalance = async () => {
+  if (!provider) {
+    uiConsole("provider not initialized yet");
+    return;
+  }
+  const balance = await RPC.getBalance(provider);
+  uiConsole(balance);
+};
+
+const signMessage = async () => {
+  if (!provider) {
+    uiConsole("provider not initialized yet");
+    return;
+  }
+  const signedMessage = await RPC.signMessage(provider);
+  uiConsole(signedMessage);
+};
+
+const sendTransaction = async () => {
+  if (!provider) {
+    uiConsole("provider not initialized yet");
+    return;
+  }
+  uiConsole("Sending Transaction...");
+  const transactionReceipt = await RPC.sendTransaction(provider);
+  uiConsole(transactionReceipt);
+};
+// IMP END - Blockchain Calls
+
+function uiConsole(...args: any[]): void {
+  const el = document.querySelector("#console>pre");
+  if (el) {
+    el.innerHTML = JSON.stringify(args || {}, null, 2);
+  }
+  console.log(...args);
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -13,7 +13,7 @@ import {
   makeEthereumSigner,
 } from "@web3auth/mpc-core-kit";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
-import { EthereumSigningProvider } from '@web3auth/ethereum-mpc-provider';
+import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 
 // IMP END - Quick Start
@@ -47,7 +47,7 @@ const coreKitInstance = new Web3AuthMPCCoreKit({
   storage: window.localStorage,
   manualSync: true, // This is the recommended approach
   tssLib: tssLib,
-  uxMode: 'popup',
+  uxMode: "popup",
 });
 
 // Setup provider for EVM Chain
@@ -78,7 +78,9 @@ function App() {
   useEffect(() => {
     const init = async () => {
       // IMP START - SDK Initialization
-      await coreKitInstance.init();
+      if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+        await coreKitInstance.init();
+      }
       // IMP END - SDK Initialization
 
       setCoreKitStatus(coreKitInstance.status);
@@ -89,17 +91,16 @@ function App() {
   const login = async () => {
     try {
       if (!coreKitInstance) {
-        throw new Error('initiated to login');
+        throw new Error("initiated to login");
       }
 
       // IMP START - Login
       const verifierConfig = {
         subVerifierDetails: {
-          typeOfLogin: 'google',
-          verifier: 'w3a-google-demo',
-          clientId:
-            '519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com',
-        }
+          typeOfLogin: "google",
+          verifier: "w3a-google-demo",
+          clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
+        },
       } as SubVerifierDetailsParams;
 
       await coreKitInstance.loginWithOAuth(verifierConfig);
@@ -117,11 +118,10 @@ function App() {
       // IMP END - Recover MFA Enabled Account
 
       setCoreKitStatus(coreKitInstance.status);
-
     } catch (error: unknown) {
       uiConsole(error);
     }
-  }
+  };
 
   // IMP START - Recover MFA Enabled Account
   const inputBackupFactorKey = async () => {
@@ -144,8 +144,8 @@ function App() {
   };
   // IMP END - Recover MFA Enabled Account
 
-   // IMP START - Export Social Account Factor
-   const getSocialMFAFactorKey = async (): Promise<string> => {
+  // IMP START - Export Social Account Factor
+  const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
       // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
       const tempCoreKitInstance = new Web3AuthMPCCoreKit({
@@ -157,20 +157,19 @@ function App() {
 
       await tempCoreKitInstance.init();
 
-        // Login using Firebase Email Password
-        const auth = getAuth(app);
-        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        uiConsole(res);
-        const idToken = await res.user.getIdToken(true);
-        const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      uiConsole(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier: "w3a-firebase-demo",
-          verifierId: userInfo.sub,
-          idToken,
-        });
-      
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier: "w3a-firebase-demo",
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
@@ -183,7 +182,7 @@ function App() {
       return "";
     }
   };
-  // IMP END - Export Social Account Factor 
+  // IMP END - Export Social Account Factor
 
   // IMP START - Enable Multi Factor Authentication
   const enableMFA = async () => {
@@ -202,7 +201,9 @@ function App() {
         await coreKitInstance.commitChanges();
       }
 
-      uiConsole("MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app");
+      uiConsole(
+        "MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key is associated with the firebase email password account in the app"
+      );
     } catch (e) {
       uiConsole(e);
     }
@@ -431,7 +432,6 @@ function App() {
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
         </button>
-
       </div>
     </>
   );

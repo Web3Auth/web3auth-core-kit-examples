@@ -40,9 +40,24 @@ function App() {
   const [pkPlugin, setPkPlugin] = useState<PasskeysPlugin | null>(null);
   const [wsPlugin, setWsPlugin] = useState<WalletServicesPlugin | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [rpID, setRpID] = useState<string>("");
+  const [rpName, setRpName] = useState<string>("");
 
   useEffect(() => {
     const init = async () => {
+      if (window.location.hostname === "localhost") {
+        setRpID("localhost");
+        setRpName("localhost");
+      } else {
+        const hostnameParts = window.location.hostname.split(".");
+        if (hostnameParts.length >= 2) {
+          setRpID(hostnameParts.slice(-2).join("."));
+          setRpName(window.location.hostname);
+        } else {
+          setRpID(window.location.hostname);
+          setRpName(window.location.hostname);
+        }
+      }
       try {
         const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
           config: { chainConfig },
@@ -54,7 +69,11 @@ function App() {
           usePnPKey: false, // Setting this to true returns the same key as PnP Web SDK, By default, this SDK returns CoreKitKey.
           privateKeyProvider: ethereumPrivateKeyProvider,
         });
-        const plugin = new PasskeysPlugin({ buildEnv: "testing" });
+        const plugin = new PasskeysPlugin({
+          rpID,
+          rpName,
+          buildEnv: "production",
+        });
         web3authSfa?.addPlugin(plugin);
         setPkPlugin(plugin);
         const wsPlugin = new WalletServicesPlugin({
@@ -249,6 +268,7 @@ function App() {
       const res = await pkPlugin.registerPasskey({
         username: `google|${userInfo?.email || userInfo?.name} - ${new Date().toLocaleDateString("en-GB")}`,
       });
+      console.log("res", res);
       if (res) uiConsole("Passkey saved successfully");
     } catch (error: unknown) {
       uiConsole((error as Error).message);
