@@ -9,35 +9,31 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import '@ethersproject/shims';
-// IMP START - Auth Provider Login
-import auth from '@react-native-firebase/auth';
-// IMP END - Auth Provider Login
-
+import {BN} from 'bn.js';
+import {ethers} from 'ethers';
 // IMP START - Quick Start
 import {
-  Web3AuthMPCCoreKit,
-  WEB3AUTH_NETWORK,
-  JWTLoginParams,
-  TssShareType,
-  parseToken,
-  generateFactorKey,
+  Bridge,
   COREKIT_STATUS,
-  keyToMnemonic,
-  mnemonicToKey,
-  makeEthereumSigner,
-  Web3AuthOptions,
   FactorKeyTypeShareDescription,
-  // asyncStoreFactor,
-} from '@web3auth/mpc-core-kit';
+  generateFactorKey,
+  keyToMnemonic,
+  makeEthereumSigner,
+  mnemonicToKey,
+  mpclib,
+  parseToken,
+  TssDklsLib,
+  TssShareType,
+  WEB3AUTH_NETWORK,
+} from '@web3auth/react-native-mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {tssLib, Bridge} from '@toruslabs/react-native-tss-lib-bridge';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 import { Point, secp256k1 } from '@tkey/common-types';
 // IMP END - Quick Start
-import {BN} from 'bn.js';
-import {ethers} from 'ethers';
+// IMP START - Auth Provider Login
+import auth from '@react-native-firebase/auth';
+// IMP END - Auth Provider Login
 
 // IMP START - Dashboard Registration
 const web3AuthClientId =
@@ -71,14 +67,15 @@ const asyncStorageKey = {
   },
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
+const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+  // setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  tssLib, // tss lib bridge for react native
+  tssLib: TssDklsLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
-} as Web3AuthOptions);
+});
 
 // Setup provider for EVM Chain
 const evmProvider = new EthereumSigningProvider({config: {chainConfig}});
@@ -89,6 +86,7 @@ const password = 'Testing@123';
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [bridgeReady, setBridgeReady] = useState<boolean>(false);
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
     COREKIT_STATUS.NOT_INITIALIZED,
@@ -98,19 +96,21 @@ export default function App() {
   const [email, setEmail] = useState<string>(`user${Math.floor(Math.random() * 10000)}@example.com`);
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        // IMP START - SDK Initialization
-        await coreKitInstance.init();
-        // IMP END - SDK Initialization
-      } catch (error) {
-        uiConsole(error, 'mounted caught');
-      }
-      setCoreKitStatus(coreKitInstance.status);
-    };
-    init();
+    if (bridgeReady) {
+      const init = async () => {
+        try {
+          // IMP START - SDK Initialization
+          await coreKitInstance.init();
+          // IMP END - SDK Initialization
+        } catch (error: any) {
+          uiConsole(error.message, 'mounted caught');
+        }
+        setCoreKitStatus(coreKitInstance.status);
+      };
+      init();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bridgeReady]);
 
   // IMP START - Auth Provider Login
   const firebaseSignIn = async () => {
@@ -154,13 +154,16 @@ export default function App() {
       const parsedToken = parseToken(idToken);
 
       // IMP START - Login
-      const LoginParams = {
+      const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
         idToken,
-      } as JWTLoginParams;
+      };
 
-      await coreKitInstance.loginWithJWT(LoginParams);
+      await coreKitInstance.loginWithJWT(idTokenLoginParams);
+      if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
+        await coreKitInstance.commitChanges(); // Needed for new accounts
+      }
       // IMP END - Login
 
       // IMP START - Recover MFA Enabled Account
@@ -209,11 +212,12 @@ export default function App() {
       uiConsole('Enabling MFA, please wait');
 
       const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      await coreKitInstance.enableMFA({ factorKey });
+      await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
       );
+
     } catch (error: any) {
       uiConsole(error.message);
     }
@@ -265,11 +269,12 @@ export default function App() {
   const getSocialMFAFactorKey = async (): Promise<string> => {
     try {
       // Create a temporary instance of the MPC Core Kit, used to create an encryption key for the Social Factor
-      const tempCoreKitInstance = new Web3AuthMPCCoreKit({
+      const tempCoreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
         web3AuthClientId,
         web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
+        // setupProviderOnInit: false, // needed to skip the provider setup
         uxMode: 'react-native',
-        tssLib, // tss lib bridge for react native
+        tssLib: TssDklsLib, // tss lib bridge for react native
         manualSync: true, // This is the recommended approach
         storage: asyncStorageKey, // Add the storage property
       });
@@ -309,7 +314,7 @@ export default function App() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    uiConsole('export share type: ', TssShareType.RECOVERY);
+    uiConsole('share type: ', TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
@@ -320,7 +325,7 @@ export default function App() {
     );
     setLoading(false);
 
-    uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+    uiConsole('New factor key mnemonic: ', factorKeyMnemonic);
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
@@ -343,7 +348,7 @@ export default function App() {
   // IMP START - Delete Factor
   const deleteFactor = async () => {
     let factorPub: string | undefined;
-    for (const [key, value] of Object.entries(coreKitInstance.getKeyDetails().shareDescriptions)) {
+    for (const [key, value] of Object.entries((await coreKitInstance.getKeyDetails()).shareDescriptions)) {
       if (value.length > 0) {
         const parsedData = JSON.parse(value[0]);
         if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
@@ -467,14 +472,8 @@ export default function App() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    //@ts-ignore
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey!, 'hex'),
-      input: {message: 'KEY_NOT_FOUND'},
-    });
+
+    await coreKitInstance._UNSAFE_resetAccount();
     uiConsole('reset');
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
@@ -484,12 +483,8 @@ export default function App() {
   };
 
   const uiConsole = (...args: any) => {
-    setConsoleUI(
-      JSON.stringify(args, null, 2) +
-      '\n\n' +
-      consoleUI
-    );
-    console.log(JSON.stringify(args, null, 2));
+    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
+    console.log(...args);
   };
 
   const loginScreen = (
@@ -633,7 +628,12 @@ export default function App() {
           <Text>{consoleUI}</Text>
         </ScrollView>
       </View>
-      <Bridge />
+      <Bridge
+        logLevel={'DEBUG'}
+        resolveReady={(ready) => {
+          setBridgeReady(ready);
+        }}
+      />
     </View>
   );
 }
