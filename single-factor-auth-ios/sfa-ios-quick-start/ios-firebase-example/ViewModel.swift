@@ -37,7 +37,12 @@ class ViewModel: ObservableObject {
         
         singleFactorAuth = try! SingleFactorAuth(params: web3AuthOptions)
         
-        try! await singleFactorAuth.initialize()
+        do {
+            try await singleFactorAuth.initialize()
+        } catch let error {
+            // Handle Error
+            print(error)
+        }
         
         // Check for existing session
         if(singleFactorAuth.getSessionData() != nil) {

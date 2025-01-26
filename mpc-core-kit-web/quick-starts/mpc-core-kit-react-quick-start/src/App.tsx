@@ -1,5 +1,3 @@
-
-
 import "./App.css";
 import { tssLib } from "@toruslabs/tss-dkls-lib";
 /* eslint-disable @typescript-eslint/no-use-before-define */
@@ -98,7 +96,9 @@ function App() {
   useEffect(() => {
     const init = async () => {
       // IMP START - SDK Initialization
-      await coreKitInstance.init();
+      if (coreKitInstance.status === COREKIT_STATUS.NOT_INITIALIZED) {
+        await coreKitInstance.init();
+      }
       // IMP END - SDK Initialization
 
       setCoreKitStatus(coreKitInstance.status);
@@ -192,20 +192,19 @@ function App() {
 
       await tempCoreKitInstance.init();
 
-        // Login using Firebase Email Password
-        const auth = getAuth(app);
-        const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
-        uiConsole(res);
-        const idToken = await res.user.getIdToken(true);
-        const userInfo = parseToken(idToken);
+      // Login using Firebase Email Password
+      const auth = getAuth(app);
+      const res = await signInWithEmailAndPassword(auth, "custom+jwt@firebase.login", "Testing@123");
+      uiConsole(res);
+      const idToken = await res.user.getIdToken(true);
+      const userInfo = parseToken(idToken);
 
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier,
-          verifierId: userInfo.sub,
-          idToken,
-        });
-      
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
@@ -228,7 +227,7 @@ function App() {
     try {
       const factorKey = new BN(await getSocialMFAFactorKey(), "hex");
       uiConsole("Using the Social Factor Key to Enable MFA, please wait...");
-      await coreKitInstance.enableMFA({factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
+      await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
 
       if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
         await coreKitInstance.commitChanges();
