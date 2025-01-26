@@ -27,9 +27,12 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react": "^4.3.1",
+    "@web3auth/auth-adapter": "^9.4.0",
     "@web3auth/base": "^9.3.0",
     "@web3auth/base-provider": "^9.3.0",
+    "@web3auth/ethereum-provider": "^9.4.0",
     "@web3auth/single-factor-auth": "^9.2.0",
+    "@web3auth/solana-provider": "^9.4.0",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -37,7 +40,8 @@
     "tonweb": "^0.0.66",
     "typescript": "^5.0.4",
     "vite": "^5.4.1",
-    "web-vitals": "^3.1.1"
+    "web-vitals": "^3.1.1",
+    "web3": "^4.15.0"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
