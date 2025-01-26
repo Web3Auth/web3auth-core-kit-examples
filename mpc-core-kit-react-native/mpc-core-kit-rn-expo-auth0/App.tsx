@@ -105,7 +105,7 @@ function Home() {
     }
   }, [bridgeReady]);
 
-  const { authorize, getCredentials } = useAuth0();
+  const { authorize, getCredentials, clearSession } = useAuth0();
 
   // IMP START - Auth Provider Login
   const signInWithAuth0 = async () => {
@@ -336,9 +336,15 @@ function Home() {
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
-    // Log out from Auth0
-    setLoading(false);
     uiConsole("logged out from web3auth");
+    // Log out from Auth0
+    try {
+      await clearSession();
+      uiConsole("logged out from auth0");
+    } catch (error: any) {
+      uiConsole("logout from auth0 unsuccessful", error.message);
+    }
+    setLoading(false);
   };
 
   // IMP START - Blockchain Calls
