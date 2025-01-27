@@ -25,6 +25,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./App.css";
+import { ethers, TypedDataEncoder } from "ethers";
 
 // IMP START - SDK Initialization
 // IMP START - Dashboard Registration
@@ -324,6 +325,60 @@ function App() {
     );
     uiConsole(signedMessage);
   };
+
+
+  const signTypedData = async () => {
+    const ethersProvider = new ethers.BrowserProvider(evmProvider);
+    const signer = await ethersProvider.getSigner();
+
+    // All properties on a domain are optional
+    const domain = {
+      // name: "Ether Mail",
+      // version: "1",
+      // chainId: 1,
+      // verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    };
+
+    // The named list of all type definitions
+    const types = {
+      Person: [
+        { name: "name", type: "string" },
+        { name: "wallet", type: "address" },
+      ],
+      Mail: [
+        { name: "from", type: "Person" },
+        { name: "to", type: "Person" },
+        { name: "contents", type: "string" },
+      ],
+    };
+
+    // The data to sign
+    const value = {
+      from: {
+        name: "Cow",
+        wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+      },
+      to: {
+        name: "Bob",
+        wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+      },
+      contents: "Hello, Bob!",
+    };
+
+    const payload = TypedDataEncoder.getPayload(domain, types, value);
+    
+    // delete payload.types.EIP712Domain;
+
+    // console.log("payload", JSON.stringify(payload));
+    // const result = await ethersProvider.send("eth_signTypedData_v4", [signer.address.toLowerCase(), JSON.stringify(payload)]);
+    // console.log("result", result);
+
+    const web3 = new Web3(evmProvider);
+    const signedMessage = await web3.eth.signTypedData( (await web3.eth.getAccounts())[0], payload);
+    uiConsole(signedMessage);
+    const signedTypedData = await signer.signTypedData(domain, types, value);
+    uiConsole(signedTypedData);
+  };
   // IMP END - Blockchain Calls
 
   const criticalResetAccount = async (): Promise<void> => {
@@ -387,6 +442,11 @@ function App() {
         <div>
           <button onClick={signMessage} className="card">
             Sign Message
+          </button>
+        </div>
+        <div>
+          <button onClick={signTypedData} className="card">
+            Sign Typed Data
           </button>
         </div>
         <div>
