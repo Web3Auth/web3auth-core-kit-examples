@@ -16,7 +16,7 @@
     "ethers": "^6.13.2",
     "firebase": "^10.13.0",
     "next": "14.2.5",
-    "react": "18.3.1",
+    "react": "19.0.0",
     "react-dom": "18.3.1",
     "viem": "^2.19.8",
     "web3": "^4.11.1"
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@types/elliptic": "^6.4.18",
     "@types/node": "20.4.1",
-    "@types/react": "18.3.3",
+    "@types/react": "19.0.8",
     "@types/react-dom": "18.3.0",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
