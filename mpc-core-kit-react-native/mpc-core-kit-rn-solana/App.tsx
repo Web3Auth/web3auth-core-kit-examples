@@ -573,7 +573,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.headingArea}>
-          <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+          <Text style={styles.heading}>MPC Core Kit RN Solana Example</Text>
           {loading && <ActivityIndicator />}
       </View>
       <View style={styles.buttonArea}>
