@@ -1,7 +1,6 @@
 import './globals';
 import '@ethersproject/shims';
 
-import {Point, secp256k1} from '@tkey/common-types';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // IMP START - Quick Start
@@ -18,6 +17,8 @@ import {
   TssDklsLib,
   TssShareType,
   WEB3AUTH_NETWORK,
+  Point,
+  secp256k1,
 } from '@web3auth/react-native-mpc-core-kit';
 // IMP END - Quick Start
 import {BN} from 'bn.js';

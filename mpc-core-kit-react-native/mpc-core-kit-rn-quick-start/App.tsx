@@ -25,11 +25,12 @@ import {
   TssDklsLib,
   TssShareType,
   WEB3AUTH_NETWORK,
+  Point,
+  secp256k1,
 } from '@web3auth/react-native-mpc-core-kit';
 import {CHAIN_NAMESPACES} from '@web3auth/base';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
-import { Point, secp256k1 } from '@tkey/common-types';
 // IMP END - Quick Start
 // IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';
@@ -93,7 +94,9 @@ export default function App() {
   );
   const [backupFactorKey, setBackupFactorKey] = useState<string>('');
   const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
-  const [email, setEmail] = useState<string>(`user${Math.floor(Math.random() * 10000)}@example.com`);
+  const [email, setEmail] = useState<string>(
+    `user${Math.floor(Math.random() * 10000)}@example.com`,
+  );
 
   useEffect(() => {
     if (bridgeReady) {
@@ -212,12 +215,14 @@ export default function App() {
       uiConsole('Enabling MFA, please wait');
 
       const factorKey = new BN(await getSocialMFAFactorKey(), 'hex');
-      await coreKitInstance.enableMFA({ factorKey, shareDescription: FactorKeyTypeShareDescription.SocialShare });
+      await coreKitInstance.enableMFA({
+        factorKey,
+        shareDescription: FactorKeyTypeShareDescription.SocialShare,
+      });
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your firebase email password login (hardcoded in this example) is used as the social backup factor',
       );
-
     } catch (error: any) {
       uiConsole(error.message);
     }
@@ -233,7 +238,7 @@ export default function App() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance not found');
     }
-    uiConsole(coreKitInstance.getKeyDetails());
+    uiConsole(await coreKitInstance.getKeyDetails());
   };
 
   const getDeviceFactor = async () => {
@@ -254,10 +259,7 @@ export default function App() {
         shareType: TssShareType.DEVICE,
         factorKey: factorKey.private,
       });
-      await coreKitInstance.setDeviceFactor(
-        factorKey.private,
-        true,
-      );
+      await coreKitInstance.setDeviceFactor(factorKey.private, true);
       uiConsole('Stored factor: ', factorKey);
     } catch (error: any) {
       uiConsole(error.message);
@@ -289,12 +291,12 @@ export default function App() {
       console.log(res);
       const idToken = await res.user.getIdToken(true);
       const userInfo = parseToken(idToken);
-        // Use the Web3Auth SFA SDK to generate an account using the Social Factor
-        await tempCoreKitInstance.loginWithJWT({
-          verifier,
-          verifierId: userInfo.sub,
-          idToken,
-        });
+      // Use the Web3Auth SFA SDK to generate an account using the Social Factor
+      await tempCoreKitInstance.loginWithJWT({
+        verifier,
+        verifierId: userInfo.sub,
+        idToken,
+      });
 
       // Get the private key using the Social Factor, which can be used as a factor key for the MPC Core Kit
       const factorKey = await tempCoreKitInstance.state.postBoxKey;
@@ -344,11 +346,12 @@ export default function App() {
     }
   };
 
-
   // IMP START - Delete Factor
   const deleteFactor = async () => {
     let factorPub: string | undefined;
-    for (const [key, value] of Object.entries((await coreKitInstance.getKeyDetails()).shareDescriptions)) {
+    for (const [key, value] of Object.entries(
+      (await coreKitInstance.getKeyDetails()).shareDescriptions,
+    )) {
       if (value.length > 0) {
         const parsedData = JSON.parse(value[0]);
         if (parsedData.module === FactorKeyTypeShareDescription.SocialShare) {
@@ -357,7 +360,11 @@ export default function App() {
       }
     }
     if (factorPub) {
-      uiConsole('Deleting Social Factor, please wait...', 'Factor Pub:', factorPub);
+      uiConsole(
+        'Deleting Social Factor, please wait...',
+        'Factor Pub:',
+        factorPub,
+      );
       const pub = Point.fromSEC1(secp256k1, factorPub);
       await coreKitInstance.deleteFactor(pub);
       await coreKitInstance.commitChanges();
@@ -489,7 +496,10 @@ export default function App() {
 
   const loginScreen = (
     <View style={styles.buttonArea}>
-      <Text style={styles.subHeading}>This is a test example, you can enter a random email to create a new account, the constant password is "Testing@123"</Text>
+      <Text style={styles.subHeading}>
+        This is a test example, you can enter a random email to create a new
+        account, the constant password is "Testing@123"
+      </Text>
       <View style={styles.section}>
         <Text style={styles.subHeading}>Enter your Email</Text>
         <TextInput
@@ -509,48 +519,47 @@ export default function App() {
     <View style={styles.buttonArea}>
       <View style={styles.compressedButtons}>
         <View style={styles.buttonRow}>
-        <TouchableOpacity
-          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          onPress={() => getDeviceFactor()}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Get Device Factor</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          onPress={() => getSocialMFAFactorKey()}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Get Social Backup Factor</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+            onPress={() => getDeviceFactor()}
+            style={styles.button}>
+            <Text style={styles.buttonText}>Get Device Factor</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+            onPress={() => getSocialMFAFactorKey()}
+            style={styles.button}>
+            <Text style={styles.buttonText}>Get Social Backup Factor</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.buttonRow}>
-        <Text style={styles.subHeading}>Recover Using Mnemonic Factor Key:</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setMnemonicFactor}
-          value={mnemonicFactor}
-        />
-        <TouchableOpacity
-          disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
-          onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Get Mnemonic Factor Key </Text>
-        </TouchableOpacity>
+          <Text style={styles.subHeading}>
+            Recover Using Mnemonic Factor Key:
+          </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setMnemonicFactor}
+            value={mnemonicFactor}
+          />
+          <TouchableOpacity
+            disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
+            onPress={() => MnemonicToFactorKeyHex(mnemonicFactor)}
+            style={styles.button}>
+            <Text style={styles.buttonText}>Get Mnemonic Factor Key </Text>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={backupFactorKey ?  styles.section : styles.disabledSection}>
-      {backupFactorKey && <Text style={styles.subHeading}>Factor Key: {backupFactorKey}</Text>}
+      <View style={backupFactorKey ? styles.section : styles.disabledSection}>
+        {backupFactorKey && (
+          <Text style={styles.subHeading}>Factor Key: {backupFactorKey}</Text>
+        )}
         <TouchableOpacity
           disabled={coreKitStatus !== COREKIT_STATUS.REQUIRED_SHARE}
           onPress={() => inputBackupFactorKey()}
-          style={styles.button}
-        >
+          style={styles.button}>
           <Text style={styles.buttonText}>Input Backup Factor Key</Text>
         </TouchableOpacity>
       </View>
-
 
       <TouchableOpacity onPress={criticalResetAccount} style={styles.button}>
         <Text style={styles.buttonText}>[CRITICAL] Reset Account</Text>
@@ -562,7 +571,7 @@ export default function App() {
     <View style={styles.compressedButtons}>
       <View style={styles.buttonRow}>
         <TouchableOpacity onPress={getUserInfo} style={styles.button}>
-          <Text style={styles.buttonText} >Get User Info</Text>
+          <Text style={styles.buttonText}>Get User Info</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={keyDetails} style={styles.button}>
           <Text style={styles.buttonText}>Key Details</Text>
@@ -574,7 +583,7 @@ export default function App() {
           <Text style={styles.buttonText}>Get Balance</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={signMessage} style={styles.button}>
-            <Text style={styles.buttonText}>Sign Message</Text>
+          <Text style={styles.buttonText}>Sign Message</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={logout} style={styles.button}>
           <Text style={styles.buttonText}>Log Out</Text>
@@ -588,12 +597,18 @@ export default function App() {
           <Text style={styles.buttonText}>Enable MFA</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={createMnemonicFactor} style={styles.button}>
-          <Text style={styles.buttonText}>Generate Backup (Mnemonic) - CreateFactor</Text>
+          <Text style={styles.buttonText}>
+            Generate Backup (Mnemonic) - CreateFactor
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => getDeviceFactor()} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => getDeviceFactor()}
+          style={styles.button}>
           <Text style={styles.buttonText}>Get Device Factor</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => storeDeviceFactor()} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => storeDeviceFactor()}
+          style={styles.button}>
           <Text style={styles.buttonText}>Store New Device Factor</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => deleteFactor()} style={styles.button}>
@@ -614,12 +629,12 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.headingArea}>
-          <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
-          {loading && <ActivityIndicator />}
+        <Text style={styles.heading}>MPC Core Kit RN Quick Start</Text>
+        {loading && <ActivityIndicator />}
       </View>
       <View style={styles.buttonArea}>
-      {coreKitStatus === COREKIT_STATUS.LOGGED_IN
-        ? loggedInView
+        {coreKitStatus === COREKIT_STATUS.LOGGED_IN
+          ? loggedInView
           : unloggedInView}
       </View>
       <View style={styles.consoleArea}>
@@ -630,7 +645,7 @@ export default function App() {
       </View>
       <Bridge
         logLevel={'DEBUG'}
-        resolveReady={(ready) => {
+        resolveReady={ready => {
           setBridgeReady(ready);
         }}
       />
@@ -713,7 +728,7 @@ const styles = StyleSheet.create({
     margin: 5,
     padding: 5,
     borderRadius: 10,
-    width:' 100%',
+    width: ' 100%',
   },
   section: {
     alignItems: 'center',

@@ -1,7 +1,6 @@
 import "./globals";
 import "@ethersproject/shims";
 
-import { Point, secp256k1 } from "@tkey/common-types";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { EthereumSigningProvider } from "@web3auth/ethereum-mpc-provider";
 // IMP START - Quick Start
@@ -15,6 +14,8 @@ import {
   mnemonicToKey,
   mpclib,
   parseToken,
+  Point,
+  secp256k1,
   TssDklsLib,
   TssShareType,
   WEB3AUTH_NETWORK,

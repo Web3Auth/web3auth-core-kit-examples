@@ -31,9 +31,10 @@ import {
   TssFrostLib,
   TssShareType,
   WEB3AUTH_NETWORK,
+  Point,
+  secp256k1,
 } from '@web3auth/react-native-mpc-core-kit';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {Point, secp256k1} from '@tkey/common-types';
 // IMP END - Quick Start
 // IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';

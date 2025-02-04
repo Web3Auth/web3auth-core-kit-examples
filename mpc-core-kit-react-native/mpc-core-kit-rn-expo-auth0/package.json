@@ -14,7 +14,6 @@
     "@web3auth/base": "^9.5.1",
     "@web3auth/ethereum-mpc-provider": "^9.5.1",
     "@web3auth/react-native-mpc-core-kit": "^0.4.1-alpha.0",
-    "@tkey/common-types": "^15.1.0",
     "bn.js": "^5.2.1",
     "ethers": "^6.13.4",
     "expo": "~51.0.28",
