@@ -17,7 +17,7 @@
     "@tkey/common-types": "^15.1.0",
     "@web3auth/base": "^9.5.1",
     "@web3auth/ethereum-mpc-provider": "^9.5.1",
-    "@web3auth/react-native-mpc-core-kit": "^0.3.0-alpha.0",
+    "@web3auth/react-native-mpc-core-kit": "^0.4.1-alpha.0",
     "ethers": "^6.13.2",
     "metro-react-native-babel-transformer": "^0.77.0",
     "react": "18.3.1",
