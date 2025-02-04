@@ -1,19 +1,23 @@
 // IMP START - Auth Provider Login
 import { COREKIT_STATUS, generateFactorKey, keyToMnemonic, TssShareType } from "@web3auth/mpc-core-kit";
-import mpclib from "@web3auth/react-native-mpc-core-kit";
-import { Button, Text, View } from "react-native";
+import { Point, secp256k1, Web3AuthMPCCoreKitRN } from "@web3auth/react-native-mpc-core-kit";
+import { useState } from "react";
+import { Button, Text, TextInput, View } from "react-native";
 
+// import type { JWTPara } from "@web3auth/react-native-mpc-core-kit"
 // import EncryptedStorage from "react-native-encrypted-storage";
 import { mpcViewStyles as styles } from "./styles";
 
 export default function MPCAccoutFunction(props: {
   uiConsole: (...args: any) => void;
   setLoading: (loading: boolean) => void;
-  coreKitInstance: mpclib.Web3AuthMPCCoreKitRN;
+  coreKitInstance: Web3AuthMPCCoreKitRN;
   setCoreKitStatus: (status: COREKIT_STATUS) => void;
 }) {
   const { uiConsole, setLoading, coreKitInstance, setCoreKitStatus } = props;
   // const { coreKitInstance, setCoreKitStatus } = useMPCCoreKitStore();
+
+  const [deleteFactorPubHex, setDeleteFactorPubHex] = useState("");
 
   // IMP END - Auth Provider Login
   const getUserInfo = async () => {};
@@ -53,6 +57,25 @@ export default function MPCAccoutFunction(props: {
     // if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
     //   await coreKitInstance.commitChanges();
     // }
+  };
+
+  const deleteFactorPub = async () => {
+    try {
+      await coreKitInstance.deleteFactor(Point.fromSEC1(secp256k1, deleteFactorPubHex));
+    } catch (e) {
+      console.log("catch error");
+      uiConsole(e);
+    }
+  };
+
+  const getAllFactorPubs = async () => {
+    try {
+      const factorKeys = await coreKitInstance.getTssFactorPub();
+      uiConsole("All factor keys: ", factorKeys);
+    } catch (e) {
+      console.log("catch error");
+      uiConsole(e);
+    }
   };
 
   const getCurrentFactorKey = async () => {
@@ -137,9 +160,20 @@ export default function MPCAccoutFunction(props: {
       <Text style={styles.heading}>MPC Core Kit RN Account Function</Text>
       <Button title="Get User Info" onPress={getUserInfo} />
       <Button title="Key Details" onPress={keyDetails} />
+      <Button title="Get All FactorPubs" onPress={getAllFactorPubs} />
 
       <Button title="Enable MFA" onPress={enableMFA} />
       <Button title="Generate Backup (Mnemonic) - CreateFactor" onPress={exportMnemonicFactor} />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Factor Pub"
+        onChangeText={(text) => {
+          setDeleteFactorPubHex(text);
+        }}
+        value={deleteFactorPubHex}
+      />
+      <Button title="Delete Factor" onPress={deleteFactorPub} />
       <Button title="Get node Signatures" onPress={() => getNodeSignatures()} />
       <Button title="Get Current Factor" onPress={() => getCurrentFactorKey()} />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
