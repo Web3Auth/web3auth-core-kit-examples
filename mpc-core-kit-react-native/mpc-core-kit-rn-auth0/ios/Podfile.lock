@@ -955,7 +955,7 @@ PODS:
     - React-debug
   - react-native-encrypted-storage (4.0.3):
     - React-Core
-  - react-native-webview (13.13.1):
+  - react-native-webview (13.13.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1376,7 +1376,7 @@ SPEC CHECKSUMS:
   React-logger: 3eb80a977f0d9669468ef641a5e1fabbc50a09ec
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
-  react-native-webview: 873405c789b07e5ded301b9afbe169037a80ee2d
+  react-native-webview: b20263fe41234d8c182530f7a1901f38347c157a
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: cd26e56d56350e123da0c1e3e4c76cb58a05e1ee
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
