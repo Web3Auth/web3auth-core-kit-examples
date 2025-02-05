@@ -5,7 +5,7 @@ const { getDefaultConfig } = require("expo/metro-config");
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-config.transformer.babelTransformerPath = require.resolve("react-native-react-bridge/lib/plugin");
+config.transformer.babelTransformerPath = require.resolve('./customTransformer.js')
 config.resolver.extraNodeModules = {
   ...config.resolver.extraNodeModules,
 

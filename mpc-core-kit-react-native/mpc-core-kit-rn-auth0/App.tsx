@@ -1,45 +1,44 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Button,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  ActivityIndicator,
-  TextInput,
-} from 'react-native';
+import './globals';
 import '@ethersproject/shims';
-// IMP START - Auth Provider Login
-import {useAuth0, Auth0Provider} from 'react-native-auth0';
-// IMP END - Auth Provider Login
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {tssLib} from '@toruslabs/react-native-tss-lib-bridge';
-import {Bridge} from '@toruslabs/react-native-tss-lib-bridge';
-import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 
+import {CHAIN_NAMESPACES} from '@web3auth/base';
+import {EthereumSigningProvider} from '@web3auth/ethereum-mpc-provider';
 // IMP START - Quick Start
 import {
-  Web3AuthMPCCoreKit,
-  WEB3AUTH_NETWORK,
-  TssShareType,
-  parseToken,
-  generateFactorKey,
+  Bridge,
   COREKIT_STATUS,
+  FactorKeyTypeShareDescription,
+  generateFactorKey,
   keyToMnemonic,
-  mnemonicToKey,
   makeEthereumSigner,
-  JWTLoginParams,
-} from '@web3auth/mpc-core-kit';
-// import { Web3AuthMPCCoreKit, WEB3AUTH_NETWORK, Point, SubVerifierDetailsParams,
-// TssShareType, keyToMnemonic, getWebBrowserFactor, COREKIT_STATUS, TssSecurityQuestion,
-// generateFactorKey, mnemonicToKey, parseToken, DEFAULT_CHAIN_CONFIG } from "@web3auth/mpc-core-kit";
-import {CHAIN_NAMESPACES} from '@web3auth/base';
+  mnemonicToKey,
+  mpclib,
+  parseToken,
+  TssDklsLib,
+  TssShareType,
+  WEB3AUTH_NETWORK,
+  Point,
+  secp256k1,
+} from '@web3auth/react-native-mpc-core-kit';
 // IMP END - Quick Start
 import {BN} from 'bn.js';
 import {ethers} from 'ethers';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+// IMP START - Auth Provider Login
+import {Auth0Provider, useAuth0} from 'react-native-auth0';
+// IMP END - Auth Provider Login
 
-// IMP START - SDK Initialization
 // IMP START - Dashboard Registration
 const web3AuthClientId =
   'BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ'; // get from https://dashboard.web3auth.io
@@ -49,6 +48,7 @@ const web3AuthClientId =
 const verifier = 'w3a-auth0-demo';
 // IMP END - Verifier Creation
 
+// IMP START - Chain Config
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: '0xaa36a7', // Please use 0x1 for Mainnet
@@ -59,8 +59,9 @@ const chainConfig = {
   ticker: 'ETH',
   tickerName: 'Ethereum',
 };
+// IMP END - Chain Config
 
-const tsslibInstance = tssLib;
+// IMP START - SDK Initialization
 // setup async storage for react native
 const asyncStorageKey = {
   getItem: async (key: string) => {
@@ -71,12 +72,12 @@ const asyncStorageKey = {
   },
 };
 
-const coreKitInstance = new Web3AuthMPCCoreKit({
+const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
-  //setupProviderOnInit: false, // needed to skip the provider setup
+  // setupProviderOnInit: false, // needed to skip the provider setup
   uxMode: 'react-native',
-  tssLib: tsslibInstance, // tss lib bridge for react native
+  tssLib: TssDklsLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
 });
@@ -88,6 +89,7 @@ evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
 
 function Home() {
   const [loading, setLoading] = useState<boolean>(false);
+  const [bridgeReady, setBridgeReady] = useState<boolean>(false);
   const [consoleUI, setConsoleUI] = useState<string>('');
   const [coreKitStatus, setCoreKitStatus] = useState<COREKIT_STATUS>(
     COREKIT_STATUS.NOT_INITIALIZED,
@@ -95,26 +97,32 @@ function Home() {
   const [backupFactorKey, setBackupFactorKey] = useState<string>('');
   const [mnemonicFactor, setMnemonicFactor] = useState<string>('');
 
+  const uiConsole = (...args: any) => {
+    setConsoleUI(`${JSON.stringify(args || {}, null, 2)}\n\n\n\n${consoleUI}`);
+    console.log(...args);
+  };
+
   useEffect(() => {
-    const init = async () => {
-      try {
-        // IMP START - SDK Initialization
-        await coreKitInstance.init();
-        // IMP END - SDK Initialization
-      } catch (error: any) {
-        uiConsole(error.message, 'mounted caught');
-      }
-      setCoreKitStatus(coreKitInstance.status);
-    };
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (bridgeReady) {
+      const init = async () => {
+        try {
+          // IMP START - SDK Initialization
+          await coreKitInstance.init();
+          // IMP END - SDK Initialization
+        } catch (error: any) {
+          uiConsole(error.message, 'mounted caught');
+        }
+        setCoreKitStatus(coreKitInstance.status);
+      };
+      init();
+    }
+  }, [bridgeReady]);
 
-  const {authorize, clearSession, getCredentials} = useAuth0();
+  const {authorize, getCredentials, clearSession} = useAuth0();
 
+  // IMP START - Auth Provider Login
   const signInWithAuth0 = async () => {
     try {
-      //@ts-ignore
       await authorize(
         {
           scope: 'openid profile email',
@@ -135,6 +143,7 @@ function Home() {
       console.error(error);
     }
   };
+  // IMP END - Auth Provider Login
 
   const login = async () => {
     try {
@@ -148,14 +157,19 @@ function Home() {
       // IMP END - Auth Provider Login
       uiConsole('idToken', idToken);
 
-      // IMP START - Login
       uiConsole('idToken', idToken);
-      const parsedToken = parseToken(idToken!);
 
-      const idTokenLoginParams: JWTLoginParams = {
+      if (!idToken) {
+        throw new Error('idToken is null or undefined');
+      }
+
+      const parsedToken = parseToken(idToken);
+
+      // IMP START - Login
+      const idTokenLoginParams = {
         verifier,
         verifierId: parsedToken.sub,
-        idToken: idToken!,
+        idToken,
       };
 
       await coreKitInstance.loginWithJWT(idTokenLoginParams);
@@ -209,15 +223,22 @@ function Home() {
     try {
       setConsoleUI('Enabling MFA, please wait');
 
-      const factorKey = await coreKitInstance.enableMFA({});
-      const factorKeyMnemonic = keyToMnemonic(factorKey);
+      const factorKey = generateFactorKey();
+
+      await coreKitInstance.enableMFA({
+        factorKey: factorKey.private,
+        shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
+      });
+      const factorKeyMnemonic = keyToMnemonic(
+        factorKey.private.toString('hex'),
+      );
 
       uiConsole(
         'MFA enabled, device factor stored in local store, deleted hashed cloud key, your backup factor key: ',
         factorKeyMnemonic,
       );
     } catch (error: any) {
-      uiConsole(error.message);
+      uiConsole('Error', error);
     }
     setLoading(false);
 
@@ -231,7 +252,7 @@ function Home() {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance not found');
     }
-    uiConsole(coreKitInstance.getKeyDetails());
+    uiConsole(await coreKitInstance.getKeyDetails());
   };
 
   const getDeviceFactor = async () => {
@@ -244,6 +265,7 @@ function Home() {
     }
   };
 
+  // IMP START - Store Device Factor
   const storeDeviceFactor = async () => {
     try {
       if (!coreKitInstance) {
@@ -256,34 +278,37 @@ function Home() {
         shareType: TssShareType.DEVICE,
         factorKey: factorKey.private,
       });
-      setLoading(false);
       uiConsole('Stored factor: ', factorKey);
     } catch (error: any) {
       uiConsole(error.message);
     }
   };
+  // IMP END - Store Device Factor
 
+  // IMP START - Export Mnemonic Factor
   const createMnemonicFactor = async (): Promise<void> => {
     if (!coreKitInstance) {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    uiConsole('export share type: ', TssShareType.RECOVERY);
+    uiConsole('share type: ', TssShareType.RECOVERY);
     const factorKey = generateFactorKey();
     await coreKitInstance.createFactor({
       shareType: TssShareType.RECOVERY,
       factorKey: factorKey.private,
+      shareDescription: FactorKeyTypeShareDescription.SeedPhrase,
     });
     const factorKeyMnemonic = await keyToMnemonic(
       factorKey.private.toString('hex'),
     );
     setLoading(false);
 
-    uiConsole('Export factor key mnemonic: ', factorKeyMnemonic);
+    uiConsole('New factor key mnemonic: ', factorKeyMnemonic);
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
   };
+  // IMP END - Export Mnemonic Factor
 
   const MnemonicToFactorKeyHex = async (mnemonic: string) => {
     if (!coreKitInstance) {
@@ -298,6 +323,35 @@ function Home() {
     }
   };
 
+  // IMP START - Delete Factor
+  const deleteFactor = async () => {
+    let factorPub: string | undefined;
+    for (const [key, value] of Object.entries(
+      (await coreKitInstance.getKeyDetails()).shareDescriptions,
+    )) {
+      if (value.length > 0) {
+        const parsedData = JSON.parse(value[0]);
+        if (parsedData.module === FactorKeyTypeShareDescription.SeedPhrase) {
+          factorPub = key;
+        }
+      }
+    }
+    if (factorPub) {
+      uiConsole(
+        'Deleting Mnemonic Factor, please wait...',
+        'Factor Pub:',
+        factorPub,
+      );
+      const pub = Point.fromSEC1(secp256k1, factorPub);
+      await coreKitInstance.deleteFactor(pub);
+      await coreKitInstance.commitChanges();
+      uiConsole('Mnemonic Factor deleted');
+    } else {
+      uiConsole('No Mnemonic factor found to delete');
+    }
+  };
+  // IMP END - Delete Factor
+
   const getUserInfo = async () => {
     // IMP START - Get User Information
     const user = coreKitInstance.getUserInfo();
@@ -311,15 +365,15 @@ function Home() {
     await coreKitInstance.logout();
     // IMP END - Logout
     setCoreKitStatus(coreKitInstance.status);
+    uiConsole('logged out from web3auth');
     // Log out from Auth0
-    setLoading(false);
     try {
       await clearSession();
       uiConsole('logged out from auth0');
     } catch (error: any) {
-      uiConsole(error.message);
+      uiConsole('logout from auth0 unsuccessful', error.message);
     }
-    uiConsole('logged out from web3auth');
+    setLoading(false);
   };
 
   // IMP START - Blockchain Calls
@@ -399,7 +453,6 @@ function Home() {
     setLoading(false);
     uiConsole(signedMessage);
   };
-  // IMP END - Blockchain Calls
 
   const sendTransaction = async () => {
     if (!coreKitInstance) {
@@ -429,6 +482,7 @@ function Home() {
     setLoading(false);
     uiConsole(receipt);
   };
+  // IMP END - Blockchain Calls
 
   const criticalResetAccount = async (): Promise<void> => {
     // This is a critical function that should only be used for testing purposes
@@ -438,25 +492,14 @@ function Home() {
       throw new Error('coreKitInstance is not set');
     }
     setLoading(true);
-    //@ts-ignore
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey!, 'hex'),
-      input: {message: 'KEY_NOT_FOUND'},
-    });
+
+    await coreKitInstance._UNSAFE_resetAccount();
     uiConsole('reset');
     if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
       await coreKitInstance.commitChanges();
     }
     setLoading(false);
     logout();
-  };
-
-  const uiConsole = (...args: any) => {
-    setConsoleUI(JSON.stringify(args || {}, null, 2) + '\n\n\n\n' + consoleUI);
-    console.log(...args);
   };
 
   const loggedInView = (
@@ -477,6 +520,7 @@ function Home() {
       />
       <Button title="Get Device Factor" onPress={() => getDeviceFactor()} />
       <Button title="Store Device Factor" onPress={() => storeDeviceFactor()} />
+      <Button title="Delete Mnemonic Factor" onPress={() => deleteFactor()} />
       <Button title="[CRITICAL] Reset Account" onPress={criticalResetAccount} />
     </View>
   );
@@ -533,6 +577,12 @@ function Home() {
           <Text>{consoleUI}</Text>
         </ScrollView>
       </View>
+      <Bridge
+        logLevel={'DEBUG'}
+        resolveReady={ready => {
+          setBridgeReady(ready);
+        }}
+      />
     </View>
   );
 }
@@ -545,7 +595,6 @@ export default function App() {
         clientId={'hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O'}>
         <Home />
       </Auth0Provider>
-      <Bridge />
     </>
   );
 }

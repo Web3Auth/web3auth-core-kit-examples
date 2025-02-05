@@ -103,3 +103,7 @@ tests/cases/user/prettier/prettier
 build
 single-factor-auth-web/sfa-web-ton-telegram-example/src/.env
 single-factor-auth-web/sfa-web-ton-telegram-example/src/.env
+Pods/
+.gradle/
+.xcode.env.local
+expo-env.d.ts

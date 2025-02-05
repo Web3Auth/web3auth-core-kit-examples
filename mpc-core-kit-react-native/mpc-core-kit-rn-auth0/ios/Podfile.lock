@@ -1,10 +1,10 @@
 PODS:
-  - A0Auth0 (3.1.0):
-    - Auth0 (= 2.5.0)
+  - A0Auth0 (3.2.1):
+    - Auth0 (= 2.7.2)
     - JWTDecode (= 3.1.0)
     - React-Core
     - SimpleKeychain (= 1.1.0)
-  - Auth0 (2.5.0):
+  - Auth0 (2.7.2):
     - JWTDecode (~> 3.1)
     - SimpleKeychain (~> 1.1)
   - boost (1.83.0)
@@ -955,15 +955,7 @@ PODS:
     - React-debug
   - react-native-encrypted-storage (4.0.3):
     - React-Core
-  - react-native-get-random-values (1.11.0):
-    - React-Core
-  - react-native-quick-crypto (0.7.3):
-    - glog
-    - OpenSSL-Universal
-    - RCT-Folly (= 2022.05.16.00)
-    - React
-    - React-Core
-  - react-native-webview (13.12.1):
+  - react-native-webview (13.13.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1193,8 +1185,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-encrypted-storage (from `../node_modules/react-native-encrypted-storage`)
-  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
-  - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1297,10 +1287,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-encrypted-storage:
     :path: "../node_modules/react-native-encrypted-storage"
-  react-native-get-random-values:
-    :path: "../node_modules/react-native-get-random-values"
-  react-native-quick-crypto:
-    :path: "../node_modules/react-native-quick-crypto"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-nativeconfig:
@@ -1347,8 +1333,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: d6fa13c9daf99f5fb17a412837ea37f8db38a562
-  Auth0: 72f19ad566fdf57f07bf37f828afd0c1570769a5
+  A0Auth0: 47cb14c87d549b95b92242675ff2198ccd9dcbc5
+  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
@@ -1390,9 +1376,7 @@ SPEC CHECKSUMS:
   React-logger: 3eb80a977f0d9669468ef641a5e1fabbc50a09ec
   React-Mapbuffer: 84ea43c6c6232049135b1550b8c60b2faac19fab
   react-native-encrypted-storage: db300a3f2f0aba1e818417c1c0a6be549038deb7
-  react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
-  react-native-quick-crypto: baf477ca99eb2d142ebc8fd10c82eba98f4ebfa6
-  react-native-webview: af2cf33a5cb5dc5789b9ac8811714a4f66a4c505
+  react-native-webview: b20263fe41234d8c182530f7a1901f38347c157a
   React-nativeconfig: b4d4e9901d4cabb57be63053fd2aa6086eb3c85f
   React-NativeModulesApple: cd26e56d56350e123da0c1e3e4c76cb58a05e1ee
   React-perflogger: 5f49905de275bac07ac7ea7f575a70611fa988f2
