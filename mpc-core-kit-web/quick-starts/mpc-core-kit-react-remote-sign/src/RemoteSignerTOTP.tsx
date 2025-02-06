@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import {QRCodeSVG} from "qrcode.react";
-import { COREKIT_STATUS, generateFactorKey, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
-import { AuthenticatorService, getFactorDetailsAndDescriptions } from "@web3auth/mpc-remote-signer-plugin";
+import { COREKIT_STATUS, generateFactorKey, IFactorManagerContext, ISignerContext, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
+import { AuthenticatorFactorManager, getFactorDetailsAndDescriptions, MPCRemoteSignerPlugin } from "@web3auth/mpc-remote-signer-plugin";
 
-export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: AuthenticatorService<Web3AuthMPCCoreKit>}) => {
+export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: AuthenticatorFactorManager<IFactorManagerContext>}) => {
     const {coreKitInstance, authenticatorService} = params;
     const [showQrCode, setShowQrCode] = useState(false);
     const [qrCodeSVG, setQrCodeSVG] = useState<string>("");
@@ -38,15 +38,30 @@ export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit,
         const factorkey = generateFactorKey();
         await authenticatorService.verifyRegistration( code, factorkey.private.toString("hex") );
         await coreKitInstance.commitChanges();
+        // once authenticated, initiate the remote signer plugin
+        const remoteSignerPlugin = new MPCRemoteSignerPlugin({
+            remoteServerUrl: authenticatorService.remoteServerUrl,
+            remoteClientToken: authenticatorService.remoteClientToken,
+            remoteFactor: authenticatorService.remoteFactor
+        },coreKitInstance as ISignerContext);
+        debugger
+        await remoteSignerPlugin.init();
         setShowQrCode(false);
     }
 
 
     const QRCodeRegisterView = () => {
+        const copyToClipboard = () => {
+            navigator.clipboard.writeText(qrCodeSVG);
+        };
+
         return <div id="qrcode" style={{ textAlign: "center" , position:"absolute" }} >
             <QRCodeSVG value={qrCodeSVG} size={300} />
-            <span>{qrCodeSVG}</span>
-            <input value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
+            <div>
+                <span>{qrCodeSVG}</span>
+                <button onClick={copyToClipboard}>Copy</button>
+            </div>
+            <input type="text" value={otpValue} onChange={(e) => setOtpValue(e.target.value)}/>
             <button onClick={() => verifyRegistration(otpValue)} >Verify</button>
         </div>;
     };
@@ -67,7 +82,7 @@ export const RemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit,
     </div>
 }
 
-export const RemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: AuthenticatorService<Web3AuthMPCCoreKit> , successCallback: (status: COREKIT_STATUS) => void}) => {
+export const TOTPRemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: AuthenticatorFactorManager<IFactorManagerContext> , successCallback: (status: COREKIT_STATUS) => void}) => {
     const {coreKitInstance, authenticatorService, successCallback} = params;
     const [otpValue, setOtpValue] = useState<string>("");
     const remoteSetup = async (code : string) => {
@@ -75,12 +90,25 @@ export const RemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCoreKi
         throw new Error("coreKitInstance not found");
         }
 
+        if (!authenticatorService) {
+            throw new Error("authenticatorService not found");
+        }
+
+    
+
         const details = coreKitInstance.getKeyDetails();
         const {factorPub} = getFactorDetailsAndDescriptions( details.shareDescriptions, "authenticator")
 
         // to do add more security measure
-        const updated = await authenticatorService?.setupRemoteSignerUsingAuthenticatorCode( code )
+        await authenticatorService.authenticate( code )
 
+        // once authenticated, initiate the remote signer plugin
+        const remoteSignerPlugin = new MPCRemoteSignerPlugin({
+            remoteServerUrl: authenticatorService.remoteServerUrl,
+            remoteClientToken: authenticatorService.remoteClientToken,
+            remoteFactor: authenticatorService.remoteFactor
+        },coreKitInstance as ISignerContext);
+        await remoteSignerPlugin.init();
         successCallback(coreKitInstance.status);
     }
     return <div>

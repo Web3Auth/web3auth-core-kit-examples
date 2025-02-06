@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import {QRCodeSVG} from "qrcode.react";
-import { COREKIT_STATUS, generateFactorKey, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
-import { SmsService, getFactorDetailsAndDescriptions } from "@web3auth/mpc-remote-signer-plugin";
+import { useState } from "react";
+import { COREKIT_STATUS, generateFactorKey, IFactorManagerContext, ISignerContext, Web3AuthMPCCoreKit } from "@web3auth/mpc-core-kit";
+import { MPCRemoteSignerPlugin, SmsFactorManager } from "@web3auth/mpc-remote-signer-plugin";
 
 
 
 
-export const SMSRemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: SmsService<Web3AuthMPCCoreKit>}) => {
+export const SMSRemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: SmsFactorManager<IFactorManagerContext>}) => {
     const {coreKitInstance, authenticatorService} = params;
     const [phoneNumber, setPhoneNumber] = useState<string>("");
     const [otpValue, setOtpValue] = useState<string>("");
@@ -38,8 +37,6 @@ export const SMSRemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreK
         await coreKitInstance.commitChanges();
     }
 
-
-
     return <div>
         <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
         <button onClick={startRegistration} className="card">
@@ -57,21 +54,27 @@ export const SMSRemoteSignerFeature = (params:{coreKitInstance: Web3AuthMPCCoreK
     </div>
 }
 
-export const SMSRemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCoreKit, authenticatorService?: SmsService<Web3AuthMPCCoreKit> , successCallback: (status: COREKIT_STATUS) => void}) => {
-    const {coreKitInstance, authenticatorService: smsService, successCallback} = params;
+export const SMSRemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCoreKit, smsService?: SmsFactorManager<IFactorManagerContext> , successCallback: (status: COREKIT_STATUS) => void}) => {
+    const {coreKitInstance, smsService, successCallback} = params;
     const [otpValue, setOtpValue] = useState<string>("");
-    const [phoneNumber, setPhoneNumber] = useState<string>("");
     const remoteSetup = async (code : string) => {
         if (!coreKitInstance) {
         throw new Error("coreKitInstance not found");
         }
 
-        const details = coreKitInstance.getKeyDetails();
-        const {factorPub} = getFactorDetailsAndDescriptions( details.shareDescriptions, "authenticator")
+        if (!smsService) {
+            throw new Error("smsService not found");
+        }
 
         // to do add more security measure
-        const updated = await smsService?.setupRemoteSignerUsingAuthenticatorCode( code )
-
+        await smsService.authenticate( code )
+        // once authenticated, initiate the remote signer plugin
+        const remoteSignerPlugin = new MPCRemoteSignerPlugin({
+            remoteServerUrl: smsService.remoteServerUrl,
+            remoteClientToken: smsService.remoteClientToken,
+            remoteFactor: smsService.remoteFactor
+        },coreKitInstance as ISignerContext);
+        await remoteSignerPlugin.init();
         successCallback(coreKitInstance.status);
     }
 
@@ -82,7 +85,6 @@ export const SMSRemoteSignerLoginView = (params:{coreKitInstance: Web3AuthMPCCor
         await smsService.requestSMSOTP()
     }
     return <div>
-        <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
         <button onClick={()=>requestOtp()} className="card">
             Request OTP
         </button>

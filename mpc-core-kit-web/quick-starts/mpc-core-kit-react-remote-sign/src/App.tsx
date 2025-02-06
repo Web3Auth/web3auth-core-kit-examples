@@ -14,6 +14,7 @@ import {
   COREKIT_STATUS,
   FactorKeyTypeShareDescription,
   generateFactorKey,
+  IFactorManagerContext,
   JWTLoginParams,
   keyToMnemonic,
   makeEthereumSigner,
@@ -36,8 +37,8 @@ import { useEffect, useState } from "react";
 // import RPC from "./ethersRPC";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
-import { AuthenticatorService, SmsService } from "@web3auth/mpc-remote-signer-plugin";
-import { RemoteSignerFeature, RemoteSignerLoginView } from "./RemoteSigner";
+import { AuthenticatorFactorManager, SmsFactorManager } from "@web3auth/mpc-remote-signer-plugin";
+import { RemoteSignerFeature, TOTPRemoteSignerLoginView } from "./RemoteSignerTOTP";
 import { SMSRemoteSignerFeature, SMSRemoteSignerLoginView } from "./RemoteSignerSMS";
 
 
@@ -109,31 +110,27 @@ function App() {
   const [mnemonicFactor, setMnemonicFactor] = useState<string>("");
 
 
-  const [authenticatorService, setAuthenticatorService] = useState<AuthenticatorService<Web3AuthMPCCoreKit>>();
-  const [smsService, setSmsService] = useState<SmsService<Web3AuthMPCCoreKit>>();
+  const [authenticatorService, setAuthenticatorService] = useState<AuthenticatorFactorManager<IFactorManagerContext>>();
+  const [smsService, setSmsService] = useState<SmsFactorManager<IFactorManagerContext>>();
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
 
   useEffect(() => {
     const init = async () => {
-      //028fd23521363d1ec06161fbfb8237045b49c4f0864b040e0ded296de19d623e7c
-      //030fd23521363d1ec06161fbfb8237045b49c4f0864b040e0ded296de19d623e8f
-      const point = Point.fromScalar(new BN("86e2703b0b4bb8d771b5ad06ff8318a40889e4e72a38e94156f9774bbd34a93c", "hex"), secp256k1);
-      console.log("point", point.toSEC1(secp256k1, true).toString("hex"));
       // IMP START - SDK Initialization
       await coreKitInstance.init();
       // IMP END - SDK Initialization
 
       if (coreKitInstance.status !== COREKIT_STATUS.NOT_INITIALIZED) {
-        const authenticatorService = new AuthenticatorService({
-          backendUrl : "http://localhost:3021",
-          remoteSignerInstance: coreKitInstance,
+        const authenticatorService = new AuthenticatorFactorManager({
+          backendUrl : "https://tp-tss-authenticator.tor.us",
+          coreKitInstance: coreKitInstance as IFactorManagerContext,
           storage: window.localStorage,
         })
         await authenticatorService.init();
-        const smsService = new SmsService({
-          backendUrl : "http://localhost:3021",
-          remoteSignerInstance: coreKitInstance,
+        const smsService = new SmsFactorManager({
+          backendUrl : "https://tp-tss-authenticator.tor.us",
+          coreKitInstance: coreKitInstance as IFactorManagerContext,
           storage: window.localStorage,
         })
         await smsService.init();
@@ -192,16 +189,16 @@ function App() {
         );
       }
       // IMP END - Recover MFA Enabled Account
-      const authenticatorService = new AuthenticatorService({
-        backendUrl : "http://localhost:3021",
-        remoteSignerInstance: coreKitInstance,
+      const authenticatorService = new AuthenticatorFactorManager({
+        backendUrl : "https://tp-tss-authenticator.tor.us",
+        coreKitInstance: coreKitInstance as IFactorManagerContext,
         storage: window.localStorage,
       })
       await authenticatorService.init();
 
-      const smsService = new SmsService({
-        backendUrl : "http://localhost:3021",
-        remoteSignerInstance: coreKitInstance,
+      const smsService = new SmsFactorManager({
+        backendUrl : "https://tp-tss-authenticator.tor.us",
+        coreKitInstance: coreKitInstance as IFactorManagerContext,
         storage: window.localStorage,
       })
       await smsService.init();
@@ -565,8 +562,8 @@ function App() {
           Input Backup Factor Key
         </button>
 
-        <RemoteSignerLoginView coreKitInstance={coreKitInstance} authenticatorService={authenticatorService} successCallback={(status) => setCoreKitStatus(status)} />
-        <SMSRemoteSignerLoginView coreKitInstance={coreKitInstance} authenticatorService={smsService} successCallback={(status) => setCoreKitStatus(status)} />
+        <TOTPRemoteSignerLoginView coreKitInstance={coreKitInstance} authenticatorService={authenticatorService} successCallback={(status) => setCoreKitStatus(status)} />
+        {/* <SMSRemoteSignerLoginView coreKitInstance={coreKitInstance} smsService={smsService} successCallback={(status) => setCoreKitStatus(status)} /> */}
 
         <button onClick={criticalResetAccount} className="card">
           [CRITICAL] Reset Account
