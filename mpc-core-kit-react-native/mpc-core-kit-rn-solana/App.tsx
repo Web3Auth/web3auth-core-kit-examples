@@ -64,7 +64,6 @@ const coreKitInstance = new mpclib.Web3AuthMPCCoreKitRN({
   web3AuthClientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.MAINNET,
   // setupProviderOnInit: false, // needed to skip the provider setup
-  uxMode: 'react-native',
   tssLib: TssFrostLib, // tss lib bridge for react native
   manualSync: true, // This is the recommended approach
   storage: asyncStorageKey, // Add the storage property
