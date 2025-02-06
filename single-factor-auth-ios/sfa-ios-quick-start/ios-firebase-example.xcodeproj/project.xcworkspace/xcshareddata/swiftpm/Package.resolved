@@ -177,8 +177,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "branch" : "feat/wallet-services_and_request_function",
-        "revision" : "ff3e41488d890ddd01d0aa1263787d3ebee23a73"
+        "revision" : "09324dcef63b1322cca27e30a7a3a2b4542af4b7"
       }
     },
     {

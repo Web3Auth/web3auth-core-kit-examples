@@ -32,7 +32,8 @@ class ViewModel: ObservableObject {
         // IMP START - Initialize Web3Auth SFA
         web3AuthOptions = Web3AuthOptions(
             clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET
+            web3AuthNetwork: .SAPPHIRE_MAINNET,
+            redirectUrl: "auth://web3auth-firebase-example"
         )
         
         singleFactorAuth = try! SingleFactorAuth(params: web3AuthOptions)
@@ -51,7 +52,7 @@ class ViewModel: ObservableObject {
             getBalance()
             
             await MainActor.run(body: {
-                user = sessionData.getPrivateKey()
+                user = sessionData.privateKey
                 loggedIn = true
                 navigationTitle = "UserInfo"
             })
@@ -88,7 +89,7 @@ class ViewModel: ObservableObject {
                 getBalance()
                 
                 await MainActor.run(body: {
-                    user = result.getPrivateKey()
+                    user = result.privateKey
                     loggedIn = true
                     navigationTitle = "UserInfo"
                 })
@@ -181,9 +182,9 @@ extension ViewModel {
     func showResult(result: SessionData) {
         print("""
         Signed in successfully!
-            Private key: \(result.getPrivateKey())
+            Private key: \(result.privateKey)
             Public Address:
-                Name: \(result.getPublicAddress())
+                Name: \(result.publicAddress)
         """)
     }
 }

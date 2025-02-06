@@ -474,7 +474,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Web3Auth.ios-firebase-example";
+				PRODUCT_BUNDLE_IDENTIFIER = "web3auth-firebase-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -503,7 +503,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Web3Auth.ios-firebase-example";
+				PRODUCT_BUNDLE_IDENTIFIER = "web3auth-firebase-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -637,8 +637,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
-				branch = "feat/wallet-services_and_request_function";
-				kind = branch;
+				kind = revision;
+				revision = 09324dcef63b1322cca27e30a7a3a2b4542af4b7;
 			};
 		};
 		28A903AD2BC3DDFC002C0DB5 /* XCRemoteSwiftPackageReference "web3" */ = {

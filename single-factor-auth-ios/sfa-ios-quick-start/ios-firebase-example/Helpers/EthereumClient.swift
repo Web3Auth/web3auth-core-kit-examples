@@ -64,7 +64,7 @@ extension SessionData: EthereumSingleKeyStorageProtocol {
     }
     
     public func loadPrivateKey() throws -> Data {
-        guard let privKeyData = Data.init(hex: self.getPrivateKey()) else {
+        guard let privKeyData = Data.init(hex: self.privateKey) else {
             // Todo make custom error
             return Data()
         }
