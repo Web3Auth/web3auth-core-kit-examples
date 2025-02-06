@@ -652,108 +652,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "104"
             endingLineNumber = "104"
-            landmarkName = "loginWithJWT()"
+            landmarkName = "loginWithJWT(verifierId:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6e3bd6b0c0ec972"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "104"
-                  endingLineNumber = "104">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6186a2b94a7e2ccb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 6186a2b94a7e2d76"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) await resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "104"
-                  endingLineNumber = "104">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - b1cb7bcc0b7874ed"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - b1cb7bcc0b787550"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "104"
-                  endingLineNumber = "104">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 1879861e02457f29"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-               <Location
-                  uuid = "3062A97E-AEA8-44CF-B697-FD8CD8426A9A - 1879861e02457e94"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(9) suspend resume partial function for closure #1 () async -&gt; () in mpc_core_kit_ios_quick_start.MainViewModel.loginWithJWT() -&gt; ()"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Documents/GitHub/web3auth-core-kit-examples/mpc-core-kit-ios/mpc-core-kit-ios-quick-start/mpc-core-kit-ios-quick-start/Models/MainViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "104"
-                  endingLineNumber = "104">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -768,7 +668,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "87"
             endingLineNumber = "87"
-            landmarkName = "loginWithJWT()"
+            landmarkName = "loginWithJWT(verifierId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -784,7 +684,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "110"
             endingLineNumber = "110"
-            landmarkName = "loginWithJWT()"
+            landmarkName = "loginWithJWT(verifierId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -802,64 +702,6 @@
             endingLineNumber = "126"
             landmarkName = "loginWithJwt(verifier:verifierId:idToken:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - 6046e145ec991a0e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "126"
-                  endingLineNumber = "126">
-               </Location>
-               <Location
-                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - 665258fe62dbc0f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "126"
-                  endingLineNumber = "126">
-               </Location>
-               <Location
-                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - f47a4b753e2f9aaf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "126"
-                  endingLineNumber = "126">
-               </Location>
-               <Location
-                  uuid = "9445A42D-AC89-4A2F-B9AA-03CF19404587 - ac0f78bf640546a9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(6) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "126"
-                  endingLineNumber = "126">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -876,50 +718,6 @@
             endingLineNumber = "124"
             landmarkName = "loginWithJwt(verifier:verifierId:idToken:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - e06b7ccdd6c4636e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124">
-               </Location>
-               <Location
-                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - 6046e145ec9919cc"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124">
-               </Location>
-               <Location
-                  uuid = "E0080E33-19EC-4A0B-9105-A1A51322FEEA - 5071d05a431a2b6a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(5) suspend resume partial function for mpc_core_kit_swift.MpcCoreKit.loginWithJwt(verifier: Swift.String, verifierId: Swift.String, idToken: Swift.String) async throws -&gt; mpc_core_kit_swift.MpcKeyDetails"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/mpc-core-kit-swift/Sources/mpc-core-kit-swift/MpcCoreKitSwift.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "124"
-                  endingLineNumber = "124">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -934,7 +732,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "99"
             endingLineNumber = "99"
-            landmarkName = "loginWithJWT()"
+            landmarkName = "loginWithJWT(verifierId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -950,7 +748,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "98"
             endingLineNumber = "98"
-            landmarkName = "loginWithJWT()"
+            landmarkName = "loginWithJWT(verifierId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1032,50 +830,6 @@
             endingLineNumber = "340"
             landmarkName = "retrieveOrImportShare(legacyMetadataHost:serverTimeOffset:enableOneKey:allowHost:network:clientId:endpoints:verifier:verifierParams:idToken:importedShares:apiKey:newPrivateKey:extraParams:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - 836e4b6e9cc3539c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "340"
-                  endingLineNumber = "340">
-               </Location>
-               <Location
-                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - 66fabdd96a9b8f9a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "340"
-                  endingLineNumber = "340">
-               </Location>
-               <Location
-                  uuid = "D59AA574-67BA-4F9F-BC41-6E31133DDDEB - d4cccafe7f8e6999"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for closure #1 () async -&gt; Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt; in closure #4 (inout Swift.ThrowingTaskGroup&lt;Swift.Optional&lt;TorusUtils.JRPCResponse&lt;TorusUtils.ShareRequestResult&gt;&gt;, Swift.Error&gt;) async throws -&gt; (Swift.Array&lt;TorusUtils.ShareRequestResult&gt;, Swift.Optional&lt;TorusUtils.KeyAssignment.PublicKey&gt;) in static TorusUtils.NodeUtils.retrieveOrImportShare(legacyMetadataHost: Swift.String, serverTimeOffset: Swift.Optional&lt;Swift.Int&gt;, enableOneKey: Swift.Bool, allowHost: Swift.String, network: FetchNodeDetails.Web3AuthNetwork, clientId: Swift.String, endpoints: Swift.Array&lt;Swift.String&gt;, verifier: Swift.String, verifierParams: TorusUtils.VerifierParams, idToken: Swift.String, importedShares: Swift.Optional&lt;Swift.Array&lt;TorusUtils.ImportedShare&gt;&gt;, apiKey: Swift.String, newPrivateKey: Swift.Optional&lt;Swift.String&gt;, extraParams: TorusUtils.TorusUtilsExtraParams) async throws -&gt; TorusUtils.TorusKey"
-                  moduleName = "mpc-core-kit-ios-quick-start.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/apollo/Library/Developer/Xcode/DerivedData/mpc-core-kit-ios-quick-start-dadfjehxpfckbvfsquxdduqdevrr/SourcePackages/checkouts/torus-utils-swift/Sources/TorusUtils/Helpers/NodeUtils.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "340"
-                  endingLineNumber = "340">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

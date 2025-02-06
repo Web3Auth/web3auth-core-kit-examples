@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/web3auth/mpc-core-kit-swift",
       "state" : {
-        "branch" : "feat/signer",
-        "revision" : "537891b6fcffe3ae8c90b0e864fac36a86d23da9"
+        "branch" : "fix/enableMFA-ManualSync",
+        "revision" : "59dba91ac15f76c1e88ab8875f097d27b5103976"
       }
     },
     {

@@ -674,7 +674,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/web3auth/mpc-core-kit-swift";
 			requirement = {
-				branch = feat/signer;
+				branch = "fix/enableMFA-ManualSync";
 				kind = branch;
 			};
 		};
