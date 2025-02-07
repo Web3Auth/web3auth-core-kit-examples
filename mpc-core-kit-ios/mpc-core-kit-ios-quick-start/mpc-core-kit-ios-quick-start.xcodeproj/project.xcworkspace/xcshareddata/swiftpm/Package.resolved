@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/web3auth/mpc-core-kit-swift",
       "state" : {
-        "branch" : "feat/signer",
-        "revision" : "4773dfc6808250dcd3b831214abcf5ec5a763585"
+        "branch" : "unfiltered_share_descriptions",
+        "revision" : "a1636d64094d8ce40503b5c15811ac9d9c4cb80f"
       }
     },
     {
@@ -195,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/tkey-mpc-swift",
       "state" : {
-        "revision" : "74ea5301e316163b48e653ba107fd9edd4fe6bf8",
-        "version" : "4.0.2"
+        "branch" : "unfiltered_share_descriptions",
+        "revision" : "8ba15942dfecef421e5821ed3fdea1da0056be05"
       }
     },
     {

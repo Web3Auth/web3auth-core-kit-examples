@@ -80,7 +80,7 @@ import UIKit
     func resetAccount() {
         Task {
             do {
-                try await mpc_core_kit_swift.resetAccount(coreKitInstance: mpcCoreKit)
+                try await mpcCoreKit.resetAccount()
                 self.isRecoveryRequired = false
                 self.isLoggedIn = false
             } catch let error {
@@ -167,10 +167,10 @@ import UIKit
                 let factor = try await mpcCoreKit.createFactor(
                     tssShareIndex: .recovery,
                     factorKey: nil,
-                    factorDescription: .SeedPhrase
+                    factorDescription: .hashedShare
                 )
                 
-                let seedPhrase = try FactorSerialization.keyToMnemonic(tkey: mpcCoreKit.tkey!,
+                let seedPhrase = try MpcCoreKit.FactorSerialization.keyToMnemonic(tkey: mpcCoreKit.tkey!,
                                                                        shareHex: factor
                 )
                 
@@ -185,7 +185,7 @@ import UIKit
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                let factorKey = try FactorSerialization.mnemonicToKey(tkey: mpcCoreKit.tkey!,
+                let factorKey = try MpcCoreKit.FactorSerialization.mnemonicToKey(tkey: mpcCoreKit.tkey!,
                     shareMnemonic: seedPhrase
                 )
                 
