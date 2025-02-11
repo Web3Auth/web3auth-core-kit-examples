@@ -40,7 +40,7 @@ android {
 
 dependencies {
     // IMP START - Installation
-    implementation 'com.github.web3auth:single-factor-auth-android:3.0.1'
+    implementation 'com.github.grvgoel81:single-factor-auth-android:9.7.2'
     // IMP END - Installation
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
     implementation 'com.google.firebase:firebase-auth-ktx'
