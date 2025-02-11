@@ -9,18 +9,6 @@ import BN from "bn.js";
 
 const ECPair = ECPairFactory(ecc);
 
-export function createBitcoinJsSigner(props: { coreKitInstance: Web3AuthMPCCoreKit; network: networks.Network }): SignerAsync {
-  return {
-    sign: async (msg: Buffer) => {
-      let sig = await props.coreKitInstance.sign(msg);
-      return sig;
-    },
-
-    publicKey: props.coreKitInstance.getPubKeyPoint().toSEC1(secp256k1, true),
-    network: props.network,
-  };
-}
-
 export function createBitcoinJsSignerBip340(props: { coreKitInstance: Web3AuthMPCCoreKit; network: networks.Network }): SignerAsync {
   const bufPubKey = props.coreKitInstance.getPubKeyPoint().toSEC1(secp256k1, true);
   const xOnlyPubKey = bufPubKey.subarray(1, 33);
