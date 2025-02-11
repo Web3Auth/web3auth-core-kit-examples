@@ -35,11 +35,35 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="140dp"
         android:text="@string/logout"
-        android:textColor="#4A148C"
-        app:backgroundTint="#F5820D"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/purple_500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.468"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/requestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="121dp"
+        android:layout_marginEnd="141dp"
+        android:layout_marginBottom="14dp"
+        android:text="@string/request"
+        app:layout_constraintBottom_toTopOf="@+id/signOut"
+        app:layout_constraintEnd_toEndOf="@+id/contentTextView"
+        app:layout_constraintStart_toStartOf="@+id/contentTextView" />
+
+    <Button
+        android:id="@+id/showWalletUI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="122dp"
+        android:layout_marginEnd="141dp"
+        android:layout_marginBottom="20dp"
+        android:text="@string/showWalletUI"
+        app:layout_constraintBottom_toTopOf="@+id/requestButton"
+        app:layout_constraintEnd_toEndOf="@+id/contentTextView"
+        app:layout_constraintStart_toStartOf="@+id/contentTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

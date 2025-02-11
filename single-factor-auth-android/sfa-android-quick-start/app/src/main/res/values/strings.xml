@@ -3,4 +3,6 @@
     <string name="login_via_firebase_to_sfa">Login</string>
     <string name="not_logged_in">Login now to get Token</string>
     <string name="logout">Logout</string>
+    <string name="showWalletUI">Show Wallet UI</string>
+    <string name="request">Request</string>
 </resources>
