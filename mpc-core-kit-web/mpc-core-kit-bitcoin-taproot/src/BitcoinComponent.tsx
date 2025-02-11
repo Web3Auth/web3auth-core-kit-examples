@@ -44,7 +44,7 @@ const handleSendTransaction = async (signedTransaction: string) => {
 
 export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInstance }) => {
   const [bip340Signer, setBip340Signer] = useState<SignerAsync | null>(null);
-  const [receiverAddr, setReceiverAddr] = useState<string>("");
+  const [receiverAddr, setReceiverAddr] = useState<string>("tb1pq23xjp27a0aq8q38fnrh8kvcl2naylrfsv2lf7d67e8hdenpdz9qsuk7g3");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -149,7 +149,6 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
 
     try {
       const address = getAddress(bip340Signer, bitcoinNetwork);
-      setReceiverAddr(address || "");
       if (address) {
         uiConsole(`Address:`, address);
       } else {
