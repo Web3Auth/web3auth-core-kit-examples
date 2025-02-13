@@ -44,7 +44,7 @@ const handleSendTransaction = async (signedTransaction: string) => {
 
 export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInstance }) => {
   const [bip340Signer, setBip340Signer] = useState<SignerAsync | null>(null);
-  const [receiverAddr, setReceiverAddr] = useState<string>("tb1pq23xjp27a0aq8q38fnrh8kvcl2naylrfsv2lf7d67e8hdenpdz9qsuk7g3");
+  const [receiverAddr, setReceiverAddr] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -77,7 +77,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
 
     try {
       const account = payments.p2tr({ pubkey: bip340Signer.publicKey.subarray(1, 33), network: bitcoinNetwork });
-
+      setReceiverAddr(account.address!);
       const utxos = await fetchUtxos(account.address!);
 
       if (!utxos.length) {
@@ -150,6 +150,7 @@ export const BitcoinComponent: React.FC<BitcoinComponentProps> = ({ coreKitInsta
     try {
       const address = getAddress(bip340Signer, bitcoinNetwork);
       if (address) {
+        setReceiverAddr(address);
         uiConsole(`Address:`, address);
       } else {
         uiConsole("Invalid address");
