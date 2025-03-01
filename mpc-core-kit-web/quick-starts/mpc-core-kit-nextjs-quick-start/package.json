@@ -26,7 +26,7 @@
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
-    "@toruslabs/eslint-config-typescript": "^3.3.4",
+    "@toruslabs/eslint-config-typescript": "^4.1.0",
     "@types/elliptic": "^6.4.18",
     "@types/node": "20.4.1",
     "@types/react": "18.3.10",
