@@ -38,6 +38,30 @@ struct UserDetailView: View {
                                 Text("Sign Message")
                             }
                         )
+                        Button(
+                            action: {
+                                viewModel.requestSignature{
+                                    result, error in
+                                    if result != nil {
+                                        alertContent = result!
+                                    } else {
+                                        alertContent = error!
+                                    }
+                                    showingAlert = true
+                                }
+                            },
+                            label: {
+                                Text("Request Signature")
+                            }
+                        )
+                        Button(
+                            action: {
+                                viewModel.showWalletUI()
+                            },
+                            label: {
+                                Text("Show Wallet UI")
+                            }
+                        )
                     } header: {
                         Text("Chain Interactions")
                     }
