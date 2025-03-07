@@ -4,6 +4,7 @@ package com.example.androidsfaexample
 
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,8 +19,11 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 // IMP END - Auth Provider Login
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 // IMP START - Quick Start
 import com.web3auth.singlefactorauth.SingleFactorAuth
+import com.web3auth.singlefactorauth.types.ChainConfig
+import com.web3auth.singlefactorauth.types.ChainNamespace
 import com.web3auth.singlefactorauth.types.LoginParams
 import com.web3auth.singlefactorauth.types.SessionData
 import com.web3auth.singlefactorauth.types.Web3AuthOptions
@@ -45,13 +49,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // IMP START - Initialize Web3Auth SFA
         web3AuthOptions = Web3AuthOptions(
-            "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
-            Web3AuthNetwork.MAINNET,
-            40
+            "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+            Web3AuthNetwork.SAPPHIRE_MAINNET,
+            redirectUrl = Uri.parse("w3a://com.example.androidsfaexample")
         )
 
         val context: Context = this.applicationContext
-        singleFactorAuth = SingleFactorAuth(web3AuthOptions, context)
+        singleFactorAuth = SingleFactorAuth(web3AuthOptions, this)
         // IMP END - Initialize Web3Auth SFA
 
 
@@ -61,6 +65,12 @@ class MainActivity : AppCompatActivity() {
 
         val signOutButton = findViewById<Button>(R.id.signOut)
         signOutButton.setOnClickListener { signOut(this.applicationContext) }
+
+        val requestButton = findViewById<Button>(R.id.requestButton)
+        requestButton.setOnClickListener { requestMethod() }
+
+        val showWalletUIButton = findViewById<Button>(R.id.showWalletUI)
+        showWalletUIButton.setOnClickListener { showWalletUI() }
         val torusKeyCF = singleFactorAuth.initialize(this.applicationContext)
         Log.i("Is connected",singleFactorAuth.isConnected().toString())
         torusKeyCF.whenComplete { _, error ->
@@ -82,6 +92,49 @@ class MainActivity : AppCompatActivity() {
         }
 
         reRender()
+    }
+
+    private fun requestMethod() {
+        val chainConfig = ChainConfig(
+            chainNamespace = ChainNamespace.EIP155,
+            chainId = "0x1",
+            rpcTarget = "https://rpc.ankr.com/eth"
+        )
+
+        val params = JsonArray().apply {
+            add("Hello, World!")
+            add(sessionData!!.publicAddress)
+        }
+
+        val signMsgCompletableFuture = singleFactorAuth.request(chainConfig, "personal_sign", params)
+
+        signMsgCompletableFuture.whenComplete { signResult, error ->
+            if (error == null) {
+                Log.d("Sign Result", signResult.toString())
+
+            } else {
+                Log.d("Sign Error", error.message ?: "Something went wrong")
+            }
+        }
+    }
+
+    private fun showWalletUI() {
+        val chainConfig = ChainConfig(
+            chainNamespace = ChainNamespace.EIP155,
+            chainId = "0x1",
+            rpcTarget = "https://rpc.ankr.com/eth"
+        )
+
+        val launchWalletCompletableFuture = singleFactorAuth.showWalletUI(
+            chainConfig
+        )
+        launchWalletCompletableFuture.whenComplete { _, error ->
+            if (error == null) {
+                Log.d("MainActivity_Web3Auth", "Wallet launched successfully")
+            } else {
+                Log.d("MainActivity_Web3Auth", error.message ?: "Something went wrong")
+            }
+        }
     }
 
     private fun signIn(){
@@ -126,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                             Log.i("Private Key:", torusKey!!.trimIndent())
                             Log.i("Public Address:", publicAddress.trimIndent())
                             Log.i("User Info", sessionData!!.userInfo.toString())
-                            println(sessionData!!.signatures!!.sessionAuthKey)
+                            println(sessionData!!.signatures)
                             reRender()
                         }
                     }
@@ -157,16 +210,22 @@ class MainActivity : AppCompatActivity() {
         val contentTextView = findViewById<TextView>(R.id.contentTextView)
         val signInButton = findViewById<Button>(R.id.signIn)
         val signOutButton = findViewById<Button>(R.id.signOut)
+        val showWalletUIButton = findViewById<Button>(R.id.showWalletUI)
+        val requestButton = findViewById<Button>(R.id.requestButton)
 
         if (publicAddress.isNotEmpty()) {
             contentTextView.text = gson.toJson(publicAddress)
             contentTextView.visibility = View.VISIBLE
             signInButton.visibility = View.GONE
             signOutButton.visibility = View.VISIBLE
+            showWalletUIButton.visibility = View.VISIBLE
+            requestButton.visibility = View.VISIBLE
         } else {
             contentTextView.visibility = View.GONE
             signInButton.visibility = View.VISIBLE
             signOutButton.visibility = View.GONE
+            showWalletUIButton.visibility = View.GONE
+            requestButton.visibility = View.GONE
         }
     }
 }
