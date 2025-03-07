@@ -17,7 +17,7 @@
     "@web3auth/base": "^9.3.0",
     "@web3auth/ethereum-provider": "^9.3.0",
     "@web3auth/single-factor-auth": "^9.2.0",
-    "axios": "^1.6.6",
+    "axios": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
