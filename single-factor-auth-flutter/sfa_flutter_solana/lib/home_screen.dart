@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final Ed25519HDKeyPair keyPair;
   late final SolanaProvider provider;
   late double balance;
-  late final SFAKey torusKey;
+  late final SessionData sessionData;
 
   @override
   void initState() {
@@ -41,14 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadAccount(BuildContext context) async {
     try {
-      torusKey = await web3authSFA.getKey(user);
+      sessionData = await web3authSFA.getKey(user);
 
       userName = getUserDisplayName();
 
       /// The ED25519 PrivateKey returns a key pair from
       /// which we only require first 32 byte.
       keyPair = await Ed25519HDKeyPair.fromPrivateKeyBytes(
-        privateKey: torusKey.privateKey.hexToBytes.take(32).toList(),
+        privateKey: sessionData.privateKey.hexToBytes.take(32).toList(),
       );
       balance = await provider.getBalance(keyPair.address);
       isAccountLoaded.value = true;
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   verticalGap,
                   OutlinedButton(
                     onPressed: () async {
-                      final privateKey = torusKey.privateKey;
+                      final privateKey = sessionData.privateKey;
                       if (context.mounted) {
                         copyContentToClipboard(context, privateKey);
                       }

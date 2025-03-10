@@ -1,18 +1,19 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:single_factor_auth_flutter/enums.dart';
 import 'package:single_factor_auth_flutter/input.dart';
 import 'package:single_factor_auth_flutter/output.dart';
 import 'package:single_factor_auth_flutter/single_factor_auth_flutter.dart';
 
 class Web3AuthSFA {
-  final SingleFactAuthFlutter singleFactAuthFlutter;
+  final SingleFactorAuthFlutter singleFactorAuthFlutter;
 
-  Web3AuthSFA(this.singleFactAuthFlutter);
+  Web3AuthSFA(this.singleFactorAuthFlutter);
 
   Future<void> init() async {
-    await singleFactAuthFlutter.init(
-      SFAParams(
+    await singleFactorAuthFlutter.init(
+      Web3AuthOptions(
         network: Web3AuthNetwork.sapphire_mainnet,
         clientId:
             "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
@@ -22,20 +23,21 @@ class Web3AuthSFA {
 
   Future<void> initialize() async {
     try {
-      final SFAKey? torusKey = await singleFactAuthFlutter.initialize();
-      if (torusKey != null) {
-        log('Initialized successfully. Private Key: ${torusKey.privateKey}');
+      await singleFactorAuthFlutter.initialize();
+      final sessionData = await singleFactorAuthFlutter.getSessionData();
+      if (sessionData != null) {
+        log('Initialized successfully. Private Key: ${sessionData.privateKey}');
       }
     } catch (e) {
       log("Error initializing SFA: $e");
     }
   }
 
-  Future<SFAKey> getKey(User user) async {
+  Future<SessionData> getKey(User user) async {
     try {
       final token = await user.getIdToken(true);
 
-      final SFAKey torusKey = await singleFactAuthFlutter.connect(
+      final SessionData sessionData = await singleFactorAuthFlutter.connect(
         LoginParams(
           verifier: 'w3a-firebase-demo',
           verifierId: user.uid,
@@ -43,7 +45,7 @@ class Web3AuthSFA {
         ),
       );
 
-      return torusKey;
+      return sessionData;
     } catch (e) {
       rethrow;
     }

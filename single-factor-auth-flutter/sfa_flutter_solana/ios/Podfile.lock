@@ -6,7 +6,7 @@ PODS:
   - AppAuth/ExternalUserAgent (1.7.5):
     - AppAuth/Core
   - BigInt (5.2.0)
-  - curvelib.swift (1.0.1)
+  - curvelib.swift (2.0.0)
   - Firebase/Auth (10.25.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 10.25.0)
@@ -68,24 +68,24 @@ PODS:
     - AppAuth/Core (~> 1.7)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3)
   - GTMSessionFetcher/Core (3.5.0)
+  - JWTDecode (3.2.0)
   - KeychainSwift (20.0.0)
   - PromisesObjC (2.4.0)
   - RecaptchaInterop (100.0.0)
   - single_factor_auth_flutter (0.0.1):
     - Flutter
-    - SingleFactorAuth (= 8.0.0)
-  - SingleFactorAuth (8.0.0):
-    - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.3)
-    - Torus-utils (~> 9.0.1)
-    - TorusSessionManager (~> 5.0.0)
-  - Torus-fetchNodeDetails (6.0.3):
+    - SingleFactorAuth (= 9.0.4)
+  - SingleFactorAuth (9.0.4):
+    - JWTDecode (~> 3.2)
+    - Torus-utils (~> 10.0.0)
+    - TorusSessionManager (~> 6.0.2)
+  - Torus-fetchNodeDetails (8.0.1):
     - BigInt (~> 5.2.0)
-  - Torus-utils (9.0.1):
-    - curvelib.swift (~> 1.0.1)
-    - Torus-fetchNodeDetails (~> 6.0.3)
-  - TorusSessionManager (5.0.0):
-    - curvelib.swift (~> 1.0.1)
+  - Torus-utils (10.0.1):
+    - curvelib.swift (~> 2.0.0)
+    - Torus-fetchNodeDetails (~> 8.0.1)
+  - TorusSessionManager (6.0.2):
+    - curvelib.swift (~> 2.0.0)
     - KeychainSwift (~> 20.0.0)
 
 DEPENDENCIES:
@@ -109,6 +109,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
+    - JWTDecode
     - KeychainSwift
     - PromisesObjC
     - RecaptchaInterop
@@ -132,7 +133,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  curvelib.swift: d0746ae82bee34016c06da3567a97e493b3c979f
+  curvelib.swift: b9223e5cac801effed8a5fe8968e952b3fe427a5
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_auth: 5719ddc9f654b813405899480e84971bd8e61235
   firebase_core: a626d00494efa398e7c54f25f1454a64c8abf197
@@ -146,14 +147,15 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  single_factor_auth_flutter: 9617e5ffce9c0251bddb19cbe49293f921c13b79
-  SingleFactorAuth: 2bfa8ad0fe8d0023fffdf1a5f0c9634ca3ee66d8
-  Torus-fetchNodeDetails: 6c349f47cbca36a4b3f276fe26d03c1b39b20949
-  Torus-utils: 1d23e6eedf9ee7df9ecc2605b765ad68eb194f71
-  TorusSessionManager: 42c21f100d895976fabe3806cb9c575392f6e424
+  single_factor_auth_flutter: aab0e8cb32b6e76fe5cb8a2036489367bc549338
+  SingleFactorAuth: 6a2639e2d25d4cec901753193b97f8503734734d
+  Torus-fetchNodeDetails: 0ae97719263ee98f5bf5549a86464eea38a828f3
+  Torus-utils: 7c53a9c71663c2f458bfdcf1a380d7a5b88f9632
+  TorusSessionManager: 3c47c2a4c4d6173a10006eb0af4b86317ee45ff8
 
 PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38
 

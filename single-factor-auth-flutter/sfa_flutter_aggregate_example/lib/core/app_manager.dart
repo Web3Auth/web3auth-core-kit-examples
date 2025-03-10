@@ -15,7 +15,7 @@ class AppManager with ChangeNotifier {
   final Web3AuthSFA web3authSFA;
 
   late web3.Credentials _keyPair;
-  late SFAKey _web3AuthSFAKey;
+  late SessionData _sessionData;
   bool _isLoggedIn = false;
   String _userDisplayName = 'User';
 
@@ -27,7 +27,7 @@ class AppManager with ChangeNotifier {
   bool get isLoggedIn => _isLoggedIn;
   web3.Credentials get keyPair => _keyPair;
   String get address => _keyPair.address.hex;
-  String get privateKey => _web3AuthSFAKey.privateKey;
+  String get privateKey => _sessionData.privateKey;
   String get userDisplayName => _userDisplayName;
 
   Future<void> login(LoginType loginType) async {
@@ -35,13 +35,13 @@ class AppManager with ChangeNotifier {
       late final Credentials credentials;
       if (loginType == LoginType.google) {
         credentials = await auth0helper.signInWithGoogle();
-        _web3AuthSFAKey = await web3authSFA.loginWithGoogle(
+        _sessionData = await web3authSFA.loginWithAggregateVerifier(
           credentials,
           "sfa-mobile-aggregate-auth0-google",
         );
       } else {
         credentials = await auth0helper.singInWithEmailPasswordless();
-        _web3AuthSFAKey = await web3authSFA.loginWithGoogle(
+        _sessionData = await web3authSFA.loginWithAggregateVerifier(
           credentials,
           "sfa-mobile-aggregate-auth0-google",
         );
@@ -49,7 +49,7 @@ class AppManager with ChangeNotifier {
 
       _userDisplayName = _getUserDisplayName(credentials);
 
-      _keyPair = web3.EthPrivateKey.fromHex(_web3AuthSFAKey.privateKey);
+      _keyPair = web3.EthPrivateKey.fromHex(_sessionData.privateKey);
       _isLoggedIn = true;
       notifyListeners();
     } catch (e) {
@@ -59,10 +59,10 @@ class AppManager with ChangeNotifier {
 
   Future<void> initialize() async {
     try {
-      _web3AuthSFAKey = await web3authSFA.initialize();
+      _sessionData = await web3authSFA.initialize();
       final credentials = await auth0helper.getCredentials();
       _userDisplayName = _getUserDisplayName(credentials);
-      _keyPair = web3.EthPrivateKey.fromHex(_web3AuthSFAKey.privateKey);
+      _keyPair = web3.EthPrivateKey.fromHex(_sessionData.privateKey);
       _isLoggedIn = true;
       notifyListeners();
     } catch (e) {

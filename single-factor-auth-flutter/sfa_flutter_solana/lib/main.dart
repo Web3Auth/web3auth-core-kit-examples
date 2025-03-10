@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,6 +15,7 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ServiceLocator.init();
   await ServiceLocator.getIt<Web3AuthSFA>().init();
+  await ServiceLocator.getIt<Web3AuthSFA>().initialize();
 
   runApp(const MyApp());
 }
@@ -46,6 +49,12 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   void initState() {
     super.initState();
     firebaseHelper = ServiceLocator.getIt<FirebaseAuthHelper>();
+    ServiceLocator.getIt<Web3AuthSFA>()
+        .singleFactorAuthFlutter
+        .connected()
+        .then((value) {
+      log("Connected: $value");
+    });
   }
 
   @override
