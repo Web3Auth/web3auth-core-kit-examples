@@ -13,8 +13,8 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ServiceLocator.init();
   final Web3AuthSFA web3authSFA = ServiceLocator.getIt<Web3AuthSFA>();
-  web3authSFA.init();
-  // await web3authSFA.initialize();
+  await web3authSFA.init();
+  await web3authSFA.initialize();
 
   runApp(const MyApp());
 }

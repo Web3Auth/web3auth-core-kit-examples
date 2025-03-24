@@ -47,11 +47,11 @@ class _HomePageState extends State<HomePage> {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 16),
-              FutureBuilder<SFAKey>(
+              FutureBuilder<SessionData>(
                 future: web3authSFA.getKey(user),
                 builder: (
                   BuildContext context,
-                  AsyncSnapshot<SFAKey> snapshot,
+                  AsyncSnapshot<SessionData> snapshot,
                 ) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
