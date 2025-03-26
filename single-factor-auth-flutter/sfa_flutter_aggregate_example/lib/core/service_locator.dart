@@ -9,9 +9,9 @@ class ServiceLocator {
   static GetIt get getIt => GetIt.instance;
 
   static Future<void> init() async {
-    final singleFactorAuth = SingleFactAuthFlutter();
+    final singleFactorAuth = SingleFactorAuthFlutter();
 
-    getIt.registerLazySingleton<SingleFactAuthFlutter>(() => singleFactorAuth);
+    getIt.registerLazySingleton<SingleFactorAuthFlutter>(() => singleFactorAuth);
     getIt.registerLazySingleton<Web3AuthSFA>(() => Web3AuthSFA(getIt()));
     getIt.registerLazySingleton<Auth0>(
       () => Auth0("web3auth.au.auth0.com", "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O"),

@@ -12,6 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocator.init();
   await ServiceLocator.getIt<Web3AuthSFA>().init();
+  await ServiceLocator.getIt<Web3AuthSFA>().initialize();
 
   runApp(
     MultiProvider(

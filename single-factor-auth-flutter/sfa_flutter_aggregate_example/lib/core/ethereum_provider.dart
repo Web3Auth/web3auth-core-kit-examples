@@ -11,7 +11,7 @@ class EthereumProvider {
 
   EthereumProvider(
     this._credentials, {
-    String rpcTarget = "https://rpc.sepolia.org",
+    String rpcTarget = "https://1rpc.io/sepolia",
   }) : web3client = Web3Client(
           rpcTarget,
           Client(),
