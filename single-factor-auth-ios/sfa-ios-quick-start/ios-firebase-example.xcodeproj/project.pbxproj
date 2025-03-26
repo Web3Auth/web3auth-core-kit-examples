@@ -637,8 +637,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Web3Auth/single-factor-auth-swift";
 			requirement = {
-				kind = revision;
-				revision = 6e480457e490370519f470552107ca2e60a6e62f;
+				kind = exactVersion;
+				version = 9.1.0;
 			};
 		};
 		28A903AD2BC3DDFC002C0DB5 /* XCRemoteSwiftPackageReference "web3" */ = {
