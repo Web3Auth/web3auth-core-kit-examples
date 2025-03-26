@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "52fb5efaa94e0fe3775913ab00964bcb51601c2a",
-        "version" : "8.0.0"
+        "revision" : "5b42dd1675f8a51ffe64feb688db7b1d764d5fc0",
+        "version" : "8.0.1"
       }
     },
     {
@@ -177,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/single-factor-auth-swift",
       "state" : {
-        "revision" : "02f7d197cc6ad8292797ada2c307b7cfd60ad155",
-        "version" : "9.0.4"
+        "revision" : "b1da4f048dc77771e806e8fe09b5d8cca5d3049a",
+        "version" : "9.1.0"
       }
     },
     {
@@ -285,8 +285,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "baa822fc67bdb208ed1a2dc5b3c10485cfca15df",
-        "version" : "10.0.0"
+        "revision" : "235a70839d3ff5723402df95d665b15b8c551ad8",
+        "version" : "10.0.1"
       }
     },
     {

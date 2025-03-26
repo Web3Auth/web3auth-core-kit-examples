@@ -21,6 +21,8 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0x01", rpcTarget: "https://eth.llamarpc.com")
+    
     
     func setup() async {
         guard singleFactorAuth == nil else { return }
@@ -32,7 +34,8 @@ class ViewModel: ObservableObject {
         // IMP START - Initialize Web3Auth SFA
         web3AuthOptions = Web3AuthOptions(
             clientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET
+            web3AuthNetwork: .SAPPHIRE_MAINNET,
+            redirectUrl: "w3a.sfa.ios://auth"
         )
         
         singleFactorAuth = try! SingleFactorAuth(params: web3AuthOptions)
@@ -41,7 +44,7 @@ class ViewModel: ObservableObject {
             try await singleFactorAuth.initialize()
         } catch let error {
             // Handle Error
-            print(error)
+            print("Initialize Error: " + error.localizedDescription)
         }
         
         // Check for existing session
@@ -51,7 +54,7 @@ class ViewModel: ObservableObject {
             getBalance()
             
             await MainActor.run(body: {
-                user = sessionData.getPrivateKey()
+                user = sessionData.privateKey
                 loggedIn = true
                 navigationTitle = "UserInfo"
             })
@@ -88,13 +91,51 @@ class ViewModel: ObservableObject {
                 getBalance()
                 
                 await MainActor.run(body: {
-                    user = result.getPrivateKey()
+                    user = result.privateKey
                     loggedIn = true
                     navigationTitle = "UserInfo"
                 })
                 
             } catch {
                 print("Error")
+            }
+        }
+    }
+    
+    func showWalletUI() {
+        Task {
+            
+            do {
+                try await singleFactorAuth.showWalletUI(chainConfig: chainConfig)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func requestSignature(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()) {
+        Task {
+            do {
+                let sessionData = singleFactorAuth.getSessionData()
+                var params = [Any]()
+                  // Message to be signed
+                  params.append("Hello, Web3Auth from iOS!")
+                  // User's EOA address
+                  params.append(sessionData!.publicAddress)
+                
+                let response = try await singleFactorAuth.request(
+                    chainConfig: chainConfig,
+                    method: "personal_sign",
+                    requestParams: params
+                )
+                
+                if response.success {
+                    onSigned(response.result, nil)
+                } else {
+                    onSigned(nil, response.error)
+                }
+            } catch {
+                onSigned(nil, error.localizedDescription)
             }
         }
     }
@@ -146,9 +187,9 @@ extension ViewModel {
     func showResult(result: SessionData) {
         print("""
         Signed in successfully!
-            Private key: \(result.getPrivateKey())
+            Private key: \(result.privateKey)
             Public Address:
-                Name: \(result.getPublicAddress())
+                Name: \(result.publicAddress)
         """)
     }
 }
