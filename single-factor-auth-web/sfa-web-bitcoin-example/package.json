@@ -34,7 +34,7 @@
     "react-dom": "^18.2.0",
     "source-map-loader": "^4.0.1",
     "typescript": "^5.0.4",
-    "vite": "^5.4.2",
+    "vite": "^5.4.16",
     "web-vitals": "^3.1.1"
   },
   "devDependencies": {
