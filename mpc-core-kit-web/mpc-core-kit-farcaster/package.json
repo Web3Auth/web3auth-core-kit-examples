@@ -10,7 +10,7 @@
   "version": "0.1.1",
   "dependencies": {
     "@farcaster/auth-client": "^0.1.1",
-    "@farcaster/auth-kit": "0.2.2",
+    "@farcaster/auth-kit": "0.6.0",
     "@toruslabs/tss-dkls-lib": "^4.1.0",
     "@web3auth/ethereum-mpc-provider": "^9.3.0",
     "@web3auth/mpc-core-kit": "3.2.4",
