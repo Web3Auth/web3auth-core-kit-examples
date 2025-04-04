@@ -19,7 +19,10 @@ dependencies:
   firebase_core: ^2.24.2
   provider: ^6.1.1
   # // IMP START - Installation
-  single_factor_auth_flutter: ^6.0.1
+  single_factor_auth_flutter:
+    git: 
+      url: https://github.com/Web3Auth/single-factor-auth-flutter.git
+      ref: feat/wallet-services_integration
   get_it: ^7.6.7
   # // IMP END - Installation
 

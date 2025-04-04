@@ -95,6 +95,18 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
+                  web3authSFA.showWalletUI();
+                },
+                child: const Text('Show Wallet UI'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  web3authSFA.showTransactionUI();
+                },
+                child: const Text('Show Transaction UI'),
+              ),
+              ElevatedButton(
+                onPressed: () {
                   // Use the AuthService class to handle sign out
                   firebaseHelper.signOut(context);
                 },
