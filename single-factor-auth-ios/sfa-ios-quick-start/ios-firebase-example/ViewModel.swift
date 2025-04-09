@@ -62,42 +62,64 @@ class ViewModel: ObservableObject {
         
         await MainActor.run(body: {
             isLoading = false
-            navigationTitle = loggedIn ? "UserInfo" : "iOS SFA QuickStart"
+            navigationTitle = loggedIn ? "UserInfo" : "iOS SFA X Demo"
         })
     }
     
     func loginViaFirebaseEP() {
-        Task{
+        Task {
             do {
-                // IMP START - Auth Provider Login
-                let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
-                let id_token = try await res.user.getIDToken()
-                // IMP END - Auth Provider Login
-                
-                // IMP START - Verifier Creation
+                // Twitter OAuth Provider Setup
+                let provider = OAuthProvider(providerID: "twitter.com")
+
+                // Use async version to get credential
+                let credential: AuthCredential = try await withCheckedThrowingContinuation { continuation in
+                    provider.getCredentialWith(nil) { credential, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else if let credential = credential {
+                            continuation.resume(returning: credential)
+                        } else {
+                            continuation.resume(throwing: NSError(domain: "FirebaseAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error getting credential"]))
+                        }
+                    }
+                }
+
+                // Sign in with Twitter credential
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let uid = authResult.user.uid
+                let idToken = try await authResult.user.getIDToken()
+                print(authResult)
+                print(uid)
+                print(idToken)
+                guard let uid = authResult.user.uid as String?, idToken as String? != nil else {
+                    throw NSError(domain: "FirebaseAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "Missing UID, or Id Token missing"])
+                }
+
+                // Verifier name
                 let verifierName = "w3a-firebase-demo"
-                // IMP END - Verifier Creation
-                // IMP START - Get Key
+
+                // Get Web3Auth key
                 let result = try await singleFactorAuth.connect(
                     loginParams: .init(
                         verifier: verifierName,
-                        verifierId: res.user.uid,
-                        idToken: id_token
+                        verifierId: uid,
+                        idToken: idToken
                     )
                 )
-                // IMP END - Get Key
-                print(result)
+
+                // Continue with Ethereum client setup and UI update
                 ethereumClient = EthereumClient(sessionData: result)
                 getBalance()
-                
-                await MainActor.run(body: {
+
+                await MainActor.run {
                     user = result.privateKey
                     loggedIn = true
                     navigationTitle = "UserInfo"
-                })
-                
+                }
+
             } catch {
-                print("Error")
+                print("Login error: \(error.localizedDescription)")
             }
         }
     }

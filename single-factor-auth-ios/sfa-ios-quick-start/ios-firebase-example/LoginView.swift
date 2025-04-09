@@ -9,7 +9,7 @@ struct LoginView: View {
                     vm.loginViaFirebaseEP()
                 },
                 label: {
-                    Label("LogIn", systemImage: "arrow.right.square.fill")
+                    Label("LogIn with X", systemImage: "arrow.right.square.fill")
                         .foregroundColor(.green)
                 }
             )
