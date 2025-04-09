@@ -7,6 +7,7 @@ struct UserDetailView: View {
     
     @State private var showingAlert = false
     @State private var alertContent: String = ""
+    @State private var isPrivateKeyVisible = false
     
     var body: some View {
         if viewModel.isLoading {
@@ -103,11 +104,26 @@ struct UserDetailView: View {
                         
                         Text(user)
                             .font(.system(size: 16))
+                            .blur(radius: isPrivateKeyVisible ? 0 : 8)
+                            .overlay(
+                                Group {
+                                    if !isPrivateKeyVisible {
+                                        Text("Tap to reveal")
+                                            .foregroundColor(.blue)
+                                            .font(.system(size: 14))
+                                    }
+                                }
+                            )
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Color(uiColor: .secondarySystemBackground))
                             .cornerRadius(12)
                             .padding(.horizontal)
+                            .onTapGesture {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isPrivateKeyVisible.toggle()
+                                }
+                            }
                     }
                     
                     Button(action: {
