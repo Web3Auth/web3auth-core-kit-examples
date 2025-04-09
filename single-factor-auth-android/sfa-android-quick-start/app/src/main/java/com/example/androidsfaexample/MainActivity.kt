@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         // IMP START - Auth Provider Login
         auth = Firebase.auth
-        auth.signInWithEmailAndPassword("android@firebase.com", "Android@Web3Auth")
+        auth.signInWithEmailAndPassword("android-sfa@firebase.com", "Android@Web3Auth")
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
