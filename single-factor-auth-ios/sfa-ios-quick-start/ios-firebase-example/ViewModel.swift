@@ -12,7 +12,8 @@ class ViewModel: ObservableObject {
     var singleFactorAuth: SingleFactorAuth!
     var web3AuthOptions: Web3AuthOptions!
     var ethereumClient: EthereumClient!
-    var userBalance: String!
+    var userBalance: String = "0.0"
+    var userAccount: String = "0x0"
     
     // IMP END - Installation
     @Published var loggedIn: Bool = false
@@ -23,6 +24,11 @@ class ViewModel: ObservableObject {
     
     var chainConfig: ChainConfig = ChainConfig(chainId: "0x01", rpcTarget: "https://eth.llamarpc.com")
     
+    init() {
+        Task {
+            await setup()
+        }
+    }
     
     func setup() async {
         guard singleFactorAuth == nil else { return }
@@ -62,13 +68,17 @@ class ViewModel: ObservableObject {
         
         await MainActor.run(body: {
             isLoading = false
-            navigationTitle = loggedIn ? "UserInfo" : "iOS SFA X Demo"
+            navigationTitle = loggedIn ? "UserInfo" : "SFA Swift - X Demo"
         })
     }
     
     func loginViaFirebaseEP() {
         Task {
             do {
+                await MainActor.run {
+                    isLoading = true
+                }
+                
                 // Twitter OAuth Provider Setup
                 let provider = OAuthProvider(providerID: "twitter.com")
 
@@ -87,11 +97,7 @@ class ViewModel: ObservableObject {
 
                 // Sign in with Twitter credential
                 let authResult = try await Auth.auth().signIn(with: credential)
-                let uid = authResult.user.uid
                 let idToken = try await authResult.user.getIDToken()
-                print(authResult)
-                print(uid)
-                print(idToken)
                 guard let uid = authResult.user.uid as String?, idToken as String? != nil else {
                     throw NSError(domain: "FirebaseAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "Missing UID, or Id Token missing"])
                 }
@@ -116,10 +122,14 @@ class ViewModel: ObservableObject {
                     user = result.privateKey
                     loggedIn = true
                     navigationTitle = "UserInfo"
+                    isLoading = false
                 }
 
             } catch {
                 print("Login error: \(error.localizedDescription)")
+                await MainActor.run {
+                    isLoading = false
+                }
             }
         }
     }
@@ -165,6 +175,8 @@ class ViewModel: ObservableObject {
     func getBalance() {
         Task {
             do  {
+                let sessionData = singleFactorAuth.getSessionData()
+                self.userAccount = sessionData!.publicAddress
                 self.userBalance = try await ethereumClient.getBalance()
                 await MainActor.run(body: {
                     self.isAccountReady = true
@@ -184,6 +196,7 @@ class ViewModel: ObservableObject {
                 try await singleFactorAuth.logout()
                 await MainActor.run(body: {
                     self.loggedIn = false
+                    navigationTitle = loggedIn ? "UserInfo" : "SFA Swift - X Demo"
                 })
             } catch let error {
                 print(error)
