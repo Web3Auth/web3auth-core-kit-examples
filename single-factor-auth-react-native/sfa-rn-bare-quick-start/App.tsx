@@ -8,7 +8,6 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import '@ethersproject/shims';
 // IMP START - Auth Provider Login
 import auth from '@react-native-firebase/auth';
 // IMP END - Auth Provider Login
@@ -52,7 +51,7 @@ const chainConfig = {
   tickerName: 'Ethereum',
   ticker: 'ETH',
   decimals: 18,
-  rpcTarget: 'https://rpc.ankr.com/eth',
+  rpcTarget: 'https://eth.llamarpc.com',
   blockExplorerUrl: 'https://etherscan.io',
   logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
 };
