@@ -22,7 +22,7 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
-    var chainConfig: ChainConfig = ChainConfig(chainId: "0x01", rpcTarget: "https://eth.llamarpc.com")
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0x11155111", rpcTarget: "https://1rpc.io/sepolia")
     
     init() {
         Task {
