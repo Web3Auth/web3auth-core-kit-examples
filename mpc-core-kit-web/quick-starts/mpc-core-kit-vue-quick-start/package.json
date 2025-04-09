@@ -13,7 +13,7 @@
     "@toruslabs/tss-dkls-lib": "^4.1.0",
     "@web3auth/base": "^9.3.0",
     "@web3auth/ethereum-mpc-provider": "^9.3.0",
-    "@web3auth/mpc-core-kit": "3.2.4",
+    "@web3auth/mpc-core-kit": "4.2.4-alpha.0",
     "core-js": "^3.38.1",
     "firebase": "^10.13.2",
     "vue": "^3.5.10",

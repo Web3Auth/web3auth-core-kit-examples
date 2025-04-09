@@ -7,7 +7,7 @@
 		"@vitejs/plugin-react": "^4.3.2",
 		"@web3auth/base": "^9.3.0",
 		"@web3auth/ethereum-mpc-provider": "^9.3.0",
-		"@web3auth/mpc-core-kit": "3.2.4",
+		"@web3auth/mpc-core-kit": "4.2.4-alpha.0",
 		"bn.js": "^5.2.1",
 		"eccrypto": "^1.1.6",
 		"firebase": "^10.14.0",
