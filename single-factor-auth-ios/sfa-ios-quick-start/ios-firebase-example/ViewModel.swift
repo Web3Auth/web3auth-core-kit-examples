@@ -62,13 +62,13 @@ class ViewModel: ObservableObject {
             await MainActor.run(body: {
                 user = sessionData.privateKey
                 loggedIn = true
-                navigationTitle = "UserInfo"
+                navigationTitle = "Profile"
             })
         }
         
         await MainActor.run(body: {
             isLoading = false
-            navigationTitle = loggedIn ? "UserInfo" : "SFA Swift - X Demo"
+            navigationTitle = loggedIn ? "Profile" : ""
         })
     }
     
@@ -121,7 +121,7 @@ class ViewModel: ObservableObject {
                 await MainActor.run {
                     user = result.privateKey
                     loggedIn = true
-                    navigationTitle = "UserInfo"
+                    navigationTitle = "Profile"
                     isLoading = false
                 }
 
@@ -196,7 +196,7 @@ class ViewModel: ObservableObject {
                 try await singleFactorAuth.logout()
                 await MainActor.run(body: {
                     self.loggedIn = false
-                    navigationTitle = loggedIn ? "UserInfo" : "SFA Swift - X Demo"
+                    navigationTitle = loggedIn ? "Profile" : ""
                 })
             } catch let error {
                 print(error)
