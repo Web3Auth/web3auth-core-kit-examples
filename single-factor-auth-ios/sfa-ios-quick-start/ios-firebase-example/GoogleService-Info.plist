@@ -7,7 +7,7 @@
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.461819774167-4o61nkm60k8rao4vbvcer22j66li9sco</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>461819774167-l7oslag3sa2vllbl1b9ghhcf6e6rhvjj.apps.googleusercontent.com</string>
+	<string>461819774167-93iair46nluf28pdbpmqq65eqktdbb7g.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAttkINEO4AWRc2jJDHa5fPYp_1EtujcH0</string>
 	<key>GCM_SENDER_ID</key>
@@ -19,7 +19,7 @@
 	<key>PROJECT_ID</key>
 	<string>web3auth-oauth-logins</string>
 	<key>STORAGE_BUCKET</key>
-	<string>web3auth-oauth-logins.appspot.com</string>
+	<string>web3auth-oauth-logins.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -32,5 +32,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:461819774167:ios:605db7054cfea4715b9c92</string>
+	<key>DATABASE_URL</key>
+	<string>https://web3auth-oauth-logins-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>

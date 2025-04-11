@@ -12,7 +12,8 @@ class ViewModel: ObservableObject {
     var singleFactorAuth: SingleFactorAuth!
     var web3AuthOptions: Web3AuthOptions!
     var ethereumClient: EthereumClient!
-    var userBalance: String!
+    var userBalance: String = "0.0"
+    var userAccount: String = "0x0"
     
     // IMP END - Installation
     @Published var loggedIn: Bool = false
@@ -21,8 +22,13 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
-    var chainConfig: ChainConfig = ChainConfig(chainId: "0x01", rpcTarget: "https://eth.llamarpc.com")
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0x11155111", rpcTarget: "https://1rpc.io/sepolia")
     
+    init() {
+        Task {
+            await setup()
+        }
+    }
     
     func setup() async {
         guard singleFactorAuth == nil else { return }
@@ -56,48 +62,74 @@ class ViewModel: ObservableObject {
             await MainActor.run(body: {
                 user = sessionData.privateKey
                 loggedIn = true
-                navigationTitle = "UserInfo"
+                navigationTitle = "Profile"
             })
         }
         
         await MainActor.run(body: {
             isLoading = false
-            navigationTitle = loggedIn ? "UserInfo" : "iOS SFA QuickStart"
+            navigationTitle = loggedIn ? "Profile" : ""
         })
     }
     
     func loginViaFirebaseEP() {
-        Task{
+        Task {
             do {
-                // IMP START - Auth Provider Login
-                let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
-                let id_token = try await res.user.getIDToken()
-                // IMP END - Auth Provider Login
+                await MainActor.run {
+                    isLoading = true
+                }
                 
-                // IMP START - Verifier Creation
+                // Twitter OAuth Provider Setup
+                let provider = OAuthProvider(providerID: "twitter.com")
+
+                // Use async version to get credential
+                let credential: AuthCredential = try await withCheckedThrowingContinuation { continuation in
+                    provider.getCredentialWith(nil) { credential, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else if let credential = credential {
+                            continuation.resume(returning: credential)
+                        } else {
+                            continuation.resume(throwing: NSError(domain: "FirebaseAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error getting credential"]))
+                        }
+                    }
+                }
+
+                // Sign in with Twitter credential
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let idToken = try await authResult.user.getIDToken()
+                guard let uid = authResult.user.uid as String?, idToken as String? != nil else {
+                    throw NSError(domain: "FirebaseAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "Missing UID, or Id Token missing"])
+                }
+
+                // Verifier name
                 let verifierName = "w3a-firebase-demo"
-                // IMP END - Verifier Creation
-                // IMP START - Get Key
+
+                // Get Web3Auth key
                 let result = try await singleFactorAuth.connect(
                     loginParams: .init(
                         verifier: verifierName,
-                        verifierId: res.user.uid,
-                        idToken: id_token
+                        verifierId: uid,
+                        idToken: idToken
                     )
                 )
-                // IMP END - Get Key
-                print(result)
+
+                // Continue with Ethereum client setup and UI update
                 ethereumClient = EthereumClient(sessionData: result)
                 getBalance()
-                
-                await MainActor.run(body: {
+
+                await MainActor.run {
                     user = result.privateKey
                     loggedIn = true
-                    navigationTitle = "UserInfo"
-                })
-                
+                    navigationTitle = "Profile"
+                    isLoading = false
+                }
+
             } catch {
-                print("Error")
+                print("Login error: \(error.localizedDescription)")
+                await MainActor.run {
+                    isLoading = false
+                }
             }
         }
     }
@@ -143,6 +175,8 @@ class ViewModel: ObservableObject {
     func getBalance() {
         Task {
             do  {
+                let sessionData = singleFactorAuth.getSessionData()
+                self.userAccount = sessionData!.publicAddress
                 self.userBalance = try await ethereumClient.getBalance()
                 await MainActor.run(body: {
                     self.isAccountReady = true
@@ -162,6 +196,7 @@ class ViewModel: ObservableObject {
                 try await singleFactorAuth.logout()
                 await MainActor.run(body: {
                     self.loggedIn = false
+                    navigationTitle = loggedIn ? "Profile" : ""
                 })
             } catch let error {
                 print(error)

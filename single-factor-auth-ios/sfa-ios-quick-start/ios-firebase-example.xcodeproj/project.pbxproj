@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0D005DFA29CCB28100F7F4F7 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0D005DF929CCB28100F7F4F7 /* FirebaseAuth */; };
-		27B35B442A3F5A3C0004BB99 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */; };
+		27B1B8EF2DA680EE004B68AD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27B1B8EE2DA680EE004B68AD /* GoogleService-Info.plist */; };
 		284BD7472D7EA570002DD6CA /* SingleFactorAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 284BD7462D7EA570002DD6CA /* SingleFactorAuth */; };
 		28A9039F2BC3CD6F002C0DB5 /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9039E2BC3CD6F002C0DB5 /* EthereumClient.swift */; };
 		28A903AF2BC3DDFC002C0DB5 /* web3.swift in Frameworks */ = {isa = PBXBuildFile; productRef = 28A903AE2BC3DDFC002C0DB5 /* web3.swift */; };
@@ -42,7 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		27B1B8EB2DA67566004B68AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		27B1B8EE2DA680EE004B68AD /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		28A9039E2BC3CD6F002C0DB5 /* EthereumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClient.swift; sourceTree = "<group>"; };
 		4D9FEEE1294BAC380035414D /* ios-firebase-example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-firebase-example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ios_firebase_exampleApp.swift; sourceTree = "<group>"; };
@@ -118,13 +119,14 @@
 		4D9FEEE3294BAC380035414D /* ios-firebase-example */ = {
 			isa = PBXGroup;
 			children = (
+				27B1B8EB2DA67566004B68AD /* Info.plist */,
 				28A9039D2BC3CD55002C0DB5 /* Helpers */,
 				4D9FEEE4294BAC380035414D /* ios_firebase_exampleApp.swift */,
 				4D9FEEE6294BAC380035414D /* ContentView.swift */,
 				4D9FEEE8294BAC3A0035414D /* Assets.xcassets */,
 				4D9FEEEA294BAC3A0035414D /* Preview Content */,
 				4D9FEF11294BACB10035414D /* ViewModel.swift */,
-				27B35B432A3F5A3B0004BB99 /* GoogleService-Info.plist */,
+				27B1B8EE2DA680EE004B68AD /* GoogleService-Info.plist */,
 				4D9FEF13294BACC90035414D /* UserDetailView.swift */,
 				4D9FEF15294BACD80035414D /* LoginView.swift */,
 			);
@@ -271,8 +273,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D9FEEEC294BAC3A0035414D /* Preview Assets.xcassets in Resources */,
-				27B35B442A3F5A3C0004BB99 /* GoogleService-Info.plist in Resources */,
 				4D9FEEE9294BAC3A0035414D /* Assets.xcassets in Resources */,
+				27B1B8EF2DA680EE004B68AD /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +466,7 @@
 				DEVELOPMENT_TEAM = 9748CA473J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ios-firebase-example/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -493,6 +496,7 @@
 				DEVELOPMENT_TEAM = 9748CA473J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ios-firebase-example/Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
