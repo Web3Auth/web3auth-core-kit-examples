@@ -36,7 +36,7 @@
     "source-map-loader": "^4.0.1",
     "tonweb": "^0.0.66",
     "typescript": "^5.0.4",
-    "vite": "^5.4.1",
+    "vite": "^5.4.18",
     "web-vitals": "^3.1.1"
   },
   "devDependencies": {
