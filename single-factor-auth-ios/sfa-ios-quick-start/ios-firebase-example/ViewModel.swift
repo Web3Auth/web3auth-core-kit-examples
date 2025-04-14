@@ -22,7 +22,7 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
-    var chainConfig: ChainConfig = ChainConfig(chainId: "0x11155111", rpcTarget: "https://1rpc.io/sepolia")
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0x13882", rpcTarget: "https://api.web3auth.io/infura-service/v1/80002/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")
     
     init() {
         Task {
@@ -72,7 +72,7 @@ class ViewModel: ObservableObject {
         })
     }
     
-    func loginViaFirebaseEP() {
+    func loginViaFirebaseX() {
         Task {
             do {
                 await MainActor.run {

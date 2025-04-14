@@ -17,7 +17,7 @@ struct LoginView: View {
             
             // Title and Subtitle
             VStack(spacing: 16) {
-                Text("SFA Swift - X Demo")
+                Text("Embedded SDK Demo")
                     .font(.system(size: 32, weight: .bold))
                     .multilineTextAlignment(.center)
                 
@@ -32,7 +32,7 @@ struct LoginView: View {
             // Login Button
             Button(
                 action: {
-                    vm.loginViaFirebaseEP()
+                    vm.loginViaFirebaseX()
                 },
                 label: {
                     HStack(spacing: 12) {

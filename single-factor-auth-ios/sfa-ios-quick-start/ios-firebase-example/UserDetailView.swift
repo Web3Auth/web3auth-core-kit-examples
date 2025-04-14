@@ -32,10 +32,10 @@ struct UserDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(viewModel.userBalance)
                                 .font(.system(size: 24, weight: .regular))
-                            Text("User balance on Ethereum Sepolia")
+                            Text("User balance on Polygon Amoy")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-                            Link(destination: URL(string: "https://sepolia.etherscan.io/address/\(viewModel.userAccount)")!) {
+                            Link(destination: URL(string: "https://amoy.polygonscan.com/address/\(viewModel.userAccount)")!) {
                                 HStack(spacing: 4) {
                                     Text(viewModel.userAccount)
                                         .lineLimit(1)
@@ -61,6 +61,14 @@ struct UserDetailView: View {
                             .padding(.horizontal)
                         
                         VStack(spacing: 0) {
+                            Button(action: {
+                                viewModel.showWalletUI()
+                            }) {
+                                Text("Send Transaction")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding()
+                            }
+                            Divider()
                             Button(action: {
                                 viewModel.signMessage { result, error in
                                     alertContent = result ?? error ?? ""
