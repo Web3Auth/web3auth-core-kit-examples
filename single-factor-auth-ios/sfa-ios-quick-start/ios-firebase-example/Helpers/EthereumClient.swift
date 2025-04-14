@@ -22,11 +22,11 @@ import SingleFactorAuth
 struct EthereumClient {
     let web3Client: EthereumHttpClient!
     let ethereumAccount: EthereumAccount!
-    var networkId: String = "80002"
+    var networkId: String = "11155111"
     
     init(sessionData: SessionData) {
         self.web3Client = EthereumHttpClient(
-            url: URL(string: "https://api.web3auth.io/infura-service/v1/80002/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")!,
+            url: URL(string: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")!,
             network: .fromString(networkId)
         )
         

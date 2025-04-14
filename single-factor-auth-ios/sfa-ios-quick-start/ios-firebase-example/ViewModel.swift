@@ -22,7 +22,7 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
-    var chainConfig: ChainConfig = ChainConfig(chainId: "0x13882", rpcTarget: "https://api.web3auth.io/infura-service/v1/80002/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0xaa36a7", rpcTarget: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")
     
     init() {
         Task {
@@ -215,7 +215,49 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func sendTransaction(to address: String, amount: String, completion: @escaping (Bool, String?) -> Void) {
+        Task {
+            do {
+                guard let amountInWei = try? convertEthToWei(amount) else {
+                    completion(false, "Invalid amount")
+                    return
+                }
+                
+                let sessionData = singleFactorAuth.getSessionData()
+                // Create transaction object
+                let transaction: [String: Any] = [
+                    "from": sessionData!.publicAddress,
+                    "to": address,
+                    "value": amountInWei,
+                    "data": "0x"
+                ]
+                
+                let response = try await singleFactorAuth.request(
+                    chainConfig: chainConfig,
+                    method: "eth_sendTransaction",
+                    requestParams: [transaction] // Send as array with single transaction object
+                )
+                
+                if response.success {
+                    completion(true, nil)
+                    // Refresh balance after successful transaction
+                    getBalance()
+                } else {
+                    completion(false, response.error)
+                }
+            } catch {
+                completion(false, error.localizedDescription)
+            }
+        }
+    }
     
+    private func convertEthToWei(_ eth: String) throws -> String {
+        guard let ethValue = Double(eth) else {
+            throw NSError(domain: "Transaction", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid amount"])
+        }
+        let weiValue = ethValue * 1e18
+        return String(format: "0x%llx", UInt64(weiValue))
+    }
 }
 
 extension ViewModel {
