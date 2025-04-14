@@ -215,11 +215,11 @@ class ViewModel: ObservableObject {
         }
     }
     
-    func sendTransaction(to address: String, amount: String, completion: @escaping (Bool, String?) -> Void) {
+    func sendTransaction(to address: String, amount: String, completion: @escaping (Bool, String?, String?) -> Void) {
         Task {
             do {
                 guard let amountInWei = try? convertEthToWei(amount) else {
-                    completion(false, "Invalid amount")
+                    completion(false, "Invalid amount", nil)
                     return
                 }
                 
@@ -239,14 +239,15 @@ class ViewModel: ObservableObject {
                 )
                 
                 if response.success {
-                    completion(true, nil)
+                    // response.result contains the transaction hash
+                    completion(true, nil, response.result)
                     // Refresh balance after successful transaction
                     getBalance()
                 } else {
-                    completion(false, response.error)
+                    completion(false, response.error, nil)
                 }
             } catch {
-                completion(false, error.localizedDescription)
+                completion(false, error.localizedDescription, nil)
             }
         }
     }

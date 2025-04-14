@@ -11,6 +11,8 @@ struct UserDetailView: View {
     @State private var recipientAddress: String = ""
     @State private var amount: String = ""
     @State private var isSending = false
+    @State private var lastTxHash: String? = nil
+    @State private var showingTxDetails = false
     
     var body: some View {
         if viewModel.isLoading {
@@ -84,14 +86,18 @@ struct UserDetailView: View {
                                 
                                 Button(action: {
                                     isSending = true
-                                    viewModel.sendTransaction(to: recipientAddress, amount: amount) { success, error in
+                                    viewModel.sendTransaction(to: recipientAddress, amount: amount) { success, error, txHash in
                                         isSending = false
                                         if success {
-                                            alertContent = "Transaction sent successfully!"
+                                            lastTxHash = txHash
+                                            showingTxDetails = true
+                                            // Clear input fields
+                                            recipientAddress = ""
+                                            amount = ""
                                         } else {
                                             alertContent = error ?? "Failed to send transaction"
+                                            showingAlert = true
                                         }
-                                        showingAlert = true
                                     }
                                 }) {
                                     HStack {
@@ -114,6 +120,33 @@ struct UserDetailView: View {
                                     .cornerRadius(22)
                                 }
                                 .disabled(isSending || recipientAddress.isEmpty || amount.isEmpty)
+                                
+                                if showingTxDetails, let hash = lastTxHash {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Transaction sent!")
+                                            .font(.headline)
+                                            .foregroundColor(.green)
+                                        
+                                        Link(destination: URL(string: "https://sepolia.etherscan.io/tx/\(hash)")!) {
+                                            HStack {
+                                                Text("View on Etherscan")
+                                                    .foregroundColor(.blue)
+                                                Image(systemName: "arrow.up.right.square")
+                                                    .font(.system(size: 12))
+                                            }
+                                        }
+                                        
+                                        Text(hash)
+                                            .font(.system(.caption, design: .monospaced))
+                                            .foregroundColor(.gray)
+                                            .lineLimit(1)
+                                            .truncationMode(.middle)
+                                    }
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color(uiColor: .tertiarySystemBackground))
+                                    .cornerRadius(12)
+                                }
                             }
                             .padding()
                             .background(Color(uiColor: .secondarySystemBackground))
