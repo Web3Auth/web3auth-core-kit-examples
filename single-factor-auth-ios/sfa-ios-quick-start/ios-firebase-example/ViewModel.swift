@@ -12,7 +12,8 @@ class ViewModel: ObservableObject {
     var singleFactorAuth: SingleFactorAuth!
     var web3AuthOptions: Web3AuthOptions!
     var ethereumClient: EthereumClient!
-    var userBalance: String!
+    var userBalance: String = "0.0"
+    var userAccount: String = "0x0"
     
     // IMP END - Installation
     @Published var loggedIn: Bool = false
@@ -21,8 +22,13 @@ class ViewModel: ObservableObject {
     @Published var navigationTitle: String = ""
     @Published var isAccountReady: Bool = false
     
-    var chainConfig: ChainConfig = ChainConfig(chainId: "0x01", rpcTarget: "https://eth.llamarpc.com")
+    var chainConfig: ChainConfig = ChainConfig(chainId: "0xaa36a7", rpcTarget: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")
     
+    init() {
+        Task {
+            await setup()
+        }
+    }
     
     func setup() async {
         guard singleFactorAuth == nil else { return }
@@ -56,48 +62,74 @@ class ViewModel: ObservableObject {
             await MainActor.run(body: {
                 user = sessionData.privateKey
                 loggedIn = true
-                navigationTitle = "UserInfo"
+                navigationTitle = "Profile"
             })
         }
         
         await MainActor.run(body: {
             isLoading = false
-            navigationTitle = loggedIn ? "UserInfo" : "iOS SFA QuickStart"
+            navigationTitle = loggedIn ? "Profile" : ""
         })
     }
     
-    func loginViaFirebaseEP() {
-        Task{
+    func loginViaFirebaseX() {
+        Task {
             do {
-                // IMP START - Auth Provider Login
-                let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
-                let id_token = try await res.user.getIDToken()
-                // IMP END - Auth Provider Login
+                await MainActor.run {
+                    isLoading = true
+                }
                 
-                // IMP START - Verifier Creation
+                // Twitter OAuth Provider Setup
+                let provider = OAuthProvider(providerID: "twitter.com")
+
+                // Use async version to get credential
+                let credential: AuthCredential = try await withCheckedThrowingContinuation { continuation in
+                    provider.getCredentialWith(nil) { credential, error in
+                        if let error = error {
+                            continuation.resume(throwing: error)
+                        } else if let credential = credential {
+                            continuation.resume(returning: credential)
+                        } else {
+                            continuation.resume(throwing: NSError(domain: "FirebaseAuth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error getting credential"]))
+                        }
+                    }
+                }
+
+                // Sign in with Twitter credential
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let idToken = try await authResult.user.getIDToken()
+                guard let uid = authResult.user.uid as String?, idToken as String? != nil else {
+                    throw NSError(domain: "FirebaseAuth", code: -2, userInfo: [NSLocalizedDescriptionKey: "Missing UID, or Id Token missing"])
+                }
+
+                // Verifier name
                 let verifierName = "w3a-firebase-demo"
-                // IMP END - Verifier Creation
-                // IMP START - Get Key
+
+                // Get Web3Auth key
                 let result = try await singleFactorAuth.connect(
                     loginParams: .init(
                         verifier: verifierName,
-                        verifierId: res.user.uid,
-                        idToken: id_token
+                        verifierId: uid,
+                        idToken: idToken
                     )
                 )
-                // IMP END - Get Key
-                print(result)
+
+                // Continue with Ethereum client setup and UI update
                 ethereumClient = EthereumClient(sessionData: result)
                 getBalance()
-                
-                await MainActor.run(body: {
+
+                await MainActor.run {
                     user = result.privateKey
                     loggedIn = true
-                    navigationTitle = "UserInfo"
-                })
-                
+                    navigationTitle = "Profile"
+                    isLoading = false
+                }
+
             } catch {
-                print("Error")
+                print("Login error: \(error.localizedDescription)")
+                await MainActor.run {
+                    isLoading = false
+                }
             }
         }
     }
@@ -143,6 +175,8 @@ class ViewModel: ObservableObject {
     func getBalance() {
         Task {
             do  {
+                let sessionData = singleFactorAuth.getSessionData()
+                self.userAccount = sessionData!.publicAddress
                 self.userBalance = try await ethereumClient.getBalance()
                 await MainActor.run(body: {
                     self.isAccountReady = true
@@ -162,6 +196,7 @@ class ViewModel: ObservableObject {
                 try await singleFactorAuth.logout()
                 await MainActor.run(body: {
                     self.loggedIn = false
+                    navigationTitle = loggedIn ? "Profile" : ""
                 })
             } catch let error {
                 print(error)
@@ -180,7 +215,50 @@ class ViewModel: ObservableObject {
         }
     }
     
+    func sendTransaction(to address: String, amount: String, completion: @escaping (Bool, String?, String?) -> Void) {
+        Task {
+            do {
+                guard let amountInWei = try? convertEthToWei(amount) else {
+                    completion(false, "Invalid amount", nil)
+                    return
+                }
+                
+                let sessionData = singleFactorAuth.getSessionData()
+                // Create transaction object
+                let transaction: [String: Any] = [
+                    "from": sessionData!.publicAddress,
+                    "to": address,
+                    "value": amountInWei,
+                    "data": "0x"
+                ]
+                
+                let response = try await singleFactorAuth.request(
+                    chainConfig: chainConfig,
+                    method: "eth_sendTransaction",
+                    requestParams: [transaction] // Send as array with single transaction object
+                )
+                
+                if response.success {
+                    // response.result contains the transaction hash
+                    completion(true, nil, response.result)
+                    // Refresh balance after successful transaction
+                    getBalance()
+                } else {
+                    completion(false, response.error, nil)
+                }
+            } catch {
+                completion(false, error.localizedDescription, nil)
+            }
+        }
+    }
     
+    private func convertEthToWei(_ eth: String) throws -> String {
+        guard let ethValue = Double(eth) else {
+            throw NSError(domain: "Transaction", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid amount"])
+        }
+        let weiValue = ethValue * 1e18
+        return String(format: "0x%llx", UInt64(weiValue))
+    }
 }
 
 extension ViewModel {
