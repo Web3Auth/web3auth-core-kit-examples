@@ -162,6 +162,14 @@ struct UserDetailView: View {
                             
                             VStack(spacing: 0) {
                                 Button(action: {
+                                    viewModel.getBalance()
+                                }) {
+                                    Text("Fetch Latest Balance")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding()
+                                }
+                                Divider()
+                                Button(action: {
                                     viewModel.signMessage { result, error in
                                         alertContent = result ?? error ?? ""
                                         showingAlert = true
