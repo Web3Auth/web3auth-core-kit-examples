@@ -31,7 +31,7 @@ const chainConfig = {
     tickerName: 'Ethereum',
     ticker: 'ETH',
     decimals: 18,
-    rpcTarget: 'https://rpc.ankr.com/eth',
+    rpcTarget: `https://api.web3auth.io/infura-service/v1/1/${clientId}`,
     blockExplorerUrl: 'https://etherscan.io',
     logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
   };

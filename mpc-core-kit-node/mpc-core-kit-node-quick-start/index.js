@@ -77,7 +77,7 @@ async function removeItem(key) {
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0x1", // Ethereum Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth",
+  rpcTarget: `https://api.web3auth.io/infura-service/v1/1/${clientId}`,
   displayName: "Ethereum Mainnet",
   blockExplorerUrl: "https://etherscan.io",
   ticker: "ETH",

@@ -37,10 +37,10 @@ struct UserDetailView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(viewModel.userBalance)
                                     .font(.system(size: 24, weight: .regular))
-                                Text("User balance on Polygon Amoy")
+                                Text("User balance on Ethereum Sepolia")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
-                                Link(destination: URL(string: "https://amoy.polygonscan.com/address/\(viewModel.userAccount)")!) {
+                                Link(destination: URL(string: "https://sepolia.etherscan.io/address/\(viewModel.userAccount)")!) {
                                     HStack(spacing: 4) {
                                         Text(viewModel.userAccount)
                                             .lineLimit(1)

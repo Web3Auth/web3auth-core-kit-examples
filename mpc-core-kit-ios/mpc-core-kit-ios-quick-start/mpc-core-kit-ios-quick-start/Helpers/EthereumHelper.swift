@@ -16,7 +16,7 @@ struct EthereumClient {
     
     init() {
         self.web3Client = EthereumHttpClient(
-            url: URL(string: "https://1rpc.io/sepolia")!,
+            url: URL(string: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ")!,
             network: .fromString(networkId)
         )
     }

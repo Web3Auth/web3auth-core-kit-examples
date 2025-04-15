@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val chainConfig = ChainConfig(
             chainNamespace = ChainNamespace.EIP155,
             chainId = "0x1",
-            rpcTarget = "https://rpc.ankr.com/eth"
+            rpcTarget = "https://api.web3auth.io/infura-service/v1/1/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"
         )
 
         val params = JsonArray().apply {
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         val chainConfig = ChainConfig(
             chainNamespace = ChainNamespace.EIP155,
             chainId = "0x1",
-            rpcTarget = "https://rpc.ankr.com/eth"
+            rpcTarget = "https://api.web3auth.io/infura-service/v1/1/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"
         )
 
         val launchWalletCompletableFuture = singleFactorAuth.showWalletUI(
