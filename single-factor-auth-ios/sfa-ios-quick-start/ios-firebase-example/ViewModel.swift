@@ -133,7 +133,55 @@ class ViewModel: ObservableObject {
             }
         }
     }
-    
+
+    func loginViaFirebaseAnonymous() {
+        Task {
+            do {
+                await MainActor.run {
+                    isLoading = true
+                }
+
+                // IMP START - Auth Provider Login
+                let res = try await Auth.auth().signIn(withEmail: "ios@firebase.com", password: "iOS@Web3Auth")
+                let id_token = try await res.user.getIDToken()
+                // IMP END - Auth Provider Login
+                
+                // IMP START - Verifier Creation
+                let verifierName = "w3a-firebase-demo"
+                // IMP END - Verifier Creation
+
+                // IMP START - Get Key
+                 let result = try await singleFactorAuth.connect(
+                    loginParams: .init(
+                        verifier: verifierName,
+                        verifierId: res.user.uid,
+                        idToken: id_token
+                    )
+                )
+                // IMP END - Get Key
+                  
+                print(result)
+
+                // Continue with Ethereum client setup and UI update
+                ethereumClient = EthereumClient(sessionData: result)
+                getBalance()
+
+                await MainActor.run {
+                    user = result.privateKey
+                    loggedIn = true
+                    navigationTitle = "Profile"
+                    isLoading = false
+                }
+
+            } catch {
+                print("Login error: \(error)")
+                await MainActor.run {
+                    isLoading = false
+                }
+            }
+        }
+    }
+
     func showWalletUI() {
         Task {
             
@@ -178,6 +226,7 @@ class ViewModel: ObservableObject {
                 let sessionData = singleFactorAuth.getSessionData()
                 self.userAccount = sessionData!.publicAddress
                 self.userBalance = try await ethereumClient.getBalance()
+                print("Balance of \(self.userAccount): \(self.userBalance)")
                 await MainActor.run(body: {
                     self.isAccountReady = true
                 })
@@ -193,7 +242,8 @@ class ViewModel: ObservableObject {
     func logout() {
         Task {
             do  {
-                try await singleFactorAuth.logout()
+                try await singleFactorAuth.logout();
+                try Auth.auth().signOut();
                 await MainActor.run(body: {
                     self.loggedIn = false
                     navigationTitle = loggedIn ? "Profile" : ""

@@ -463,7 +463,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
-				DEVELOPMENT_TEAM = 9748CA473J;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-firebase-example/Info.plist";
@@ -493,7 +493,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios-firebase-example/Preview Content\"";
-				DEVELOPMENT_TEAM = 9748CA473J;
+				DEVELOPMENT_TEAM = 2Q63NCPY55;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-firebase-example/Info.plist";

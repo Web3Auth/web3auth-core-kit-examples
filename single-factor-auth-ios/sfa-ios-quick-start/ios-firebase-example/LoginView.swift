@@ -56,6 +56,34 @@ struct LoginView: View {
                 }
             )
             .padding(.horizontal, 24)
+                        
+            // Login Button
+            Button(
+                action: {
+                    vm.loginViaFirebaseAnonymous()
+                },
+                label: {
+                    HStack(spacing: 12) {
+                        if vm.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "arrow.right")
+                                .foregroundColor(.white)
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        Text("Log in with ID Token")
+                            .foregroundColor(.white)
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .background(Color.black)
+                    .cornerRadius(26)
+                }
+            )
+            .padding(.horizontal, 24)
             
             // Bottom Links
             HStack(spacing: 40) {
