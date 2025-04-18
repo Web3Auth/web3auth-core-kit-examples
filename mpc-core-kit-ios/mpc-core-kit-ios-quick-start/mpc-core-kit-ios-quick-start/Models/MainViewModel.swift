@@ -11,10 +11,14 @@ import MpcProviderSwift
 import web3
 import UIKit
 
-class MainViewModel: ObservableObject {
+@MainActor class MainViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isRecoveryRequired: Bool = false
     @Published var factorPubs: [String] = []
+    
+    @Published var showAlert: Bool = false
+    
+    @Published var isLoaderVisible: Bool = false
     
     var publicAddress: String!
     
@@ -23,28 +27,87 @@ class MainViewModel: ObservableObject {
     private var ethereumClient: EthereumClient!
     private var mpcEthereumProvider: MPCEthereumProvider!
     
-    func initialize() {
-        mpcCoreKit = MpcCoreKit(
-            web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+    
+    var alertContent: String = ""
+    var loaderContent: String = ""
+    
+    func initialize() throws {
+        mpcCoreKit = try MpcCoreKit(
+            options: .init(web3AuthClientId: "BHgArYmWwSeq21czpcarYh0EVq2WWOzflX-NTK-tY1-1pauPzHKRRLgpABkmYiIV_og9jAvoIxQ8L3Smrwe04Lw",
+                           web3AuthNetwork: .SAPPHIRE_DEVNET, storage: UserStorage()
+                 )
         )
         
         ethereumClient = EthereumClient()
     }
     
-    func loginWithJWT() {
+    func mockLogin(email: String) async throws -> Data {
+        // Create URL
+        let url = URL(string: "https://li6lnimoyrwgn2iuqtgdwlrwvq0upwtr.lambda-url.eu-west-1.on.aws/")!
+
+        // Create URLRequest
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Create JSON data to send in the request body
+        // verifier: "torus-key-test", scope: "email", extraPayload: { email }, alg: "ES256"
+        let jsonObject: [String: Any] = [
+            "verifier": "torus-test-health",
+            "iss" : "torus-key-test",
+            "aud" : "torus-key-test",
+            "emailVerified": true,
+            "email": email,
+            "scope": email,
+            "extraPayload": [
+                "email": email,
+            ],
+            "alg": "ES256",
+        ]
+        let jsonData = try JSONSerialization.data(withJSONObject: jsonObject)
+        request.httpBody = jsonData
+
+        // Perform the request asynchronously
+        let (data, _) = try await URLSession.shared.data(for: request)
+
+        return data
+    }
+    
+    
+    func loginWithJWT(verifierId: String) {
         Task {
             do {
-                let result = try await mpcCoreKit.loginWithJwt(
-                    verifier: "w3a-firebase-demo",
-                    verifierId: "",
-                    idToken: "String"
+                let verifierId = verifierId
+                let verifier = "torus-test-health"
+                let clientId = "torus-test-health"
+                let email = verifierId
+                
+                let mockResult = try await mockLogin(email: email)
+                
+                guard let mockResult = try JSONSerialization.jsonObject(with: mockResult) as? [String: Any] else {
+                    throw NSError(domain: "", code: 0, userInfo: nil)
+                    
+                }
+                guard let token = mockResult["token"] as? String else {
+                    throw NSError(domain: "", code: 0, userInfo: nil)
+                    
+                }
+                print(token)
+                
+                
+                mpcCoreKit = try MpcCoreKit(
+                    options: .init(web3AuthClientId: clientId,
+                                   web3AuthNetwork: .SAPPHIRE_DEVNET, storage: UserStorage()
+                         )
                 )
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = result.requiredFactors > 0
-                }
+                let result = try await mpcCoreKit.loginWithJwt(
+                    verifier: verifier,
+                    verifierId: email,
+                    idToken: token
+                )
+                
+                self.isRecoveryRequired = result.requiredFactors > 0
                 
                 try await login()
             } catch let error {
@@ -57,15 +120,10 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let result = try await mpcCoreKit.loginWithOAuth(
-                    loginProvider: .google,
-                    clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com",
-                    verifier: "w3a-google-demo"
-                    
+                    singleLoginParams: .init(typeOfLogin: .google, verifier: "w3a-sfa-web-google", clientId: "519228911939-cri01h55lsjbsia1k7ll6qpalrus75ps.apps.googleusercontent.com")
                 )
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = result.requiredFactors > 0
-                }
+                self.isRecoveryRequired = result.requiredFactors > 0
                 
                 try await login()
                 
@@ -79,10 +137,9 @@ class MainViewModel: ObservableObject {
     func resetAccount() {
         Task {
             do {
-                try await mpcCoreKit.resetAccount()
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
-                }
+                try await mpc_core_kit_swift.resetAccount(coreKitInstance: mpcCoreKit)
+                self.isRecoveryRequired = false
+                self.isLoggedIn = false
             } catch let error {
                 print(error.localizedDescription)
             }
@@ -104,7 +161,6 @@ class MainViewModel: ObservableObject {
     func signMessage(onSigned: @escaping (_ signedMessage: String?, _ error: String?) -> ()){
         Task {
             do {
-                print(mpcCoreKit.debugDescription)
                 let signature = try mpcEthereumProvider.signMessage(message: "YOUR_MESSAGE".data(using: .ascii)!)
                 onSigned(signature, nil)
             } catch let error  {
@@ -122,7 +178,7 @@ class MainViewModel: ObservableObject {
                 )
                 let transaction = EthereumTransaction.init(
                     to: address,
-                    data: Data.init(hex: "0x")
+                    data: Data.init(hex: "0x") ?? Data()
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
@@ -164,17 +220,14 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
-                    factorKey: factor,
-                    format: "mnemonic"
-                ) else {
-                    return
-                }
+                let seedPhrase = try FactorSerialization.keyToMnemonic(tkey: mpcCoreKit.tkey!,
+                                                                       shareHex: factor
+                )
                 
                 print(seedPhrase)
                 
@@ -187,26 +240,32 @@ class MainViewModel: ObservableObject {
     func recoverUsingSeedPhrase(seedPhrase: String) {
         Task {
             do {
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
-                    shareMnemonic: seedPhrase,
-                    format: "mnemonic"
-                ) else {
-                    return
-                }
+                let factorKey = try FactorSerialization.mnemonicToKey(tkey: mpcCoreKit.tkey!,
+                    shareMnemonic: seedPhrase
+                )
                 
                 print(factorKey.count)
                 
-                try await mpcCoreKit.inputFactor(
+                try await mpcCoreKit.inputFactorKey(
                     factorKey: factorKey
                 )
                 
                 try await login()
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired.toggle()
-                }
+                self.isRecoveryRequired.toggle()
             } catch let error {
                 print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func getKeyDetails() {
+        Task {
+            do {
+                let keyDetails = try await mpcCoreKit.getKeyDetails()
+                print(keyDetails)
+            } catch let error {
+                print(error)
             }
         }
     }
@@ -222,6 +281,15 @@ class MainViewModel: ObservableObject {
         }
     }
     
+    func logout() {
+        Task {
+            do {
+                try await mpcCoreKit.logout()
+                toggleIsLoggedIn()
+            }
+        }
+    }
+    
     private func login() async throws {
         mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
         publicAddress = mpcEthereumProvider.address.toChecksumAddress()
@@ -232,14 +300,32 @@ class MainViewModel: ObservableObject {
     
     private func refreshFactorPubs() async throws {
         let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
-        DispatchQueue.main.async {
-            self.factorPubs = localFactorPubs
-        }
+        self.factorPubs = localFactorPubs
     }
     
     func toggleIsLoggedIn() {
         DispatchQueue.main.async {
             self.isLoggedIn.toggle()
+        }
+    }
+    
+    func showLoader(_ message: String) {
+        loaderContent = message
+        DispatchQueue.main.async {
+            self.isLoaderVisible = true
+        }
+    }
+    
+    func hideLoader() {
+        DispatchQueue.main.async {
+            self.isLoaderVisible = false
+        }
+    }
+    
+    func showAlert(message: String) {
+        alertContent = message
+        DispatchQueue.main.async {
+            self.showAlert = true
         }
     }
 }

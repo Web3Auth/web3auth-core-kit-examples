@@ -8,7 +8,7 @@
 import Foundation
 import mpc_core_kit_swift
 
-class UserStorage : ILocalStorage {
+class UserStorage : IStorage {
     func get(key: String) async throws -> Data {
         print(key)
         guard let data = UserDefaults().value(forKey: key) as? Data else  {

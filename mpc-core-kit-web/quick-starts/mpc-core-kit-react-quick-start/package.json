@@ -13,7 +13,7 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "@web3auth/base": "^9.3.0",
-    "@web3auth/ethereum-mpc-provider": "^9.3.0",
+    "@web3auth/ethereum-mpc-provider": "file:../../../../web3auth-web/packages/providers/ethereum-mpc-provider/web3auth-ethereum-mpc-provider-9.5.2.tgz",
     "@web3auth/mpc-core-kit": "^3.2.4",
     "bn.js": "^5.2.1",
     "ethers": "^6.13.3",
@@ -21,7 +21,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.6.2",
-    "viem": "^2.21.18",
+    "viem": "^2.22.4",
     "vite": "^5.4.8",
     "web3": "^4.13.0"
   },

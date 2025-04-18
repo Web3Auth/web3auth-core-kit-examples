@@ -13,6 +13,8 @@ import UIKit
 import tkey
 import Auth0
 import JWTDecode
+import CustomAuth
+import curveSecp256k1
 
 class MainViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
@@ -28,15 +30,17 @@ class MainViewModel: ObservableObject {
     private var ethereumClient: EthereumClient!
     private var mpcEthereumProvider: MPCEthereumProvider!
     private var webAuth: WebAuth!
-    var userInfo: [String: Any]!
+    var userInfo: Any?
     var alertContent: String = ""
     var loaderContent: String = ""
     
     func initialize() {
-        mpcCoreKit = MpcCoreKit(
-            web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
-            web3AuthNetwork: .SAPPHIRE_MAINNET,
-            localStorage: UserStorage()
+        mpcCoreKit = try! MpcCoreKit(
+            options: .init(
+                web3AuthClientId: "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+                web3AuthNetwork: .SAPPHIRE_MAINNET,
+                storage: UserStorage()
+            )
         )
         
         webAuth = Auth0.webAuth(clientId: "hUVVf4SEsZT7syOiL0gLU9hFEtm2gQ6O", domain: "web3auth.au.auth0.com")
@@ -55,7 +59,7 @@ class MainViewModel: ObservableObject {
                 
                 let jwt = try decode(jwt: auth0Creds.idToken)
                 guard let sub = jwt.body["sub"] as? String else {
-                    throw "Sub not found in JWT"
+                   return
                 }
                 
                 let result = try await mpcCoreKit.loginWithJwt(
@@ -64,15 +68,15 @@ class MainViewModel: ObservableObject {
                     idToken: auth0Creds.idToken
                 )
                 
-                userInfo = try mpcCoreKit.getUserInfo()
+                userInfo = mpcCoreKit.getUserInfo()
                 
-                DispatchQueue.main.async {
-                    self.isRecoveryRequired = result.requiredFactors > 0
-                }
-                
-                if(!self.isRecoveryRequired) {
+                if(!(result.requiredFactors > 0)) {
                     try await login()
-                   
+                    
+                } else {
+                    DispatchQueue.main.async {
+                        self.isRecoveryRequired = true
+                    }
                 }
                 
                 hideLoader()
@@ -154,7 +158,7 @@ class MainViewModel: ObservableObject {
                 )
                 let transaction = EthereumTransaction.init(
                     to: address,
-                    data: Data.init(hex: "0x00")
+                    data: Data.init(hex: "0x00")!
                 )
                 
                 let gasLimit = try await self.ethereumClient.getGasLimit(
@@ -169,7 +173,7 @@ class MainViewModel: ObservableObject {
                     value: 1000000000000,
                     data: transaction.data,
                     nonce: nonce,
-                    gasPrice: gasPrice,
+                    gasPrice: gasPrice.multiplied(by: .init(stringLiteral: "2")),
                     gasLimit: gasLimit,
                     chainId: Int(self.ethereumClient.getChainId())
                 )
@@ -199,17 +203,14 @@ class MainViewModel: ObservableObject {
             do {
                 showLoader("Adding new factor")
                 let factor = try await mpcCoreKit.createFactor(
-                    tssShareIndex: .RECOVERY,
+                    tssShareIndex: .recovery,
                     factorKey: nil,
                     factorDescription: .SeedPhrase
                 )
                 
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
-                    factorKey: factor,
-                    format: "mnemonic"
-                ) else {
-                    return
-                }
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
+                    factorKey: factor
+                )
                 
                 print(seedPhrase)
                 
@@ -228,13 +229,9 @@ class MainViewModel: ObservableObject {
         Task {
             do {
                 showLoader("Recovering account")
-                guard let factorKey = mpcCoreKit.mnemonicToKey(
-                    shareMnemonic: seedPhrase,
-                    format: "mnemonic"
-                ) else {
-                    hideLoader()
-                    return
-                }
+                let factorKey = try mpcCoreKit.mnemonicToKey(
+                    shareMnemonic: seedPhrase
+                )
                 
                 try await mpcCoreKit.inputFactor(
                     factorKey: factorKey
@@ -254,18 +251,48 @@ class MainViewModel: ObservableObject {
         }
     }
     
+    func setDeviceFactor() {
+        Task {
+            do {
+                showLoader("Setting Device Factor")
+                let deviceFactor = try curveSecp256k1.SecretKey().serialize()
+                try await mpcCoreKit.setDeviceFactor(factorKey: deviceFactor)
+                
+                showAlert(message: "Device Factor added successfully")
+                hideLoader()
+                await refreshFactorPubs()
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                showAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
+    func getDeviceFactor() {
+        Task {
+            do {
+                showLoader("Deleting Device Factor")
+                let deviceFactor = try await mpcCoreKit.getDeviceFactor()
+                
+                showAlert(message: "Device Factor: " + deviceFactor)
+                hideLoader()
+            } catch let error {
+                hideLoader()
+                print(error.localizedDescription)
+                showAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
     func enableMFA() {
         Task {
             do {
                 showLoader("Enabling MFA")
-                let recoveryFactorKey = try await mpcCoreKit.enableMFA()
-                guard let seedPhrase = mpcCoreKit.keyToMnemonic(
-                    factorKey: recoveryFactorKey!,
-                    format: "mnemonic"
-                ) else {
-                    hideLoader()
-                    return
-                }
+                let recoveryFactorKey = try await mpcCoreKit.enableMFAWithRecoveryFactor()
+                let seedPhrase = try mpcCoreKit.keyToMnemonic(
+                    factorKey: recoveryFactorKey
+                )
                 
                 print(seedPhrase)
                 
@@ -282,8 +309,9 @@ class MainViewModel: ObservableObject {
     }
     
     private func login() async throws {
-        let pubKey = try await mpcCoreKit.getTssPubKey()
+        let pubKey = try mpcCoreKit.getTssPubKey()
         let keyDetails = try await mpcCoreKit.getKeyDetails()
+        print("Description")
         print(keyDetails.requiredFactors)
         
         mpcEthereumProvider = MPCEthereumProvider(evmSigner: mpcCoreKit)
@@ -294,7 +322,7 @@ class MainViewModel: ObservableObject {
         
         
         let address = KeyUtil.generateAddress(
-            from: Data(hex: fullAddress).suffix(64)
+            from: Data(hex: fullAddress)!.suffix(64)
         )
         print(address)
         
@@ -313,6 +341,8 @@ class MainViewModel: ObservableObject {
     
     private func refreshFactorPubs() async {
         do {
+            let keyDetails = try await mpcCoreKit.getKeyDetails()
+            print(keyDetails.shareDescriptions)
             let localFactorPubs = try await mpcCoreKit.getAllFactorPubs()
             DispatchQueue.main.async {
                 self.factorPubs = localFactorPubs

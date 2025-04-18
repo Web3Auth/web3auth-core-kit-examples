@@ -13,11 +13,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             if viewModel.isLoggedIn {
-                if viewModel.isRecoveryRequired {
-                    RecoveryView(viewModel: viewModel)
-                } else {
-                    HomeView(viewModel: viewModel)
-                }
+                HomeView(viewModel: viewModel)
             } else if viewModel.isRecoveryRequired {
                 RecoveryView(viewModel: viewModel)
             } else {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject var viewModel: MainViewModel
+    @State private var email: String = ""
     
     var body: some View {
         VStack(spacing: 16) {
@@ -24,9 +25,22 @@ struct LoginView: View {
                     Text("Sign in with Google")
                 }
             ).buttonStyle(.bordered)
+            TextField(
+                "Enter your email",
+                text: $email
+            ).textFieldStyle(.roundedBorder).padding()
+            Button(
+                action: {
+                    viewModel.loginWithJWT(verifierId: email)
+                },
+                label: {
+                    Text("Sign in with Mock")
+                }
+            ).buttonStyle(.bordered)
+            
             Spacer()
         }.onAppear {
-            viewModel.initialize()
+            try? viewModel.initialize()
         }
         
     }
