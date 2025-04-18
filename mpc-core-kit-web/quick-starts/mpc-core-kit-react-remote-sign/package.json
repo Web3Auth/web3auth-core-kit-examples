@@ -1,0 +1,78 @@
+{
+  "name": "mpc-core-kit-react-quick-start",
+  "version": "0.1.0",
+  "private": true,
+  "//IMP START": "IMP START - Web3Auth Installation",
+  "dependencies": {
+    "@ethereumjs/util": "^9.1.0",
+    "@react-oauth/google": "^0.12.1",
+    "@tkey/common-types": "15.2.1-alpha.0",
+    "@toruslabs/tss-dkls-lib": "^5.0.0-alpha.0",
+    "@toruslabs/tss-frost-lib": "^2.0.0-alpha.0",
+    "@toruslabs/tss-frost-lib-bip340": "^0.1.0-alpha.0",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "@web3auth/base": "^9.3.0",
+    "@web3auth/base-provider": "^9.3.0",
+    "@web3auth/ethereum-mpc-provider": "^9.3.0",
+    "@web3auth/mpc-core-kit": "4.2.4-alpha.0",
+    "@web3auth/mpc-remote-signer-plugin": "0.1.6-alpha.0",
+    "@web3auth/single-factor-auth": "^9.0.0",
+    "bn.js": "^5.2.1",
+    "ethers": "^6.13.3",
+    "firebase": "^10.13.2",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^4.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.6.2",
+    "viem": "^2.21.18",
+    "vite": "^5.4.8",
+    "web3": "^4.13.0"
+  },
+  "//IMP END": "IMP END - Web3Auth Installation",
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.6",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "empty-module": "^0.0.2",
+    "eslint-config-react-app": "^7.0.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "source-map-loader": "^4.0.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.4"
+  },
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  }
+}
