@@ -37,7 +37,7 @@
     "tonweb": "^0.0.66",
     "typescript": "^5.0.4",
     "vite": "^5.4.1",
-    "web-vitals": "^3.1.1"
+    "web-vitals": "^4.2.4"
   },
   "devDependencies": {
     "buffer": "^6.0.3",

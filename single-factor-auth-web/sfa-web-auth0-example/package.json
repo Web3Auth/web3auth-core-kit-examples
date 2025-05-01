@@ -22,7 +22,7 @@
     "typescript": "^5.0.4",
     "viem": "^2.9.15",
     "vite": "^5.4.2",
-    "web-vitals": "^3.1.1",
+    "web-vitals": "^4.2.4",
     "web3": "^4.1.1"
   },
   "overrides": {
