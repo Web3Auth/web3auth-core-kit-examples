@@ -20,6 +20,7 @@ class Web3AuthSFA {
         network: Web3AuthNetwork.mainnet,
         clientId:
             "BJRZ6qdDTbj6Vd5YXvV994TYCqY42-PxldCetmvGTUdoq6pkCqdpuC1DIehz76zuYdaq1RJkXGHuDraHRhCQHvA",
+        redirectUrl: 'com.example.sfa_flutter_quick_start',
       ),
     );
     // IMP END - Initialize Web3Auth SFA
@@ -34,6 +35,38 @@ class Web3AuthSFA {
       }
     } catch (e) {
       log("Error initializing SFA: $e");
+    }
+  }
+
+  Future<void> showWalletUI() async {
+    try {
+      final chainConfig = ChainConfig(
+        chainId: '0xaa36a7',
+        rpcTarget: 'https://1rpc.io/sepolia',
+      );
+      await singleFactorAuthFlutter.showWalletUI(chainConfig);
+    } catch (e) {
+      log("Error showing wallet UI: $e");
+    }
+  }
+
+  Future<void> showTransactionUI() async {
+    try {
+      final chainConfig = ChainConfig(
+        chainId: '0xaa36a7',
+        rpcTarget: 'https://1rpc.io/sepolia',
+      );
+
+      final sessionData = await singleFactorAuthFlutter.getSessionData();
+      final result =
+          await singleFactorAuthFlutter.request(chainConfig, "personal_sign", [
+        "Hello, Web3Auth from Flutter SFA!",
+        sessionData!.publicAddress,
+      ]);
+
+      log("Transaction result: $result");
+    } catch (e) {
+      log("Error showing wallet UI: $e");
     }
   }
 
