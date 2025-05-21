@@ -355,27 +355,6 @@ function App() {
   };
   // IMP END - Blockchain Calls
 
-  const criticalResetAccount = async (): Promise<void> => {
-    // This is a critical function that should only be used for testing purposes
-    // Resetting your account means clearing all the metadata associated with it from the metadata server
-    // The key details will be deleted from our server and you will not be able to recover your account
-    if (!coreKitInstance) {
-      throw new Error("coreKitInstance is not set");
-    }
-    // if (selectedNetwork === WEB3AUTH_NETWORK.MAINNET) {
-    //   throw new Error("reset account is not recommended on mainnet");
-    // }
-    await coreKitInstance.tKey.storageLayer.setMetadata({
-      privKey: new BN(coreKitInstance.state.postBoxKey! as string, "hex"),
-      input: { message: "KEY_NOT_FOUND" },
-    });
-    if (coreKitInstance.status === COREKIT_STATUS.LOGGED_IN) {
-      await coreKitInstance.commitChanges();
-    }
-    uiConsole("reset");
-    logout();
-  };
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function uiConsole(...args: any): void {
     const el = document.querySelector("#console>p");
@@ -428,11 +407,6 @@ function App() {
         </button>
       </div>
       <div>
-        <button onClick={criticalResetAccount} className="card">
-          [CRITICAL] Reset Account
-        </button>
-      </div>
-      <div>
         <button onClick={deleteFactor} className="card">
           Delete Social Factor
         </button>
@@ -465,9 +439,6 @@ function App() {
         <label>Backup/ Device Factor: {backupFactorKey}</label>
         <button onClick={() => inputBackupFactorKey()} className="card">
           Input Backup Factor Key
-        </button>
-        <button onClick={criticalResetAccount} className="card">
-          [CRITICAL] Reset Account
         </button>
       </div>
     </div>
