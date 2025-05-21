@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 // import RPC from "./ethersRPC";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
+import { OffNetworkRecovery, styles as RecoveryStyle } from "./recovery";
 // IMP END - Blockchain Calls
 
 // IMP START - Dashboard Registration
@@ -92,6 +93,8 @@ function App() {
 
   // Firebase Initialisation
   const app = initializeApp(firebaseConfig);
+
+  const [offNetworkRecovery, setOffNetworkRecovery] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -479,7 +482,21 @@ function App() {
         React Quick Start
       </h1>
 
-      <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>
+      {!offNetworkRecovery && <div className="grid">{coreKitStatus === COREKIT_STATUS.LOGGED_IN ? loggedInView : unloggedInView}</div>}
+
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      {coreKitStatus !== COREKIT_STATUS.LOGGED_IN && (
+        <button style={RecoveryStyle.button} onClick={() => setOffNetworkRecovery(!offNetworkRecovery)}>
+          {!offNetworkRecovery ? "Enable Off Network Recovery" : "Disable Off Network Recovery"}
+        </button>
+      )}
+      {offNetworkRecovery && <OffNetworkRecovery web3AuthClientId={web3AuthClientId} web3AuthNetwork={WEB3AUTH_NETWORK.MAINNET} />}
+
       <div id="console" style={{ whiteSpace: "pre-line" }}>
         <p style={{ whiteSpace: "pre-line" }}></p>
       </div>
