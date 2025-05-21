@@ -42,7 +42,7 @@ const verifier = "w3a-auth0-demo";
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7", // Please use 0x1 for Mainnet
-  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  rpcTarget: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
   displayName: "Ethereum Sepolia Testnet",
   blockExplorerUrl: "https://sepolia.etherscan.io/",
   blockExplorer: "https://sepolia.etherscan.io/",
