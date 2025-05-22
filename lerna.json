@@ -5,7 +5,6 @@
   "version": "0.0.0",
   "packages": [
     "mpc-core-kit-web/**/*",
-    "single-factor-auth-node/**/*",
-    "single-factor-auth-web/**/*"
+    "mpc-core-kit-node/**/*"
   ]
 }
