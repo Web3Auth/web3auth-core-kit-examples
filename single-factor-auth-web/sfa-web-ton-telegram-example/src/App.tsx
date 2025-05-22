@@ -5,7 +5,7 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import TonRPC from "./RPC/tonRpc";
 import EthereumRPC from "./RPC/ethRPC-web3";
 import SolanaRPC from "./RPC/solanaRPC";
-import type { IRPC, RPCResponse } from "./RPC/IRPC";
+import type { IRPC } from "./RPC/IRPC";
 import { useLaunchParams, User } from "@telegram-apps/sdk-react";
 import { useTelegramMock } from "./hooks/useMockTelegramInitData";
 import { Sun, Moon, Copy, Check, ChevronDown } from "lucide-react";
