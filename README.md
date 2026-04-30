@@ -31,6 +31,12 @@ results in a standard cryptographic key provider specific to the user and applic
 | Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - PopUp Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-popup-flow-example/)       |
 | Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Redirect Example](/mpc-core-kit-web/implicit-flow-examples/mpc-core-kit-redirect-flow-example/) |
 | Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Aggregate Example](/mpc-core-kit-web/mpc-core-kit-aggregate-verifier-example/)                  |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Bitcoin Example](/mpc-core-kit-web/mpc-core-kit-bitcoin/)                                       |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Farcaster Example](/mpc-core-kit-web/mpc-core-kit-farcaster/)                                   |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - NEAR Example](/mpc-core-kit-web/mpc-core-kit-near/)                                             |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Solana Example](/mpc-core-kit-web/mpc-core-kit-solana/)                                         |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Sui Example](/mpc-core-kit-web/mpc-core-kit-sui/)                                               |
+| Web      | `@web3auth/mpc-core-kit` | `React`        | [MPC CoreKit Web - Aptos Example](/mpc-core-kit-web/mpc-core-kit-aptos/)                                           |
 | Node     | `@web3auth/mpc-core-kit` | `JavaScript`   | [MPC CoreKit Node Example](/mpc-core-kit-node/)                                                                    |
 | iOS      | `@web3auth/mpc-core-kit` | `Swift`        | [MPC CoreKit iOS Example](/mpc-core-kit-ios/)                                                                      |
 | Mobile   | `@web3auth/mpc-core-kit` | `React Native` | [MPC CoreKit React Native Example](/mpc-core-kit-react-native/)                                                    |
