@@ -40,7 +40,7 @@
     "assert": "^2.1.0",
     "babel-jest": "^29.6.3",
     "base-64": "^1.0.0",
-    "bn.js": "^5.2.1",
+    "bn.js": "^5.2.3",
     "buffer": "^6.0.3",
     "empty-module": "^0.0.2",
     "esbuild-plugins-node-modules-polyfill": "^1.6.8",
