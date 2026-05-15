@@ -23,6 +23,9 @@ import { BN } from "bn.js";
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup, UserCredential } from "firebase/auth";
 import { useEffect, useState } from "react";
+import {  createWalletClient, custom, TypedData, verifyTypedData } from 'viem'
+import { baseSepolia } from 'viem/chains'
+
 
 // IMP END - Quick Start
 // IMP START - Blockchain Calls
@@ -364,6 +367,70 @@ function App() {
     console.log(...args);
   }
 
+
+  async function viemSignTypedData() {
+    const chainConfig = {
+      chainId: '0x14a34',
+      displayName: 'Base Sepolia Testnet',
+      chainNamespace: CHAIN_NAMESPACES.EIP155,
+      tickerName: 'Vastlink Token',
+      ticker: 'VAST',
+      decimals: 18,
+      rpcTarget: "https://base-sepolia-rpc.publicnode.com",
+      blockExplorerUrl: "https://sepolia.basescan.org",
+    }
+  
+    const evmProvider = new EthereumSigningProvider({ config: { chainConfig } });
+    evmProvider.setupProvider(makeEthereumSigner(coreKitInstance));
+    const userWalletClient = createWalletClient({
+      chain: baseSepolia,
+      transport: custom(evmProvider),
+    })
+
+    const domain = {
+      name: 'Ether Mail',
+      version: '1',
+      chainId: 84532,
+      verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+    } as const
+  
+    const types : TypedData = {
+      Person: [
+        { name: 'name', type: 'string' },
+        { name: 'wallet', type: 'address' },
+      ],
+      Mail: [
+        { name: 'from', type: 'Person' },
+        { name: 'to', type: 'Person' },
+        { name: 'contents', type: 'string' },
+      ],
+    } as const
+  
+    const [account] = await userWalletClient.getAddresses()
+    const params = {
+      account,
+      domain,
+      types,
+      primaryType: 'Mail',
+      message: {
+        from: {
+          name: 'Cow',
+          wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+        },
+        to: {
+          name: 'Bob',
+          wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+        },
+        contents: 'Hello, Bob!',
+      },
+    }
+    
+    const signature = await userWalletClient.signTypedData(params as any)
+
+    console.log(signature)
+    console.log(await verifyTypedData( {...params, signature, address: account} ) )
+
+  }
   const loggedInView = (
     <div className="flex-container">
       <div>
@@ -394,6 +461,11 @@ function App() {
       <div>
         <button onClick={signMessage} className="card">
           Sign Message
+        </button>
+      </div>
+      <div>
+        <button onClick={viemSignTypedData} className="card" >
+          ViemSignTypedData
         </button>
       </div>
       <div>

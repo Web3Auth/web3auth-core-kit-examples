@@ -17,107 +17,141 @@ struct HomeView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(header: Text("Public Address")) {
-                    Button(
-                        action: {
-                            UIPasteboard.general.string = viewModel.publicAddress
-                        }, label: {
-                            Text(viewModel.publicAddress)
-                        })
-                    
-                }
-                
-                Section(header: Text("Chain Interactions")) {
-                    Button(
-                        action: {
-                            viewModel.signMessage{
-                                result, error in
-                                if result != nil {
-                                    signedMessage = result
-                                }
-                            }
-                        },
-                        label: {
-                            Text("Sign Message")
-                        }
-                    )
-                    
-                    if signedMessage != nil {
-                        Text(signedMessage!)
+            LoadingView(viewModel: viewModel, content: {
+                Form {
+                    Section(header: Text("Public Address")) {
+                        Button(
+                            action: {
+                                UIPasteboard.general.string = viewModel.publicAddress
+                            }, label: {
+                                Text(viewModel.publicAddress)
+                            })
+                        
                     }
                     
-                    Button(
-                        action: {
-                            viewModel.sendTransaction{
-                                result, error in
-                                if result != nil {
-                                    hash = result
-                                }
-                            }
-                        },
-                        label: {
-                            Text("Send 0.001 ETH")
-                        }
-                    )
-                    
-                    if(hash != nil) {
-                        Link(
-                            hash!,
-                            destination: URL(
-                                string: "https://sepolia.etherscan.io/tx/\(hash!)"
-                            )!
-                        ).underline()
-                    }
-                    
-                    Text("The sample uses Eth Sepolia, you can choose any EVM network of your choice. Send 0.001 ETH will perform self transfer of ETH. You'll need to have Sepolia faucet to perform transaction.").font(.caption)
-                                   
-                }
-                
-                if(!viewModel.factorPubs.isEmpty) {
-                    Section(header: Text("TSS Factors PubKey")) {
-                        ForEach(Array(viewModel.factorPubs), id: \.self) { factorPub in
-                            HStack(
-                                alignment: .top,
-                                spacing: 24,
-                                content: {
-                                    Text(factorPub)
-                                    Button(action: {
-                                        withAnimation {
-                                            viewModel.deleteFactor(
-                                                factorPub: factorPub
-                                            )
-                                        }
-                                    }) {
-                                        Label("",systemImage: "trash")
+                    Section(header: Text("Chain Interactions")) {
+                        Button(
+                            action: {
+                                viewModel.signMessage{
+                                    result, error in
+                                    if result != nil {
+                                        signedMessage = result
                                     }
                                 }
-                            )
+                            },
+                            label: {
+                                Text("Sign Message")
+                            }
+                        )
+                        
+                        if signedMessage != nil {
+                            Text(signedMessage!)
+                        }
+                        
+                        Button(
+                            action: {
+                                viewModel.sendTransaction{
+                                    result, error in
+                                    if result != nil {
+                                        hash = result
+                                    }
+                                }
+                            },
+                            label: {
+                                Text("Send 0.001 ETH")
+                            }
+                        )
+                        
+                        if(hash != nil) {
+                            Link(
+                                hash!,
+                                destination: URL(
+                                    string: "https://sepolia.etherscan.io/tx/\(hash!)"
+                                )!
+                            ).underline()
+                        }
+                        
+                        Text("The sample uses Eth Sepolia, you can choose any EVM network of your choice. Send 0.001 ETH will perform self transfer of ETH. You'll need to have Sepolia faucet to perform transaction.").font(.caption)
+                        
+                    }
+                    
+                    if(!viewModel.factorPubs.isEmpty) {
+                        Section(header: Text("TSS Factors PubKey")) {
+                            ForEach(Array(viewModel.factorPubs), id: \.self) { factorPub in
+                                HStack(
+                                    alignment: .top,
+                                    spacing: 24,
+                                    content: {
+                                        Text(factorPub)
+                                        Button(action: {
+                                            withAnimation {
+                                                viewModel.deleteFactor(
+                                                    factorPub: factorPub
+                                                )
+                                            }
+                                        }) {
+                                            Label("",systemImage: "trash")
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
+                    
+                    Section(
+                        header: Text("TSS Operations")
+                    ) {
+                        Button(
+                            action: {
+                                viewModel.enableMFA()
+                            },
+                            label: {
+                                Text("Enable MFA")
+                            }
+                        )
+                        Button(
+                            action: {
+                                
+                                viewModel.showAlert(message: "creating factor...")
+                                viewModel.createNewTssFactor()
+                                viewModel.hideLoader()
+                            },
+                            label: {
+                                Text("Create new Factor")
+                            }
+                        )
+                        Button(
+                            action: {
+                                
+                                viewModel.getKeyDetails()
+                            },
+                            label: {
+                                Text("Get Key Details")
+                            }
+                        )
+                        
+                        Button(
+                            action: {
+                                viewModel.logout()
+                            },
+                            label: {
+                                Text("Logout")
+                            }
+                        )
+                        
+                        Button(
+                            action: {
+                                viewModel.resetAccount()
+                            },
+                            label: {
+                                Text("Reset")
+                            }
+                        )
+                    }
                 }
-                
-                Section(
-                    header: Text("TSS Operations")
-                ) {
-                    Button(
-                        action: {
-                            viewModel.enableMFA()
-                        },
-                        label: {
-                            Text("Enable MFA")
-                        }
-                    )
-                    Button(
-                        action: {
-                            viewModel.createNewTssFactor()
-                        },
-                        label: {
-                            Text("Create new Factor")
-                        }
-                    )
-                }
-            }
-        }
+            })
+        }.alert(isPresented: $viewModel.showAlert, content: {
+            Alert(title: Text(viewModel.alertContent))
+        })
     }
 }

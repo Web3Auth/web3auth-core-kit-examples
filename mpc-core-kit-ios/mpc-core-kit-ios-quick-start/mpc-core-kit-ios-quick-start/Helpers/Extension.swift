@@ -13,7 +13,7 @@ import web3
 
 extension MpcCoreKit : EvmSigner {
     public func sign(message: Data) throws -> Data {
-        let data =  try self.tssSign(message: message)
+        let data =  try self.tssSignSync(message: message)
         return data
     }
 
@@ -22,7 +22,7 @@ extension MpcCoreKit : EvmSigner {
             address: self.getTssPubKey().hexString
         ).getPublicKey(format: .FullAddress)
 
-       return Data(hex: fullAddress).suffix(64)
+        return Data(hex: fullAddress)?.suffix(64) ?? Data()
     }
 
 }
