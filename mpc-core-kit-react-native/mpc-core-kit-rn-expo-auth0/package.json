@@ -16,7 +16,7 @@
     "@web3auth/react-native-mpc-core-kit": "^1.0.0",
     "bn.js": "^5.2.1",
     "ethers": "^6.13.5",
-    "expo": "~51.0.28",
+    "expo": "~55.0.9",
     "expo-secure-store": "^13.0.2",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",

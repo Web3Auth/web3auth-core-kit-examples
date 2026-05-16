@@ -9,7 +9,7 @@
     "@web3auth/ethereum-provider": "^9.3.0",
     "@web3auth/mpc-core-kit": "^3.2.4",
     "bn.js": "^5.2.1",
-    "firebase": "^10.13.2",
+    "firebase": "^12.11.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "web3": "^4.13.0"
