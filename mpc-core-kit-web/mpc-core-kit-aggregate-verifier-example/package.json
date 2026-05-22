@@ -16,7 +16,7 @@
 		"@web3auth/ethereum-mpc-provider": "^9.3.0",
 		"@web3auth/mpc-core-kit": "^3.2.4",
 		"browserify-zlib": "^0.2.0",
-		"copy-webpack-plugin": "^12.0.2",
+		"copy-webpack-plugin": "^14.0.0",
 		"ethers": "^6.12.1",
 		"html-webpack-plugin": "^5.6.0",
 		"jsrsasign": "^11.1.0",
