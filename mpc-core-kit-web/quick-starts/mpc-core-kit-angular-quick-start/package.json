@@ -35,8 +35,8 @@
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
-    "@angular-devkit/build-angular": "~18.2.6",
-    "@angular/cli": "~18.2.6",
+    "@angular-devkit/build-angular": "~21.2.15",
+    "@angular/cli": "~22.0.1",
     "@angular/compiler-cli": "~18.2.6",
     "@types/jasmine": "~4.3.0",
     "@types/keccak": "^3.0.4",
