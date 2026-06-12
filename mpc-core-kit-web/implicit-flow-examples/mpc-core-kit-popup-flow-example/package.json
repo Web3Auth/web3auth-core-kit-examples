@@ -4,7 +4,7 @@
 	"private": true,
 	"dependencies": {
 		"@toruslabs/tss-dkls-lib": "^4.1.0",
-		"@vitejs/plugin-react": "^4.3.2",
+		"@vitejs/plugin-react": "^6.0.2",
 		"@web3auth/base": "^9.3.0",
 		"@web3auth/ethereum-mpc-provider": "^9.3.0",
 		"@web3auth/mpc-core-kit": "3.2.4",
@@ -16,7 +16,7 @@
 		"react-dom": "^18.3.1",
 		"sweetalert": "^2.1.2",
 		"typescript": "^5.6.2",
-		"vite": "^5.4.8",
+		"vite": "^8.0.16",
 		"web3": "^4.13.0"
 	},
 	"scripts": {
