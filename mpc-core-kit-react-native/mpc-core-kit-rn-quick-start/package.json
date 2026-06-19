@@ -12,8 +12,8 @@
   "//IMP START": "IMP START - Web3Auth Installation",
   "dependencies": {
     "@ethersproject/shims": "^5.7.0",
-    "@react-native-firebase/app": "^20.4.0",
-    "@react-native-firebase/auth": "^20.4.0",
+    "@react-native-firebase/app": "^24.1.1",
+    "@react-native-firebase/auth": "^24.1.1",
     "@web3auth/base": "^9.5.3",
     "@web3auth/ethereum-mpc-provider": "^9.5.3",
     "@web3auth/react-native-mpc-core-kit": "^1.0.0",
@@ -28,7 +28,7 @@
   },
   "//IMP END": "IMP END - Web3Auth Installation",
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@craftzdog/react-native-buffer": "^6.0.5",
