@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 // import RPC from "./viemRPC";
 import RPC from "./web3RPC";
 import { OffNetworkRecovery, styles as RecoveryStyle } from "./recovery";
+import { criticalResetAccount } from "./resetAccount";
 // IMP END - Blockchain Calls
 
 // IMP START - Dashboard Registration
@@ -44,7 +45,8 @@ const verifier = "w3a-firebase-demo";
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7",
-  rpcTarget: "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
+  rpcTarget:
+    "https://api.web3auth.io/infura-service/v1/11155111/BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ",
   // Avoid using public rpcTarget in production.
   // Use services like Infura, Quicknode etc
   displayName: "Ethereum Sepolia Testnet",
@@ -353,6 +355,14 @@ function App() {
     const transactionReceipt = await RPC.sendTransaction(evmProvider);
     uiConsole(transactionReceipt);
   };
+
+  const resetAccount = async () => {
+    if (!coreKitInstance) {
+      throw new Error("coreKitInstance not found");
+    }
+    await criticalResetAccount(coreKitInstance);
+    uiConsole("account reset");
+  };
   // IMP END - Blockchain Calls
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -414,6 +424,11 @@ function App() {
       <div>
         <button onClick={createMnemonicFactor} className="card">
           Generate Backup (Mnemonic)
+        </button>
+      </div>
+      <div>
+        <button onClick={resetAccount} className="card">
+          Reset Account (Critical)
         </button>
       </div>
     </div>
